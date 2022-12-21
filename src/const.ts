@@ -63,7 +63,7 @@ export const TOKEN_COLORS: any = {
 	NFLXx: "#F44336",
 	NVDAx: "#4CAF50",
 	GOOGLx: "#4285F4",
-	AMDx: "#00B10",
+	AMDx: "#00B100",
 	AAPLx: "#6B6B6B",
 	USDcx: "#5677FB",
 	USDsx: "#5677FB",

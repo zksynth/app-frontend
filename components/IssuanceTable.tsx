@@ -335,27 +335,17 @@ const IssuanceTable = ({ handleChange }: any) => {
 																					{
 																						<Image
 																							src={`/icons/${token.symbol}.png`}
-																							height={
-																								"40px"
-																							}
-																							width={
-																								"40px"
-																							}
+																							height={"40px"}
+																							width={"40px"}
 																							alt=""
 																						/>
 																					}
 
 																					<Text
-																						fontSize={
-																							"xs"
-																						}
-																						my={
-																							1
-																						}
+																						fontSize={"xs"}
+																						my={1}
 																					>
-																						{
-																							token.symbol
-																						}
+																						{token.symbol}
 																					</Text>
 																				</Flex>
 																			</Box>

@@ -21,7 +21,7 @@ import {
 import { ConnectButton as RainbowConnect } from "@rainbow-me/rainbowkit";
 import { FaBars } from "react-icons/fa";
 import { BsMoonFill, BsSunFill } from "react-icons/bs";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -31,6 +31,7 @@ import lightlogo from "../public/light_logo.svg";
 import { useAccount } from "wagmi";
 import { useContext } from 'react';
 import { AppDataContext } from "./context/AppDataProvider";
+import { ChainID } from "../src/chains";
 
 function NavBar() {
 	// const [address, setAddress] = useState(null);
@@ -41,13 +42,33 @@ function NavBar() {
 
 	const { fetchData, setChain } = useContext(AppDataContext);
 
-	const {address, isConnected: isEvmConnected, isConnecting: isEvmConnecting} = useAccount({
+	const {address, isConnected, isConnecting, connector: activeConnector} = useAccount({
 		onConnect({ address, connector, isReconnected }) {
 			console.log('Connected', address)
 			fetchData(address!, connector!.chains[0].id);
 			setChain(connector!.chains[0].id);
+		},
+		onDisconnect() {
+			console.log('Disconnected');
+			fetchData(null, ChainID.ARB_GOERLI);
+			setChain(ChainID.ARB_GOERLI);
 		}
 	});
+
+	useEffect(() => {
+		if(activeConnector) (window as any).ethereum.on('accountsChanged', function (accounts: any[]) {
+			console.log(activeConnector)
+			// Time to reload your interface with accounts[0]!
+			fetchData(accounts[0], activeConnector?.chains[0].id);
+			setChain(activeConnector?.chains[0].id);
+		})
+		if (localStorage.getItem('chakra-ui-color-mode') === 'light') {
+			localStorage.setItem('chakra-ui-color-mode', 'dark');
+		}
+		if(!isConnected && !isConnecting) {
+			fetchData(null, ChainID.ARB_GOERLI);
+		}
+	}, [isConnected, isConnecting, activeConnector, fetchData, setChain]);
 
 	return (
 		<>

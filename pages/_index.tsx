@@ -39,6 +39,10 @@ export default function _index({ children }: any) {
 	const {address: evmAddress, isConnected: isEvmConnected, isConnecting: isEvmConnecting} = useAccount();
 	const {connectAsync: connectEvm, connectors} = useConnect();
 
+	useEffect(() => {
+		localStorage.setItem('chakra-ui-color-mode', 'light')
+	})
+
 	// useEffect(() => {
 	// 	if (typeof window !== 'undefined' && !init) {
 	// 		setInit(true)

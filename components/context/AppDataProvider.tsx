@@ -14,7 +14,7 @@ interface AppDataValue {
 	totalDebt: number;
 	pools: any[];
 	fetchData: (
-		_address: string,
+		_address: string|null,
 		chainId: number
 	) => Promise<unknown> | undefined;
 	tradingPool: number;
@@ -46,11 +46,6 @@ interface AppDataValue {
 }
 
 const AppDataContext = React.createContext<AppDataValue>({} as AppDataValue);
-const collateralsConfig = require("../../artifacts/collaterals.json");
-const synthsConfig = require("../../artifacts/synths.json");
-const tradingPoolsConfig = require("../../artifacts/tradingPools.json");
-
-const DUMMY_ADDRESS = "TU6nPbkDzMfhtg13nUnTMbuVFFMpLSs3P3";
 
 function AppDataProvider({ children }: any) {
 	const [isDataReady, setIsDataReady] = React.useState(false);
@@ -142,7 +137,7 @@ function AppDataProvider({ children }: any) {
 	// 	});
 	// };
 
-	const fetchData = (_address: string, chainId: number) => {
+	const fetchData = (_address: string|null, chainId: number) => {
 		return new Promise((resolve, reject) => {
 			setIsFetchingData(true);
 			console.log("Fetching data...", Endpoints[chainId]);
@@ -203,13 +198,18 @@ function AppDataProvider({ children }: any) {
 						getABI("Multicall"),
 						provider.getSigner()
 					);
-					_setCollaterals(
-						_collaterals,
-						multicallContract,
-						_address,
-						chainId
-					);
-					_setPools(_pools, multicallContract, _address, chainId);
+					if(_address){
+						_setCollaterals(
+							_collaterals,
+							multicallContract,
+							_address,
+							chainId
+						);
+						_setPools(_pools, multicallContract, _address, chainId);
+					} else {
+						setCollaterals(_collaterals);
+						setPools(_pools);
+					}
 				})
 				.catch((err) => {
 					console.log("error", err);
@@ -278,7 +278,6 @@ function AppDataProvider({ children }: any) {
 					_collaterals[i].id,
 					itf.encodeFunctionData("balanceOf", [_address]),
 				]);
-				console.log(_collaterals[i].id, _address);
 				calls.push([
 					_collaterals[i].id,
 					itf.encodeFunctionData("allowance", [
