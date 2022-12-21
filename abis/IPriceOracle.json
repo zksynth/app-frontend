@@ -1,0 +1,229 @@
+{
+  "contractName": "IPriceOracle",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "latestAnswer",
+      "outputs": [
+        {
+          "internalType": "int256",
+          "name": "",
+          "type": "int256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.6;\n\ninterface IPriceOracle {\n    function latestAnswer() external view returns (int);\n}",
+  "sourcePath": "/Users/prasad/projects/synthex/contracts/contracts/interfaces/IPriceOracle.sol",
+  "ast": {
+    "absolutePath": "/Users/prasad/projects/synthex/contracts/contracts/interfaces/IPriceOracle.sol",
+    "exportedSymbols": {
+      "IPriceOracle": [
+        2684
+      ]
+    },
+    "id": 2685,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 2678,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".6"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "32:23:11"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 2684,
+        "linearizedBaseContracts": [
+          2684
+        ],
+        "name": "IPriceOracle",
+        "nameLocation": "67:12:11",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "functionSelector": "50d25bcd",
+            "id": 2683,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "latestAnswer",
+            "nameLocation": "95:12:11",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2679,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "107:2:11"
+            },
+            "returnParameters": {
+              "id": 2682,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2681,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2683,
+                  "src": "133:3:11",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_int256",
+                    "typeString": "int256"
+                  },
+                  "typeName": {
+                    "id": 2680,
+                    "name": "int",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "133:3:11",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_int256",
+                      "typeString": "int256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "132:5:11"
+            },
+            "scope": 2684,
+            "src": "86:52:11",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 2685,
+        "src": "57:83:11",
+        "usedErrors": []
+      }
+    ],
+    "src": "32:108:11"
+  },
+  "legacyAST": {
+    "absolutePath": "/Users/prasad/projects/synthex/contracts/contracts/interfaces/IPriceOracle.sol",
+    "exportedSymbols": {
+      "IPriceOracle": [
+        2684
+      ]
+    },
+    "id": 2685,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 2678,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".6"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "32:23:11"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 2684,
+        "linearizedBaseContracts": [
+          2684
+        ],
+        "name": "IPriceOracle",
+        "nameLocation": "67:12:11",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "functionSelector": "50d25bcd",
+            "id": 2683,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "latestAnswer",
+            "nameLocation": "95:12:11",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2679,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "107:2:11"
+            },
+            "returnParameters": {
+              "id": 2682,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2681,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2683,
+                  "src": "133:3:11",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_int256",
+                    "typeString": "int256"
+                  },
+                  "typeName": {
+                    "id": 2680,
+                    "name": "int",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "133:3:11",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_int256",
+                      "typeString": "int256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "132:5:11"
+            },
+            "scope": 2684,
+            "src": "86:52:11",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 2685,
+        "src": "57:83:11",
+        "usedErrors": []
+      }
+    ],
+    "src": "32:108:11"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.6+commit.0e36fba0.mod.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "2.0.1",
+  "updatedAt": "2022-11-16T08:23:15.807Z"
+}

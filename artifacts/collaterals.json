@@ -1,0 +1,18 @@
+[
+    {
+        "coll_address": "TFByeKTNht2egRzbUxZSYdWhob6ZnV8PyJ",
+        "name": "Wrapped TRX",
+        "symbol": "WTRX",
+        "price": "0.0671",
+        "decimal": "6",
+        "cAsset": "TC5jrghYVGH3qTqRxKUawad5FcMkvKPB6y"
+    },
+    {
+        "coll_address": "TFT7sNiNDGZcqL7z7dwXUPpxrx1Ewk8iGL",
+        "name": "Decentralized USD",
+        "symbol": "USDD",
+        "price": "0.998",
+        "decimal": "18",
+        "cAsset": "TMtovzHnSRWnQPbSYT9s8MjbTnvZnDWxwF"
+    }
+]

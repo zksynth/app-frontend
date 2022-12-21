@@ -1,0 +1,1341 @@
+{
+  "contractName": "MockInterestRateModel",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "contract ISystem",
+          "name": "_system",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "getInterestRate",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_interestRate",
+          "type": "uint256"
+        }
+      ],
+      "name": "setInterestRate",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x608060405234801561001057600080fd5b50d3801561001d57600080fd5b50d2801561002a57600080fd5b506040516103383803806103388339810160408190526100499161006e565b600080546001600160a01b0319166001600160a01b03929092169190911790556100a7565b60006020828403121561008057600080fd5b81516001600160a81b038116811461009757600080fd5b6001600160a01b03169392505050565b610282806100b66000396000f3fe608060405234801561001057600080fd5b50d3801561001d57600080fd5b50d2801561002a57600080fd5b50600436106100505760003560e01c80630c196a74146100555780635f84f3021461007c575b600080fd5b61006a610063366004610233565b5060015490565b60405190815260200160405180910390f35b61008f61008a366004610233565b610091565b005b600054604080517f8da5cb5b0000000000000000000000000000000000000000000000000000000081529051339273ffffffffffffffffffffffffffffffffffffffff1691638da5cb5b916004808301926020929190829003018186803b1580156100fb57600080fd5b505afa15801561010f573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061013391906101df565b73ffffffffffffffffffffffffffffffffffffffff16146101da576040517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820152603360248201527f4669786564496e746572657374526174653a204f6e6c79206f776e657220636160448201527f6e2073657420696e746572657374207261746500000000000000000000000000606482015260840160405180910390fd5b600155565b6000602082840312156101f157600080fd5b815174ffffffffffffffffffffffffffffffffffffffffff8116811461021657600080fd5b73ffffffffffffffffffffffffffffffffffffffff169392505050565b60006020828403121561024557600080fd5b503591905056fea26474726f6e582212207a6f1bf58c4c127f5260250c7b171d95456cdffe11f9b16e583a674ed190fd7664736f6c63430008060033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50d3801561001d57600080fd5b50d2801561002a57600080fd5b50600436106100505760003560e01c80630c196a74146100555780635f84f3021461007c575b600080fd5b61006a610063366004610233565b5060015490565b60405190815260200160405180910390f35b61008f61008a366004610233565b610091565b005b600054604080517f8da5cb5b0000000000000000000000000000000000000000000000000000000081529051339273ffffffffffffffffffffffffffffffffffffffff1691638da5cb5b916004808301926020929190829003018186803b1580156100fb57600080fd5b505afa15801561010f573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061013391906101df565b73ffffffffffffffffffffffffffffffffffffffff16146101da576040517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820152603360248201527f4669786564496e746572657374526174653a204f6e6c79206f776e657220636160448201527f6e2073657420696e746572657374207261746500000000000000000000000000606482015260840160405180910390fd5b600155565b6000602082840312156101f157600080fd5b815174ffffffffffffffffffffffffffffffffffffffffff8116811461021657600080fd5b73ffffffffffffffffffffffffffffffffffffffff169392505050565b60006020828403121561024557600080fd5b503591905056fea26474726f6e582212207a6f1bf58c4c127f5260250c7b171d95456cdffe11f9b16e583a674ed190fd7664736f6c63430008060033",
+  "sourceMap": "113:666:23:-:0;;;258:61;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;296:6;:16;;-1:-1:-1;;;;;;296:16:23;-1:-1:-1;;;;;296:16:23;;;;;;;;;;113:666;;14:332:46;100:6;153:2;141:9;132:7;128:23;124:32;121:2;;;169:1;166;159:12;121:2;195:16;;-1:-1:-1;;;;;240:31:46;;230:42;;220:2;;286:1;283;276:12;220:2;-1:-1:-1;;;;;309:31:46;;111:235;-1:-1:-1;;;111:235:46:o;:::-;113:666:23;;;;;;",
+  "deployedSourceMap": "113:666:23:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;681:96;;;;;;:::i;:::-;-1:-1:-1;757:12:23;;;681:96;;;;1134:25:46;;;1122:2;1107:18;681:96:23;;;;;;;474:201;;;;;;:::i;:::-;;:::i;:::-;;;546:6;;:14;;;;;;;;564:10;;546:28;:6;;:12;;:14;;;;;;;;;;;;;;:6;:14;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;:28;;;538:92;;;;;;;770:2:46;538:92:23;;;752:21:46;809:2;789:18;;;782:30;848:34;828:18;;;821:62;919:21;899:18;;;892:49;958:19;;538:92:23;;;;;;;;640:12;:28;474:201::o;14:364:46:-;84:6;137:2;125:9;116:7;112:23;108:32;105:2;;;153:1;150;143:12;105:2;185:9;179:16;235:44;228:5;224:56;217:5;214:67;204:2;;295:1;292;285:12;204:2;329:42;318:54;;95:283;-1:-1:-1;;;95:283:46:o;383:180::-;442:6;495:2;483:9;474:7;470:23;466:32;463:2;;;511:1;508;501:12;463:2;-1:-1:-1;534:23:46;;453:110;-1:-1:-1;453:110:46:o",
+  "source": "// SPDX-License-Identifier: SEE LICENSE IN LICENSE\npragma solidity ^0.8.6;\n\nimport \"../interfaces/ISystem.sol\";\n\ncontract MockInterestRateModel {\n    ISystem system;\n\n    // Interest rate per second\n    uint interestRate;\n    uint interestRateDecimals;\n\n    constructor(ISystem _system){\n        system = _system;\n    }\n\n    // x = interest rate per second\n    // y = interest rate per year\n    // x = (y+1)**(1/31536000) - 1\n    // 1 % APR = 0.000000021979553066 % APS\n    function setInterestRate(uint _interestRate) external {\n        require(system.owner() == msg.sender, \"FixedInterestRate: Only owner can set interest rate\");\n        interestRate = _interestRate;\n    }\n\n    function getInterestRate(uint) external view returns(uint){\n        return (interestRate);\n    }\n}",
+  "sourcePath": "/Users/prasad/projects/synthex/contracts/contracts/mock/MockInterestRateModel.sol",
+  "ast": {
+    "absolutePath": "/Users/prasad/projects/synthex/contracts/contracts/mock/MockInterestRateModel.sol",
+    "exportedSymbols": {
+      "ISystem": [
+        4464
+      ],
+      "MockInterestRateModel": [
+        4517
+      ]
+    },
+    "id": 4518,
+    "license": "SEE LICENSE IN LICENSE",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 4466,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".6"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "51:23:23"
+      },
+      {
+        "absolutePath": "/Users/prasad/projects/synthex/contracts/contracts/interfaces/ISystem.sol",
+        "file": "../interfaces/ISystem.sol",
+        "id": 4467,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 4518,
+        "sourceUnit": 4465,
+        "src": "76:35:23",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 4517,
+        "linearizedBaseContracts": [
+          4517
+        ],
+        "name": "MockInterestRateModel",
+        "nameLocation": "122:21:23",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "id": 4470,
+            "mutability": "mutable",
+            "name": "system",
+            "nameLocation": "158:6:23",
+            "nodeType": "VariableDeclaration",
+            "scope": 4517,
+            "src": "150:14:23",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_ISystem_$4464",
+              "typeString": "contract ISystem"
+            },
+            "typeName": {
+              "id": 4469,
+              "nodeType": "UserDefinedTypeName",
+              "pathNode": {
+                "id": 4468,
+                "name": "ISystem",
+                "nodeType": "IdentifierPath",
+                "referencedDeclaration": 4464,
+                "src": "150:7:23"
+              },
+              "referencedDeclaration": 4464,
+              "src": "150:7:23",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_ISystem_$4464",
+                "typeString": "contract ISystem"
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 4472,
+            "mutability": "mutable",
+            "name": "interestRate",
+            "nameLocation": "208:12:23",
+            "nodeType": "VariableDeclaration",
+            "scope": 4517,
+            "src": "203:17:23",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 4471,
+              "name": "uint",
+              "nodeType": "ElementaryTypeName",
+              "src": "203:4:23",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 4474,
+            "mutability": "mutable",
+            "name": "interestRateDecimals",
+            "nameLocation": "231:20:23",
+            "nodeType": "VariableDeclaration",
+            "scope": 4517,
+            "src": "226:25:23",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 4473,
+              "name": "uint",
+              "nodeType": "ElementaryTypeName",
+              "src": "226:4:23",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 4484,
+              "nodeType": "Block",
+              "src": "286:33:23",
+              "statements": [
+                {
+                  "expression": {
+                    "id": 4482,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 4480,
+                      "name": "system",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 4470,
+                      "src": "296:6:23",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_ISystem_$4464",
+                        "typeString": "contract ISystem"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "id": 4481,
+                      "name": "_system",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 4477,
+                      "src": "305:7:23",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_ISystem_$4464",
+                        "typeString": "contract ISystem"
+                      }
+                    },
+                    "src": "296:16:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_ISystem_$4464",
+                      "typeString": "contract ISystem"
+                    }
+                  },
+                  "id": 4483,
+                  "nodeType": "ExpressionStatement",
+                  "src": "296:16:23"
+                }
+              ]
+            },
+            "id": 4485,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4478,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4477,
+                  "mutability": "mutable",
+                  "name": "_system",
+                  "nameLocation": "278:7:23",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4485,
+                  "src": "270:15:23",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_ISystem_$4464",
+                    "typeString": "contract ISystem"
+                  },
+                  "typeName": {
+                    "id": 4476,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 4475,
+                      "name": "ISystem",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 4464,
+                      "src": "270:7:23"
+                    },
+                    "referencedDeclaration": 4464,
+                    "src": "270:7:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_ISystem_$4464",
+                      "typeString": "contract ISystem"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "269:17:23"
+            },
+            "returnParameters": {
+              "id": 4479,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "286:0:23"
+            },
+            "scope": 4517,
+            "src": "258:61:23",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 4504,
+              "nodeType": "Block",
+              "src": "528:147:23",
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "commonType": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        "id": 4496,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "leftExpression": {
+                          "arguments": [],
+                          "expression": {
+                            "argumentTypes": [],
+                            "expression": {
+                              "id": 4491,
+                              "name": "system",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 4470,
+                              "src": "546:6:23",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_ISystem_$4464",
+                                "typeString": "contract ISystem"
+                              }
+                            },
+                            "id": 4492,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "owner",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": 4443,
+                            "src": "546:12:23",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_function_external_view$__$returns$_t_address_$",
+                              "typeString": "function () view external returns (address)"
+                            }
+                          },
+                          "id": 4493,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "kind": "functionCall",
+                          "lValueRequested": false,
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "546:14:23",
+                          "tryCall": false,
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "nodeType": "BinaryOperation",
+                        "operator": "==",
+                        "rightExpression": {
+                          "expression": {
+                            "id": 4494,
+                            "name": "msg",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 4294967281,
+                            "src": "564:3:23",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_magic_message",
+                              "typeString": "msg"
+                            }
+                          },
+                          "id": 4495,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "memberName": "sender",
+                          "nodeType": "MemberAccess",
+                          "src": "564:10:23",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "src": "546:28:23",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      },
+                      {
+                        "hexValue": "4669786564496e746572657374526174653a204f6e6c79206f776e65722063616e2073657420696e7465726573742072617465",
+                        "id": 4497,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "kind": "string",
+                        "lValueRequested": false,
+                        "nodeType": "Literal",
+                        "src": "576:53:23",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_stringliteral_069db75aba851522445425f1775c0be5d8914d65112d9686b11e6401d82ccfb1",
+                          "typeString": "literal_string \"FixedInterestRate: Only owner can set interest rate\""
+                        },
+                        "value": "FixedInterestRate: Only owner can set interest rate"
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        },
+                        {
+                          "typeIdentifier": "t_stringliteral_069db75aba851522445425f1775c0be5d8914d65112d9686b11e6401d82ccfb1",
+                          "typeString": "literal_string \"FixedInterestRate: Only owner can set interest rate\""
+                        }
+                      ],
+                      "id": 4490,
+                      "name": "require",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [
+                        4294967278,
+                        4294967278
+                      ],
+                      "referencedDeclaration": 4294967278,
+                      "src": "538:7:23",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                        "typeString": "function (bool,string memory) pure"
+                      }
+                    },
+                    "id": 4498,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "538:92:23",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 4499,
+                  "nodeType": "ExpressionStatement",
+                  "src": "538:92:23"
+                },
+                {
+                  "expression": {
+                    "id": 4502,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 4500,
+                      "name": "interestRate",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 4472,
+                      "src": "640:12:23",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "id": 4501,
+                      "name": "_interestRate",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 4487,
+                      "src": "655:13:23",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "src": "640:28:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "id": 4503,
+                  "nodeType": "ExpressionStatement",
+                  "src": "640:28:23"
+                }
+              ]
+            },
+            "functionSelector": "5f84f302",
+            "id": 4505,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "setInterestRate",
+            "nameLocation": "483:15:23",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4488,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4487,
+                  "mutability": "mutable",
+                  "name": "_interestRate",
+                  "nameLocation": "504:13:23",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4505,
+                  "src": "499:18:23",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4486,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "499:4:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "498:20:23"
+            },
+            "returnParameters": {
+              "id": 4489,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "528:0:23"
+            },
+            "scope": 4517,
+            "src": "474:201:23",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": {
+              "id": 4515,
+              "nodeType": "Block",
+              "src": "739:38:23",
+              "statements": [
+                {
+                  "expression": {
+                    "components": [
+                      {
+                        "id": 4512,
+                        "name": "interestRate",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 4472,
+                        "src": "757:12:23",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      }
+                    ],
+                    "id": 4513,
+                    "isConstant": false,
+                    "isInlineArray": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "nodeType": "TupleExpression",
+                    "src": "756:14:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "functionReturnParameters": 4511,
+                  "id": 4514,
+                  "nodeType": "Return",
+                  "src": "749:21:23"
+                }
+              ]
+            },
+            "functionSelector": "0c196a74",
+            "id": 4516,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getInterestRate",
+            "nameLocation": "690:15:23",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4508,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4507,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4516,
+                  "src": "706:4:23",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4506,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "706:4:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "705:6:23"
+            },
+            "returnParameters": {
+              "id": 4511,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4510,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4516,
+                  "src": "734:4:23",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4509,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "734:4:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "733:6:23"
+            },
+            "scope": 4517,
+            "src": "681:96:23",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 4518,
+        "src": "113:666:23",
+        "usedErrors": []
+      }
+    ],
+    "src": "51:728:23"
+  },
+  "legacyAST": {
+    "absolutePath": "/Users/prasad/projects/synthex/contracts/contracts/mock/MockInterestRateModel.sol",
+    "exportedSymbols": {
+      "ISystem": [
+        4464
+      ],
+      "MockInterestRateModel": [
+        4517
+      ]
+    },
+    "id": 4518,
+    "license": "SEE LICENSE IN LICENSE",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 4466,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".6"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "51:23:23"
+      },
+      {
+        "absolutePath": "/Users/prasad/projects/synthex/contracts/contracts/interfaces/ISystem.sol",
+        "file": "../interfaces/ISystem.sol",
+        "id": 4467,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 4518,
+        "sourceUnit": 4465,
+        "src": "76:35:23",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 4517,
+        "linearizedBaseContracts": [
+          4517
+        ],
+        "name": "MockInterestRateModel",
+        "nameLocation": "122:21:23",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "id": 4470,
+            "mutability": "mutable",
+            "name": "system",
+            "nameLocation": "158:6:23",
+            "nodeType": "VariableDeclaration",
+            "scope": 4517,
+            "src": "150:14:23",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_ISystem_$4464",
+              "typeString": "contract ISystem"
+            },
+            "typeName": {
+              "id": 4469,
+              "nodeType": "UserDefinedTypeName",
+              "pathNode": {
+                "id": 4468,
+                "name": "ISystem",
+                "nodeType": "IdentifierPath",
+                "referencedDeclaration": 4464,
+                "src": "150:7:23"
+              },
+              "referencedDeclaration": 4464,
+              "src": "150:7:23",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_ISystem_$4464",
+                "typeString": "contract ISystem"
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 4472,
+            "mutability": "mutable",
+            "name": "interestRate",
+            "nameLocation": "208:12:23",
+            "nodeType": "VariableDeclaration",
+            "scope": 4517,
+            "src": "203:17:23",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 4471,
+              "name": "uint",
+              "nodeType": "ElementaryTypeName",
+              "src": "203:4:23",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 4474,
+            "mutability": "mutable",
+            "name": "interestRateDecimals",
+            "nameLocation": "231:20:23",
+            "nodeType": "VariableDeclaration",
+            "scope": 4517,
+            "src": "226:25:23",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 4473,
+              "name": "uint",
+              "nodeType": "ElementaryTypeName",
+              "src": "226:4:23",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 4484,
+              "nodeType": "Block",
+              "src": "286:33:23",
+              "statements": [
+                {
+                  "expression": {
+                    "id": 4482,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 4480,
+                      "name": "system",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 4470,
+                      "src": "296:6:23",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_ISystem_$4464",
+                        "typeString": "contract ISystem"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "id": 4481,
+                      "name": "_system",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 4477,
+                      "src": "305:7:23",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_ISystem_$4464",
+                        "typeString": "contract ISystem"
+                      }
+                    },
+                    "src": "296:16:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_ISystem_$4464",
+                      "typeString": "contract ISystem"
+                    }
+                  },
+                  "id": 4483,
+                  "nodeType": "ExpressionStatement",
+                  "src": "296:16:23"
+                }
+              ]
+            },
+            "id": 4485,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4478,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4477,
+                  "mutability": "mutable",
+                  "name": "_system",
+                  "nameLocation": "278:7:23",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4485,
+                  "src": "270:15:23",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_ISystem_$4464",
+                    "typeString": "contract ISystem"
+                  },
+                  "typeName": {
+                    "id": 4476,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 4475,
+                      "name": "ISystem",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 4464,
+                      "src": "270:7:23"
+                    },
+                    "referencedDeclaration": 4464,
+                    "src": "270:7:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_ISystem_$4464",
+                      "typeString": "contract ISystem"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "269:17:23"
+            },
+            "returnParameters": {
+              "id": 4479,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "286:0:23"
+            },
+            "scope": 4517,
+            "src": "258:61:23",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 4504,
+              "nodeType": "Block",
+              "src": "528:147:23",
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "commonType": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        "id": 4496,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "leftExpression": {
+                          "arguments": [],
+                          "expression": {
+                            "argumentTypes": [],
+                            "expression": {
+                              "id": 4491,
+                              "name": "system",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 4470,
+                              "src": "546:6:23",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_ISystem_$4464",
+                                "typeString": "contract ISystem"
+                              }
+                            },
+                            "id": 4492,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "owner",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": 4443,
+                            "src": "546:12:23",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_function_external_view$__$returns$_t_address_$",
+                              "typeString": "function () view external returns (address)"
+                            }
+                          },
+                          "id": 4493,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "kind": "functionCall",
+                          "lValueRequested": false,
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "546:14:23",
+                          "tryCall": false,
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "nodeType": "BinaryOperation",
+                        "operator": "==",
+                        "rightExpression": {
+                          "expression": {
+                            "id": 4494,
+                            "name": "msg",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 4294967281,
+                            "src": "564:3:23",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_magic_message",
+                              "typeString": "msg"
+                            }
+                          },
+                          "id": 4495,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "memberName": "sender",
+                          "nodeType": "MemberAccess",
+                          "src": "564:10:23",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "src": "546:28:23",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      },
+                      {
+                        "hexValue": "4669786564496e746572657374526174653a204f6e6c79206f776e65722063616e2073657420696e7465726573742072617465",
+                        "id": 4497,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "kind": "string",
+                        "lValueRequested": false,
+                        "nodeType": "Literal",
+                        "src": "576:53:23",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_stringliteral_069db75aba851522445425f1775c0be5d8914d65112d9686b11e6401d82ccfb1",
+                          "typeString": "literal_string \"FixedInterestRate: Only owner can set interest rate\""
+                        },
+                        "value": "FixedInterestRate: Only owner can set interest rate"
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        },
+                        {
+                          "typeIdentifier": "t_stringliteral_069db75aba851522445425f1775c0be5d8914d65112d9686b11e6401d82ccfb1",
+                          "typeString": "literal_string \"FixedInterestRate: Only owner can set interest rate\""
+                        }
+                      ],
+                      "id": 4490,
+                      "name": "require",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [
+                        4294967278,
+                        4294967278
+                      ],
+                      "referencedDeclaration": 4294967278,
+                      "src": "538:7:23",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                        "typeString": "function (bool,string memory) pure"
+                      }
+                    },
+                    "id": 4498,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "538:92:23",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 4499,
+                  "nodeType": "ExpressionStatement",
+                  "src": "538:92:23"
+                },
+                {
+                  "expression": {
+                    "id": 4502,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 4500,
+                      "name": "interestRate",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 4472,
+                      "src": "640:12:23",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "id": 4501,
+                      "name": "_interestRate",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 4487,
+                      "src": "655:13:23",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "src": "640:28:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "id": 4503,
+                  "nodeType": "ExpressionStatement",
+                  "src": "640:28:23"
+                }
+              ]
+            },
+            "functionSelector": "5f84f302",
+            "id": 4505,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "setInterestRate",
+            "nameLocation": "483:15:23",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4488,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4487,
+                  "mutability": "mutable",
+                  "name": "_interestRate",
+                  "nameLocation": "504:13:23",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4505,
+                  "src": "499:18:23",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4486,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "499:4:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "498:20:23"
+            },
+            "returnParameters": {
+              "id": 4489,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "528:0:23"
+            },
+            "scope": 4517,
+            "src": "474:201:23",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "body": {
+              "id": 4515,
+              "nodeType": "Block",
+              "src": "739:38:23",
+              "statements": [
+                {
+                  "expression": {
+                    "components": [
+                      {
+                        "id": 4512,
+                        "name": "interestRate",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 4472,
+                        "src": "757:12:23",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      }
+                    ],
+                    "id": 4513,
+                    "isConstant": false,
+                    "isInlineArray": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "nodeType": "TupleExpression",
+                    "src": "756:14:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "functionReturnParameters": 4511,
+                  "id": 4514,
+                  "nodeType": "Return",
+                  "src": "749:21:23"
+                }
+              ]
+            },
+            "functionSelector": "0c196a74",
+            "id": 4516,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getInterestRate",
+            "nameLocation": "690:15:23",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4508,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4507,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4516,
+                  "src": "706:4:23",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4506,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "706:4:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "705:6:23"
+            },
+            "returnParameters": {
+              "id": 4511,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4510,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4516,
+                  "src": "734:4:23",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 4509,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "734:4:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "733:6:23"
+            },
+            "scope": 4517,
+            "src": "681:96:23",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 4518,
+        "src": "113:666:23",
+        "usedErrors": []
+      }
+    ],
+    "src": "51:728:23"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.6+commit.0e36fba0.mod.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "2.0.1",
+  "updatedAt": "2022-10-13T10:21:41.947Z"
+}
