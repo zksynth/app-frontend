@@ -72,7 +72,7 @@ export default function Collateral({ handleChange }: any) {
 					>
 					<Flex>
 						<Image
-							src={`/icons/${collateral.inputToken.symbol}.png`}
+							src={`https://raw.githubusercontent.com/synthe-x/assets/main/${collateral.inputToken.symbol?.toUpperCase()}.png`}
 							width={35}
 							height={35}
 							alt="logo"

@@ -243,7 +243,7 @@ function Swap({handleChange}: any) {
 						<Flex gap={2}>
 							<Box mt={2}>
 								<Image
-									src={'/icons/' + inputToken()?.symbol + '.png'}
+									src={'https://raw.githubusercontent.com/synthe-x/assets/main/' + inputToken()?.symbol.toUpperCase() + '.png'}
 									height={'50px'}
 									width={'50px'}
 									style={{

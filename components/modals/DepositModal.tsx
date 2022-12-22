@@ -294,7 +294,7 @@ const DepositModal = ({ handleDeposit }: any) => {
 							<>
 							<Flex my={4}>
 								<Image
-									src={`/icons/${asset()?.symbol}.png`}
+									src={`https://raw.githubusercontent.com/synthe-x/assets/main/${asset()?.symbol?.toUpperCase()}.png`}
 									alt=""
 									width="35"
 									height={35}
@@ -349,7 +349,7 @@ const DepositModal = ({ handleDeposit }: any) => {
 									</Flex>
 									<InputGroup size="md" alignItems={"center"}>
 										<Image
-											src={`/icons/${asset()?.symbol}.png`}
+											src={`https://raw.githubusercontent.com/synthe-x/assets/main/${asset()?.symbol?.toUpperCase()}.png`}
 											alt=""
 											width="35"
 											height={35}

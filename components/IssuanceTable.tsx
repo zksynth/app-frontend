@@ -318,23 +318,14 @@ const IssuanceTable = ({ handleChange }: any) => {
 																		>
 																			<Box minH="40px" mb={2}>
 																				<Flex
-																					align={
-																						"center"
-																					}
-																					gap={
-																						1
-																					}
-																					display={
-																						token._totalSupplyUSD /
-																							pool.totalBorrowBalanceUSD >
-																						0.05
-																							? "flex"
-																							: "none"
-																					}
+																					align={"center"}
+																					gap={1}
+																					display={token._totalSupplyUSD / pool.totalBorrowBalanceUSD > 0.05 ? "flex" : "none"}
 																				>
 																					{
 																						<Image
-																							src={`/icons/${token.symbol}.png`}
+																							src={`https://raw.githubusercontent.com/synthe-x/assets/main/${token.symbol?.toUpperCase()}.png`}
+																							
 																							height={"40px"}
 																							width={"40px"}
 																							alt=""

@@ -102,8 +102,8 @@ function ExchangeSideBar({}) {
 													>
 														<Image
 															src={
-																"/icons/" +
-																_synth.symbol +
+																"https://raw.githubusercontent.com/synthe-x/assets/main/" +
+																_synth.symbol?.toUpperCase() +
 																".png"
 															}
 															height={'30px'}
