@@ -39,6 +39,7 @@ import { ChainID } from "../../src/chains";
 import { useAccount } from "wagmi";
 import { dollarFormatter, tokenFormatter } from '../../src/const';
 import Big from "big.js";
+import InputWithSlider from '../inputs/InputWithSlider';
 
 const DepositModal = ({ asset, handleIssue }: any) => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
@@ -68,11 +69,6 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 	const { chain, availableToBorrow, explorer, togglePoolEnabled, adjustedCollateral, adjustedDebt } =
 		useContext(AppDataContext);
 
-	const setMax = () => {
-		// 1/mincRatio * collateralBalance = max amount of debt
-		setAmount(max());
-	};
-
 	const max = () => {
 		return (adjustedCollateral-adjustedDebt)/asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD;
 	};
@@ -91,17 +87,12 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 			.then(async (res: any) => {
 				setLoading(false);
 				setResponse("Transaction sent! Waiting for confirmation...");
-				if (chain == ChainID.NILE) {
-					setHash(res);
-					checkResponse(res);
-				} else {
-					setHash(res.hash);
-					await res.wait(1);
-					setConfirmed(true);
-					handleIssue(asset._mintedTokens[selectedAssetIndex].id, value);
-					if (!asset.isEnabled) togglePoolEnabled(asset.id);
-					setResponse("Transaction Successful!");
-				}
+				setHash(res.hash);
+				await res.wait(1);
+				setConfirmed(true);
+				handleIssue(asset._mintedTokens[selectedAssetIndex].id, value);
+				if (!asset.isEnabled) togglePoolEnabled(asset.id);
+				setResponse("Transaction Successful!");
 			})
 			.catch((err: any) => {
 				setLoading(false);
@@ -110,46 +101,11 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 			});
 	};
 
-	const checkResponse = (tx_id: string, retryCount = 0) => {
-		axios
-			.get(
-				"https://nile.trongrid.io/wallet/gettransactionbyid?value=" +
-					tx_id
-			)
-			.then((res) => {
-				console.log(res);
-				if (!res.data.ret) {
-					setTimeout(() => {
-						checkResponse(tx_id);
-					}, 2000);
-				} else {
-					setConfirmed(true);
-					if (res.data.ret[0].contractRet == "SUCCESS") {
-						setResponse("Transaction Successful!");
-						handleIssue(
-							asset["synth_id"],
-							BigInt(amount * 10 ** asset["decimal"]).toString()
-						);
-					} else {
-						if (retryCount < 3)
-							setTimeout(() => {
-								checkResponse(tx_id, retryCount + 1);
-							}, 2000);
-						else {
-							setResponse(
-								"Transaction Failed. Please try again."
-							);
-						}
-					}
-				}
-			});
-	};
 
-	const { isConnected, tronWeb } = useContext(WalletContext);
 	const {
-		address: evmAddress,
-		isConnected: isEvmConnected,
-		isConnecting: isEvmConnecting,
+		address,
+		isConnected,
+		isConnecting,
 	} = useAccount();
 
 	return (
@@ -185,44 +141,22 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 							<Text my={1} fontSize='sm'>Price: {dollarFormatter.format(asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD)}</Text>
 							<Text my={1} fontSize='sm'>Available to borrow: {tokenFormatter.format((adjustedCollateral-adjustedDebt)/asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD)} {asset._mintedTokens[selectedAssetIndex]?.symbol}</Text>
 						</Flex>
-						<Select my={1} placeholder="Select asset to issue" value={selectedAssetIndex} onChange={(e) => setSelectedAssetIndex(parseInt(e.target.value))}>
+						<Select my={0} placeholder="Select asset to issue" value={selectedAssetIndex} onChange={(e) => setSelectedAssetIndex(parseInt(e.target.value))}>
 							{asset._mintedTokens.map((token: any, index: number) => (
 								<option value={index} key={index}>
 									{token.symbol}
 								</option>
 							))}
 						</Select>
-						<InputGroup size="md" alignItems={"center"} my={1}>
-							<Image
-								src={`https://raw.githubusercontent.com/synthe-x/assets/main/${asset.symbol?.toUpperCase()}.png`}
-								alt=""
-								width="35"
-								height={35}
-							/>
-							<Input
-								type="number"
-								placeholder="Enter amount"
-								onChange={changeAmount}
-								value={amount}
-								disabled={
-									!(isConnected || isEvmConnected)
-								}
-							/>
-							<InputRightElement width="4.5rem">
-								<Button
-									h="1.75rem"
-									size="sm"
-									mr={1}
-									onClick={setMax}
-									disabled={
-										!(isConnected || isEvmConnected)
-									}
-								>
-									Set Max
-								</Button>
-							</InputRightElement>
-						</InputGroup>
-						<Flex mt={4} justify="space-between">
+						<InputWithSlider 
+						asset={asset._mintedTokens[selectedAssetIndex]} 
+						max={max()} 
+						min={0}
+						onUpdate={(_value: any) => {
+							setAmount(_value);
+						}}
+						/>
+						<Flex mt={2} justify="space-between">
 							<Text fontSize={"xs"} color="gray.400">
 								1 {asset._mintedTokens[selectedAssetIndex].symbol} = {asset._mintedTokens[selectedAssetIndex].lastPriceUSD}{" "}
 								USD
@@ -235,7 +169,7 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 						<Button
 							disabled={
 								loading ||
-								!(isConnected || isEvmConnected) ||
+								!(isConnected) ||
 								!amount ||
 								amount == 0 ||
 								amount > max()
@@ -247,7 +181,7 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 							mt={4}
 							onClick={issue}
 						>
-							{isConnected || isEvmConnected ? (
+							{isConnected ? (
 								amount > max() ? (
 									<>Insufficient Collateral</>
 								) : !amount || amount == 0 ? (

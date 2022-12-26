@@ -142,7 +142,7 @@ const IssuanceTable = ({ handleChange }: any) => {
 										color={"gray.500"}
 										borderColor={"#3C3C3C"}
 									>
-										Rewards
+										$SYN Rewards (%)
 									</Th>
 									<Th
 										borderColor={"#3C3C3C"}
@@ -319,40 +319,25 @@ const IssuanceTable = ({ handleChange }: any) => {
 																			<Box minH="40px" mb={2}>
 																				<Flex
 																					align={"center"}
-																					gap={1}
+																					gap={0.5}
 																					display={token._totalSupplyUSD / pool.totalBorrowBalanceUSD > 0.05 ? "flex" : "none"}
 																				>
-																					{
-																						<Image
-																							src={`https://raw.githubusercontent.com/synthe-x/assets/main/${token.symbol?.toUpperCase()}.png`}
-																							
-																							height={"40px"}
-																							width={"40px"}
-																							alt=""
-																						/>
-																					}
-
-																					<Text
-																						fontSize={"xs"}
-																						my={1}
-																					>
+																					{<Image
+																						src={`https://raw.githubusercontent.com/synthe-x/assets/main/${token.symbol?.toUpperCase()}.png`}	
+																						height={"40px"}
+																						width={"40px"}
+																						alt=""
+																					/>}
+																					<Text fontSize={"xs"} my={1}>
 																						{token.symbol}
 																					</Text>
 																				</Flex>
 																			</Box>
 																			<Box
-																				h={
-																					"8px"
-																				}
-																				bgColor={
-																					TOKEN_COLORS[
-																						token
-																							.symbol
-																					]
-																				}
-																				mt={
-																					"0px"
-																				}
+																				h={"8px"}
+																				bgColor={TOKEN_COLORS[token.symbol]}
+																				mt={"0px"}
+																				borderRadius='100'
 																			></Box>
 																		</Box>
 																	</>

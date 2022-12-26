@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { useAccount } from "wagmi";
 import { call, getABI, getAddress, getContract } from "../../src/contract";
 import { ethers } from "ethers";
+import Big from 'big.js';
 
 export default function Borrow() {
 	const {
@@ -81,7 +82,7 @@ export default function Borrow() {
 						</Text>
 					</Box> */}
 					<Box textAlign={"right"}>
-						<Text fontSize={"sm"}>Claim Rewards</Text>
+						<Text fontSize={"sm"}>Rewards</Text>
 						<Text fontSize={"2xl"} fontWeight="bold">
 							{tokenFormatter?.format(synAccrued / 1e18)} $SYN
 						</Text>
@@ -93,6 +94,7 @@ export default function Borrow() {
 							onClick={claim}
 							isLoading={claiming}
 							loadingText="Claiming"
+							disabled={Big(synAccrued ?? 0).eq(0)}
 						>
 							Claim 💰
 						</Button>
@@ -113,12 +115,9 @@ export default function Borrow() {
 					<Box textAlign={"left"}>
 						<Text fontSize={"sm"}>Health Factor</Text>
 						<Text fontSize={"2xl"} fontWeight="bold">
-							{tokenFormatter?.format(
-								adjustedCollateral / adjustedDebt
+							{ tokenFormatter?.format(
+								adjustedCollateral > 0 ? adjustedCollateral / adjustedDebt : Infinity
 							)}
-						</Text>
-						<Text fontSize={"sm"} color="gray">
-							Min 1.00
 						</Text>
 					</Box>
 
@@ -161,8 +160,8 @@ export default function Borrow() {
 							roundedRight={10}
 							bgColor="gray.700"
 							width={
-								100 * (1 - adjustedDebt / adjustedCollateral) +
-								"%"
+								adjustedCollateral > 0 ? 100 * (1 - adjustedDebt / adjustedCollateral) +
+								"%" : '100%'
 							}
 						></Box>
 					</Flex>

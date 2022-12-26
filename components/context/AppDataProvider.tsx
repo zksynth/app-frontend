@@ -189,16 +189,16 @@ function AppDataProvider({ children }: any) {
 							_collaterals.push(markets[i]);
 						}
 					}
-					const provider = new ethers.providers.Web3Provider(
-						(window as any).ethereum!,
-						"any"
-					);
-					const multicallContract = new ethers.Contract(
-						getAddress("Multicall", chainId),
-						getABI("Multicall"),
-						provider.getSigner()
-					);
 					if(_address){
+						const provider = new ethers.providers.Web3Provider(
+							(window as any).ethereum!,
+							"any"
+						);
+						const multicallContract = new ethers.Contract(
+							getAddress("Multicall", chainId),
+							getABI("Multicall"),
+							provider.getSigner()
+						);
 						_setCollaterals(
 							_collaterals,
 							multicallContract,

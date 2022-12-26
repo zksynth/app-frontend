@@ -25,6 +25,7 @@ import { useContext, useState } from "react";
 import { WalletContext } from "./context/WalletContextProvider";
 import { AppDataContext } from "./context/AppDataProvider";
 import TransferModal from "./modals/TransferModal";
+import { tokenFormatter } from '../src/const';
 
 function ExchangeSideBar({}) {
 	const [nullValue, setNullValue] = useState(false);
@@ -115,14 +116,14 @@ function ExchangeSideBar({}) {
 													</Flex>
 												</Td>
 												<Td borderColor={"#3C3C3C"} isNumeric>
-													{(
+													{_synth.balance ? tokenFormatter.format(
 														
 															_synth.balance
 														 /
 														10 **
 															(_synth.decimal ??
 																18)
-													).toFixed(2)}{" "}
+													) : '-'}{" "}
 													{_synth.symbol}
 												</Td>
 												

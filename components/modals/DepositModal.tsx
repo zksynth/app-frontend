@@ -51,6 +51,7 @@ import { useAccount } from "wagmi";
 import { ethers } from "ethers";
 import { tokenFormatter } from "../../src/const";
 import { BsPlusCircleFill } from "react-icons/bs";
+import InputWithSlider from "../inputs/InputWithSlider";
 
 const CLAIM_AMOUNTS: any = {
 	WTRX: "100000000000",
@@ -64,7 +65,6 @@ const DepositModal = ({ handleDeposit }: any) => {
 	const { collaterals, chain, updateCollateralWalletBalance, addCollateralAllowance, explorer, toggleCollateralEnabled } = useContext(AppDataContext);
 
 	const [amount, setAmount] = React.useState(0);
-	const [sliderValue, setSliderValue] = React.useState(0);
 	const [claimLoading, setClaimLoading] = useState(false);
 
 	const [loading, setLoading] = useState(false);
@@ -74,7 +74,6 @@ const DepositModal = ({ handleDeposit }: any) => {
 
 	// const { isConnected, tronWeb, address } = useContext(WalletContext);
 	const { isConnected, address } = useAccount();
-
 
 	const asset = () => collaterals[selectedAsset];
 	const balance = () => {
@@ -92,10 +91,6 @@ const DepositModal = ({ handleDeposit }: any) => {
 		onClose();
 	};
 
-	const changeAmount = (event: any) => {
-		setAmount(event.target.value);
-	};
-
 	const deposit = async () => {
 		if (!amount) return;
 		setLoading(true);
@@ -107,73 +102,32 @@ const DepositModal = ({ handleDeposit }: any) => {
 			.mul(Big(10).pow(Number(asset().inputToken.decimals)))
 			.toFixed(0);
 
-		console.log(asset().isEnabled);
+		console.log(asset(), value)
 
-		send(synthex, 'enterAndDeposit', [asset().id, value], chain)
+		send(synthex, asset().isEnabled ? 'deposit' : 'enterAndDeposit', [asset().id, value], chain)
 			.then(async (res: any) => {
 				setLoading(false);
 				setResponse("Transaction sent! Waiting for confirmation...");
-				if (chain == ChainID.NILE) {
-					setHash(res);
-					checkResponse(res);
-				} else {
-					setHash(res.hash);
-					await res.wait(1);
-					setConfirmed(true);
-					handleDeposit(
-						asset()["id"],
-						Big(amount)
-							.mul(Big(10).pow(Number(asset().inputToken.decimals)))
-							.toFixed(0)
-					);
-					if(!asset().isEnabled){
-						toggleCollateralEnabled(asset().id)
-					}
-					updateSlider(20)
-					setResponse("Transaction Successful!");
+				setHash(res.hash);
+				await res.wait(1);
+				setConfirmed(true);
+				handleDeposit(
+					asset()["id"],
+					Big(amount)
+						.mul(Big(10).pow(Number(asset().inputToken.decimals)))
+						.toFixed(0)
+				);
+				if(!asset().isEnabled){
+					toggleCollateralEnabled(asset().id)
 				}
+				setResponse("Transaction Successful!");
+				
 			})
 			.catch((err: any) => {
 				console.log('err', err)
 				setLoading(false);
 				setConfirmed(true);
 				setResponse("Transaction failed. Please try again!");
-			});
-	};
-
-	const checkResponse = (tx_id: string, retryCount = 0) => {
-		axios
-			.get(
-				"https://nile.trongrid.io/wallet/gettransactionbyid?value=" +
-					tx_id
-			)
-			.then((res) => {
-				if (!res.data.ret) {
-					setTimeout(() => {
-						checkResponse(tx_id);
-					}, 2000);
-				} else {
-					setConfirmed(true);
-					if (res.data.ret[0].contractRet == "SUCCESS") {
-						setResponse("Transaction Successful!");
-						handleDeposit(
-							asset()["coll_address"],
-							Big(amount)
-								.mul(Big(10).pow(Number(asset()["decimal"])))
-								.toFixed(0)
-						);
-					} else {
-						if (retryCount < 3)
-							setTimeout(() => {
-								checkResponse(tx_id, retryCount + 1);
-							}, 2000);
-						else {
-							setResponse(
-								"Transaction Failed. Please try again."
-							);
-						}
-					}
-				}
 			});
 	};
 
@@ -223,30 +177,15 @@ const DepositModal = ({ handleDeposit }: any) => {
 		});
 	};
 
-	const updateSlider = (e: any) => {
-		setSliderValue(e);
-		setAmount((balance() * e) / 100);
-	};
-
 	const updateAsset = (e: any) => {
 		setSelectedAsset(e.target.value);
 	};
 
 	const tryApprove = () => {
-		// console.log(asset()?.allowance, (amount+0.1));
-
-		// console.log(Big(asset()?.allowance).lt(amount+0.1));
 		if (!asset()) return true;
 		if (!asset().allowance) return true;
 		return Big(asset()?.allowance).lt(ethers.constants.One);
 	};
-
-	const {
-		address: evmAddress,
-		isConnected: isEvmConnected,
-		isConnecting: isEvmConnecting,
-	} = useAccount();
-
 
 	return (
 		<Box>
@@ -269,7 +208,7 @@ const DepositModal = ({ handleDeposit }: any) => {
 				>
 					<ModalCloseButton />
 
-					<ModalHeader>Deposit collateral</ModalHeader>
+					<ModalHeader>Add collateral</ModalHeader>
 					<ModalBody>
 						
 						{!asset() && <Text mb={4}>Choose an asset you would like to deposit</Text>}
@@ -306,7 +245,7 @@ const DepositModal = ({ handleDeposit }: any) => {
 								</Text>
 							</Flex>
 								<Button
-									disabled={!(isConnected || isEvmConnected)}
+									disabled={!(isConnected)}
 									isLoading={loading}
 									loadingText="Please sign the transaction"
 									colorScheme={"orange"}
@@ -315,7 +254,7 @@ const DepositModal = ({ handleDeposit }: any) => {
 									onClick={approve}
 									isDisabled={loading}
 								>
-									{isConnected || isEvmConnected ? (
+									{isConnected ? (
 										<>Approve {asset()?.symbol}</>
 									) : (
 										<>Please connect your wallet</>
@@ -339,46 +278,17 @@ const DepositModal = ({ handleDeposit }: any) => {
 										<Button
 											isLoading={claimLoading}
 											size={"xs"}
-											// rounded={40}
 											onClick={claim}
 											color="black"
-											// variant={'ghost'}
+											variant={'outline'}
 										>
 											Claim testnet tokens 💰
 										</Button>
 									</Flex>
-									<InputGroup size="md" alignItems={"center"}>
-										<Image
-											src={`https://raw.githubusercontent.com/synthe-x/assets/main/${asset()?.symbol?.toUpperCase()}.png`}
-											alt=""
-											width="35"
-											height={35}
-										/>
-										<Input
-											type="number"
-											placeholder="Enter amount"
-											onChange={changeAmount}
-											value={amount}
-										/>
-										<InputRightAddon>
-										<Text fontSize={'sm'}>
-											{asset()?.inputToken.symbol}
-										</Text>
-										</InputRightAddon>
-									</InputGroup>
-									<Slider
-										aria-label="slider-ex-1"
-										defaultValue={30}
-										onChange={updateSlider}
-										mt={4}
-										value={sliderValue}
-									>
-										<SliderTrack>
-											<SliderFilledTrack bgColor="#3EE6C4" />
-										</SliderTrack>
-										<SliderThumb />
-									</Slider>
-									<Flex mt={4} justify="space-between">
+
+									<InputWithSlider asset={asset().inputToken} onUpdate={(_value: any) => {setAmount(_value)}} max={balance()} min={0} />
+
+									<Flex mt={2} justify="space-between">
 										<Text fontSize={"xs"} color="gray.400">
 											Volatility Ratio: {asset()?.maximumLTV/100}
 										</Text>
@@ -395,7 +305,7 @@ const DepositModal = ({ handleDeposit }: any) => {
 									disabled={
 										amountLowerThanMin() ||
 										loading ||
-										!(isConnected || isEvmConnected) ||
+										!(isConnected) ||
 										!amount ||
 										amount == 0 ||
 										amount > balance()
@@ -407,7 +317,7 @@ const DepositModal = ({ handleDeposit }: any) => {
 									isDisabled={loading}
 									onClick={deposit}
 								>
-									{isConnected || isEvmConnected ? (
+									{isConnected ? (
 										!amount || amount == 0 ? (
 											"Enter amount"
 										) : amountLowerThanMin() ? (
