@@ -10,9 +10,13 @@
   },
   "dependencies": {
     "@ajna/pagination": "^1.4.19",
+    "@chakra-ui/icons": "2.0.13",
+    "@chakra-ui/react": "2.4.2",
+    "@chakra-ui/theme-tools": "2.0.14",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
     "@rainbow-me/rainbowkit": "^0.7.0",
+    "@sentry/nextjs": "^7.28.1",
     "apexcharts": "^3.35.5",
     "big.js": "^6.2.1",
     "chart.js": "^3.9.1",
@@ -31,10 +35,7 @@
     "recharts": "^2.1.15",
     "tronweb": "^4.4.0",
     "wagmi": "^0.8.4",
-    "web3": "^1.8.0",
-    "@chakra-ui/icons": "2.0.13",
-    "@chakra-ui/react": "2.4.2",
-    "@chakra-ui/theme-tools": "2.0.14"
+    "web3": "^1.8.0"
   },
   "devDependencies": {
     "@types/big.js": "^6.1.6",
