@@ -24,7 +24,6 @@ import Image from "next/image";
 import { useContext, useState } from "react";
 import { WalletContext } from "./context/WalletContextProvider";
 import { AppDataContext } from "./context/AppDataProvider";
-import TransferModal from "./modals/TransferModal";
 import { tokenFormatter } from '../src/const';
 
 function ExchangeSideBar({}) {

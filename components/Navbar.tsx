@@ -37,7 +37,6 @@ import { BigNumber } from "ethers";
 function NavBar() {
 	// const [address, setAddress] = useState(null);
 	const router = useRouter();
-	const { toggleColorMode } = useColorMode();
 	const { colorMode } = useColorMode();
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
