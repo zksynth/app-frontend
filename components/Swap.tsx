@@ -17,7 +17,7 @@ import {
 } from '@chakra-ui/react';
 import { useContext, useEffect, useState } from 'react';
 import { getContract, send } from '../src/contract';
-import { useAccount } from 'wagmi';
+import { useAccount, useNetwork } from 'wagmi';
 import web3 from 'web3';
 import { WalletContext } from './context/WalletContextProvider';
 import { MdOutlineSwapVert } from 'react-icons/md';
@@ -113,16 +113,11 @@ function Swap({handleChange}: any) {
 		.then(async (res: any) => {
 			setLoading(false);
 			setResponse('Transaction sent! Waiting for confirmation...');
-			if (chain == ChainID.NILE) {
-				setHash(res);
-				checkResponse(res);
-			} else {
-				setHash(res.hash);
-				await res.wait(1);
-				setConfirmed(true);
-				handleExchange(inputToken().id, outputToken().id, Big(inputAmount).mul(10**18).toString(), Big(outputAmount).mul(10**18).toString());
-				setResponse('Transaction Successful!');
-			}
+			setHash(res.hash);
+			await res.wait(1);
+			setConfirmed(true);
+			handleExchange(inputToken().id, outputToken().id, Big(inputAmount).mul(10**18).toString(), Big(outputAmount).mul(10**18).toString());
+			setResponse('Transaction Successful!');
 		})
 		.catch((err: any) => {
 			console.log('err', err)
@@ -132,41 +127,8 @@ function Swap({handleChange}: any) {
 		});
 	};
 
-	// check response in intervals
-	const checkResponse = (tx_id: string, retryCount = 0) => {
-		axios
-			.get(
-				'https://nile.trongrid.io/wallet/gettransactionbyid?value=' +
-					tx_id
-			)
-			.then((res) => {
-				console.log(res);
-				if (!res.data.ret) {
-					setTimeout(() => {
-						checkResponse(tx_id);
-					}, 2000);
-				} else {
-					setConfirmed(true);
-					if (res.data.ret[0].contractRet == 'SUCCESS') {
-						setResponse('Transaction Successful!');
-						handleExchange(inputToken().synth_id, outputToken().synth_id, Big(inputAmount).mul(10**18).toString(), Big(outputAmount).mul(10**18).toString());
-					} else {
-						if (retryCount < 3)
-							setTimeout(() => {
-								checkResponse(tx_id, retryCount + 1);
-							}, 2000);
-						else {
-							setResponse(
-								'Transaction Failed. Please try again.'
-							);
-						}
-					}
-				}
-			});
-	};
-
-	const { isConnected, tronWeb } = useContext(WalletContext);
-	const {address: evmAddress, isConnected: isEvmConnected, isConnecting: isEvmConnecting} = useAccount();
+	const {address, isConnected, isConnecting} = useAccount();
+	const { chain: activeChain } = useNetwork();
 
 	const { synths, tradingPool, pools, tradingBalanceOf, tokenFormatter, updateSynthBalance } = useContext(AppDataContext);
 
@@ -388,12 +350,12 @@ function Swap({handleChange}: any) {
 						width={'100%'}
 						bgColor={'primary'}
 						onClick={exchange}
-						disabled={loading || !(isConnected || isEvmConnected) || inputAmount <= 0 || swapInputExceedsBalance()}
+						disabled={loading || !isConnected || activeChain?.unsupported || inputAmount <= 0 || swapInputExceedsBalance()}
 						loadingText="Sign the transaction in your wallet"
 						isLoading={loading}
 						_hover={{ bg: 'gray.600' }}
 						color="#171717">
-						{(isConnected || isEvmConnected) ? (
+						{(isConnected && !activeChain?.unsupported) ? (
 							swapInputExceedsBalance() ? 'Insufficient Balance' : inputAmount > 0 ? 'Exchange' : 'Enter Amount'
 						) : 'Please connect your wallet'}
 					</Button>

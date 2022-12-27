@@ -34,7 +34,7 @@ import { WalletContext } from "../context/WalletContextProvider";
 import axios from "axios";
 import { AppDataContext } from "../context/AppDataProvider";
 import { ChainID } from "../../src/chains";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import { tokenFormatter } from "../../src/const";
 import InputWithSlider from '../inputs/InputWithSlider';
 
@@ -108,6 +108,7 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 	};
 
 	const { address, isConnected, isConnecting } = useAccount();
+	const { chain: activeChain } = useNetwork();
 
 	return (
 		<Box>
@@ -140,7 +141,7 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 							</Text>
 						</Flex>
 						<Select
-							my={1}
+							my={2}
 							placeholder="Select asset to issue"
 							value={selectedAssetIndex}
 							onChange={(e) =>
@@ -165,6 +166,7 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 							disabled={
 								loading ||
 								!isConnected ||
+								activeChain?.unsupported ||
 								!amount ||
 								amount == 0 ||
 								amount > max()
@@ -176,7 +178,7 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 							onClick={repay}
 							loadingText="Please sign the transaction"
 						>
-							{isConnected ? (
+							{(isConnected && !activeChain?.unsupported) ? (
 								amount > max() ? (
 									<>Insufficient Debt</>
 								) : !amount || amount == 0 ? (

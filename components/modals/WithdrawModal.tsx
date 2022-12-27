@@ -34,7 +34,7 @@ import { AppDataContext } from "../context/AppDataProvider";
 const { Big } = require("big.js");
 import axios from "axios";
 import { ChainID } from "../../src/chains";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import InputWithSlider from "../inputs/InputWithSlider";
 import { tokenFormatter } from '../../src/const';
 
@@ -47,13 +47,12 @@ const WithdrawModal = ({ asset, handleWithdraw }: any) => {
 	const [hash, setHash] = useState(null);
 	const [confirmed, setConfirmed] = useState(false);
 
-	const { isConnected, tronWeb } = useContext(WalletContext);
 	const { safeCRatio, totalCollateral, totalDebt, chain, explorer } =
 		useContext(AppDataContext);
 	const {
-		address: evmAddress,
-		isConnected: isEvmConnected,
-		isConnecting: isEvmConnecting,
+		address,
+		isConnected,
+		isConnecting,
 	} = useAccount();
 
 	const _onClose = () => {
@@ -100,6 +99,8 @@ const WithdrawModal = ({ asset, handleWithdraw }: any) => {
 			});
 	};
 
+	const { chain: activeChain } = useNetwork();
+
 	return (
 		<Box>
 			<IconButton
@@ -137,7 +138,8 @@ const WithdrawModal = ({ asset, handleWithdraw }: any) => {
 						<Button
 							disabled={
 								loading ||
-								!(isConnected || isEvmConnected) ||
+								!isConnected || 
+								activeChain?.unsupported ||
 								!amount ||
 								amount == 0 ||
 								amount > max()
@@ -149,7 +151,7 @@ const WithdrawModal = ({ asset, handleWithdraw }: any) => {
 							mt={4}
 							onClick={withdraw}
 						>
-							{isConnected || isEvmConnected ? (
+							{isConnected && !activeChain?.unsupported ? (
 								amount > max() ? (
 									<>Insufficient Collateral</>
 								) : !amount || amount == 0 ? (

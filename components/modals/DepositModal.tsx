@@ -47,7 +47,7 @@ import { BiPlusCircle } from "react-icons/bi";
 import { AppDataContext } from "../context/AppDataProvider";
 import axios from "axios";
 import { ChainID } from "../../src/chains";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from 'wagmi';
 import { ethers } from "ethers";
 import { tokenFormatter } from "../../src/const";
 import { BsPlusCircleFill } from "react-icons/bs";
@@ -74,6 +74,7 @@ const DepositModal = ({ handleDeposit }: any) => {
 
 	// const { isConnected, tronWeb, address } = useContext(WalletContext);
 	const { isConnected, address } = useAccount();
+	const { chain: activeChain } = useNetwork();
 
 	const asset = () => collaterals[selectedAsset];
 	const balance = () => {
@@ -245,7 +246,7 @@ const DepositModal = ({ handleDeposit }: any) => {
 								</Text>
 							</Flex>
 								<Button
-									disabled={!(isConnected)}
+									disabled={!(isConnected) || activeChain?.unsupported}
 									isLoading={loading}
 									loadingText="Please sign the transaction"
 									colorScheme={"orange"}
@@ -254,7 +255,7 @@ const DepositModal = ({ handleDeposit }: any) => {
 									onClick={approve}
 									isDisabled={loading}
 								>
-									{isConnected ? (
+									{isConnected && !activeChain?.unsupported ? (
 										<>Approve {asset()?.symbol}</>
 									) : (
 										<>Please connect your wallet</>

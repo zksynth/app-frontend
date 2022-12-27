@@ -36,7 +36,7 @@ import { WalletContext } from "../context/WalletContextProvider";
 import { BiPlusCircle } from "react-icons/bi";
 import { AppDataContext } from "../context/AppDataProvider";
 import { ChainID } from "../../src/chains";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import { dollarFormatter, tokenFormatter } from '../../src/const';
 import Big from "big.js";
 import InputWithSlider from '../inputs/InputWithSlider';
@@ -60,10 +60,6 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 		setConfirmed(false);
 		setAmount(0);
 		onClose();
-	};
-
-	const changeAmount = (event: any) => {
-		setAmount(event.target.value);
 	};
 
 	const { chain, availableToBorrow, explorer, togglePoolEnabled, adjustedCollateral, adjustedDebt } =
@@ -108,6 +104,8 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 		isConnecting,
 	} = useAccount();
 
+	const { chain: activeChain } = useNetwork();
+
 	return (
 		<Box>
 			{/* <IconButton
@@ -141,7 +139,7 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 							<Text my={1} fontSize='sm'>Price: {dollarFormatter.format(asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD)}</Text>
 							<Text my={1} fontSize='sm'>Available to borrow: {tokenFormatter.format((adjustedCollateral-adjustedDebt)/asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD)} {asset._mintedTokens[selectedAssetIndex]?.symbol}</Text>
 						</Flex>
-						<Select my={0} placeholder="Select asset to issue" value={selectedAssetIndex} onChange={(e) => setSelectedAssetIndex(parseInt(e.target.value))}>
+						<Select my={2} placeholder="Select asset to issue" value={selectedAssetIndex} onChange={(e) => setSelectedAssetIndex(parseInt(e.target.value))}>
 							{asset._mintedTokens.map((token: any, index: number) => (
 								<option value={index} key={index}>
 									{token.symbol}
@@ -169,7 +167,8 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 						<Button
 							disabled={
 								loading ||
-								!(isConnected) ||
+								!(isConnected) || 
+								activeChain?.unsupported ||
 								!amount ||
 								amount == 0 ||
 								amount > max()
@@ -181,7 +180,7 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 							mt={4}
 							onClick={issue}
 						>
-							{isConnected ? (
+							{isConnected && !activeChain?.unsupported ? (
 								amount > max() ? (
 									<>Insufficient Collateral</>
 								) : !amount || amount == 0 ? (

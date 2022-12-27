@@ -28,10 +28,11 @@ import Link from "next/link";
 import "../styles/Home.module.css";
 import darklogo from "../public/dark_logo.svg";
 import lightlogo from "../public/light_logo.svg";
-import { useAccount } from "wagmi";
-import { useContext } from 'react';
+import { useAccount, useConnect, useNetwork } from "wagmi";
+import { useContext } from "react";
 import { AppDataContext } from "./context/AppDataProvider";
 import { ChainID } from "../src/chains";
+import { BigNumber } from "ethers";
 
 function NavBar() {
 	// const [address, setAddress] = useState(null);
@@ -40,35 +41,61 @@ function NavBar() {
 	const { colorMode } = useColorMode();
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
-	const { fetchData, setChain } = useContext(AppDataContext);
+	const { fetchData, isDataReady, isFetchingData, setChain } = useContext(AppDataContext);
 
-	const {address, isConnected, isConnecting, connector: activeConnector} = useAccount({
+	const { chain, chains } = useNetwork();
+	const [init, setInit] = useState(false);
+	
+	const {
+		address,
+		isConnected,
+		isConnecting,
+		connector: activeConnector,
+		
+	} = useAccount({
 		onConnect({ address, connector, isReconnected }) {
-			console.log('Connected', address)
+			if((chain as any).unsupported) return
+			console.log("Connected", address);
 			fetchData(address!, connector!.chains[0].id);
 			setChain(connector!.chains[0].id);
 		},
 		onDisconnect() {
-			console.log('Disconnected');
+			console.log("Disconnected");
 			fetchData(null, ChainID.ARB_GOERLI);
 			setChain(ChainID.ARB_GOERLI);
-		}
+		},
 	});
 
 	useEffect(() => {
-		if(activeConnector) (window as any).ethereum.on('accountsChanged', function (accounts: any[]) {
-			console.log(activeConnector)
-			// Time to reload your interface with accounts[0]!
-			fetchData(accounts[0], activeConnector?.chains[0].id);
-			setChain(activeConnector?.chains[0].id);
-		})
-		if (localStorage.getItem('chakra-ui-color-mode') === 'light') {
-			localStorage.setItem('chakra-ui-color-mode', 'dark');
+		if (activeConnector)
+			(window as any).ethereum.on(
+				"accountsChanged",
+				function (accounts: any[]) {
+					console.log(activeConnector);
+					// Time to reload your interface with accounts[0]!
+					fetchData(accounts[0], activeConnector?.chains[0].id);
+					setChain(activeConnector?.chains[0].id);
+				}
+			);
+			(window as any).ethereum.on(
+				"chainChanged",
+				function (chainId: any[]) {
+					if(chains[0]){
+						if(chains[0].id == BigNumber.from(chainId).toNumber()) {
+							fetchData(address as string, BigNumber.from(chainId).toNumber());
+							setChain(BigNumber.from(chainId).toNumber());
+						}
+					}
+				}
+			);
+		if (localStorage.getItem("chakra-ui-color-mode") === "light") {
+			localStorage.setItem("chakra-ui-color-mode", "dark");
 		}
-		if(!isConnected && !isConnecting) {
+		if ((!(isConnected && !isConnecting) || chain?.unsupported) && (!isDataReady || !isFetchingData) && !init) {
+			setInit(true);
 			fetchData(null, ChainID.ARB_GOERLI);
 		}
-	}, [isConnected, isConnecting, activeConnector, fetchData, setChain]);
+	}, [isConnected, isConnecting, activeConnector, fetchData, setChain, chain, isDataReady, isFetchingData]);
 
 	return (
 		<>
@@ -115,7 +142,6 @@ function NavBar() {
 								Home
 							</Text>
 						</Link>
-
 
 						<Link href={"/exchange"} as="/exchange">
 							<Text
@@ -281,7 +307,7 @@ function NavBar() {
 								</ListItem>
 								<ListItem my="1rem">
 									{/* <ConnectButton /> */}
-									<RainbowConnect/>
+									<RainbowConnect />
 								</ListItem>
 							</UnorderedList>
 						</Box>

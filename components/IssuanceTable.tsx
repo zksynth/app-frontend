@@ -142,7 +142,7 @@ const IssuanceTable = ({ handleChange }: any) => {
 										color={"gray.500"}
 										borderColor={"#3C3C3C"}
 									>
-										$SYN Rewards (%)
+										$SYN Rewards (APY)
 									</Th>
 									<Th
 										borderColor={"#3C3C3C"}
@@ -172,13 +172,6 @@ const IssuanceTable = ({ handleChange }: any) => {
 															align={"center"}
 															gap={2}
 														>
-															{/* <Image
-												src={`/${debt.symbol}.png`}
-												width={35}
-												height={35}
-												// style={tknholdingImg}
-												alt="..."
-											/> */}
 															<Box>
 																<Text
 																	fontSize="lg"

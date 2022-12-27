@@ -140,7 +140,7 @@ function AppDataProvider({ children }: any) {
 	const fetchData = (_address: string|null, chainId: number) => {
 		return new Promise((resolve, reject) => {
 			setIsFetchingData(true);
-			console.log("Fetching data...", Endpoints[chainId]);
+			console.log(`Fetching data for ${_address} through ${Endpoints[chainId]}`)
 			axios
 				.post(Endpoints[chainId], {
 					query: `{

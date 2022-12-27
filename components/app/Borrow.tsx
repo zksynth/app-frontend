@@ -3,7 +3,7 @@ import React, { useContext, useState } from "react";
 import { AppDataContext } from "../context/AppDataProvider";
 import { tokenFormatter } from "../../src/const";
 import { useEffect } from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from 'wagmi';
 import { call, getABI, getAddress, getContract } from "../../src/contract";
 import { ethers } from "ethers";
 import Big from 'big.js';
@@ -25,9 +25,10 @@ export default function Borrow() {
 	const [claiming, setClaiming] = useState(false);
 
 	const { address, isConnected, isConnecting } = useAccount();
+	const {chain: connectedChain} = useNetwork();
 
 	useEffect(() => {
-		if (!synAccrued && address) {
+		if (!synAccrued && isConnected && !(connectedChain as any).unsupported) {
 			(async () => {
 				const provider = new ethers.providers.Web3Provider(
 					(window as any).ethereum!,
