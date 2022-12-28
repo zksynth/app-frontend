@@ -25,6 +25,7 @@ import { useContext, useState } from "react";
 import { WalletContext } from "./context/WalletContextProvider";
 import { AppDataContext } from "./context/AppDataProvider";
 import { tokenFormatter } from '../src/const';
+import { theme } from '../src/theme';
 
 function ExchangeSideBar({}) {
 	const [nullValue, setNullValue] = useState(false);
@@ -66,10 +67,10 @@ function ExchangeSideBar({}) {
 			>
 				CHOOSE A POOL
 			</Text>
-			<Select mb={10} onChange={updatePoolIndex} value={tradingPool}>
+			<Select mb={10} onChange={updatePoolIndex} value={tradingPool} color="white" bgColor='black'>
 				{pools.map((pool: any, index: number) => {
 					return (
-						<option key={pool?.symbol} value={index}>
+						<option key={pool?.symbol} value={index} style={{ color: 'black' }}>
 							<Text>{pool?.name}</Text>
 						</option>
 					);

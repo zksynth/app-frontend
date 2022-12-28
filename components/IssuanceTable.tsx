@@ -49,7 +49,6 @@ const IssuanceTable = ({ handleChange }: any) => {
 			initialState: { currentPage: 1 },
 		});
 	const [extraTokens, setExtraTokens] = useState<any>([]);
-	const [synAccrued, setSynAccrued] = useState<any>(null);
 
 	const { isConnected } = useContext(WalletContext);
 
@@ -162,7 +161,9 @@ const IssuanceTable = ({ handleChange }: any) => {
 									.map((pool: any, poolIndex: number) => {
 										return (
 											<>
-												<Tr >
+
+											
+												<Tr key={Math.random()} >
 													<Td
 														borderColor={
 															"transparent"
@@ -289,7 +290,7 @@ const IssuanceTable = ({ handleChange }: any) => {
 													</Td>
 												</Tr>
 
-												<Tr >
+												<Tr key={Math.random()} >
 													<Td pb={6}
 														borderColor={"#3C3C3C"}
 														colSpan={5}
@@ -300,8 +301,8 @@ const IssuanceTable = ({ handleChange }: any) => {
 																	token: any,
 																	index: number
 																) => (
-																	<>
 																		<Box
+																			key={index}
 																			w={
 																				(token._totalSupplyUSD /
 																					pool.totalBorrowBalanceUSD) *
@@ -333,7 +334,6 @@ const IssuanceTable = ({ handleChange }: any) => {
 																				borderRadius='100'
 																			></Box>
 																		</Box>
-																	</>
 																)
 															)}
 															<Text
@@ -351,6 +351,8 @@ const IssuanceTable = ({ handleChange }: any) => {
 														</Flex>
 													</Td>
 												</Tr>
+											
+											
 											</>
 										);
 									})}

@@ -54,19 +54,17 @@ function NavBar() {
 	} = useAccount({
 		onConnect({ address, connector, isReconnected }) {
 			if((chain as any).unsupported) return
-			console.log("Connected", address);
 			fetchData(address!, connector!.chains[0].id);
 			setChain(connector!.chains[0].id);
 		},
 		onDisconnect() {
-			console.log("Disconnected");
 			fetchData(null, ChainID.ARB_GOERLI);
 			setChain(ChainID.ARB_GOERLI);
 		},
 	});
 
 	useEffect(() => {
-		if (activeConnector)
+		if (activeConnector && window.ethereum){
 			(window as any).ethereum.on(
 				"accountsChanged",
 				function (accounts: any[]) {
@@ -87,6 +85,7 @@ function NavBar() {
 					}
 				}
 			);
+		}
 		if (localStorage.getItem("chakra-ui-color-mode") === "light") {
 			localStorage.setItem("chakra-ui-color-mode", "dark");
 		}

@@ -65,7 +65,7 @@ export default function Collateral({ handleChange }: any) {
 			{collaterals.map((collateral, index) => (
 				<>
 				<Flex
-					key={collateral.symbol}
+					key={index}
 					justify="space-between"
 					p={'12px'}
 					mt="12px"

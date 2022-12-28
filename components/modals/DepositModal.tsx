@@ -5,15 +5,8 @@ import {
 	Text,
 	Flex,
 	useDisclosure,
-	Input,
-	IconButton,
-	InputRightElement,
-	InputGroup,
-	Spinner,
 	Link,
 	Image,
-	InputLeftAddon,
-	InputRightAddon,
 	Select,
 	Alert,
 	AlertIcon,
@@ -29,14 +22,6 @@ import {
 	ModalCloseButton,
 } from "@chakra-ui/react";
 
-import {
-	Slider,
-	SliderTrack,
-	SliderFilledTrack,
-	SliderThumb,
-	SliderMark,
-} from "@chakra-ui/react";
-
 const Big = require("big.js");
 
 import { AiOutlineInfoCircle, AiOutlinePlusCircle } from "react-icons/ai";
@@ -47,16 +32,15 @@ import { BiPlusCircle } from "react-icons/bi";
 import { AppDataContext } from "../context/AppDataProvider";
 import axios from "axios";
 import { ChainID } from "../../src/chains";
-import { useAccount, useNetwork } from 'wagmi';
+import { useAccount, useBalance, useNetwork } from 'wagmi';
 import { ethers } from "ethers";
 import { tokenFormatter } from "../../src/const";
-import { BsPlusCircleFill } from "react-icons/bs";
 import InputWithSlider from "../inputs/InputWithSlider";
 
 const CLAIM_AMOUNTS: any = {
-	WTRX: "100000000000",
-	ETH: "1000",
-	NEAR: "10000",
+	WTRX: "100000000",
+	ETH: "10",
+	NEAR: "1000",
 };
 
 const DepositModal = ({ handleDeposit }: any) => {
@@ -75,6 +59,9 @@ const DepositModal = ({ handleDeposit }: any) => {
 	// const { isConnected, tronWeb, address } = useContext(WalletContext);
 	const { isConnected, address } = useAccount();
 	const { chain: activeChain } = useNetwork();
+	const {data: ethBalance} = useBalance({
+		address
+	})
 
 	const asset = () => collaterals[selectedAsset];
 	const balance = () => {
@@ -102,8 +89,6 @@ const DepositModal = ({ handleDeposit }: any) => {
 		let value = Big(amount)
 			.mul(Big(10).pow(Number(asset().inputToken.decimals)))
 			.toFixed(0);
-
-		console.log(asset(), value)
 
 		send(synthex, asset().isEnabled ? 'deposit' : 'enterAndDeposit', [asset().id, value], chain)
 			.then(async (res: any) => {
@@ -222,7 +207,7 @@ const DepositModal = ({ handleDeposit }: any) => {
 							{collaterals.map(
 								(collateral: any, index: number) => (
 									<option
-										key={collateral.symbol}
+										key={index}
 										value={index}
 									>
 										{collateral.name}
@@ -232,13 +217,13 @@ const DepositModal = ({ handleDeposit }: any) => {
 						</Select>
 						{ asset() && <>{tryApprove() ? (
 							<>
-							<Flex my={4}>
+							<Flex my={6} gap={2}>
 								<Image
-									src={`https://raw.githubusercontent.com/synthe-x/assets/main/${asset()?.symbol?.toUpperCase()}.png`}
+									src={`https://raw.githubusercontent.com/synthe-x/assets/main/${asset()?.inputToken.symbol?.toUpperCase()}.png`}
 									alt=""
 									width="35"
 									height={35}
-									mb={5}
+									my={1}
 								/>
 								<Text fontSize={"sm"}>
 									To Deposit {asset()?.name} token, you need
@@ -246,17 +231,17 @@ const DepositModal = ({ handleDeposit }: any) => {
 								</Text>
 							</Flex>
 								<Button
-									disabled={!(isConnected) || activeChain?.unsupported}
+									disabled={ ethBalance?.value.lt(ethers.utils.parseEther('0.01')) || !(isConnected) || activeChain?.unsupported}
 									isLoading={loading}
 									loadingText="Please sign the transaction"
 									colorScheme={"orange"}
 									width="100%"
-									mt={4}
 									onClick={approve}
 									isDisabled={loading}
 								>
 									{isConnected && !activeChain?.unsupported ? (
-										<>Approve {asset()?.symbol}</>
+										ethBalance?.value.lt(ethers.utils.parseEther('0.01')) ? (<>Insufficient ETH for gas ⛽️</>) :
+										(<>Approve {asset()?.symbol}</>)
 									) : (
 										<>Please connect your wallet</>
 									)}
