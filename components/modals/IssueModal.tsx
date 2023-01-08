@@ -40,6 +40,7 @@ import { useAccount, useNetwork } from "wagmi";
 import { dollarFormatter, tokenFormatter } from '../../src/const';
 import Big from "big.js";
 import InputWithSlider from '../inputs/InputWithSlider';
+import { MdOutlineAddCircle } from "react-icons/md";
 
 const DepositModal = ({ asset, handleIssue }: any) => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
@@ -108,25 +109,17 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 
 	return (
 		<Box>
-			{/* <IconButton
-			// disabled={!isConnected}
-				variant="ghost"
-				onClick={onOpen}
-				icon={<BiPlusCircle size={35} color="gray" />}
-				aria-label={''}
-				isRound={true}></IconButton> */}
-
 			<Button
 				onClick={onOpen}
 				variant={"ghost"}
-				size="sm"
+				size="md"
 				bgColor={"secondary"}
 				rounded={100}
 				color="white"
 				my={1}
-				_hover={{ bgColor: "gray.700" }}
+				_hover={{ opacity: 0.6 }}
 			>
-				<Text mr={1}>Mint</Text> <BiPlusCircle size={20} />
+				<MdOutlineAddCircle size={20} /> <Text ml={1}>Mint</Text>
 			</Button>
 			<Modal isCentered isOpen={isOpen} onClose={_onClose}>
 				<ModalOverlay bg="blackAlpha.100" backdropFilter="blur(30px)" />
@@ -134,7 +127,6 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 					<ModalCloseButton />
 					<ModalHeader>Issue {asset.name}</ModalHeader>
 					<ModalBody>
-						
 						<Flex justify={'space-between'}>
 							<Text my={1} fontSize='sm'>Price: {dollarFormatter.format(asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD)}</Text>
 							<Text my={1} fontSize='sm'>Available to borrow: {tokenFormatter.format((adjustedCollateral-adjustedDebt)/asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD)} {asset._mintedTokens[selectedAssetIndex]?.symbol}</Text>
@@ -153,6 +145,7 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 						onUpdate={(_value: any) => {
 							setAmount(_value);
 						}}
+						color='secondary'
 						/>
 						<Flex mt={2} justify="space-between">
 							<Text fontSize={"xs"} color="gray.400">
@@ -175,7 +168,7 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 							}
 							isLoading={loading}
 							loadingText="Please sign the transaction"
-							bgColor="#3EE6C4"
+							bgColor="secondary"
 							width="100%"
 							mt={4}
 							onClick={issue}

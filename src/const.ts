@@ -5,28 +5,6 @@ export const DUMMY_ADDRESS = {
 	[ChainID.AURORA]: ethers.constants.AddressZero,
 };
 
-export const HELPER = "";
-export const EXCHANGE = "";
-export const VAULT = "";
-export const SYSTEM = "";
-
-export const ADDRESSES: any = {
-	[ChainID.NILE]: {
-		Helper: "TY7KLZkopABnjy4x8SSbsaK9viV9bqxCvE",
-		System: "TJiPUzzt3yQySg8qJ6xPXpuPn1yHjHNJxm",
-		WTRX: "TJE8C3ZhnxrQAL69D5C6C5fQFNitrTKqZD",
-	},
-	[ChainID.AURORA]: {
-		Helper: "0x36A0A236C0125240cB15629959bdFf74fC1F3290",
-		System: "0xFac2F4ce393Bc7253d3795D6f415d792ee4eca3A",
-		WTRX: "0x6CF5B73CC04D54418686dc9FE389fc7b90ad0e89",
-	},
-	[ChainID.ARB_GOERLI]: {
-		SyntheX: "0x241691dE5EDC2dfC16E93ff8A0445c2f8d3ec779",
-		Multicall: "0x511f64296fa72526231E5A55615d8e4eE5a2d4cF",
-	},
-};
-
 export const Endpoints: any = {
 	[ChainID.NILE]: "https://api.synthex.finance/",
 	[ChainID.AURORA]: "https://aurora.api.synthex.finance/", // 'http://localhost:3030/',
@@ -36,14 +14,38 @@ export const Endpoints: any = {
 export const dollarFormatter = new Intl.NumberFormat("en-US", {
 	style: "currency",
 	currency: "USD",
-	maximumSignificantDigits: 8,
+	maximumSignificantDigits: 6
 });
 
 export const tokenFormatter = new Intl.NumberFormat("en-US", {
 	maximumSignificantDigits: 8,
 });
 
-export const TOKEN_COLORS: any = {
+
+const COLORS_GREEN = [
+	"#154F43",
+	"#043D31",
+	"#002E24",
+	"#194038"
+]
+
+const COLORS_BLUE = [
+	"#243B95",
+	"#5677FB",
+	"#C3CFFF",
+	"#5B6CAE",
+	"#7B8FDD",
+	"#9DB1FF",
+	"#3D54AF",
+	"#1A275C",
+]
+
+// return a random color from COLORS
+export const TOKEN_COLORS = () => {
+	return COLORS_GREEN[Math.floor(Math.random() * COLORS_GREEN.length)];
+}
+
+export const TOKEN_COLORS2: any = {
 	BTCx: "#F5B300",
 	ETHx: "#8C8C8C",
 	BNBx: "#FFC53E",

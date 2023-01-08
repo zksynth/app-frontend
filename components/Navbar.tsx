@@ -20,7 +20,8 @@ import {
 
 import { ConnectButton as RainbowConnect } from "@rainbow-me/rainbowkit";
 import { FaBars } from "react-icons/fa";
-import { BsMoonFill, BsSunFill } from "react-icons/bs";
+import { MdSpaceDashboard, MdSwapHorizontalCircle } from "react-icons/md";
+
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -28,6 +29,7 @@ import Link from "next/link";
 import "../styles/Home.module.css";
 import darklogo from "../public/dark_logo.svg";
 import lightlogo from "../public/light_logo.svg";
+import logo from "../public/logo.svg";
 import { useAccount, useConnect, useNetwork } from "wagmi";
 import { useContext } from "react";
 import { AppDataContext } from "./context/AppDataProvider";
@@ -40,20 +42,20 @@ function NavBar() {
 	const { colorMode } = useColorMode();
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
-	const { fetchData, isDataReady, isFetchingData, setChain } = useContext(AppDataContext);
+	const { fetchData, isDataReady, isFetchingData, setChain } =
+		useContext(AppDataContext);
 
 	const { chain, chains } = useNetwork();
 	const [init, setInit] = useState(false);
-	
+
 	const {
 		address,
 		isConnected,
 		isConnecting,
 		connector: activeConnector,
-		
 	} = useAccount({
 		onConnect({ address, connector, isReconnected }) {
-			if((chain as any).unsupported) return
+			if ((chain as any).unsupported) return;
 			fetchData(address!, connector!.chains[0].id);
 			setChain(connector!.chains[0].id);
 		},
@@ -64,7 +66,7 @@ function NavBar() {
 	});
 
 	useEffect(() => {
-		if (activeConnector && window.ethereum){
+		if (activeConnector && window.ethereum) {
 			(window as any).ethereum.on(
 				"accountsChanged",
 				function (accounts: any[]) {
@@ -77,42 +79,57 @@ function NavBar() {
 			(window as any).ethereum.on(
 				"chainChanged",
 				function (chainId: any[]) {
-					if(chains[0]){
-						if(chains[0].id == BigNumber.from(chainId).toNumber()) {
-							fetchData(address as string, BigNumber.from(chainId).toNumber());
+					if (chains[0]) {
+						if (
+							chains[0].id == BigNumber.from(chainId).toNumber()
+						) {
+							fetchData(
+								address as string,
+								BigNumber.from(chainId).toNumber()
+							);
 							setChain(BigNumber.from(chainId).toNumber());
 						}
 					}
 				}
 			);
 		}
-		if (localStorage.getItem("chakra-ui-color-mode") === "light") {
-			localStorage.setItem("chakra-ui-color-mode", "dark");
-		}
-		if ((!(isConnected && !isConnecting) || chain?.unsupported) && (!isDataReady || !isFetchingData) && !init) {
+		// if (localStorage.getItem("chakra-ui-color-mode") === "light") {
+		// 	localStorage.setItem("chakra-ui-color-mode", "dark");
+		// }
+		if (
+			(!(isConnected && !isConnecting) || chain?.unsupported) &&
+			(!isDataReady || !isFetchingData) &&
+			!init
+		) {
 			setInit(true);
 			fetchData(null, ChainID.ARB_GOERLI);
 		}
-	}, [isConnected, isConnecting, activeConnector, fetchData, setChain, chain, isDataReady, isFetchingData]);
+	}, [
+		isConnected,
+		isConnecting,
+		activeConnector,
+		fetchData,
+		setChain,
+		chain,
+		isDataReady,
+		isFetchingData,
+	]);
 
 	return (
 		<>
 			<Flex alignItems={"center"}>
-				<Box width={"33%"} mt={2}>
-					<Image
-						onClick={() => {
-							router.push("/");
-						}}
-						src={
-							// colorMode == "dark" ?
-							// darklogo
-							//  :
-							lightlogo
-						}
-						alt=""
-						width="100px"
-						height="70px"
-					/>
+				<Box width={"33%"} mt={2} py={5}>
+					<Box cursor="pointer" maxW={"30px"}>
+						<Image
+							onClick={() => {
+								router.push("/");
+							}}
+							src={logo}
+							alt=""
+							width="30px"
+							height="30px"
+						/>
+					</Box>
 				</Box>
 
 				<Flex
@@ -120,80 +137,26 @@ function NavBar() {
 					width={"33%"}
 					display={{ sm: "none", md: "flex" }}
 				>
-					<Flex gap={6}>
-						<Link href="/" as="/">
-							<Text
-								my="1rem"
-								color={
-									router.pathname == "/" ? "primary" : "white"
-								}
-								textDecoration={
-									router.pathname == "/" ? "underline" : ""
-								}
-								textUnderlineOffset={5}
-								cursor={"pointer"}
-								onClick={onClose}
-								fontFamily="Roboto"
-								fontWeight={"bold"}
-								fontSize="sm"
-							>
-								Home
-							</Text>
-						</Link>
-
-						<Link href={"/exchange"} as="/exchange">
-							<Text
-								cursor={"pointer"}
-								color={
-									router.pathname == "/exchange"
-										? "primary"
-										: "gray.100"
-								}
-								textDecoration={
-									router.pathname == "/exchange"
-										? "underline"
-										: ""
-								}
-								textUnderlineOffset={5}
-								my="1rem"
-								onClick={onClose}
-								fontFamily="Roboto"
-								fontWeight={"bold"}
-								fontSize="sm"
-							>
-								Swap
-							</Text>
-						</Link>
-
-						{/* <Link href={"/analytics"} as="/analytics">
-							<Text
-								cursor={"pointer"}
-								color={
-									router.pathname == "/analytics"
-										? "primary"
-										: "gray.100"
-								}
-								textDecoration={
-									router.pathname == "/analytics"
-										? "underline"
-										: ""
-								}
-								textUnderlineOffset={5}
-								my="1rem"
-								onClick={onClose}
-								fontFamily="Roboto"
-								fontWeight={"bold"}
-								fontSize="sm"
-							>
-								Analytics
-							</Text>
-							</Link> */}
+					<Flex gap={0}>
+						<NavLink
+							path={"/"}
+							title={"Dashboard"}
+							pathname={router.pathname}
+						>
+							<MdSpaceDashboard />
+						</NavLink>
+						<NavLink
+							path={"/exchange"}
+							title="Swap"
+							pathname={router.pathname}
+						>
+							<MdSwapHorizontalCircle />
+						</NavLink>
 					</Flex>
 				</Flex>
 
 				<Flex width={"33%"} justify="flex-end" align={"center"}>
 					<Box display={{ sm: "none", md: "block" }}>
-						{/* <ConnectButton /> */}
 						<RainbowConnect chainStatus={"icon"} />
 					</Box>
 				</Flex>
@@ -227,84 +190,25 @@ function NavBar() {
 								listStyleType="none"
 							>
 								<ListItem>
-									<Link href="/">
-										<Text
-											my="1rem"
-											color={
-												router.pathname == "/"
-													? "primary"
-													: "white"
-											}
-											textDecoration={
-												router.pathname == "/"
-													? "underline"
-													: ""
-											}
-											textUnderlineOffset={5}
-											cursor={"pointer"}
-											onClick={onClose}
-											fontFamily="Roboto"
-											fontWeight={"bold"}
-											fontSize="sm"
-										>
-											Home
-										</Text>
-									</Link>
+									<NavLink
+										path={"/"}
+										title={"Dashboard"}
+										pathname={router.pathname}
+									>
+										<MdSpaceDashboard />
+									</NavLink>{" "}
 								</ListItem>
-
-								{/* <ListItem>
-									<Link href="/pools">
-										<Text
-											my="1rem"
-											color={
-												router.pathname.includes("pool")
-													? "primary"
-													: "gray.100"
-											}
-											textDecoration={
-												router.pathname.includes("pool")
-													? "underline"
-													: ""
-											}
-											textUnderlineOffset={5}
-											cursor={"pointer"}
-											onClick={onClose}
-											fontFamily="Roboto"
-											fontWeight={"bold"}
-											fontSize="sm"
-										>
-											Pools
-										</Text>
-									</Link>
-								</ListItem> */}
 
 								<ListItem>
-									<Link href={"/exchange"}>
-										<Text
-											cursor={"pointer"}
-											color={
-												router.pathname == "/exchange"
-													? "primary"
-													: "gray.100"
-											}
-											textDecoration={
-												router.pathname == "/exchange"
-													? "underline"
-													: ""
-											}
-											textUnderlineOffset={5}
-											my="1rem"
-											onClick={onClose}
-											fontFamily="Roboto"
-											fontWeight={"bold"}
-											fontSize="sm"
-										>
-											Swap
-										</Text>
-									</Link>
+									<NavLink
+										path={"/exchange"}
+										title="Swap"
+										pathname={router.pathname}
+									>
+										<MdSwapHorizontalCircle />
+									</NavLink>{" "}
 								</ListItem>
 								<ListItem my="1rem">
-									{/* <ConnectButton /> */}
 									<RainbowConnect />
 								</ListItem>
 							</UnorderedList>
@@ -316,4 +220,39 @@ function NavBar() {
 	);
 }
 
+const NavLink = ({ path, title, pathname, children }: any) => {
+	const [isPath, setIsPath] = useState(false);
+
+	useEffect(() => {
+		setIsPath(pathname == path);
+	}, [setIsPath, pathname, path]);
+
+	return (
+		<Link href={`${path}`} as={`${path}`}>
+			<Flex align={"center"}>
+				<Flex
+					align={"center"}
+					h={10}
+					px={4}
+					cursor="pointer"
+					rounded={100}
+					bgColor={isPath ? "gray.700" : "transparent"}
+				>
+					<Box
+						color={isPath ? "primary" : "gray.100"}
+						my="1rem"
+						fontFamily="Roboto"
+						fontWeight={"bold"}
+						fontSize="sm"
+					>
+						<Flex align={"center"} gap={2}>
+							{children}
+							<Text>{title}</Text>
+						</Flex>
+					</Box>
+				</Flex>
+			</Flex>
+		</Link>
+	);
+};
 export default NavBar;

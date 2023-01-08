@@ -25,7 +25,7 @@ import { useContext, useState } from "react";
 import { WalletContext } from "./context/WalletContextProvider";
 import { AppDataContext } from "./context/AppDataProvider";
 import { tokenFormatter } from '../src/const';
-import { theme } from '../src/theme';
+import { theme } from '../styles/theme';
 
 function ExchangeSideBar({}) {
 	const [nullValue, setNullValue] = useState(false);
@@ -62,29 +62,28 @@ function ExchangeSideBar({}) {
 				mt={6}
 				fontSize={"xs"}
 				fontWeight="bold"
-				color={"gray"}
 				ml={1}
 			>
 				CHOOSE A POOL
 			</Text>
-			<Select mb={10} onChange={updatePoolIndex} value={tradingPool} color="white" bgColor='black'>
+			<Select mb={10} onChange={updatePoolIndex} value={tradingPool}>
 				{pools.map((pool: any, index: number) => {
 					return (
-						<option key={pool?.symbol} value={index} style={{ color: 'black' }}>
+						<option key={pool?.symbol} value={index} >
 							<Text>{pool?.name}</Text>
 						</option>
 					);
 				})}
 			</Select>
 
-			<TableContainer rounded={6} bgColor="#171717" color={"white"}>
+			<TableContainer rounded={6} color={"white"}>
 				<Table variant="simple" size="sm">
 					<Thead>
 						<Tr>
-							<Th color="#686868" borderColor={"#3C3C3C"}>
+							<Th color="gray.400" borderColor={"gray.700"}>
 								Asset
 							</Th>
-							<Th color="#686868" borderColor={"#3C3C3C"} isNumeric>
+							<Th color="gray.400" borderColor={"gray.700"} isNumeric>
 								Balance
 							</Th>
 						</Tr>
@@ -96,10 +95,11 @@ function ExchangeSideBar({}) {
 									(_synth: any, index: number) => {
 										return (
 											<Tr key={index}>
-												<Td borderColor={"#3C3C3C"} py={1}>
+												<Td borderColor={"gray.700"} py={1}>
 													<Flex
 														align={"center"}
 														gap={"1"}
+														ml={-1}
 													>
 														<Image
 															src={
@@ -115,7 +115,7 @@ function ExchangeSideBar({}) {
 														{_synth.name}
 													</Flex>
 												</Td>
-												<Td borderColor={"#3C3C3C"} isNumeric>
+												<Td borderColor={"gray.700"} isNumeric>
 													{_synth.balance ? tokenFormatter.format(
 														
 															_synth.balance

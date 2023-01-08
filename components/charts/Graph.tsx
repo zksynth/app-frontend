@@ -7,14 +7,13 @@ import { useContext } from 'react';
 const Graph = ({}) => {
 	const chartContainerRef = useRef<any>();
 	const chart = useRef<any>();
-
 	useEffect(() => {
         if(!chart.current){
 		chart.current = createChart(chartContainerRef.current, {
 			width: chartContainerRef.current.clientWidth,
 			height: chartContainerRef.current.clientHeight,
 			layout: {
-				backgroundColor: '#161616',
+				backgroundColor: '#2D3748',
 				textColor: 'rgba(255, 255, 255, 0.9)',
 			},
 			grid: {
@@ -28,14 +27,10 @@ const Graph = ({}) => {
 			crosshair: {
 				mode: CrosshairMode.Normal,
 			},
-			// priceScale: {
-			// 	borderColor: '#485c7b',
-			// },
 			timeScale: {
 				borderColor: '#485c7b',
 			},
 		});
-
 		const candleSeries = chart.current.addCandlestickSeries({
 			upColor: '#4bffb5',
 			downColor: '#ff4976',
@@ -45,16 +40,6 @@ const Graph = ({}) => {
 			wickUpColor: '#838ca1',
 		});
 		candleSeries.setData(priceData);
-
-		// const areaSeries = chart.current.addAreaSeries({
-		//   topColor: 'rgba(38,198,218, 0.56)',
-		//   bottomColor: 'rgba(38,198,218, 0.04)',
-		//   lineColor: 'rgba(38,198,218, 1)',
-		//   lineWidth: 2
-		// });
-
-		// areaSeries.setData(areaData);
-
 		const volumeSeries = chart.current.addHistogramSeries({
 			color: '#182233',
 			lineWidth: 2,

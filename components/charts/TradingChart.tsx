@@ -15,7 +15,7 @@ export default function TradingChart({input, output}: any) {
         <>
         <Box mb={10} height='400px'>
             {/* <SymbolOverview chartOnly={true}/> */}
-            <Flex position={'absolute'} zIndex={10} color={'gray.600'} gap={1} align='center'><Text fontSize='sm'> ERROR: Chart not found</Text></Flex>
+            {/* <Flex position={'absolute'} zIndex={10} color={'gray.600'} gap={1} align='center'><Text fontSize='sm'> ERROR: Chart not found</Text></Flex> */}
             <Graph/>
         </Box>
         </>

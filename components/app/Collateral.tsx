@@ -5,6 +5,7 @@ import { AppDataContext } from '../context/AppDataProvider';
 import DepositModal from '../modals/DepositModal';
 import WithdrawModal from '../modals/WithdrawModal';
 import { WalletContext } from '../context/WalletContextProvider';
+import { dollarFormatter, tokenFormatter } from '../../src/const';
 
 export default function Collateral({ handleChange }: any) {
 	const [nullValue, setNullValue] = useState(false);
@@ -12,10 +13,8 @@ export default function Collateral({ handleChange }: any) {
 	const {
 		totalCollateral,
 		collaterals,
-		dollarFormatter,
 		updateCollateralWalletBalance,
 		updateCollateralAmount,
-		tokenFormatter,
 	} = useContext(AppDataContext);
 
 	const { isConnected, tronWeb } = useContext(WalletContext);
@@ -38,21 +37,21 @@ export default function Collateral({ handleChange }: any) {
 	const {address: evmAddress, isConnected: isEvmConnected, isConnecting: isEvmConnecting} = useAccount();
 
 	return (
-		<Box bgColor="#171717" pb={4} rounded={15} height='100%'>
+		<Box pb={4} height='100%'>
 			<Flex
 				flexDir={'column'}
 				justify="space-between"
 				height={'200px'}
-				bgColor="gray.100"
+				bgColor="gray.200"
 				width={'100%'}
 				color="black"
 				p={'12px'}
 				rounded={10}>
 				<Box>
-					<Text fontSize={'lg'} >
-						My Balance
+					<Text fontSize='md' color='gray.600'>
+						Balance
 					</Text>
-					<Text fontSize={'2xl'} fontWeight="bold">
+					<Text fontSize={'3xl'} mt={-1} fontWeight="bold">
 						{dollarFormatter?.format(totalCollateral)}
 					</Text>
 				</Box>
@@ -60,8 +59,8 @@ export default function Collateral({ handleChange }: any) {
 					<DepositModal handleDeposit={handleDeposit}/>
 				</Box>
 			</Flex>
-			<Box>
 
+			<Box>
 			{collaterals.map((collateral, index) => (
 				<>
 				<Flex

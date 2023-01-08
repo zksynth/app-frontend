@@ -195,8 +195,8 @@ function AppDataProvider({ children }: any) {
 							"any"
 						);
 						const multicallContract = new ethers.Contract(
-							getAddress("Multicall", chainId),
-							getABI("Multicall"),
+							getAddress("Multicall2", chainId),
+							getABI("Multicall2"),
 							provider.getSigner()
 						);
 						_setCollaterals(
@@ -270,7 +270,7 @@ function AppDataProvider({ children }: any) {
 	) => {
 		return new Promise((resolve, reject) => {
 			let calls = [];
-			const itf = new ethers.utils.Interface(getABI("ERC20"));
+			const itf = new ethers.utils.Interface(getABI("MockToken"));
 			const synthexitf = new ethers.utils.Interface(getABI("SyntheX"));
 
 			for (let i = 0; i < _collaterals.length; i++) {
@@ -352,7 +352,7 @@ function AppDataProvider({ children }: any) {
 	) => {
 		return new Promise((resolve, reject) => {
 			let calls = [];
-			const itf = new ethers.utils.Interface(getABI("ERC20"));
+			const itf = new ethers.utils.Interface(getABI("MockToken"));
 			const synthexitf = new ethers.utils.Interface(getABI("SyntheX"));
 
 			for (let i = 0; i < _pools.length; i++) {

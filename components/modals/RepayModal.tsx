@@ -116,12 +116,13 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 				// disabled={!isConnected}
 				variant="ghost"
 				onClick={onOpen}
-				icon={<BiMinusCircle size={20} color="gray" />}
+				icon={<BiMinusCircle size={25} color="gray" />}
 				aria-label={""}
 				isRound={true}
 				bgColor="white"
-				size={"sm"}
+				size={"md"}
 				my={1}
+				_hover={{opacity: 0.6}}
 			></IconButton>
 			<Modal isCentered isOpen={isOpen} onClose={_onClose}>
 				<ModalOverlay bg="blackAlpha.100" backdropFilter="blur(30px)" />
@@ -172,7 +173,7 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 								amount > max()
 							}
 							isLoading={loading}
-							colorScheme={"red"}
+							bgColor='red.400'
 							width="100%"
 							mt={4}
 							onClick={repay}

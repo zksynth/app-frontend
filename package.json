@@ -3,8 +3,8 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "dev": "config:dev && node_modules/next/dist/bin/next dev",
-    "build": "config:staging && node_modules/next/dist/bin/next build",
+    "dev": "yarn config:dev && node_modules/next/dist/bin/next dev",
+    "build": "yarn config:staging && node_modules/next/dist/bin/next build",
     "start": "node_modules/next/dist/bin/next start",
     "lint": "node_modules/next/dist/bin/next lint",
     "config:dev": "export NODE_ENV=dev && export NETWORK=arbitrumGoerli && node scripts/config.js",

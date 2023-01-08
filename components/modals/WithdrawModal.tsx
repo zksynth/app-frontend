@@ -104,10 +104,10 @@ const WithdrawModal = ({ asset, handleWithdraw }: any) => {
 	return (
 		<Box>
 			<IconButton
-				// disabled={!isConnected}
 				variant="ghost"
 				onClick={onOpen}
-				icon={<BiMinusCircle size={37} color="gray" />}
+				color="gray.400"
+				icon={<BiMinusCircle size={37} />}
 				aria-label={""}
 				isRound={true}
 			></IconButton>

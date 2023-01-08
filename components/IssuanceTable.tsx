@@ -14,6 +14,8 @@ import {
 	useDisclosure,
 	useColorMode,
 	Skeleton,
+	AvatarGroup,
+	Avatar,
 } from "@chakra-ui/react";
 
 import Image from "next/image";
@@ -39,16 +41,19 @@ import { AppDataContext } from "./context/AppDataProvider";
 import { useAccount } from "wagmi";
 import { useEffect } from "react";
 import { TOKEN_COLORS } from "../src/const";
-import { getContract, call } from "../src/contract";
+import { BsChevronDown, BsChevronUp } from "react-icons/bs";
 
+const LIMIT = 6;
 const IssuanceTable = ({ handleChange }: any) => {
 	const [nullValue, setNullValue] = useState(false);
 	const { currentPage, setCurrentPage, pagesCount, pages, pageSize } =
 		usePagination({
-			pagesCount: 2,
+			pagesCount: 1,
 			initialState: { currentPage: 1 },
 		});
 	const [extraTokens, setExtraTokens] = useState<any>([]);
+
+	const [expandedRows, setExpandedRows] = useState<any>({});
 
 	const { isConnected } = useContext(WalletContext);
 
@@ -80,6 +85,13 @@ const IssuanceTable = ({ handleChange }: any) => {
 		handleChange();
 	};
 
+	const expandRow = (index: number) => {
+		const _expandedRows = { ...expandedRows };
+		if (!_expandedRows[index]) _expandedRows[index] = true;
+		else _expandedRows[index] = !_expandedRows[index];
+		setExpandedRows(_expandedRows);
+	};
+
 	useEffect(() => {
 		if (pools.length > 0 && extraTokens.length == 0) {
 			// tokens with less than 10 % of total liquidity => add as extra tokens
@@ -98,11 +110,24 @@ const IssuanceTable = ({ handleChange }: any) => {
 			}
 			setExtraTokens(_extraTokens);
 		}
-		
 	}, [pools, extraTokens.length]);
 
+	const rowStyle = (poolIndex: number) => {
+		return {
+			borderColor: "gray.700",
+			// backgroundColor: expandedRows[poolIndex] ? 'gray.700' : 'transparent',
+		};
+	};
+
+	const rowHeadStyle = {
+		fontSize: "xs",
+		fontFamily: "Poppins",
+		color: "gray.500",
+		borderColor: "gray.600",
+	};
+
 	return (
-		<Box minH="575px">
+		<Box>
 			{pools.length > 0 ? (
 				<>
 					{" "}
@@ -110,46 +135,12 @@ const IssuanceTable = ({ handleChange }: any) => {
 						<Table overflow={"auto"} variant="simple">
 							<Thead>
 								<Tr>
-									<Th
-										fontSize={"xs"}
-										fontFamily="Poppins"
-										color={"gray.500"}
-										borderColor={"#3C3C3C"}
-									>
-										Pool
-									</Th>
+									<Th {...rowHeadStyle}>Pool</Th>
 
-									<Th
-										fontSize={"xs"}
-										fontFamily="Poppins"
-										color={"gray.500"}
-										borderColor={"#3C3C3C"}
-									>
-										Protocol Debt
-									</Th>
-									<Th
-										fontSize={"xs"}
-										fontFamily="Poppins"
-										color={"gray.500"}
-										borderColor={"#3C3C3C"}
-									>
-										Liquidity
-									</Th>
-									<Th
-										fontSize={"xs"}
-										fontFamily="Poppins"
-										color={"gray.500"}
-										borderColor={"#3C3C3C"}
-									>
-										$SYN Rewards (APY)
-									</Th>
-									<Th
-										borderColor={"#3C3C3C"}
-										isNumeric
-										fontSize={"xs"}
-										fontFamily="Poppins"
-										color={"gray.500"}
-									></Th>
+									<Th {...rowHeadStyle}>Protocol Debt</Th>
+									<Th {...rowHeadStyle}>Liquidity</Th>
+									<Th {...rowHeadStyle}>APY ($SYN)</Th>
+									<Th {...rowHeadStyle}></Th>
 								</Tr>
 							</Thead>
 							<Tbody>
@@ -160,238 +151,194 @@ const IssuanceTable = ({ handleChange }: any) => {
 									)
 									.map((pool: any, poolIndex: number) => {
 										return (
-											<>
-
-											
-												<Tr key={Math.random()} >
-													<Td
-														borderColor={
-															"transparent"
-														}
-													>
-														<Flex
-															align={"center"}
-															gap={2}
-														>
-															<Box>
-																<Text
-																	fontSize="lg"
-																	fontWeight="bold"
-																	textAlign={
-																		"left"
-																	}
-																>
-																	{
-																		pool[
-																			"name"
-																		]
-																	}
-																</Text>
-																<Text
-																	fontSize="xs"
-																	fontWeight="light"
-																	textAlign={
-																		"left"
-																	}
-																>
-																	{
-																		pool[
-																			"symbol"
-																		]
-																	}
-																</Text>
-															</Box>
-														</Flex>
-													</Td>
-
-													<Td
-														maxW={"110px"}
-														borderColor={
-															"transparent"
-														}
+											<Tr key={poolIndex}>
+												<Td
+													{...rowStyle(poolIndex)}
+													// {...expandOnClick(poolIndex)}
+													mt={
+														poolIndex == 0
+															? 20
+															: 0
+													}
+												>
+													<Flex
+														align={"center"}
+														gap={2}
 													>
 														<Box>
 															<Text
-																fontSize="sm"
-																// fontWeight="bold"
-																textAlign={
-																	"left"
-																}
+																fontSize="lg"
+																fontWeight="bold"
+																textAlign="left"
 															>
-																{isConnected ||
-																isEvmConnected
-																	? dollarFormatter.format(
-																			pool.balance /
-																				1e18
-																	  )
-																	: "-"}{" "}
-																{pool["symbol"]}
+																{pool.name}
+															</Text>
+															<Text
+																fontSize="xs"
+																fontWeight="light"
+																textAlign="left"
+																mt={1}
+															>
+																{
+																	pool
+																		.inputToken
+																		.symbol
+																}
 															</Text>
 														</Box>
-													</Td>
-													<Td
-														borderColor={
-															"transparent"
-														}
+													</Flex>
+													<AvatarGroup
+														size="md"
+														max={7}
+														mt={5}
+														colorScheme="pink"
+														fontSize={"sm"}
 													>
-														<Text fontSize={"sm"}>
-															{dollarFormatter.format(
-																pool.totalBorrowBalanceUSD
-															)}
-														</Text>
-													</Td>
-													<Td
-														borderColor={
-															"transparent"
-														}
-													>
+														{pool._mintedTokens.map(
+															(
+																token: any,
+																index: number
+															) => (
+																<Avatar
+																	bg={
+																		"gray.600"
+																	}
+																	borderColor={
+																		"transparent"
+																	}
+																	key={
+																		index
+																	}
+																	name={
+																		token.name
+																	}
+																	src={`https://raw.githubusercontent.com/synthe-x/assets/main/${token.symbol?.toUpperCase()}.png`}
+																/>
+															)
+														)}
+													</AvatarGroup>
+												</Td>
+												<Td
+													{...rowStyle(poolIndex)}
+													// {...expandOnClick(poolIndex)}
+												>
+													<Box>
 														<Text
 															fontSize="sm"
-															// fontWeight="bold"
-															textAlign={"left"}
+															textAlign={
+																"left"
+															}
 														>
-															{tokenFormatter.format(
-																(100 *
-																	((0.01 *
-																		3600 *
-																		24 *
-																		365 *
-																		pool._rewardSpeed) /
-																		1e18)) /
-																	pool.totalBorrowBalanceUSD
-															)}{" "}
-															%
+															{isConnected ||
+															isEvmConnected
+																? dollarFormatter.format(
+																		pool.balance /
+																			1e18
+																	)
+																: "-"}{" "}
+															{pool["symbol"]}
 														</Text>
-													</Td>
-													<Td
-														isNumeric
-														borderColor={
-															"transparent"
-														}
+													</Box>
+												</Td>
+												<Td
+													{...rowStyle(poolIndex)}
+													// {...expandOnClick(poolIndex)}
+												>
+													<Text fontSize={"sm"}>
+														{dollarFormatter.format(
+															pool.totalBorrowBalanceUSD
+														)}
+													</Text>
+												</Td>
+												<Td
+													{...rowStyle(poolIndex)}
+													// {...expandOnClick(poolIndex)}
+												>
+													<Text
+														fontSize="sm"
+														// fontWeight="bold"
+														textAlign={"left"}
 													>
-														<Flex
-															alignItems={"end"}
-															justify="end"
-															gap={2}
-														>
-															<IssueModel
-																asset={pool}
-																handleIssue={
-																	handleIssue
-																}
-															/>
-															<RepayModel
-																asset={pool}
-																handleRepay={
-																	handleRepay
-																}
-															/>
-														</Flex>
-													</Td>
-												</Tr>
-
-												<Tr key={Math.random()} >
-													<Td pb={6}
-														borderColor={"#3C3C3C"}
-														colSpan={5}
+														{tokenFormatter.format(
+															(100 *
+																((0.01 *
+																	3600 *
+																	24 *
+																	365 *
+																	pool._rewardSpeed) /
+																	1e18)) /
+																pool.totalBorrowBalanceUSD
+														)}{" "}
+														%
+													</Text>
+												</Td>
+												<Td
+													isNumeric
+													{...rowStyle(poolIndex)}
+												>
+													<Flex
+														alignItems={"end"}
+														justify="end"
+														gap={2}
 													>
-														<Flex align="center">
-															{pool._mintedTokens.map(
-																(
-																	token: any,
-																	index: number
-																) => (
-																		<Box
-																			key={index}
-																			w={
-																				(token._totalSupplyUSD /
-																					pool.totalBorrowBalanceUSD) *
-																					100 +
-																				"%"
-																			}
-																		>
-																			<Box minH="40px" mb={2}>
-																				<Flex
-																					align={"center"}
-																					gap={0.5}
-																					display={token._totalSupplyUSD / pool.totalBorrowBalanceUSD > 0.05 ? "flex" : "none"}
-																				>
-																					{<Image
-																						src={`https://raw.githubusercontent.com/synthe-x/assets/main/${token.symbol?.toUpperCase()}.png`}	
-																						height={"40px"}
-																						width={"40px"}
-																						alt=""
-																					/>}
-																					<Text fontSize={"xs"} my={1}>
-																						{token.symbol}
-																					</Text>
-																				</Flex>
-																			</Box>
-																			<Box
-																				h={"8px"}
-																				bgColor={TOKEN_COLORS[token.symbol]}
-																				mt={"0px"}
-																				borderRadius='100'
-																			></Box>
-																		</Box>
-																)
-															)}
-															<Text
-																fontSize={"sm"}
-																ml={6}
-															>
-																+{" "}
-																{
-																	extraTokens[
-																		poolIndex
-																	]
-																}{" "}
-																more...
-															</Text>
-														</Flex>
-													</Td>
-												</Tr>
-											
-											
-											</>
+														<IssueModel
+															asset={pool}
+															handleIssue={
+																handleIssue
+															}
+														/>
+														<RepayModel
+															asset={pool}
+															handleRepay={
+																handleRepay
+															}
+														/>
+													</Flex>
+												</Td>
+											</Tr>
 										);
 									})}
 							</Tbody>
 						</Table>
 					</TableContainer>
-					{/* <Flex justify={'center'}>
-			<Pagination
-				pagesCount={pagesCount}
-				currentPage={currentPage}
-				onPageChange={setCurrentPage}>
-				<PaginationContainer my={4}>
-					<PaginationPrevious variant={'none'}>
-						<MdNavigateBefore />
-					</PaginationPrevious>
-					<PaginationPageGroup>
-						{pages.map((page: number) => (
-							<PaginationPage
-								key={`pagination_page_${page}`}
-								page={page}
-								width={10}
-								rounded={'full'}
-								bgColor={page === currentPage ? 'black' : '#171717'}
-								_hover={{bgColor: 'gray.700'}}
-							/>
-						))}
-					</PaginationPageGroup>
-					<PaginationNext variant={'none'}>
-						{' '}
-						<MdNavigateNext />{' '}
-					</PaginationNext>
-				</PaginationContainer>
-			</Pagination>
-		</Flex>  */}
+					<Flex justify={"center"}>
+						<Pagination
+							pagesCount={pagesCount}
+							currentPage={currentPage}
+							onPageChange={setCurrentPage}
+						>
+							<PaginationContainer my={4}>
+								<PaginationPrevious variant={"none"}>
+									<MdNavigateBefore />
+								</PaginationPrevious>
+								<PaginationPageGroup>
+									{pages.map((page: number) => (
+										<PaginationPage
+											key={`pagination_page_${page}`}
+											page={page}
+											width={10}
+											rounded={"full"}
+											bgColor={
+												page === currentPage
+													? "black"
+													: "#171717"
+											}
+											_hover={{ bgColor: "gray.700" }}
+										/>
+									))}
+								</PaginationPageGroup>
+								<PaginationNext variant={"none"}>
+									{" "}
+									<MdNavigateNext />{" "}
+								</PaginationNext>
+							</PaginationContainer>
+						</Pagination>
+					</Flex>
 				</>
 			) : (
 				<Skeleton
-					colorScheme={"whiteAlpha"}
-					minH="530px"
+					color={"gray"}
+					bgColor={"gray"}
 					rounded={"10"}
 				></Skeleton>
 			)}

@@ -21,9 +21,10 @@ import { Box, ChakraProvider, Flex } from '@chakra-ui/react';
 import { WalletContextProvider } from '../components/context/WalletContextProvider';
 import Index from './_index';
 
-import { useEffect } from 'react';
 import { AppDataProvider } from '../components/context/AppDataProvider';
-import { theme } from '../src/theme';
+import { theme } from '../styles/theme';
+import rainbowTheme from '../styles/rainbowTheme';
+
 
 const { chains, provider } = configureChains(
 	[{
@@ -50,14 +51,11 @@ const { chains, provider } = configureChains(
   })
 
 function MyApp({ Component, pageProps }: AppProps) {
-	useEffect(() => {
-		localStorage.setItem('chakra-ui-color-mode', 'light');
-	});
 
 	return (
 		<ChakraProvider theme={theme}>
 			<WagmiConfig client={wagmiClient}>
-			<RainbowKitProvider chains={chains} theme={darkTheme()}>
+			<RainbowKitProvider chains={chains} theme={rainbowTheme}>
 				<WalletContextProvider>
 					<AppDataProvider>
 						<Index>

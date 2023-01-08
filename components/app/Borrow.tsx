@@ -1,12 +1,15 @@
-import { Box, Flex, Text, Divider, Button } from "@chakra-ui/react";
+import { Box, Flex, Text, Divider, Button, CircularProgress, Skeleton } from "@chakra-ui/react";
 import React, { useContext, useState } from "react";
 import { AppDataContext } from "../context/AppDataProvider";
 import { tokenFormatter } from "../../src/const";
 import { useEffect } from "react";
-import { useAccount, useNetwork } from 'wagmi';
+import { useAccount, useNetwork } from "wagmi";
 import { call, getABI, getAddress, getContract } from "../../src/contract";
 import { ethers } from "ethers";
-import Big from 'big.js';
+import Big from "big.js";
+import { PlusSquareIcon } from "@chakra-ui/icons";
+import { AiFillPlusCircle } from 'react-icons/ai';
+import { MdGeneratingTokens } from "react-icons/md";
 
 export default function Borrow() {
 	const {
@@ -25,31 +28,32 @@ export default function Borrow() {
 	const [claiming, setClaiming] = useState(false);
 
 	const { address, isConnected, isConnecting } = useAccount();
-	const {chain: connectedChain} = useNetwork();
+	const { chain: connectedChain } = useNetwork();
 
 	useEffect(() => {
-		if (!synAccrued && isConnected && !(connectedChain as any).unsupported) {
-			(async () => {
-				const provider = new ethers.providers.Web3Provider(
-					(window as any).ethereum!,
-					"any"
-				);
-				const synthex = await getContract("SyntheX", chain);
-				synthex.callStatic.synAccrued(address).then((result: any) => {
-					setSynAccrued(result.toString());
-				});
-			})();
+		if (
+			!synAccrued &&
+			isConnected &&
+			!(connectedChain as any).unsupported
+		) {
+			_setSynAccrued()
 		}
 	});
+
+	const _setSynAccrued = async () => {
+		const synthex = await getContract("SyntheX", chain);
+		const result = await synthex.callStatic.getSYNAccrued(address)
+		setSynAccrued(result.toString());
+	}
 
 	const claim = async () => {
 		setClaiming(true);
 		const synthex = await getContract("SyntheX", chain);
-		synthex
-			.claimSYN1(address)
+		synthex['claimSYN(address)'](address)
 			.then(async (result: any) => {
 				await result.wait(1);
 				setClaiming(false);
+				setSynAccrued('0')
 			})
 			.catch((err: any) => {
 				console.log(err);
@@ -61,8 +65,6 @@ export default function Borrow() {
 		<Flex
 			flexDir={"column"}
 			justify="space-between"
-			bgColor="#171717"
-			rounded={15}
 			px={"30px"}
 			py="22px"
 			height={"100%"}
@@ -84,20 +86,27 @@ export default function Borrow() {
 					</Box> */}
 					<Box textAlign={"right"}>
 						<Text fontSize={"sm"}>Rewards</Text>
-						<Text fontSize={"2xl"} fontWeight="bold">
-							{tokenFormatter?.format(synAccrued / 1e18)} $SYN
-						</Text>
+
+						<Flex align={'center'} gap={1}>
+						
+						{synAccrued !== null ? <Text fontSize={"2xl"} fontWeight="bold">{tokenFormatter?.format(synAccrued / 1e18)}</Text> : 
+						<Skeleton height={'20px'} width='60px' mr={1}/>
+						}
+						
+
+					<Text fontSize={"2xl"} fontWeight="bold">$SYN</Text>
+					</Flex>
 						<Button
-							color={"black"}
 							size="sm"
 							mt={1}
-							width="100%"
+							// width="100%"
 							onClick={claim}
 							isLoading={claiming}
 							loadingText="Claiming"
 							disabled={Big(synAccrued ?? 0).eq(0)}
+							rounded={20}
 						>
-							Claim 💰
+							<MdGeneratingTokens/> <Text ml={1}>Claim</Text>
 						</Button>
 					</Box>
 				</Flex>
@@ -106,7 +115,7 @@ export default function Borrow() {
 
 			{/* <Divider mb={4} borderColor={'#3C3C3C'}/> */}
 			<Flex flexDir={"column"} justify="space-between" height={"50%"}>
-				<Flex justify={"space-between"} align='end'>
+				<Flex justify={"space-between"} align="end">
 					{/* <Box>
 						<Text fontSize={'sm'}>Collateralisation Ratio</Text>
 						<Text fontSize={'xl'} fontWeight="bold">
@@ -116,8 +125,10 @@ export default function Borrow() {
 					<Box textAlign={"left"}>
 						<Text fontSize={"sm"}>Health Factor</Text>
 						<Text fontSize={"2xl"} fontWeight="bold">
-							{ tokenFormatter?.format(
-								adjustedCollateral > 0 ? adjustedCollateral / adjustedDebt : Infinity
+							{tokenFormatter?.format(
+								adjustedCollateral > 0
+									? adjustedCollateral / adjustedDebt
+									: Infinity
 							)}
 						</Text>
 					</Box>
@@ -159,10 +170,15 @@ export default function Borrow() {
 						<Box
 							minH={2}
 							roundedRight={10}
-							bgColor="gray.700"
+							bgColor="gray.600"
 							width={
-								adjustedCollateral > 0 ? 100 * (1 - adjustedDebt / adjustedCollateral) +
-								"%" : '100%'
+								adjustedCollateral > 0
+									? 100 *
+											(1 -
+												adjustedDebt /
+													adjustedCollateral) +
+									  "%"
+									: "100%"
 							}
 						></Box>
 					</Flex>

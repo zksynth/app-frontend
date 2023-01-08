@@ -36,50 +36,8 @@ export default function _index({ children }: any) {
 	} = useContext(AppDataContext);
 	const [init, setInit] = useState(false);
 
-	const {address: evmAddress, isConnected: isEvmConnected, isConnecting: isEvmConnecting} = useAccount();
-	const {connectAsync: connectEvm, connectors} = useConnect();
-
-	useEffect(() => {
-		localStorage.setItem('chakra-ui-color-mode', 'light')
-	})
-
-	// useEffect(() => {
-	// 	if (typeof window !== 'undefined' && !init) {
-	// 		setInit(true)
-	// 		const _address = localStorage.getItem('address');
-	// 		const _chain = localStorage.getItem('chain');
-	// 		if(_address && _chain){
-	// 			if(parseInt(_chain) == ChainID.NILE){
-	// 				connect((_address: string | null, _err: string) => {
-	// 					if (!isDataReady && !isFetchingData && _address) {
-	// 						fetchData(_address, ChainID.NILE);
-	// 						setChain(ChainID.NILE);
-	// 					}
-	// 				});
-	// 			} else {
-	// 				if(!isEvmConnected && !evmAddress){
-	// 					connectEvm({chainId: parseInt(_chain), connector: connectors[chainIndex[parseInt(_chain)]]}).then((res: any) => {
-	// 						if (!isDataReady && !isFetchingData && res.account) {
-	// 							fetchData(res.account, ChainID.AURORA);
-	// 							setChain(ChainID.AURORA);
-	// 							localStorage.setItem("address", res.account)
-	// 							localStorage.setItem("chain", ChainID.AURORA.toString());
-	// 						}
-	// 					})
-	// 				} else {
-	// 					fetchData(null, ChainID.AURORA);
-	// 				}
-	// 			}
-	// 		} else {
-	// 			fetchData(null, ChainID.AURORA);
-	// 		}
-	// 	}
-	// }, [connect, connectEvm, connectors, fetchData, init, isDataReady, isFetchingData, setChain, setInit]);
-
-	const router = useRouter();
-
 	const backgroundStyle = {
-		backgroundColor: '#0D0D0D'
+		backgroundColor: 'gray.900'
 	};
 
 	return (

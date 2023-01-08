@@ -37,7 +37,7 @@ function Exchange() {
 					<Box
 						width={{sm: '100%', md: '35%'}}
 						px={{sm: '4', md: '5'}}
-						bgColor={'#171717'}
+						bgColor={'gray.800'}
 						color={'white'}
 						rounded={10}>
 						<ExchangeSideBar />
@@ -45,7 +45,7 @@ function Exchange() {
 					<Box
 						my={'auto'}
 						width={{sm: '100%', md: '64%'}}
-						bgColor={'#171717'}
+						bgColor={'gray.700'}
 						color={'white'}
 						rounded={10}>
 						<Swap handleChange={handleChange}/>

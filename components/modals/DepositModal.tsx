@@ -24,7 +24,7 @@ import {
 
 const Big = require("big.js");
 
-import { AiOutlineInfoCircle, AiOutlinePlusCircle } from "react-icons/ai";
+import { AiFillPlusCircle, AiOutlineInfoCircle, AiOutlinePlusCircle } from "react-icons/ai";
 import { getAddress, getContract, send, call } from "../../src/contract";
 import { useEffect, useContext } from "react";
 import { WalletContext } from "../context/WalletContextProvider";
@@ -32,10 +32,12 @@ import { BiPlusCircle } from "react-icons/bi";
 import { AppDataContext } from "../context/AppDataProvider";
 import axios from "axios";
 import { ChainID } from "../../src/chains";
-import { useAccount, useBalance, useNetwork } from 'wagmi';
+import { useAccount, useBalance, useNetwork } from "wagmi";
 import { ethers } from "ethers";
 import { tokenFormatter } from "../../src/const";
 import InputWithSlider from "../inputs/InputWithSlider";
+import { MdOutlineAddCircle } from 'react-icons/md';
+import { FaCoins } from "react-icons/fa";
 
 const CLAIM_AMOUNTS: any = {
 	WTRX: "100000000",
@@ -46,7 +48,14 @@ const CLAIM_AMOUNTS: any = {
 const DepositModal = ({ handleDeposit }: any) => {
 	const [selectedAsset, setSelectedAsset] = React.useState<number>(0);
 	const { isOpen, onOpen, onClose } = useDisclosure();
-	const { collaterals, chain, updateCollateralWalletBalance, addCollateralAllowance, explorer, toggleCollateralEnabled } = useContext(AppDataContext);
+	const {
+		collaterals,
+		chain,
+		updateCollateralWalletBalance,
+		addCollateralAllowance,
+		explorer,
+		toggleCollateralEnabled,
+	} = useContext(AppDataContext);
 
 	const [amount, setAmount] = React.useState(0);
 	const [claimLoading, setClaimLoading] = useState(false);
@@ -59,9 +68,9 @@ const DepositModal = ({ handleDeposit }: any) => {
 	// const { isConnected, tronWeb, address } = useContext(WalletContext);
 	const { isConnected, address } = useAccount();
 	const { chain: activeChain } = useNetwork();
-	const {data: ethBalance} = useBalance({
-		address
-	})
+	const { data: ethBalance } = useBalance({
+		address,
+	});
 
 	const asset = () => collaterals[selectedAsset];
 	const balance = () => {
@@ -90,7 +99,12 @@ const DepositModal = ({ handleDeposit }: any) => {
 			.mul(Big(10).pow(Number(asset().inputToken.decimals)))
 			.toFixed(0);
 
-		send(synthex, asset().isEnabled ? 'deposit' : 'enterAndDeposit', [asset().id, value], chain)
+		send(
+			synthex,
+			asset().isEnabled ? "deposit" : "enterAndDeposit",
+			[asset().id, value],
+			chain
+		)
 			.then(async (res: any) => {
 				setLoading(false);
 				setResponse("Transaction sent! Waiting for confirmation...");
@@ -103,14 +117,13 @@ const DepositModal = ({ handleDeposit }: any) => {
 						.mul(Big(10).pow(Number(asset().inputToken.decimals)))
 						.toFixed(0)
 				);
-				if(!asset().isEnabled){
-					toggleCollateralEnabled(asset().id)
+				if (!asset().isEnabled) {
+					toggleCollateralEnabled(asset().id);
 				}
 				setResponse("Transaction Successful!");
-				
 			})
 			.catch((err: any) => {
-				console.log('err', err)
+				console.log("err", err);
 				setLoading(false);
 				setConfirmed(true);
 				setResponse("Transaction failed. Please try again!");
@@ -145,22 +158,25 @@ const DepositModal = ({ handleDeposit }: any) => {
 
 	const approve = async () => {
 		setLoading(true);
-		let collateral = await getContract("ERC20", chain, asset()["id"]);
+		let collateral = await getContract("MockToken", chain, asset()["id"]);
 		send(
 			collateral,
 			"approve",
 			[getAddress("SyntheX", chain), ethers.constants.MaxUint256],
 			chain
 		)
-		.then(async (res: any) => {
-			await res.wait(1);
-			addCollateralAllowance(asset().id, ethers.constants.MaxUint256.toString());
-			setLoading(false);
-		})
-		.catch((err: any) => {
-			console.log('err', err);
-			setLoading(false);
-		});
+			.then(async (res: any) => {
+				await res.wait(1);
+				addCollateralAllowance(
+					asset().id,
+					ethers.constants.MaxUint256.toString()
+				);
+				setLoading(false);
+			})
+			.catch((err: any) => {
+				console.log("err", err);
+				setLoading(false);
+			});
 	};
 
 	const updateAsset = (e: any) => {
@@ -178,12 +194,12 @@ const DepositModal = ({ handleDeposit }: any) => {
 			<Button
 				width={"100%"}
 				size="lg"
-				bgColor={"primary"}
-				rounded={10}
+				rounded={40}
 				onClick={onOpen}
-				_hover={{ bgColor: "gray.700", color: "white" }}
+				bgColor="primary"
+				_hover={{ opacity: 0.6 }}
 			>
-				<Text mr={1}>Add</Text> <BiPlusCircle />
+				<MdOutlineAddCircle size={22} /> <Text ml={'2px'}>Add</Text>
 			</Button>
 
 			<Modal isCentered isOpen={isOpen} onClose={_onClose}>
@@ -196,8 +212,11 @@ const DepositModal = ({ handleDeposit }: any) => {
 
 					<ModalHeader>Add collateral</ModalHeader>
 					<ModalBody>
-						
-						{!asset() && <Text mb={4}>Choose an asset you would like to deposit</Text>}
+						{!asset() && (
+							<Text mb={4}>
+								Choose an asset you would like to deposit
+							</Text>
+						)}
 						<Select
 							placeholder="Select asset"
 							onChange={updateAsset}
@@ -206,119 +225,173 @@ const DepositModal = ({ handleDeposit }: any) => {
 						>
 							{collaterals.map(
 								(collateral: any, index: number) => (
-									<option
-										key={index}
-										value={index}
-									>
+									<option key={index} value={index}>
 										{collateral.name}
 									</option>
 								)
 							)}
 						</Select>
-						{ asset() && <>{tryApprove() ? (
+						{asset() && (
 							<>
-							<Flex my={6} gap={2}>
-								<Image
-									src={`https://raw.githubusercontent.com/synthe-x/assets/main/${asset()?.inputToken.symbol?.toUpperCase()}.png`}
-									alt=""
-									width="35"
-									height={35}
-									my={1}
-								/>
-								<Text fontSize={"sm"}>
-									To Deposit {asset()?.name} token, you need
-									to approve it for SyntheX to use.
-								</Text>
-							</Flex>
-								<Button
-									disabled={ ethBalance?.value.lt(ethers.utils.parseEther('0.01')) || !(isConnected) || activeChain?.unsupported}
-									isLoading={loading}
-									loadingText="Please sign the transaction"
-									colorScheme={"orange"}
-									width="100%"
-									onClick={approve}
-									isDisabled={loading}
-								>
-									{isConnected && !activeChain?.unsupported ? (
-										ethBalance?.value.lt(ethers.utils.parseEther('0.01')) ? (<>Insufficient ETH for gas ⛽️</>) :
-										(<>Approve {asset()?.symbol}</>)
-									) : (
-										<>Please connect your wallet</>
-									)}
-								</Button>
-								</>
-						) : (
-							<>
-								<Box>
-									<Flex
-										justify={"space-between"}
-										align="center"
-										width={"100%"}
-										mb={2}
-									>
-										<Text textAlign="right" fontSize={"xs"} color="gray.400">
-											Balance:{" "}
-											{tokenFormatter.format(balance())}{" "}
-											{asset()?.symbol}
-										</Text>
+								{tryApprove() ? (
+									<>
+										<Flex my={6} gap={2}>
+											<Image
+												src={`https://raw.githubusercontent.com/synthe-x/assets/main/${asset()?.inputToken.symbol?.toUpperCase()}.png`}
+												alt=""
+												width="35"
+												height={35}
+												my={1}
+											/>
+											<Text fontSize={"sm"}>
+												To Deposit {asset()?.name}{" "}
+												token, you need to approve it
+												for SyntheX to use.
+											</Text>
+										</Flex>
 										<Button
-											isLoading={claimLoading}
-											size={"xs"}
-											onClick={claim}
-											color="black"
-											variant={'outline'}
+											disabled={
+												ethBalance?.value.lt(
+													ethers.utils.parseEther(
+														"0.01"
+													)
+												) ||
+												!isConnected ||
+												activeChain?.unsupported
+											}
+											isLoading={loading}
+											loadingText="Please sign the transaction"
+											colorScheme={"orange"}
+											width="100%"
+											onClick={approve}
+											isDisabled={loading}
 										>
-											Claim testnet tokens 💰
+											{isConnected &&
+											!activeChain?.unsupported ? (
+												ethBalance?.value.lt(
+													ethers.utils.parseEther(
+														"0.01"
+													)
+												) ? (
+													<>
+														Insufficient ETH for gas
+														⛽️
+													</>
+												) : (
+													<>
+														Approve{" "}
+														{asset()?.symbol}
+													</>
+												)
+											) : (
+												<>Please connect your wallet</>
+											)}
 										</Button>
-									</Flex>
+									</>
+								) : (
+									<>
+										<Box>
+											<Flex
+												justify={"space-between"}
+												align="center"
+												width={"100%"}
+												mb={2}
+											>
+												<Text
+													textAlign="right"
+													fontSize={"xs"}
+													color="gray.400"
+												>
+													Balance:{" "}
+													{tokenFormatter.format(
+														balance()
+													)}{" "}
+													{asset()?.symbol}
+												</Text>
+												<Button
+													isLoading={claimLoading}
+													size={"xs"}
+													onClick={claim}
+													color="white"
+													variant={"solid"}
+													rounded={20}
+												>
+													<FaCoins/> <Text ml={2}>Claim w{asset()?.inputToken.symbol?.toUpperCase()}</Text>
+												</Button>
+											</Flex>
 
-									<InputWithSlider asset={asset().inputToken} onUpdate={(_value: any) => {setAmount(_value)}} max={balance()} min={0} />
+											<InputWithSlider
+												asset={asset().inputToken}
+												onUpdate={(_value: any) => {
+													setAmount(_value);
+												}}
+												max={balance()}
+												min={0}
+											/>
 
-									<Flex mt={2} justify="space-between">
-										<Text fontSize={"xs"} color="gray.400">
-											Volatility Ratio: {asset()?.maximumLTV/100}
-										</Text>
+											<Flex
+												mt={2}
+												justify="space-between"
+											>
+												<Text
+													fontSize={"xs"}
+													color="gray.400"
+												>
+													Volatility Ratio:{" "}
+													{asset()?.maximumLTV / 100}
+												</Text>
 
-										<Text fontSize={"xs"} color="gray.400">
-											1 {asset()?.inputToken.symbol} ={" "}
-											{asset()?.inputTokenPriceUSD} USD
-										</Text>
-									</Flex>
-								</Box>
-								<Button
-									isLoading={loading}
-									loadingText="Please sign the transaction"
-									disabled={
-										amountLowerThanMin() ||
-										loading ||
-										!(isConnected) ||
-										!amount ||
-										amount == 0 ||
-										amount > balance()
-									}
-									bgColor="#3EE6C4"
-									color={"gray.800"}
-									width="100%"
-									mt={4}
-									isDisabled={loading}
-									onClick={deposit}
-								>
-									{isConnected ? (
-										!amount || amount == 0 ? (
-											"Enter amount"
-										) : amountLowerThanMin() ? (
-											"Amount too less"
-										) : amount > balance() ? (
-											"Insufficient Balance"
-										) : (
-											<>Deposit</>
-										)
-									) : (
-										<>Please connect your wallet</>
-									)}
-								</Button>
+												<Text
+													fontSize={"xs"}
+													color="gray.400"
+												>
+													1{" "}
+													{asset()?.inputToken.symbol}{" "}
+													={" "}
+													{
+														asset()
+															?.inputTokenPriceUSD
+													}{" "}
+													USD
+												</Text>
+											</Flex>
+										</Box>
+										<Button
+											isLoading={loading}
+											loadingText="Please sign the transaction"
+											disabled={
+												amountLowerThanMin() ||
+												loading ||
+												!isConnected ||
+												!amount ||
+												amount == 0 ||
+												amount > balance()
+											}
+											bgColor="#3EE6C4"
+											color={"gray.800"}
+											width="100%"
+											mt={4}
+											isDisabled={loading}
+											onClick={deposit}
+										>
+											{isConnected ? (
+												!amount || amount == 0 ? (
+													"Enter amount"
+												) : amountLowerThanMin() ? (
+													"Amount too less"
+												) : amount > balance() ? (
+													"Insufficient Balance"
+												) : (
+													<>Deposit</>
+												)
+											) : (
+												<>Please connect your wallet</>
+											)}
+										</Button>
+									</>
+								)}
 							</>
-						)}</>} 
+						)}
 
 						{response && (
 							<Box width={"100%"} my={2} color="black">

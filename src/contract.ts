@@ -1,14 +1,17 @@
-import { ADDRESSES } from './const';
 import { ChainID } from './chains';
 import { ethers } from 'ethers';
 
+export const config = require('../deployments/config.json');
+export const deployments = require('../deployments/deployments.json');
+
 export function getABI(contractName: string) {
-  const contractBuild = require('../abis/' + contractName + '.json');
-  return contractBuild.abi;
+  console.log("getABI", contractName);
+  const contractBuild = deployments.sources[contractName];
+  return contractBuild;
 }
 
 export function getAddress(contractName: string, chain: number = ChainID.ARB_GOERLI) {
-  return ADDRESSES[chain][contractName]
+  return deployments.contracts[contractName].address;
 }
 
 export async function getContract(contractName: string, chain: number, address: string|null = null) {

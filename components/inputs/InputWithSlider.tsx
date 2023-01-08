@@ -15,12 +15,18 @@ import {
 	SliderTrack,
 	SliderFilledTrack,
 	SliderThumb,
-  SliderMark,
+	SliderMark,
 } from "@chakra-ui/react";
 
 import Image from "next/image";
 
-export default function InputWithSlider({ onUpdate, asset, max, min, color = '#3EE6C4' }: any) {
+export default function InputWithSlider({
+	onUpdate,
+	asset,
+	max,
+	min,
+	color = "#3EE6C4",
+}: any) {
 	const [sliderValue, setSliderValue] = React.useState(0);
 	const [value, setValue] = React.useState(0);
 
@@ -36,26 +42,33 @@ export default function InputWithSlider({ onUpdate, asset, max, min, color = '#3
 		onUpdate(_value);
 	};
 
-  const labelStyles = {
-    mt: '-1.5',
-    ml: '-1.5',
-  }
+	const labelStyles = {
+		mt: "-1.5",
+		ml: "-1.5",
+	};
 
-  const boxStyle = {
-    h:3,
-    w: 3,
-    borderRadius: 100
-  }
+	const boxStyle = (_sliderValue: any) => ({
+		h: 3,
+		w: 3,
+		borderRadius: 100,
+		bg: sliderValue > _sliderValue ? color : "gray.400",
+	});
 
 	return (
 		<Box>
 			<InputGroup>
-				<InputLeftAddon bgColor={"transparent"} width={"18%"} py={4} justifyContent='center'>
+				<InputLeftAddon
+					bgColor={"transparent"}
+					width={"18%"}
+					py={4}
+					justifyContent="center"
+					borderColor={'gray.600'}
+				>
 					<Image
 						src={`https://raw.githubusercontent.com/synthe-x/assets/main/${asset.symbol.toUpperCase()}.png`}
 						alt=""
-						width={'30'}
-						height={'30'}
+						width={"30"}
+						height={"30"}
 					/>
 				</InputLeftAddon>
 				<NumberInput
@@ -64,7 +77,7 @@ export default function InputWithSlider({ onUpdate, asset, max, min, color = '#3
 					onChange={updateValue}
 					max={max}
 					min={min}
-          step={0.01}
+					step={0.01}
 				>
 					<NumberInputField borderRadius={0} />
 					<NumberInputStepper>
@@ -72,8 +85,15 @@ export default function InputWithSlider({ onUpdate, asset, max, min, color = '#3
 						<NumberDecrementStepper />
 					</NumberInputStepper>
 				</NumberInput>
-				<InputRightAddon bgColor={"transparent"} width={"18%"} justifyContent='center'>
-					<Text fontSize={"sm"} textAlign='center'>{asset.symbol}</Text>
+				<InputRightAddon
+					bgColor={"transparent"}
+					width={"18%"}
+					justifyContent="center"
+					borderColor={'gray.600'}
+				>
+					<Text fontSize={"sm"} textAlign="center">
+						{asset.symbol}
+					</Text>
 				</InputRightAddon>
 			</InputGroup>
 
@@ -83,26 +103,36 @@ export default function InputWithSlider({ onUpdate, asset, max, min, color = '#3
 				onChange={updateSlider}
 				mt={2.5}
 				value={sliderValue}
-        width='97%'
-        ml={1.5}
+				width="97%"
+				ml={1.5}
 			>
-        <SliderMark value={0} {...labelStyles}>
-          <Box {...boxStyle} bgColor={sliderValue < 0 ? 'gray.200': color}></Box>
-        </SliderMark>
-        <SliderMark value={25} {...labelStyles}>
-          <Box {...boxStyle} bgColor={sliderValue < 25 ? 'gray.200': color}></Box>
-        </SliderMark>
-        <SliderMark value={50} {...labelStyles}>
-        <Box {...boxStyle} bgColor={sliderValue < 50 ? 'gray.200': color}></Box>
-        </SliderMark>
-        <SliderMark value={75} {...labelStyles}>
-        <Box {...boxStyle} bgColor={sliderValue < 75 ? 'gray.200': color}></Box>
-        </SliderMark>
-        <SliderMark value={100} {...labelStyles}>
-        <Box {...boxStyle}  bgColor={sliderValue < 100 ? 'gray.200': color}></Box>
-        </SliderMark>
-				<SliderTrack>
-					<SliderFilledTrack bgColor={color} />
+				<SliderMark value={0} {...labelStyles}>
+					<Box
+						{...boxStyle(0)}
+					></Box>
+				</SliderMark>
+				<SliderMark value={25} {...labelStyles}>
+					<Box
+						{...boxStyle(25)}
+					></Box>
+				</SliderMark>
+				<SliderMark value={50} {...labelStyles}>
+					<Box
+						{...boxStyle(50)}
+					></Box>
+				</SliderMark>
+				<SliderMark value={75} {...labelStyles}>
+					<Box
+						{...boxStyle(75)}
+					></Box>
+				</SliderMark>
+				<SliderMark value={100} {...labelStyles}>
+					<Box
+						{...boxStyle(100)}
+					></Box>
+				</SliderMark>
+				<SliderTrack bg={'gray.400'}>
+					<SliderFilledTrack bg={color} />
 				</SliderTrack>
 				<SliderThumb />
 			</Slider>
