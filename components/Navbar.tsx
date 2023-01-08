@@ -93,9 +93,11 @@ function NavBar() {
 				}
 			);
 		}
-		// if (localStorage.getItem("chakra-ui-color-mode") === "light") {
-		// 	localStorage.setItem("chakra-ui-color-mode", "dark");
-		// }
+		if (localStorage.getItem("chakra-ui-color-mode") === "light") {
+			localStorage.setItem("chakra-ui-color-mode", "dark");
+			// reload
+			window.location.reload();
+		}
 		if (
 			(!(isConnected && !isConnecting) || chain?.unsupported) &&
 			(!isDataReady || !isFetchingData) &&
@@ -104,16 +106,7 @@ function NavBar() {
 			setInit(true);
 			fetchData(null, ChainID.ARB_GOERLI);
 		}
-	}, [
-		isConnected,
-		isConnecting,
-		activeConnector,
-		fetchData,
-		setChain,
-		chain,
-		isDataReady,
-		isFetchingData,
-	]);
+	}, [isConnected, isConnecting, activeConnector, fetchData, setChain, chain, isDataReady, isFetchingData, init, chains, address]);
 
 	return (
 		<>
