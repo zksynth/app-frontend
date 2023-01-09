@@ -45,10 +45,10 @@ function App() {
 						align="stretch" 
 						gap={3}
 						>
-						<Box width={{sm: '100%', md: '28%'}} bgColor='gray.700' rounded={15}>
+						<Box width={{sm: '100%', md: '28%'}} bgColor='gray.700' border='1px' borderColor='rgba(255, 255, 255, 0.06)' rounded={15}>
 							<Collateral handleChange={handleChange} />
 						</Box>
-						<Box width={{sm: '100%', md: '72%'}} bgColor='gray.700' rounded={15}>
+						<Box width={{sm: '100%', md: '72%'}} bgColor='gray.700' border='1px' borderColor='rgba(255, 255, 255, 0.06)' rounded={15}>
 							<Borrow />
 						</Box>
 					</Flex>
@@ -62,7 +62,7 @@ function App() {
 						justifyContent="space-between"
 						gap={10}
 						flexWrap="wrap">
-						<Box {...TableStyle} bg='gray.800' rounded={15}>
+						<Box {...TableStyle} bg='gray.800' border='1px' borderColor='rgba(255, 255, 255, 0.03)' rounded={15}>
 							<IssuanceTable handleChange={handleChange} />
 						</Box>
 					</Flex>

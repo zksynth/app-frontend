@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useContext } from 'react';
 import {
   Box,
   Container,
@@ -9,11 +9,16 @@ import {
   VisuallyHidden,
   chakra,
   useColorModeValue,
+  Flex,
 } from '@chakra-ui/react';
 import { FaTwitter, FaYoutube, FaInstagram, FaDiscord, FaGithub } from 'react-icons/fa';
+import { AppDataContext } from './context/AppDataProvider';
 
 
 export default function Footer() {
+
+  const {block} = useContext(AppDataContext);
+
   return (
     <Box
       bg={'gray.800'}
@@ -31,7 +36,10 @@ export default function Footer() {
           spacing={4}
           justify={{ md: 'space-between' }}
           align={{ md: 'center' }}>
-          <Text fontSize={'xs'} mb={1}>© 2022 SyntheX Finance. All rights reserved</Text>
+            <Flex align={'center'} gap={1}>
+            <Box h={2} w={2} bgColor={block == 0 ? 'red': 'primary'} rounded='100'></Box>
+          <Text fontSize={'xs'}>  {block}</Text>
+            </Flex>
           <Stack direction={'row'} spacing={6}>
             <Link target={'_blank'} href={'https://twitter.com/synthe_x'}>
               <FaTwitter />

@@ -89,7 +89,7 @@ export default function Borrow() {
 
 						<Flex align={'center'} gap={1}>
 						
-						{synAccrued !== null ? <Text fontSize={"2xl"} fontWeight="bold">{tokenFormatter?.format(synAccrued / 1e18)}</Text> : 
+						{(synAccrued !== null && isConnected && !(connectedChain as any).unsupported) ? <Text fontSize={"2xl"} fontWeight="bold">{tokenFormatter?.format(synAccrued / 1e18)}</Text> : 
 						<Skeleton height={'20px'} width='60px' mr={1}/>
 						}
 						
