@@ -43,6 +43,7 @@ interface AppDataValue {
 	togglePoolEnabled(poolAddress: string): void;
 	adjustedDebt: number;
 	adjustedCollateral: number;
+	block: number;
 }
 
 const AppDataContext = React.createContext<AppDataValue>({} as AppDataValue);
@@ -70,6 +71,7 @@ function AppDataProvider({ children }: any) {
 	const [chain, setChain] = React.useState(ChainID.ARB_GOERLI);
 
 	const [refresh, setRefresh] = React.useState(0);
+	const [block, setBlock] = React.useState(0);
 
 	React.useEffect(() => {
 		// fetchData(DUMMY_ADDRESS, ChainID.NILE);
@@ -89,53 +91,6 @@ function AppDataProvider({ children }: any) {
 			}
 		}
 	};
-
-	// const fetchTronData = (_address: string | null, chainId: number) => {
-	// 	return new Promise((resolve, reject) => {
-	// 		setIsFetchingData(true);
-	// 		console.log("Fetching data...", Endpoints[chainId]);
-	// 		Promise.all([
-	// 			axios.get(Endpoints[chainId] + "assets/synths"),
-	// 			axios.get(Endpoints[chainId] + "assets/collaterals"),
-	// 			axios.get(Endpoints[chainId] + "pool/all"),
-	// 			axios.get(Endpoints[chainId] + "system"),
-	// 		])
-	// 			.then(async (res) => {
-	// 				let contract = await getContract("Helper", chainId);
-	// 				Promise.all([
-	// 					_setSynths(
-	// 						res[2].data.data,
-	// 						res[0].data.data,
-	// 						contract,
-	// 						_address,
-	// 						chainId
-	// 					),
-	// 					_setCollaterals(
-	// 						res[1].data.data,
-	// 						contract,
-	// 						_address,
-	// 						chainId
-	// 					),
-	// 				])
-	// 					.then((_) => {
-	// 						setMinCRatio(res[3].data.data.minCollateralRatio);
-	// 						setSafeCRatio(res[3].data.data.safeCollateralRatio);
-	// 						resolve(null);
-	// 					})
-	// 					.catch((err) => {
-	// 						console.log("Error", err);
-	// 						reject(err);
-	// 					});
-	// 			})
-	// 			.catch((err) => {
-	// 				console.log("error", err);
-	// 				setDataFetchError(
-	// 					"Failed to fetch data. Please refresh the page."
-	// 				);
-	// 				reject(err);
-	// 			});
-	// 	});
-	// };
 
 	const fetchData = (_address: string|null, chainId: number) => {
 		return new Promise((resolve, reject) => {
@@ -303,6 +258,7 @@ function AppDataProvider({ children }: any) {
 			let _totalCollateral = Big(0);
 			let _adjustedCollateral = Big(0);
 			helper.callStatic.aggregate(calls).then((res: any) => {
+				setBlock(parseInt(res[0].toString()));
 				for (let i = 0; i < res.returnData.length; i += 4) {
 					_collaterals[i / 4].walletBalance = BigNumber.from(
 						res.returnData[i]
@@ -375,6 +331,7 @@ function AppDataProvider({ children }: any) {
 			let _totalDebt = Big(0);
 			let _adjustedDebt = Big(0);
 			helper.callStatic.aggregate(calls).then(async (res: any) => {
+				setBlock(parseInt(res[0].toString()));
 				for (let i = 0; i < res.returnData.length; i += 2) {
 					_pools[i / 2].balance = BigNumber.from(
 						res.returnData[i]
@@ -713,6 +670,7 @@ function AppDataProvider({ children }: any) {
 		togglePoolEnabled,
 		adjustedDebt,
 		adjustedCollateral,
+		block
 	};
 
 	return (

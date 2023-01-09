@@ -12,7 +12,7 @@ const myCustomTheme: Theme = {
     
     
     modalBackground: '#1A202C',
-    modalBorder: '#2D3748',
+    // modalBorder: '#2D3748',
     
 
     actionButtonBorder: "rgba(255, 255, 255, 0.04)",
@@ -33,7 +33,7 @@ const myCustomTheme: Theme = {
     menuItemBackground: "rgba(224, 232, 255, 0.1)",
     modalBackdrop: "rgba(0, 0, 0, 0.5)",
     // modalBackground: "#1A1B1F",
-    // modalBorder: "rgba(255, 255, 255, 0.08)",
+    modalBorder: "rgba(255, 255, 255, 0.08)",
     modalText: "#FFF",
     modalTextDim: "rgba(224, 232, 255, 0.3)",
     modalTextSecondary: "rgba(255, 255, 255, 0.6)",

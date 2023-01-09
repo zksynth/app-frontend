@@ -39,7 +39,9 @@ function Exchange() {
 						px={{sm: '4', md: '5'}}
 						bgColor={'gray.800'}
 						color={'white'}
-						rounded={10}>
+						rounded={10}
+						border='1px' borderColor='rgba(255, 255, 255, 0.04)'
+						>
 						<ExchangeSideBar />
 					</Box>
 					<Box
@@ -47,7 +49,8 @@ function Exchange() {
 						width={{sm: '100%', md: '64%'}}
 						bgColor={'gray.700'}
 						color={'white'}
-						rounded={10}>
+						rounded={10}
+						border='1px' borderColor='rgba(255, 255, 255, 0.06)'>
 						<Swap handleChange={handleChange}/>
 					</Box>
 				</Flex>
