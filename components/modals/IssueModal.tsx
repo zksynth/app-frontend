@@ -188,7 +188,7 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 				
 
 						{response && (
-							<Box width={"100%"} my={2} color="black">
+							<Box width={"100%"} my={2}>
 								<Alert
 									status={
 										response.includes("confirm")

@@ -394,7 +394,7 @@ const DepositModal = ({ handleDeposit }: any) => {
 						)}
 
 						{response && (
-							<Box width={"100%"} my={2} color="black">
+							<Box width={"100%"} my={2}>
 								<Alert
 									status={
 										response.includes("confirm")
@@ -404,7 +404,7 @@ const DepositModal = ({ handleDeposit }: any) => {
 											? "success"
 											: "error"
 									}
-									variant="subtle"
+									variant="top-accent"
 									rounded={6}
 								>
 									<AlertIcon />

@@ -13,6 +13,7 @@ import {
 } from '@chakra-ui/react';
 import { FaTwitter, FaYoutube, FaInstagram, FaDiscord, FaGithub } from 'react-icons/fa';
 import { AppDataContext } from './context/AppDataProvider';
+import { config } from '../src/contract';
 
 
 export default function Footer() {
@@ -38,7 +39,9 @@ export default function Footer() {
           align={{ md: 'center' }}>
             <Flex align={'center'} gap={1}>
             <Box h={2} w={2} bgColor={block == 0 ? 'red': 'primary'} rounded='100'></Box>
-          <Text fontSize={'xs'}>  {block}</Text>
+          <Text fontSize={'xs'}>{block}</Text>
+          <Text fontSize={'xs'}>| v{config.latest}-alpha</Text>
+
             </Flex>
           <Stack direction={'row'} spacing={6}>
             <Link target={'_blank'} href={'https://twitter.com/synthe_x'}>
