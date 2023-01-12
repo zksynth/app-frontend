@@ -1,4 +1,4 @@
-import { Box, Divider, Flex, Text, Image } from '@chakra-ui/react';
+import { Box, Divider, Flex, Text, Image, Skeleton } from '@chakra-ui/react';
 import React, { useContext, useState } from 'react';
 import { useAccount } from 'wagmi';
 import { AppDataContext } from '../context/AppDataProvider';
@@ -60,7 +60,7 @@ export default function Collateral({ handleChange }: any) {
 				</Box>
 			</Flex>
 
-			<Box>
+			{ collaterals.length > 0 ? <Box>
 			{collaterals.map((collateral, index) => (
 				<>
 				<Flex
@@ -71,7 +71,7 @@ export default function Collateral({ handleChange }: any) {
 					>
 					<Flex>
 						<Image
-							src={`https://raw.githubusercontent.com/synthe-x/assets/main/${collateral.inputToken.symbol?.toUpperCase()}.png`}
+							src={`/icons/${collateral.inputToken.symbol?.toUpperCase()}.png`}
 							width={35}
 							height={35}
 							alt="logo"
@@ -107,7 +107,17 @@ export default function Collateral({ handleChange }: any) {
 				{(index != (collaterals.length - 1)) && <Divider width={'90%'} mx='auto' borderColor={'#3C3C3C'} />}
 				</>
 			))}
-			</Box>
+			</Box> : <>
+			
+			<Skeleton
+					color={"gray"}
+					bgColor={"gray"}
+					height={"75px"}
+					mt={5}
+					mx={5}
+					rounded={"10"}
+				></Skeleton>
+			</>}
 
 		</Box>
 	);

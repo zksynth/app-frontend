@@ -114,6 +114,7 @@ function AppDataProvider({ children }: any) {
 									inputTokenPriceUSD
 									maximumLTV
 									_rewardSpeed
+									_fee
 									_mintedTokens (orderBy: _totalSupplyUSD, orderDirection: desc) {
 										id
 										name
@@ -223,7 +224,7 @@ function AppDataProvider({ children }: any) {
 				helper.callStatic.aggregate(calls), 
 				synthex.safeCRatio()
 			]).then(([res, safeCRatio]) => {
-				console.log('safeCRatio', safeCRatio);
+				setSafeCRatio(Number(ethers.utils.formatEther(safeCRatio)));
 				setBlock(parseInt(res[0].toString()));
 				for (let i = 0; i < res.returnData.length; i += 4) {
 					_collaterals[i / 4].walletBalance = BigNumber.from(
@@ -310,8 +311,8 @@ function AppDataProvider({ children }: any) {
 					_adjustedDebt = _adjustedDebt.plus(
 						Big(_pools[i / 2].balance)
 							.div(Big(10).pow(_pools[i / 2].inputToken.decimals))
-							.times(Big(_pools[i / 2].maximumLTV))
-							.div(100)
+							.div(Big(_pools[i / 2].maximumLTV))
+							.times(100)
 					);
 					_pools[i / 2].isEnabled = Boolean(
 						BigNumber.from(res.returnData[i + 1]).toNumber()
@@ -441,113 +442,6 @@ function AppDataProvider({ children }: any) {
 		console.log("settin", _pools);
 		setPools(_pools);
 	};
-
-	const _setTronSynths = (
-		_tradingPools: any,
-		_synths: any,
-		helper: any,
-		_address: string | null,
-		_chain: number
-	) => {
-		return new Promise((resolve, reject) => {
-			let tokens: string[] = [];
-			for (let i in _synths) {
-				tokens.push(_synths[i].synth_id);
-			}
-
-			if (_address) {
-				Promise.all([
-					call(helper, "balanceOf", [tokens, _address], _chain),
-					call(helper, "debtBalanceOf", [tokens, _address], _chain),
-				])
-					.then((res: any) => {
-						let walletBalances = res[0];
-						let debtBalances = res[1];
-
-						let totalDebt = 0;
-
-						for (let i = 0; i < walletBalances.length; i++) {
-							_synths[i]["walletBalance"] =
-								walletBalances[i].toString();
-						}
-
-						for (let i = 0; i < debtBalances.length; i++) {
-							_synths[i]["amount"] = [debtBalances[i].toString()];
-							totalDebt +=
-								Number(debtBalances[i] / 1e18) *
-								_synths[i].price;
-						}
-
-						let tradingPoolAddresses: string[] = [];
-						for (let i in _tradingPools) {
-							tradingPoolAddresses.push(
-								_tradingPools[i].pool_address
-							);
-						}
-
-						_tradingPools.splice(0, 0, {
-							pool_address:
-								"0x0000000000000000000000000000000000000000",
-							name: "My Wallet",
-							symbol: "USER",
-						});
-
-						setPools(_tradingPools);
-
-						let poolUserDataRequests: any = [];
-						for (let i in tradingPoolAddresses) {
-							poolUserDataRequests.push(
-								call(
-									helper,
-									"tradingBalanceOf",
-									[tradingPoolAddresses[i], tokens, _address],
-									_chain
-								)
-							);
-						}
-
-						Promise.all(poolUserDataRequests)
-							.then((res: any) => {
-								for (let i in res) {
-									for (let j = 0; j < res[i].length; j++) {
-										if (!_synths[j].amount)
-											_synths[j]["amount"] = [];
-										_synths[j]["amount"].push(
-											res[i][j].toString()
-										);
-										totalDebt +=
-											Number(res[i][j] / 1e18) *
-											_synths[j].price;
-									}
-								}
-								setTotalDebt(totalDebt);
-								setSynths(_synths);
-								setIsDataReady(true);
-								setIsFetchingData(false);
-								resolve(null);
-							})
-							.catch((err: any) => {
-								console.log("Error:", err);
-								reject(err);
-							});
-					})
-					.catch((err: any) => {
-						console.log("Error:", err);
-						reject(err);
-					});
-			} else {
-				setSynths(_synths);
-				_tradingPools.splice(0, 0, {
-					pool_address: "0x0000000000000000000000000000000000000000",
-					name: "My Wallet",
-					symbol: "USER",
-				});
-				setPools(_tradingPools);
-			}
-		});
-	};
-
-	// const _setSynths = ()
 
 	const updateSynthBalance = (
 		synthAddress: string,
