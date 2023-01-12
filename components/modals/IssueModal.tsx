@@ -20,22 +20,22 @@ import {
 	ModalBody,
 	ModalCloseButton,
 } from "@chakra-ui/react";
-import axios from "axios";
 
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { getContract, send } from "../../src/contract";
 import { useContext } from "react";
-import { WalletContext } from "../context/WalletContextProvider";
-import { BiPlusCircle } from "react-icons/bi";
 import { AppDataContext } from "../context/AppDataProvider";
-import { ChainID } from "../../src/chains";
 import { useAccount, useNetwork } from "wagmi";
 import { dollarFormatter, tokenFormatter } from '../../src/const';
 import Big from "big.js";
 import InputWithSlider from '../inputs/InputWithSlider';
 import { MdOutlineAddCircle } from "react-icons/md";
+import Response from "./utils/Response";
+import InfoFooter from "./utils/InfoFooter";
 
-const DepositModal = ({ asset, handleIssue }: any) => {
+const ROUNDING = 0.98;
+
+const IssueModal = ({ asset, handleIssue }: any) => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
 	const [loading, setLoading] = useState(false);
@@ -58,7 +58,7 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 		onClose();
 	};
 
-	const { chain, explorer, togglePoolEnabled, adjustedCollateral, adjustedDebt, safeCRatio } =
+	const { chain, togglePoolEnabled, adjustedCollateral, adjustedDebt, safeCRatio } =
 		useContext(AppDataContext);
 
 	const max = () => {
@@ -87,6 +87,7 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 				handleIssue(asset._mintedTokens[selectedAssetIndex].id, value);
 				if (!asset.isEnabled) togglePoolEnabled(asset.id);
 				setResponse("Transaction Successful!");
+				setMessage(`You have successfully issued ${tokenFormatter.format(amount)} ${asset._mintedTokens[selectedAssetIndex].symbol}`)
 			})
 			.catch((err: any) => {
 				setLoading(false);
@@ -96,13 +97,7 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 			});
 	};
 
-
-	const {
-		address,
-		isConnected,
-		isConnecting,
-	} = useAccount();
-
+	const { isConnected } = useAccount();
 	const { chain: activeChain } = useNetwork();
 
 	return (
@@ -127,7 +122,7 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 					<ModalBody>
 						<Flex justify={'space-between'}>
 							<Text my={1} fontSize='sm'>Price: {dollarFormatter.format(asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD)}</Text>
-							<Text my={1} fontSize='sm'>Available to borrow: {tokenFormatter.format(max())}</Text>
+							<Text my={1} fontSize='sm'>Available to borrow: {tokenFormatter.format(ROUNDING * max())}</Text>
 						</Flex>
 						<Select my={2} placeholder="Select asset to issue" value={selectedAssetIndex} onChange={(e) => setSelectedAssetIndex(parseInt(e.target.value))}>
 							{asset._mintedTokens.map((token: any, index: number) => (
@@ -139,6 +134,7 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 						<InputWithSlider 
 						asset={asset._mintedTokens[selectedAssetIndex]} 
 						max={max()} 
+						softMax={ROUNDING * max()}
 						min={0}
 						onUpdate={(_value: any) => {
 							setAmount(_value);
@@ -146,13 +142,13 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 						color='secondary'
 						/>
 						<Flex mt={2} justify="space-between">
-							<Text fontSize={"xs"} color="gray.400">
+							{/* <Text fontSize={"xs"} color="gray.400">
 								1 {asset._mintedTokens[selectedAssetIndex].symbol} = {asset._mintedTokens[selectedAssetIndex].lastPriceUSD}{" "}
 								USD
-							</Text>
+							</Text> */}
 							<Text fontSize={"xs"} color="gray.400">
-								Volatility Ratio ={" "}
-								{parseFloat(asset.maximumLTV) / 100}
+								Market LTV ={" "}
+								{parseFloat(asset.maximumLTV)} %
 							</Text>
 						</Flex>
 						<Button
@@ -184,53 +180,15 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 							)}
 						</Button>
 				
-
-						{response && (
-							<Box width={"100%"} my={2}>
-								<Alert
-									status={
-										response.includes("confirm")
-											? "info"
-											: confirmed &&
-											  response.includes("Success")
-											? "success"
-											: "error"
-									}
-									variant="top-accent"
-									rounded={6}
-								>
-									<AlertIcon />
-									<Box>
-										<Text fontSize="md" mb={0}>
-											{response}
-										</Text>
-										<Text fontSize="xs" mb={0}>
-											{message.slice(0, 100)}
-										</Text>
-										{hash && (
-											<Link
-												href={explorer() + hash}
-												target="_blank"
-											>
-												{" "}
-												<Text fontSize={"xs"}>
-													View on explorer
-												</Text>
-											</Link>
-										)}
-									</Box>
-								</Alert>
-							</Box>
-						)}
+						<Response response={response} message={message} hash={hash} confirmed={confirmed} />
 					</ModalBody>
-					<ModalFooter>
-						<AiOutlineInfoCircle size={20} />
-						<Text ml="2">More Info</Text>
-					</ModalFooter>
+					<InfoFooter message='
+						You can issue a new asset against your collateral. Maximum amount is determined by the pool LTV and collateral LTV.
+					'/>
 				</ModalContent>
 			</Modal>
 		</Box>
 	);
 };
 
-export default DepositModal;
+export default IssueModal;

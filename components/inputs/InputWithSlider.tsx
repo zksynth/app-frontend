@@ -24,6 +24,7 @@ export default function InputWithSlider({
 	onUpdate,
 	asset,
 	max,
+	softMax = max,
 	min,
 	color = "#3EE6C4",
 }: any) {
@@ -32,8 +33,8 @@ export default function InputWithSlider({
 
 	const updateSlider = (_value: any) => {
 		setSliderValue(_value);
-		setValue((_value * max) / 100);
-		onUpdate((_value * max) / 100);
+		setValue((_value * softMax) / 100);
+		onUpdate((_value * softMax) / 100);
 	};
 
 	const updateValue = (_value: any) => {

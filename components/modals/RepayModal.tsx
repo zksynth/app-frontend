@@ -5,11 +5,7 @@ import {
 	Text,
 	Flex,
 	useDisclosure,
-	Input,
 	IconButton,
-	InputRightElement,
-	InputGroup,
-	Spinner,
 	Link,
 	AlertIcon,
 	Alert,
@@ -30,14 +26,13 @@ import { BiMinusCircle } from "react-icons/bi";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { getContract, send } from "../../src/contract";
 import { useContext } from "react";
-import { WalletContext } from "../context/WalletContextProvider";
-import axios from "axios";
 import { AppDataContext } from "../context/AppDataProvider";
-import { ChainID } from "../../src/chains";
 import { useAccount, useNetwork } from "wagmi";
 import { tokenFormatter } from "../../src/const";
 import InputWithSlider from '../inputs/InputWithSlider';
 import Big from "big.js";
+import Response from "./utils/Response";
+import InfoFooter from "./utils/InfoFooter";
 
 const RepayModal = ({ asset, handleRepay }: any) => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
@@ -46,10 +41,11 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 	const [hash, setHash] = useState(null);
 	const [confirmed, setConfirmed] = useState(false);
 	const [amount, setAmount] = React.useState(0);
+	const [message, setMessage] = useState('');
 
 	const [selectedAssetIndex, setSelectedAssetIndex] = useState(0);
 
-	const { chain, explorer } = useContext(AppDataContext);
+	const { chain } = useContext(AppDataContext);
 
 	const _onClose = () => {
 		setLoading(false);
@@ -58,14 +54,6 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 		setConfirmed(false);
 		setAmount(0);
 		onClose();
-	};
-
-	const changeAmount = (event: any) => {
-		setAmount(event.target.value);
-	};
-
-	const setMax = () => {
-		setAmount(max());
 	};
 
 	const max = () => {
@@ -87,8 +75,11 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 		setConfirmed(false);
 		setHash(null);
 		setResponse("");
+		setMessage('');
 		let synthex = await getContract("SyntheX", chain);
-		let value = BigInt(amount * 10 ** asset.inputToken.decimals).toString();
+		const _amount = amount;
+		const _asset = asset._mintedTokens[selectedAssetIndex].symbol;
+		let value = BigInt(_amount * 10 ** asset.inputToken.decimals).toString();
 		send(
 			synthex,
 			"burn",
@@ -102,11 +93,13 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 				await res.wait(1);
 				setConfirmed(true);
 				handleRepay(asset._mintedTokens[selectedAssetIndex].id, value);
+				setMessage(`Repaid ${_amount} ${_asset}`);
 				setResponse("Transaction Successful!");
 			})
 			.catch((err: any) => {
 				setLoading(false);
 				setConfirmed(true);
+				setMessage(JSON.stringify(err));
 				setResponse("Transaction failed. Please try again!");
 			});
 	};
@@ -196,45 +189,13 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 							)}
 						</Button>
 
-						{response && (
-							<Box width={"100%"} my={2}>
-								<Alert
-									status={
-										response.includes("confirm")
-											? "info"
-											: confirmed &&
-											  response.includes("Success")
-											? "success"
-											: "error"
-									}
-									variant="top-accent"
-									rounded={6}
-								>
-									<AlertIcon />
-									<Box>
-										<Text fontSize="md" mb={0}>
-											{response}
-										</Text>
-										{hash && (
-											<Link
-												href={explorer() + hash}
-												target="_blank"
-											>
-												{" "}
-												<Text fontSize={"sm"}>
-													View on explorer
-												</Text>
-											</Link>
-										)}
-									</Box>
-								</Alert>
-							</Box>
-						)}
+						<Response response={response} message={message} hash={hash} confirmed={confirmed} />
 					</ModalBody>
-					<ModalFooter>
-						<AiOutlineInfoCircle size={20} />
-						<Text ml="2">More Info</Text>
-					</ModalFooter>
+
+					<InfoFooter message='
+						Repaying your debt will reduce your liquidation risk. If your health falls below the minimum (1.0), you will be liquidated and your collateral will be sold to repay your debt.
+					'/>
+
 				</ModalContent>
 			</Modal>
 		</Box>

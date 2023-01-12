@@ -38,6 +38,8 @@ import { tokenFormatter } from "../../src/const";
 import InputWithSlider from "../inputs/InputWithSlider";
 import { MdOutlineAddCircle } from 'react-icons/md';
 import { FaCoins } from "react-icons/fa";
+import Response from "./utils/Response";
+import InfoFooter from "./utils/InfoFooter";
 
 const CLAIM_AMOUNTS: any = {
 	WTRX: "100000000",
@@ -64,6 +66,7 @@ const DepositModal = ({ handleDeposit }: any) => {
 	const [response, setResponse] = useState<string | null>(null);
 	const [hash, setHash] = useState(null);
 	const [confirmed, setConfirmed] = useState(false);
+	const [message, setMessage] = useState('');
 
 	// const { isConnected, tronWeb, address } = useContext(WalletContext);
 	const { isConnected, address } = useAccount();
@@ -94,6 +97,7 @@ const DepositModal = ({ handleDeposit }: any) => {
 		setConfirmed(false);
 		setHash(null);
 		setResponse("");
+		setMessage('');
 		let synthex = await getContract("SyntheX", chain);
 		let value = Big(amount)
 			.mul(Big(10).pow(Number(asset().inputToken.decimals)))
@@ -120,10 +124,11 @@ const DepositModal = ({ handleDeposit }: any) => {
 				if (!asset().isEnabled) {
 					toggleCollateralEnabled(asset().id);
 				}
+				setMessage(`You have successfully deposited ${amount} ${asset().inputToken.symbol}`)
 				setResponse("Transaction Successful!");
 			})
 			.catch((err: any) => {
-				console.log("err", err);
+				setMessage(JSON.stringify(err));
 				setLoading(false);
 				setConfirmed(true);
 				setResponse("Transaction failed. Please try again!");
@@ -337,7 +342,7 @@ const DepositModal = ({ handleDeposit }: any) => {
 													fontSize={"xs"}
 													color="gray.400"
 												>
-													Volatility Ratio:{" "}
+													Maximum LTV:{" "}
 													{asset()?.maximumLTV / 100}
 												</Text>
 
@@ -393,45 +398,11 @@ const DepositModal = ({ handleDeposit }: any) => {
 							</>
 						)}
 
-						{response && (
-							<Box width={"100%"} my={2}>
-								<Alert
-									status={
-										response.includes("confirm")
-											? "info"
-											: confirmed &&
-											  response.includes("Success")
-											? "success"
-											: "error"
-									}
-									variant="top-accent"
-									rounded={6}
-								>
-									<AlertIcon />
-									<Box>
-										<Text fontSize="md" mb={0}>
-											{response}
-										</Text>
-										{hash && (
-											<Link
-												href={explorer() + hash}
-												target="_blank"
-											>
-												{" "}
-												<Text fontSize={"sm"}>
-													View on explorer
-												</Text>
-											</Link>
-										)}
-									</Box>
-								</Alert>
-							</Box>
-						)}
+					<Response response={response} message={message} hash={hash} confirmed={confirmed} />
 					</ModalBody>
-					<ModalFooter>
-						<AiOutlineInfoCircle size={20} />
-						<Text ml="2">More Info</Text>
-					</ModalFooter>
+					<InfoFooter message='
+						Adding collateral would increase your borrowing power, and lower your liquidation risk. You can withdraw your collateral at any time.
+					'/>
 				</ModalContent>
 			</Modal>
 		</Box>
