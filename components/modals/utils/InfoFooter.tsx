@@ -4,7 +4,7 @@ import { AiOutlineInfoCircle } from "react-icons/ai";
 
 export default function InfoFooter({message}: any) {
 	return (
-		<ModalFooter mt={-1}>
+		<ModalFooter mt={-1} mb={2}>
 			<Box width={10} mr={2}>
 				<AiOutlineInfoCircle size={20} />
 			</Box>

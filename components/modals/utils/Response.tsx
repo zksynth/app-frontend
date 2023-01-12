@@ -9,7 +9,7 @@ export default function Response({response, message, hash, confirmed}: any) {
 	return (
 		<>
 			{response && (
-				<Box width={"100%"} my={2}>
+				<Box width={"100%"} mt={2} mb={-2}>
 					<Alert
 						status={
 							response.includes("confirm")
