@@ -5,7 +5,6 @@ export const config = require('../deployments/config.json');
 export const deployments = require('../deployments/deployments.json');
 
 export function getABI(contractName: string) {
-  console.log("getABI", contractName);
   const contractBuild = deployments.sources[contractName];
   return contractBuild;
 }

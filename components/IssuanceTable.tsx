@@ -6,19 +6,15 @@ import {
 	Tr,
 	Th,
 	Td,
-	Button,
 	TableContainer,
 	Box,
 	Text,
 	Flex,
-	useDisclosure,
-	useColorMode,
 	Skeleton,
 	AvatarGroup,
 	Avatar,
 } from "@chakra-ui/react";
 
-import Image from "next/image";
 import IssueModel from "./modals/IssueModal";
 import RepayModel from "./modals/RepayModal";
 import { WalletContext } from "./context/WalletContextProvider";
@@ -40,10 +36,7 @@ import {
 import { AppDataContext } from "./context/AppDataProvider";
 import { useAccount } from "wagmi";
 import { useEffect } from "react";
-import { TOKEN_COLORS } from "../src/const";
-import { BsChevronDown, BsChevronUp } from "react-icons/bs";
 
-const LIMIT = 6;
 const IssuanceTable = ({ handleChange }: any) => {
 	const [nullValue, setNullValue] = useState(false);
 	const { currentPage, setCurrentPage, pagesCount, pages, pageSize } =
@@ -52,8 +45,6 @@ const IssuanceTable = ({ handleChange }: any) => {
 			initialState: { currentPage: 1 },
 		});
 	const [extraTokens, setExtraTokens] = useState<any>([]);
-
-	const [expandedRows, setExpandedRows] = useState<any>({});
 
 	const { isConnected } = useContext(WalletContext);
 
@@ -83,13 +74,6 @@ const IssuanceTable = ({ handleChange }: any) => {
 		updateSynthBalance(synthId, value, true);
 		setNullValue(!nullValue);
 		handleChange();
-	};
-
-	const expandRow = (index: number) => {
-		const _expandedRows = { ...expandedRows };
-		if (!_expandedRows[index]) _expandedRows[index] = true;
-		else _expandedRows[index] = !_expandedRows[index];
-		setExpandedRows(_expandedRows);
 	};
 
 	useEffect(() => {
@@ -127,7 +111,7 @@ const IssuanceTable = ({ handleChange }: any) => {
 	};
 
 	return (
-		<Box>
+		<Box minH={'400px'}>
 			{pools.length > 0 ? (
 				<>
 					{" "}
@@ -212,7 +196,7 @@ const IssuanceTable = ({ handleChange }: any) => {
 																	name={
 																		token.name
 																	}
-																	src={`https://raw.githubusercontent.com/synthe-x/assets/main/${token.symbol?.toUpperCase()}.png`}
+																	src={`/icons/${token.symbol?.toUpperCase()}.png`}
 																/>
 															)
 														)}
@@ -320,8 +304,8 @@ const IssuanceTable = ({ handleChange }: any) => {
 											rounded={"full"}
 											bgColor={
 												page === currentPage
-													? "black"
-													: "#171717"
+													? "gray.700"
+													: "gray.800"
 											}
 											_hover={{ bgColor: "gray.700" }}
 										/>
@@ -339,6 +323,7 @@ const IssuanceTable = ({ handleChange }: any) => {
 				<Skeleton
 					color={"gray"}
 					bgColor={"gray"}
+					height={"382px"}
 					rounded={"10"}
 				></Skeleton>
 			)}

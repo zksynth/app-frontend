@@ -37,6 +37,7 @@ import { ChainID } from "../../src/chains";
 import { useAccount, useNetwork } from "wagmi";
 import { tokenFormatter } from "../../src/const";
 import InputWithSlider from '../inputs/InputWithSlider';
+import Big from "big.js";
 
 const RepayModal = ({ asset, handleRepay }: any) => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
@@ -69,11 +70,14 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 
 	const max = () => {
 		return Math.min(
-			asset._mintedTokens[selectedAssetIndex].balance /
-				10 ** asset.inputToken.decimals, // user token balance
-			asset.balance /
-				10 ** asset.inputToken.decimals /
-				asset._mintedTokens[selectedAssetIndex].lastPriceUSD // debt in terms of this token
+			Big(asset._mintedTokens[selectedAssetIndex].balance).div(
+				10 ** asset.inputToken.decimals
+			).toNumber(),
+			Big(asset.balance).div(
+				10 ** asset.inputToken.decimals
+			).div(
+				asset._mintedTokens[selectedAssetIndex].lastPriceUSD
+			).toNumber()
 		);
 	};
 
@@ -203,7 +207,7 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 											? "success"
 											: "error"
 									}
-									variant="subtle"
+									variant="top-accent"
 									rounded={6}
 								>
 									<AlertIcon />

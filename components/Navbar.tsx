@@ -14,8 +14,6 @@ import {
 	DrawerContent,
 	DrawerCloseButton,
 	useDisclosure,
-	Switch,
-	LinkBox,
 } from "@chakra-ui/react";
 
 import { ConnectButton as RainbowConnect } from "@rainbow-me/rainbowkit";
@@ -30,7 +28,7 @@ import "../styles/Home.module.css";
 import darklogo from "../public/dark_logo.svg";
 import lightlogo from "../public/light_logo.svg";
 import logo from "../public/logo.svg";
-import { useAccount, useConnect, useNetwork } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import { useContext } from "react";
 import { AppDataContext } from "./context/AppDataProvider";
 import { ChainID } from "../src/chains";

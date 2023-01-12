@@ -14,6 +14,7 @@ import {
 	Link,
 	Alert,
 	AlertIcon,
+	Skeleton,
 } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import { getContract, send } from "../src/contract";
@@ -42,15 +43,16 @@ function Swap({ handleChange }: any) {
 	const [response, setResponse] = useState<string | null>(null);
 	const [hash, setHash] = useState(null);
 	const [confirmed, setConfirmed] = useState(false);
+	const [message, setMessage] = useState('');
 
-	const { chain, explorer, isDataReady } = useContext(AppDataContext);
+	const { chain, explorer } = useContext(AppDataContext);
 
 	const updateInputAmount = (e: any) => {
 		setInputAmount(e.target.value);
 		let outputAmount =
 			(e.target.value * inputToken().lastPriceUSD) /
 			outputToken().lastPriceUSD;
-		setOutputAmount(outputAmount);
+		setOutputAmount((Big(1).minus(Big(pools[tradingPool]._fee).div(1e18)).times(outputAmount)).toNumber());
 	};
 
 	const updateInputAssetIndex = (e: any) => {
@@ -59,20 +61,16 @@ function Swap({ handleChange }: any) {
 		}
 		setInputAssetIndex(e.target.value);
 		// calculate output amount
-		let _outputAmount =
-			(inputAmount * inputToken(e.target.value).lastPriceUSD) /
-			outputToken().lastPriceUSD;
-		setOutputAmount(_outputAmount);
+		let _outputAmount = Big(inputAmount).times(inputToken(e.target.value).lastPriceUSD).div(outputToken().lastPriceUSD);
+		setOutputAmount((Big(1).minus(Big(pools[tradingPool]._fee).div(1e18)).times(_outputAmount)).toNumber());
 	};
 
 	const updateOutputAmount = (e: any) => {
 		setOutputAmount(e.target.value);
-		let inputAmount =
-			(e.target.value *
-				pools[tradingPool]._mintedTokens[outputAssetIndex]
-					.lastPriceUSD) /
-			pools[tradingPool]._mintedTokens[inputAssetIndex].lastPriceUSD;
-		setInputAmount(inputAmount);
+		let inputAmount = Big(e.target.value)
+			.times(pools[tradingPool]._mintedTokens[outputAssetIndex].lastPriceUSD)
+			.div(pools[tradingPool]._mintedTokens[inputAssetIndex].lastPriceUSD);
+		setInputAmount((Big(1).minus(Big(pools[tradingPool]._fee).div(1e18)).times(inputAmount).toNumber()));
 	};
 
 	const updateOutputAssetIndex = (e: any) => {
@@ -81,10 +79,8 @@ function Swap({ handleChange }: any) {
 		}
 		setOutputAssetIndex(e.target.value);
 		// calculate input amount
-		let _inputAmount =
-			(outputAmount * outputToken(e.target.value).lastPriceUSD) /
-			inputToken().lastPriceUSD;
-		setInputAmount(_inputAmount);
+		let _inputAmount = Big(outputAmount).times(outputToken(e.target.value).lastPriceUSD).div(inputToken().lastPriceUSD);
+		setInputAmount((Big(1).minus(Big(pools[tradingPool]._fee).div(1e18)).times(_inputAmount)).toNumber());
 	};
 
 	const switchTokens = () => {
@@ -103,13 +99,12 @@ function Swap({ handleChange }: any) {
 		setConfirmed(false);
 		setHash(null);
 		setResponse("");
+		setMessage('');
 		let contract = await getContract("SyntheX", chain);
-		console.log(
-			pools[tradingPool].id,
-			pools[tradingPool]._mintedTokens[inputAssetIndex].id,
-			ethers.utils.parseEther(inputAmount.toString()),
-			pools[tradingPool]._mintedTokens[outputAssetIndex].id
-		);
+		const _inputAmount = inputAmount;
+		const _inputAsset = pools[tradingPool]._mintedTokens[inputAssetIndex].symbol;
+		const _outputAsset = pools[tradingPool]._mintedTokens[outputAssetIndex].symbol;
+		const _outputAmount = outputAmount;
 		send(
 			contract,
 			"exchange",
@@ -137,24 +132,24 @@ function Swap({ handleChange }: any) {
 						.mul(10 ** 18)
 						.toString()
 				);
+				setMessage(`Swapped ${_inputAmount} ${_inputAsset} for ${_outputAmount} ${_outputAsset}`)
 				setResponse("Transaction Successful!");
 			})
 			.catch((err: any) => {
-				console.log("err", err);
+				setMessage(JSON.stringify(err));
 				setLoading(false);
 				setConfirmed(true);
 				setResponse("Transaction failed. Please try again!");
 			});
 	};
 
-	const { address, isConnected, isConnecting } = useAccount();
+	const { isConnected } = useAccount();
 	const { chain: activeChain } = useNetwork();
 
 	const {
 		synths,
 		tradingPool,
 		pools,
-		tradingBalanceOf,
 		tokenFormatter,
 		updateSynthBalance,
 	} = useContext(AppDataContext);
@@ -187,12 +182,10 @@ function Swap({ handleChange }: any) {
 	}, [inputAssetIndex, outputAssetIndex, pools, synths, tradingPool]);
 
 	const handleMax = () => {
-		let _inputAmount = inputToken().balance / 1e18;
+		let _inputAmount = Big(inputToken().balance).div(1e18);
 		setInputAmount(_inputAmount);
-		let _outputAmount =
-			(_inputAmount * inputToken().lastPriceUSD) /
-			outputToken().lastPriceUSD;
-		setOutputAmount(_outputAmount);
+		let _outputAmount = Big(_inputAmount).times(inputToken().lastPriceUSD).div(outputToken().lastPriceUSD)
+		setOutputAmount(Big(1).minus(Big(pools[tradingPool]._fee).div(1e18)).times(_outputAmount).toNumber());
 	};
 
 	const inputToken = (_inputAssetIndex = inputAssetIndex) => {
@@ -227,7 +220,7 @@ function Swap({ handleChange }: any) {
 				)}
 				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
 			</Head>
-			{pools[tradingPool] && (
+			{pools[tradingPool] ? (
 				<Box px={{ sm: "5", md: "10" }} pb={20} mt={8} rounded={6}>
 					<Flex justify={"space-between"} mb={5}>
 						{/* Asset Name */}
@@ -235,7 +228,7 @@ function Swap({ handleChange }: any) {
 							<Box mt={2}>
 								<Image
 									src={
-										"https://raw.githubusercontent.com/synthe-x/assets/main/" +
+										"/icons/" +
 										inputToken()?.symbol.toUpperCase() +
 										".png"
 									}
@@ -375,9 +368,14 @@ function Swap({ handleChange }: any) {
 						</Select>
 					</Flex>
 
-					<Text fontSize={"sm"} mt={6} color="gray">
-						Trading Fee: 0.00 %
+					<Flex align={'center'} mt={6} justify='space-between'>
+					<Text fontSize={"xs"} color="gray.400">
+						Trading Fee: {pools[tradingPool]._fee/1e16} %
 					</Text>
+					<Text fontSize={"xs"} color="gray.400">
+						Slippage: {0} %
+					</Text>
+					</Flex>
 					<Button
 						mt={6}
 						size="lg"
@@ -406,7 +404,7 @@ function Swap({ handleChange }: any) {
 					</Button>
 
 					{response && (
-						<Box width={"100%"} my={2} color="black">
+						<Box width={"100%"} mt={4}>
 							<Alert
 								status={
 									response.includes("confirm")
@@ -416,7 +414,7 @@ function Swap({ handleChange }: any) {
 										? "success"
 										: "error"
 								}
-								variant="subtle"
+								variant="top-accent"
 								rounded={6}
 							>
 								<AlertIcon />
@@ -424,13 +422,16 @@ function Swap({ handleChange }: any) {
 									<Text fontSize="md" mb={0}>
 										{response}
 									</Text>
+									<Text fontSize="xs" mb={0}>
+											{message.slice(0, 100)}
+										</Text>
 									{hash && (
 										<Link
 											href={explorer() + hash}
 											target="_blank"
 										>
 											{" "}
-											<Text fontSize={"sm"}>
+											<Text fontSize={"xs"}>
 												View on explorer
 											</Text>
 										</Link>
@@ -440,7 +441,15 @@ function Swap({ handleChange }: any) {
 						</Box>
 					)}
 				</Box>
-			)}
+			): <>
+			
+			<Skeleton
+					color={"gray"}
+					bgColor={"gray"}
+					height={"382px"}
+					rounded={"10"}
+				></Skeleton>
+			</>}
 		</>
 	);
 }

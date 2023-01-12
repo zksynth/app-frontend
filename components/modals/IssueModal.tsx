@@ -5,14 +5,7 @@ import {
 	Text,
 	Flex,
 	useDisclosure,
-	Input,
-	IconButton,
-	InputRightElement,
-	InputGroup,
-	Spinner,
 	Link,
-	Progress,
-	Image,
 	Alert,
 	AlertIcon,
 	Select,
@@ -60,6 +53,7 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 		setResponse(null);
 		setHash(null);
 		setConfirmed(false);
+		setMessage('');
 		setAmount(0);
 		onClose();
 	};
@@ -68,19 +62,21 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 		useContext(AppDataContext);
 
 	const max = () => {
-		return (asset.maximumLTV/100)*((adjustedCollateral/(safeCRatio)) - adjustedDebt)/(asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD);
+		// MAX = ((Ac/safeC) - Ad)*Vr
+		return Big(asset.maximumLTV/100).times(Big(adjustedCollateral).div(safeCRatio).minus(adjustedDebt)).div(asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD).toNumber();
 	};
 
-	// 1/1.69 - 1/1.5 = 0.58823529411764705882352941176471 - 0.66666666666666666666666666666667 = -0.07843137254901960784313725490196
 	const issue = async () => {
 		if (!amount) return;
 		setLoading(true);
 		setConfirmed(false);
 		setHash(null);
-		setResponse("");
+		setResponse('');
+		setMessage('');
 
 		let synthex = await getContract("SyntheX", chain);
-		let value = BigInt(amount * 10 ** asset.inputToken.decimals).toString();
+		let value = Big(amount).times(10 ** asset.inputToken.decimals).toFixed(0);
+		console.log(value)
 		send(synthex, asset.isEnabled ? 'issue' : 'enterAndIssue', [asset.id, asset._mintedTokens[selectedAssetIndex].id, value], chain)
 			.then(async (res: any) => {
 				setLoading(false);
@@ -200,7 +196,7 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 											? "success"
 											: "error"
 									}
-									variant="subtle"
+									variant="top-accent"
 									rounded={6}
 								>
 									<AlertIcon />

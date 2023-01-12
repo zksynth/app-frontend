@@ -103,7 +103,7 @@ function ExchangeSideBar({}) {
 													>
 														<Image
 															src={
-																"https://raw.githubusercontent.com/synthe-x/assets/main/" +
+																"/icons/" +
 																_synth.symbol?.toUpperCase() +
 																".png"
 															}

@@ -237,7 +237,7 @@ const DepositModal = ({ handleDeposit }: any) => {
 									<>
 										<Flex my={6} gap={2}>
 											<Image
-												src={`https://raw.githubusercontent.com/synthe-x/assets/main/${asset()?.inputToken.symbol?.toUpperCase()}.png`}
+												src={`/icons/${asset()?.inputToken.symbol?.toUpperCase()}.png`}
 												alt=""
 												width="35"
 												height={35}

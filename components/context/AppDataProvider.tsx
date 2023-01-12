@@ -114,6 +114,7 @@ function AppDataProvider({ children }: any) {
 									inputTokenPriceUSD
 									maximumLTV
 									_rewardSpeed
+									_fee
 									_mintedTokens (orderBy: _totalSupplyUSD, orderDirection: desc) {
 										id
 										name
