@@ -37,6 +37,8 @@ import { ChainID } from "../../src/chains";
 import { useAccount, useNetwork } from "wagmi";
 import InputWithSlider from "../inputs/InputWithSlider";
 import { tokenFormatter } from '../../src/const';
+import Response from "./utils/Response";
+import InfoFooter from "./utils/InfoFooter";
 
 const WithdrawModal = ({ asset, handleWithdraw }: any) => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
@@ -46,14 +48,11 @@ const WithdrawModal = ({ asset, handleWithdraw }: any) => {
 	const [response, setResponse] = useState<string | null>(null);
 	const [hash, setHash] = useState(null);
 	const [confirmed, setConfirmed] = useState(false);
+	const [message, setMessage] = useState('');
 
-	const { safeCRatio, totalCollateral, totalDebt, chain, explorer } =
+	const { safeCRatio, adjustedCollateral, adjustedDebt, chain, explorer } =
 		useContext(AppDataContext);
-	const {
-		address,
-		isConnected,
-		isConnecting,
-	} = useAccount();
+	const { isConnected } = useAccount();
 
 	const _onClose = () => {
 		setLoading(false);
@@ -65,10 +64,7 @@ const WithdrawModal = ({ asset, handleWithdraw }: any) => {
 	};
 
 	const max = () => {
-		return (
-			(0.999 * ((totalCollateral * 100) / safeCRatio) - totalDebt) /
-			asset.inputTokenPriceUSD
-		);
+		return Big(asset.maximumLTV/100).times(Big(adjustedCollateral).div(safeCRatio).minus(adjustedDebt)).div(asset.inputTokenPriceUSD).toNumber();
 	};
 
 	const withdraw = async () => {
@@ -78,6 +74,8 @@ const WithdrawModal = ({ asset, handleWithdraw }: any) => {
 		setHash(null);
 		setResponse("");
 		let synthex = await getContract("SyntheX", chain);
+		const _amount = amount;
+		const _asset = asset.inputToken.symbol;
 		let value = Big(amount)
 			.mul(Big(10).pow(Number(asset.inputToken.decimals)))
 			.toFixed(0);
@@ -90,11 +88,13 @@ const WithdrawModal = ({ asset, handleWithdraw }: any) => {
 				await res.wait(1);
 				setConfirmed(true);
 				handleWithdraw(asset.id, value);
+				setMessage(`You have successfully withdrawn ${_amount} ${_asset} from your position!`)
 				setResponse("Transaction Successful!");
 			})
 			.catch((err: any) => {
 				setLoading(false);
 				setConfirmed(true);
+				setMessage(JSON.stringify(err))
 				setResponse("Transaction failed. Please try again!");
 			});
 	};
@@ -119,7 +119,13 @@ const WithdrawModal = ({ asset, handleWithdraw }: any) => {
 						Withdraw collateral
 					</ModalHeader>
 					<ModalBody>
-						<Text fontSize={'xs'} color='gray' mt={-2} mb={2} textAlign='right'>Max {tokenFormatter.format(max())} {asset.inputToken.symbol}</Text>
+						<Flex mt={-2} mb={2} justify='space-between'>
+						<Text fontSize={"xs"} color="gray.400">
+								1 {asset.inputToken.symbol} ={" "}
+								{asset.inputTokenPriceUSD} USD
+							</Text>
+						<Text fontSize={'xs'} color='gray.400'  textAlign='right'>Max {tokenFormatter.format(max())} {asset.inputToken.symbol}</Text>
+						</Flex>
 						<InputWithSlider
 							asset={asset.inputToken}
 							max={max()}
@@ -130,10 +136,7 @@ const WithdrawModal = ({ asset, handleWithdraw }: any) => {
 							color={'red.400'}
 						/>
 						<Flex mt={2} justify="space-between">
-							<Text fontSize={"xs"} color="gray.400">
-								1 {asset.inputToken.symbol} ={" "}
-								{asset.inputTokenPriceUSD} USD
-							</Text>
+							
 						</Flex>
 						<Button
 							disabled={
@@ -146,10 +149,11 @@ const WithdrawModal = ({ asset, handleWithdraw }: any) => {
 							}
 							loadingText="Please sign the transaction"
 							isLoading={loading}
-							colorScheme={"red"}
+							bgColor='red.400'
 							width="100%"
 							mt={4}
 							onClick={withdraw}
+							color='white'
 						>
 							{isConnected && !activeChain?.unsupported ? (
 								amount > max() ? (
@@ -164,45 +168,15 @@ const WithdrawModal = ({ asset, handleWithdraw }: any) => {
 							)}
 						</Button>
 
-						{response && (
-							<Box width={"100%"} my={2}>
-								<Alert
-									status={
-										response.includes("confirm")
-											? "info"
-											: confirmed &&
-											  response.includes("Success")
-											? "success"
-											: "error"
-									}
-									variant="subtle"
-									rounded={6}
-								>
-									<AlertIcon />
-									<Box>
-										<Text fontSize="md" mb={0}>
-											{response}
-										</Text>
-										{hash && (
-											<Link
-												href={explorer() + hash}
-												target="_blank"
-											>
-												{" "}
-												<Text fontSize={"sm"}>
-													View on explorer
-												</Text>
-											</Link>
-										)}
-									</Box>
-								</Alert>
-							</Box>
-						)}
+						<Response response={response} message={message} hash={hash} confirmed={confirmed} />
 					</ModalBody>
-					<ModalFooter>
-						<AiOutlineInfoCircle size={20} />
-						<Text ml="2">More Info</Text>
-					</ModalFooter>
+
+					<InfoFooter 
+						message='
+						By withdrawing your collateral, your health factor will reduce. 
+						You will be able to borrow less and your position will be at risk of liquidation.
+					'/>
+
 				</ModalContent>
 			</Modal>
 		</Box>
