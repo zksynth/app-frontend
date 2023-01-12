@@ -176,57 +176,17 @@ function AppDataProvider({ children }: any) {
 		});
 	};
 
-	// const _setTronCollaterals = (
-	// 	_collaterals: any,
-	// 	helper: any,
-	// 	_address: string | null,
-	// 	_chain: number
-	// ) => {
-	// 	return new Promise((resolve, reject) => {
-	// 		let tokens = [];
-	// 		for (let i in _collaterals) {
-	// 			tokens.push(_collaterals[i].coll_address);
-	// 			tokens.push(_collaterals[i].cAsset);
-	// 		}
-
-	// 		if (_address)
-	// 			call(helper, "balanceOf", [tokens, _address], _chain)
-	// 				.then((res: any) => {
-	// 					let collateralBalance = 0;
-	// 					for (let i = 0; i < res.length; i += 2) {
-	// 						_collaterals[i / 2]["walletBalance"] =
-	// 							res[i].toString();
-	// 						_collaterals[i / 2]["amount"] =
-	// 							res[i + 1].toString();
-	// 						collateralBalance +=
-	// 							(res[i + 1].toString() *
-	// 								_collaterals[i / 2].price) /
-	// 							10 ** _collaterals[i / 2].decimal;
-	// 					}
-	// 					setCollaterals(_collaterals);
-	// 					setTotalCollateral(collateralBalance);
-	// 					resolve(null);
-	// 				})
-	// 				.catch((err: any) => {
-	// 					console.log("Error:", err);
-	// 					reject(err);
-	// 				});
-	// 		else {
-	// 			setCollaterals(_collaterals);
-	// 		}
-	// 	});
-	// };
-
 	const _setCollaterals = (
 		_collaterals: any[],
 		helper: any,
 		_address: string,
 		_chain: number
 	) => {
-		return new Promise((resolve, reject) => {
+		return new Promise(async (resolve, reject) => {
 			let calls = [];
 			const itf = new ethers.utils.Interface(getABI("MockToken"));
 			const synthexitf = new ethers.utils.Interface(getABI("SyntheX"));
+			const synthex = await getContract("SyntheX", _chain);
 
 			for (let i = 0; i < _collaterals.length; i++) {
 				calls.push([
@@ -257,7 +217,13 @@ function AppDataProvider({ children }: any) {
 			}
 			let _totalCollateral = Big(0);
 			let _adjustedCollateral = Big(0);
-			helper.callStatic.aggregate(calls).then((res: any) => {
+
+
+			Promise.all([
+				helper.callStatic.aggregate(calls), 
+				synthex.safeCRatio()
+			]).then(([res, safeCRatio]) => {
+				console.log('safeCRatio', safeCRatio);
 				setBlock(parseInt(res[0].toString()));
 				for (let i = 0; i < res.returnData.length; i += 4) {
 					_collaterals[i / 4].walletBalance = BigNumber.from(
