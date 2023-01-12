@@ -49,6 +49,7 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 	const [response, setResponse] = useState<string | null>(null);
 	const [hash, setHash] = useState(null);
 	const [confirmed, setConfirmed] = useState(false);
+	const [message, setMessage] = useState('');
 
 	const [selectedAssetIndex, setSelectedAssetIndex] = useState(0);
 
@@ -63,11 +64,11 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 		onClose();
 	};
 
-	const { chain, availableToBorrow, explorer, togglePoolEnabled, adjustedCollateral, adjustedDebt } =
+	const { chain, explorer, togglePoolEnabled, adjustedCollateral, adjustedDebt, safeCRatio } =
 		useContext(AppDataContext);
 
 	const max = () => {
-		return (adjustedCollateral-adjustedDebt)/asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD;
+		return (asset.maximumLTV/100)*((adjustedCollateral/(safeCRatio)) - adjustedDebt)/(asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD);
 	};
 
 	// 1/1.69 - 1/1.5 = 0.58823529411764705882352941176471 - 0.66666666666666666666666666666667 = -0.07843137254901960784313725490196
@@ -95,6 +96,7 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 				setLoading(false);
 				setConfirmed(true);
 				setResponse("Transaction failed. Please try again!");
+				setMessage(JSON.stringify(err));
 			});
 	};
 
@@ -129,7 +131,7 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 					<ModalBody>
 						<Flex justify={'space-between'}>
 							<Text my={1} fontSize='sm'>Price: {dollarFormatter.format(asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD)}</Text>
-							<Text my={1} fontSize='sm'>Available to borrow: {tokenFormatter.format((adjustedCollateral-adjustedDebt)/asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD)} {asset._mintedTokens[selectedAssetIndex]?.symbol}</Text>
+							<Text my={1} fontSize='sm'>Available to borrow: {tokenFormatter.format(max())}</Text>
 						</Flex>
 						<Select my={2} placeholder="Select asset to issue" value={selectedAssetIndex} onChange={(e) => setSelectedAssetIndex(parseInt(e.target.value))}>
 							{asset._mintedTokens.map((token: any, index: number) => (
@@ -206,13 +208,16 @@ const DepositModal = ({ asset, handleIssue }: any) => {
 										<Text fontSize="md" mb={0}>
 											{response}
 										</Text>
+										<Text fontSize="xs" mb={0}>
+											{message.slice(0, 100)}
+										</Text>
 										{hash && (
 											<Link
 												href={explorer() + hash}
 												target="_blank"
 											>
 												{" "}
-												<Text fontSize={"sm"}>
+												<Text fontSize={"xs"}>
 													View on explorer
 												</Text>
 											</Link>
