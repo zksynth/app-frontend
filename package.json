@@ -18,7 +18,7 @@
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
     "@rainbow-me/rainbowkit": "^0.7.0",
-    "@sentry/nextjs": "^7.28.1",
+    "@sentry/nextjs": "^7.30.0",
     "apexcharts": "^3.35.5",
     "big.js": "^6.2.1",
     "chart.js": "^3.9.1",

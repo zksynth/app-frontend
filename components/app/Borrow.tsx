@@ -31,13 +31,13 @@ export default function Borrow() {
 	const { chain: connectedChain } = useNetwork();
 
 	useEffect(() => {
-		if (
+		if(connectedChain){if (
 			!synAccrued &&
 			isConnected &&
 			!(connectedChain as any).unsupported
 		) {
 			_setSynAccrued()
-		}
+		}}
 	});
 
 	const _setSynAccrued = async () => {
@@ -88,7 +88,7 @@ export default function Borrow() {
 						<Text fontSize={"sm"}>Rewards</Text>
 
 						<Flex align={'center'} gap={1}>
-						{!(connectedChain as any).unsupported ? 
+						{connectedChain && !(connectedChain as any).unsupported ? 
 						(synAccrued !== null && isConnected) ? <Text fontSize={"2xl"} fontWeight="bold">{tokenFormatter?.format(synAccrued / 1e18)}</Text> : 
 						<Skeleton height={'20px'} width='60px' mr={1}/>
 					: <>-</>
