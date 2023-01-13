@@ -343,7 +343,7 @@ const DepositModal = ({ handleDeposit }: any) => {
 													color="gray.400"
 												>
 													Maximum LTV:{" "}
-													{asset()?.maximumLTV / 100}
+													{asset()?.maximumLTV} %
 												</Text>
 
 												<Text

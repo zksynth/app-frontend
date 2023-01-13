@@ -128,7 +128,7 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 					<ModalHeader>Repay {asset["symbol"]}</ModalHeader>
 					<ModalBody>
 						<Flex>
-							<Text fontSize="sm">
+							<Text fontSize="xs">
 								Balance:{" "}
 								{tokenFormatter.format(
 									asset._mintedTokens[selectedAssetIndex]

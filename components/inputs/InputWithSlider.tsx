@@ -44,15 +44,15 @@ export default function InputWithSlider({
 	};
 
 	const labelStyles = {
-		mt: "-1.5",
+		mt: "-1",
 		ml: "-1.5",
 	};
 
 	const boxStyle = (_sliderValue: any) => ({
-		h: 3,
-		w: 3,
+		h: 2,
+		w: 2,
 		borderRadius: 100,
-		bg: sliderValue > _sliderValue ? color : "gray.400",
+		bg: sliderValue > _sliderValue ? color : "gray.600",
 	});
 
 	return (
@@ -132,7 +132,7 @@ export default function InputWithSlider({
 						{...boxStyle(100)}
 					></Box>
 				</SliderMark>
-				<SliderTrack bg={'gray.400'}>
+				<SliderTrack bg={'gray.600'}>
 					<SliderFilledTrack bg={color} />
 				</SliderTrack>
 				<SliderThumb />

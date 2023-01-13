@@ -118,11 +118,11 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 				<ModalOverlay bg="blackAlpha.100" backdropFilter="blur(30px)" />
 				<ModalContent width={"30rem"} bgColor="">
 					<ModalCloseButton />
-					<ModalHeader>Issue {asset.name}</ModalHeader>
+					<ModalHeader>Issue</ModalHeader>
 					<ModalBody>
 						<Flex justify={'space-between'}>
-							<Text my={1} fontSize='sm'>Price: {dollarFormatter.format(asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD)}</Text>
-							<Text my={1} fontSize='sm'>Available to borrow: {tokenFormatter.format(ROUNDING * max())}</Text>
+							<Text fontSize='xs'>Price: {dollarFormatter.format(asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD)}</Text>
+							<Text fontSize='xs'>Available to borrow: {dollarFormatter.format(asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD * max())}</Text>
 						</Flex>
 						<Select my={2} placeholder="Select asset to issue" value={selectedAssetIndex} onChange={(e) => setSelectedAssetIndex(parseInt(e.target.value))}>
 							{asset._mintedTokens.map((token: any, index: number) => (
