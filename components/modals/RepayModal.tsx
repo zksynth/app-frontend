@@ -58,10 +58,10 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 
 	const max = () => {
 		return Math.min(
-			Big(asset._mintedTokens[selectedAssetIndex].balance).div(
+			Big(asset._mintedTokens[selectedAssetIndex].balance ?? 0).div(
 				10 ** asset.inputToken.decimals
 			).toNumber(),
-			Big(asset.balance).div(
+			Big(asset.balance ?? 0).div(
 				10 ** asset.inputToken.decimals
 			).div(
 				asset._mintedTokens[selectedAssetIndex].lastPriceUSD

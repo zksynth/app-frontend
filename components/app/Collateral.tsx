@@ -1,6 +1,6 @@
 import { Box, Divider, Flex, Text, Image, Skeleton } from '@chakra-ui/react';
 import React, { useContext, useState } from 'react';
-import { useAccount } from 'wagmi';
+import { useAccount, useNetwork } from 'wagmi';
 import { AppDataContext } from '../context/AppDataProvider';
 import DepositModal from '../modals/DepositModal';
 import WithdrawModal from '../modals/WithdrawModal';
@@ -35,6 +35,7 @@ export default function Collateral({ handleChange }: any) {
 	}
 
 	const {address: evmAddress, isConnected: isEvmConnected, isConnecting: isEvmConnecting} = useAccount();
+	const {chain: activeChain} = useNetwork();
 
 	return (
 		<Box pb={4} height='100%'>
@@ -87,7 +88,7 @@ export default function Collateral({ handleChange }: any) {
 								fontSize="xs"
 								fontWeight="light"
 								textAlign={'left'} color='primary'>
-								{(isConnected || isEvmConnected)
+								{(isEvmConnected && !activeChain?.unsupported)
 									? tokenFormatter.format(
 											collateral.balance /
 												10 ** collateral.inputToken.decimals

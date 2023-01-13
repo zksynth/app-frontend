@@ -112,7 +112,7 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 				my={1}
 				_hover={{ opacity: 0.6 }}
 			>
-				<MdOutlineAddCircle size={20} /> <Text ml={1}>Mint</Text>
+				<MdOutlineAddCircle /> <Text ml={1}>Mint</Text>
 			</Button>
 			<Modal isCentered isOpen={isOpen} onClose={_onClose}>
 				<ModalOverlay bg="blackAlpha.100" backdropFilter="blur(30px)" />
@@ -183,7 +183,7 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 						<Response response={response} message={message} hash={hash} confirmed={confirmed} />
 					</ModalBody>
 					<InfoFooter message='
-						You can issue a new asset against your collateral. Maximum amount is determined by the pool LTV and collateral LTV.
+						You can issue a new asset against your collateral. Debt is dynamic and depends on total debt of the pool.
 					'/>
 				</ModalContent>
 			</Modal>

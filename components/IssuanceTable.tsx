@@ -34,7 +34,7 @@ import {
 	PaginationPageGroup,
 } from "@ajna/pagination";
 import { AppDataContext } from "./context/AppDataProvider";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from 'wagmi';
 import { useEffect } from "react";
 
 const IssuanceTable = ({ handleChange }: any) => {
@@ -47,6 +47,7 @@ const IssuanceTable = ({ handleChange }: any) => {
 	const [extraTokens, setExtraTokens] = useState<any>([]);
 
 	const { isConnected } = useContext(WalletContext);
+	const { chain: activeChain } = useNetwork();
 
 	const {
 		address: evmAddress,
@@ -213,8 +214,7 @@ const IssuanceTable = ({ handleChange }: any) => {
 																"left"
 															}
 														>
-															{isConnected ||
-															isEvmConnected
+															{(isEvmConnected && !activeChain?.unsupported)
 																? dollarFormatter.format(
 																		pool.balance /
 																			1e18

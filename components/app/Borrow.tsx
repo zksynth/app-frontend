@@ -31,13 +31,13 @@ export default function Borrow() {
 	const { chain: connectedChain } = useNetwork();
 
 	useEffect(() => {
-		if (
+		if(connectedChain){if (
 			!synAccrued &&
 			isConnected &&
 			!(connectedChain as any).unsupported
 		) {
 			_setSynAccrued()
-		}
+		}}
 	});
 
 	const _setSynAccrued = async () => {
@@ -88,10 +88,11 @@ export default function Borrow() {
 						<Text fontSize={"sm"}>Rewards</Text>
 
 						<Flex align={'center'} gap={1}>
-						
-						{(synAccrued !== null && isConnected && !(connectedChain as any).unsupported) ? <Text fontSize={"2xl"} fontWeight="bold">{tokenFormatter?.format(synAccrued / 1e18)}</Text> : 
+						{connectedChain && !(connectedChain as any).unsupported ? 
+						(synAccrued !== null && isConnected) ? <Text fontSize={"2xl"} fontWeight="bold">{tokenFormatter?.format(synAccrued / 1e18)}</Text> : 
 						<Skeleton height={'20px'} width='60px' mr={1}/>
-						}
+					: <>-</>
+				}
 						
 
 					<Text fontSize={"2xl"} fontWeight="bold">$SYN</Text>
@@ -133,14 +134,6 @@ export default function Borrow() {
 						</Text>
 					</Box>
 
-					{/* <Box textAlign={'left'}>
-						<Text fontSize={'sm'}>Minimum Required</Text>
-						<Text fontSize={'xl'} fontWeight="bold">
-							{minCRatio} %
-						</Text>
-
-						
-					</Box> */}
 
 					<Flex justify={"flex-end"} gap={6} mb={-2}>
 						<Text fontSize={"sm"} color="gray">

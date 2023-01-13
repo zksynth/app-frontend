@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "dev": "yarn config:dev && node_modules/next/dist/bin/next dev",
+    "dev": "node_modules/next/dist/bin/next dev",
     "build": "yarn config:staging && node_modules/next/dist/bin/next build",
     "start": "node_modules/next/dist/bin/next start",
     "lint": "node_modules/next/dist/bin/next lint",
@@ -18,7 +18,7 @@
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
     "@rainbow-me/rainbowkit": "^0.7.0",
-    "@sentry/nextjs": "^7.28.1",
+    "@sentry/nextjs": "^7.30.0",
     "apexcharts": "^3.35.5",
     "big.js": "^6.2.1",
     "chart.js": "^3.9.1",
