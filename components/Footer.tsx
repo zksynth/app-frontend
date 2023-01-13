@@ -39,7 +39,7 @@ export default function Footer() {
           align={{ md: 'center' }}>
             <Flex align={'center'} gap={1}>
             <Box h={2} w={2} bgColor={block == 0 ? 'red': 'primary'} rounded='100'></Box>
-          <Text fontSize={'xs'}>{block}</Text>
+          <Text fontSize={'xs'}>{block == 0 ? 'Not Connected': block}</Text>
           <Text fontSize={'xs'}>| v{config.latest}-alpha</Text>
 
             </Flex>

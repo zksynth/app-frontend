@@ -204,7 +204,7 @@ const DepositModal = ({ handleDeposit }: any) => {
 				bgColor="primary"
 				_hover={{ opacity: 0.6 }}
 			>
-				<MdOutlineAddCircle size={22} /> <Text ml={'2px'}>Add</Text>
+				<MdOutlineAddCircle /> <Text ml={'2px'}>Add</Text>
 			</Button>
 
 			<Modal isCentered isOpen={isOpen} onClose={_onClose}>
