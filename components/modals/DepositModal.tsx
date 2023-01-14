@@ -45,6 +45,7 @@ const CLAIM_AMOUNTS: any = {
 	WTRX: "100000000",
 	ETH: "10",
 	NEAR: "1000",
+	wETH: "10"
 };
 
 const DepositModal = ({ handleDeposit }: any) => {
@@ -141,6 +142,7 @@ const DepositModal = ({ handleDeposit }: any) => {
 		const _amount = ethers.utils
 			.parseEther(CLAIM_AMOUNTS[asset().inputToken.symbol])
 			.toString();
+		console.log(_amount);
 		send(token, "mint", [address, _amount], chain)
 			.then(async (res: any) => {
 				console.log(hash);
@@ -321,7 +323,7 @@ const DepositModal = ({ handleDeposit }: any) => {
 													variant={"solid"}
 													rounded={20}
 												>
-													<FaCoins/> <Text ml={2}>Claim w{asset()?.inputToken.symbol?.toUpperCase()}</Text>
+													<FaCoins/> <Text ml={2}>Claim {asset()?.inputToken.symbol?.toUpperCase()}</Text>
 												</Button>
 											</Flex>
 

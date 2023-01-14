@@ -62,6 +62,8 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 		useContext(AppDataContext);
 
 	const max = () => {
+		if(!Number(safeCRatio)) return 0;
+		if(!Number(asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD)) return NaN;
 		// MAX = ((Ac/safeC) - Ad)*Vr
 		return Big(asset.maximumLTV/100).times(Big(adjustedCollateral).div(safeCRatio).minus(adjustedDebt)).div(asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD).toNumber();
 	};

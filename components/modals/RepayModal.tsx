@@ -28,7 +28,7 @@ import { getContract, send } from "../../src/contract";
 import { useContext } from "react";
 import { AppDataContext } from "../context/AppDataProvider";
 import { useAccount, useNetwork } from "wagmi";
-import { tokenFormatter } from "../../src/const";
+import { tokenFormatter, dollarFormatter } from '../../src/const';
 import InputWithSlider from '../inputs/InputWithSlider';
 import Big from "big.js";
 import Response from "./utils/Response";
@@ -57,6 +57,8 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 	};
 
 	const max = () => {
+		if(!Number(asset._mintedTokens[selectedAssetIndex].lastPriceUSD)) return 0;
+
 		return Math.min(
 			Big(asset._mintedTokens[selectedAssetIndex].balance ?? 0).div(
 				10 ** asset.inputToken.decimals
@@ -127,7 +129,7 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 					<ModalCloseButton />
 					<ModalHeader>Repay {asset["symbol"]}</ModalHeader>
 					<ModalBody>
-						<Flex>
+						<Flex justify={'space-between'}>
 							<Text fontSize="xs">
 								Balance:{" "}
 								{tokenFormatter.format(
@@ -136,6 +138,15 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 										10 ** asset.inputToken.decimals
 								)}{" "}
 								{asset._mintedTokens[selectedAssetIndex].symbol}
+							</Text>
+
+							<Text fontSize="xs">
+								Pool Debt:{" "}
+								{dollarFormatter.format(
+									asset
+										.balance /
+										10 ** asset.inputToken.decimals
+								)}
 							</Text>
 						</Flex>
 						<Select

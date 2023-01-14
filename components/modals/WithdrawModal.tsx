@@ -64,6 +64,8 @@ const WithdrawModal = ({ asset, handleWithdraw }: any) => {
 	};
 
 	const max = () => {
+		if(!Number(safeCRatio)) return 0;
+		if(!Number(asset.inputTokenPriceUSD)) return 0;
 		return Big(asset.maximumLTV/100).times(Big(adjustedCollateral).div(safeCRatio).minus(adjustedDebt)).div(asset.inputTokenPriceUSD).toNumber();
 	};
 
