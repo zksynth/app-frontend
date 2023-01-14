@@ -19,6 +19,7 @@ import {
 } from "@chakra-ui/react";
 
 import Image from "next/image";
+import Big from "big.js";
 
 export default function InputWithSlider({
 	onUpdate,
@@ -33,8 +34,8 @@ export default function InputWithSlider({
 
 	const updateSlider = (_value: any) => {
 		setSliderValue(_value);
-		setValue((_value * softMax) / 100);
-		onUpdate((_value * softMax) / 100);
+		setValue(Big(_value).times(softMax).div(100).toNumber());
+		onUpdate(Big(_value).times(softMax).div(100).toNumber());
 	};
 
 	const updateValue = (_value: any) => {
@@ -44,15 +45,15 @@ export default function InputWithSlider({
 	};
 
 	const labelStyles = {
-		mt: "-1.5",
+		mt: "-1",
 		ml: "-1.5",
 	};
 
 	const boxStyle = (_sliderValue: any) => ({
-		h: 3,
-		w: 3,
+		h: 2,
+		w: 2,
 		borderRadius: 100,
-		bg: sliderValue > _sliderValue ? color : "gray.400",
+		bg: sliderValue > _sliderValue ? color : "gray.600",
 	});
 
 	return (
@@ -132,7 +133,7 @@ export default function InputWithSlider({
 						{...boxStyle(100)}
 					></Box>
 				</SliderMark>
-				<SliderTrack bg={'gray.400'}>
+				<SliderTrack bg={'gray.600'}>
 					<SliderFilledTrack bg={color} />
 				</SliderTrack>
 				<SliderThumb />

@@ -26,7 +26,7 @@ export default function Response({response, message, hash, confirmed}: any) {
 							<Text fontSize="md" mb={0}>
 								{response}
 							</Text>
-							<Text fontSize="xs" mb={0}>
+							<Text fontSize="xs" mt={0}>
 								{message.slice(0, 100)}
 							</Text>
 							{hash && (

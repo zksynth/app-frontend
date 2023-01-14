@@ -2,12 +2,7 @@ import {
 	Box,
 	Text,
 	Flex,
-	Divider,
-	useColorMode,
-	Progress,
-	Input,
 	Select,
-	Button,
 } from "@chakra-ui/react";
 import {
 	Table,
@@ -22,37 +17,19 @@ import {
 } from "@chakra-ui/react";
 import Image from "next/image";
 import { useContext, useState } from "react";
-import { WalletContext } from "./context/WalletContextProvider";
 import { AppDataContext } from "./context/AppDataProvider";
 import { tokenFormatter } from '../src/const';
-import { theme } from '../styles/theme';
 
 function ExchangeSideBar({}) {
-	const [nullValue, setNullValue] = useState(false);
-
-	const { isConnected, isConnecting, address, connect } =
-		useContext(WalletContext);
 
 	const {
-		synths,
-		totalDebt,
-		isDataReady,
 		tradingPool,
 		setTradingPool,
-		pools,
-		tradingBalanceOf,
+		pools
 	} = useContext(AppDataContext);
 
 	const updatePoolIndex = (e: any) => {
 		setTradingPool(e.target.value);
-	};
-
-	const getSynth = (address: string) => {
-		return synths.find((s: any) => s.id === address);
-	};
-
-	const handleUpdate = () => {
-		setNullValue(!nullValue);
 	};
 
 	return (
