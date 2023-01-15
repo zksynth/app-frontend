@@ -34,6 +34,7 @@ export default function InputWithSlider({
 
 	const updateSlider = (_value: any) => {
 		setSliderValue(_value);
+		if(!softMax) return;
 		setValue(Big(_value).times(softMax).div(100).toNumber());
 		onUpdate(Big(_value).times(softMax).div(100).toNumber());
 	};

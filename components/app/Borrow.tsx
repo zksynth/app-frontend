@@ -82,7 +82,7 @@ export default function Borrow() {
 			py="22px"
 			height={"100%"}
 		>
-			<Flex flexDir={"column"} justify={"space-between"} height={"50%"}>
+			<Flex flexDir={"column"} justify={"space-between"} height={"40%"}>
 				<Flex justify={"space-between"}>
 					<Box>
 						<Text fontSize={"sm"}>Borrow Balance</Text>
@@ -131,7 +131,9 @@ export default function Borrow() {
 				</Flex>
 			</Flex>
 
-			<Flex flexDir={"column"} justify="space-between" height={"50%"}>
+			
+
+			<Flex flexDir={"column"} justify="space-between" height={"40%"}>
 				<Flex justify={"space-between"} align="end" >
 					<Box textAlign={"left"}>
 						<Text fontSize={"sm"}>Health Factor</Text>
@@ -159,7 +161,7 @@ export default function Borrow() {
 					</Flex>
 				</Flex>
 
-				<Box textAlign={"right"} mb={2}>
+				<Box textAlign={"right"} pb={4}>
 					<Flex width={"100%"}>
 						<Box
 							minH={2}
@@ -186,6 +188,7 @@ export default function Borrow() {
 					</Flex>
 				</Box>
 			</Flex>
+
 		</Flex>
 	);
 }

@@ -79,7 +79,7 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 		let synthex = await getContract("SyntheX", chain);
 		let value = Big(amount).times(10 ** asset.inputToken.decimals).toFixed(0);
 		console.log(value)
-		send(synthex, asset.isEnabled ? 'issue' : 'enterAndIssue', [asset.id, asset._mintedTokens[selectedAssetIndex].id, value], chain)
+		send(synthex, 'issue', [asset.id, asset._mintedTokens[selectedAssetIndex].id, value], chain)
 			.then(async (res: any) => {
 				setLoading(false);
 				setResponse("Transaction sent! Waiting for confirmation...");

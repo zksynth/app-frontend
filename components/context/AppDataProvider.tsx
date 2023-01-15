@@ -99,7 +99,7 @@ function AppDataProvider({ children }: any) {
 			axios
 				.post(Endpoints[chainId], {
 					query: `{
-								markets(first: 5, orderBy: totalBorrowBalanceUSD, orderDirection: desc) {
+								markets(orderBy: totalBorrowBalanceUSD, orderDirection: desc) {
 									id
 									name
 									canBorrowFrom
@@ -189,18 +189,36 @@ function AppDataProvider({ children }: any) {
 			const synthexitf = new ethers.utils.Interface(getABI("SyntheX"));
 			const synthex = await getContract("SyntheX", _chain);
 
+			let _totalCollateral = Big(0);
+			let _adjustedCollateral = Big(0);
+
+			// for erc20Collaterals
 			for (let i = 0; i < _collaterals.length; i++) {
-				calls.push([
-					_collaterals[i].id,
-					itf.encodeFunctionData("balanceOf", [_address]),
-				]);
-				calls.push([
-					_collaterals[i].id,
-					itf.encodeFunctionData("allowance", [
-						_address,
-						getAddress("SyntheX", _chain),
-					]),
-				]);
+				if(_collaterals[i].inputToken.id === "0x0000000000000000000000000000000000000000"){
+					// getEthBalance
+					console.log(helper.interface);
+					calls.push([
+						helper.address,
+						helper.interface.encodeFunctionData("getEthBalance", [_address]),
+					]);
+					calls.push([
+						helper.address,
+						helper.interface.encodeFunctionData("getEthBalance", [_address]) 
+					])
+				} else {
+					calls.push([
+						_collaterals[i].id,
+						itf.encodeFunctionData("balanceOf", [_address]),
+					]);
+					calls.push([
+						_collaterals[i].id,
+						itf.encodeFunctionData("allowance", [
+							_address,
+							getAddress("SyntheX", _chain),
+						]),
+					]);
+				}
+
 				calls.push([
 					getAddress("SyntheX", _chain),
 					synthexitf.encodeFunctionData("accountCollateralBalance", [
@@ -216,54 +234,60 @@ function AppDataProvider({ children }: any) {
 					]),
 				]);
 			}
-			let _totalCollateral = Big(0);
-			let _adjustedCollateral = Big(0);
-
-
-			Promise.all([
+			
+			const [res, safeCRatio] = await Promise.all([
 				helper.callStatic.aggregate(calls), 
 				synthex.safeCRatio()
-			]).then(([res, safeCRatio]) => {
-				setSafeCRatio(Number(ethers.utils.formatEther(safeCRatio)));
-				setBlock(parseInt(res[0].toString()));
-				for (let i = 0; i < res.returnData.length; i += 4) {
-					_collaterals[i / 4].walletBalance = BigNumber.from(
-						res.returnData[i]
-					).toString();
+			])
+			
+			setSafeCRatio(Number(ethers.utils.formatEther(safeCRatio)));
+			setBlock(parseInt(res[0].toString()));
+			for (let i = 0; i < res.returnData.length; i += 4) {
+				_collaterals[i / 4].walletBalance = BigNumber.from(
+					res.returnData[i]
+				).toString();
+				if(_collaterals[i / 4].inputToken.id === "0x0000000000000000000000000000000000000000"){
+					_collaterals[i / 4].allowance = ethers.constants.MaxUint256.toString();
+				} else {
 					_collaterals[i / 4].allowance = BigNumber.from(
 						res.returnData[i + 1]
-					).toString();
-					_collaterals[i / 4].balance = BigNumber.from(
-						res.returnData[i + 2]
-					).toString();
-					_totalCollateral = _totalCollateral.plus(
-						Big(_collaterals[i / 4].balance)
-							.times(Big(_collaterals[i / 4].inputTokenPriceUSD))
-							.div(
-								Big(10).pow(
-									_collaterals[i / 4].inputToken.decimals
-								)
+						).toString();
+					}
+				_collaterals[i / 4].balance = BigNumber.from(
+					res.returnData[i + 2]
+				).toString();
+				_totalCollateral = _totalCollateral.plus(
+					Big(_collaterals[i / 4].balance)
+						.times(Big(_collaterals[i / 4].inputTokenPriceUSD))
+						.div(
+							Big(10).pow(
+								_collaterals[i / 4].inputToken.decimals
 							)
-					);
-					_adjustedCollateral = _adjustedCollateral.plus(
-						Big(_collaterals[i / 4].balance)
-							.times(Big(_collaterals[i / 4].inputTokenPriceUSD))
-							.div(
-								Big(10).pow(
-									_collaterals[i / 4].inputToken.decimals
-								)
+						)
+				);
+				_adjustedCollateral = _adjustedCollateral.plus(
+					Big(_collaterals[i / 4].balance)
+						.times(Big(_collaterals[i / 4].inputTokenPriceUSD))
+						.div(
+							Big(10).pow(
+								_collaterals[i / 4].inputToken.decimals
 							)
-							.times(Big(_collaterals[i / 4].maximumLTV))
-							.div(100)
-					);
-					_collaterals[i / 4].isEnabled = Boolean(
-						BigNumber.from(res.returnData[i + 3]).toNumber()
-					);
-				}
-				setAdjustedCollateral(_adjustedCollateral.toNumber());
-				setTotalCollateral(_totalCollateral.toNumber());
-				setCollaterals(_collaterals);
-			});
+						)
+						.times(Big(_collaterals[i / 4].maximumLTV))
+						.div(100)
+				);
+				_collaterals[i / 4].isEnabled = Boolean(
+					BigNumber.from(res.returnData[i + 3]).toNumber()
+				);
+			}
+
+			console.log(_collaterals)
+
+
+			setAdjustedCollateral(_adjustedCollateral.toNumber());
+			setTotalCollateral(_totalCollateral.toNumber());
+			setCollaterals(_collaterals);
+			
 		});
 	};
 

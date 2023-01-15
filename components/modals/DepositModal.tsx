@@ -37,15 +37,15 @@ import { ethers } from "ethers";
 import { tokenFormatter } from "../../src/const";
 import InputWithSlider from "../inputs/InputWithSlider";
 import { MdOutlineAddCircle } from 'react-icons/md';
-import { FaCoins } from "react-icons/fa";
+import { FaCoins, FaPlusCircle } from "react-icons/fa";
 import Response from "./utils/Response";
 import InfoFooter from "./utils/InfoFooter";
 
 const CLAIM_AMOUNTS: any = {
-	WTRX: "100000000",
+	USDC: "1000",
 	ETH: "10",
 	NEAR: "1000",
-	wETH: "10"
+	WETH: "10"
 };
 
 const DepositModal = ({ handleDeposit }: any) => {
@@ -106,9 +106,10 @@ const DepositModal = ({ handleDeposit }: any) => {
 
 		send(
 			synthex,
-			asset().isEnabled ? "deposit" : "enterAndDeposit",
+			"deposit",
 			[asset().id, value],
-			chain
+			chain,
+			asset().id == ethers.constants.AddressZero ? value : 0
 		)
 			.then(async (res: any) => {
 				setLoading(false);
@@ -188,12 +189,13 @@ const DepositModal = ({ handleDeposit }: any) => {
 
 	const updateAsset = (e: any) => {
 		setSelectedAsset(e.target.value);
+		setAmount(0);
 	};
 
 	const tryApprove = () => {
 		if (!asset()) return true;
 		if (!asset().allowance) return true;
-		return Big(asset()?.allowance).lt(ethers.constants.One);
+		return Big(asset()?.allowance).lt(amount * 10 ** (asset()?.inputToken.decimals ?? 18) || 1);
 	};
 
 	return (
@@ -205,15 +207,15 @@ const DepositModal = ({ handleDeposit }: any) => {
 				onClick={onOpen}
 				bgColor="primary"
 				_hover={{ opacity: 0.6 }}
+				gap={1}
 			>
-				<MdOutlineAddCircle /> <Text ml={'2px'}>Add</Text>
+				Add <BiPlusCircle size={20} />
 			</Button>
 
 			<Modal isCentered isOpen={isOpen} onClose={_onClose}>
 				<ModalOverlay bg="blackAlpha.100" backdropFilter="blur(30px)" />
 				<ModalContent
 					width={"30rem"}
-					// bgColor="blackAlpha.800" color={"white"}
 				>
 					<ModalCloseButton />
 
@@ -308,6 +310,7 @@ const DepositModal = ({ handleDeposit }: any) => {
 													textAlign="right"
 													fontSize={"xs"}
 													color="gray.400"
+													py={1}
 												>
 													Balance:{" "}
 													{tokenFormatter.format(
@@ -315,7 +318,7 @@ const DepositModal = ({ handleDeposit }: any) => {
 													)}{" "}
 													{asset()?.symbol}
 												</Text>
-												<Button
+												{asset().id !== ethers.constants.AddressZero && <Button
 													isLoading={claimLoading}
 													size={"xs"}
 													onClick={claim}
@@ -324,7 +327,7 @@ const DepositModal = ({ handleDeposit }: any) => {
 													rounded={20}
 												>
 													<FaCoins/> <Text ml={2}>Claim {asset()?.inputToken.symbol?.toUpperCase()}</Text>
-												</Button>
+												</Button>}
 											</Flex>
 
 											<InputWithSlider

@@ -1,4 +1,4 @@
-import { Box, Divider, Flex, Text, Image, Skeleton } from '@chakra-ui/react';
+import { Box, Divider, Flex, Text, Image, Skeleton, Button } from '@chakra-ui/react';
 import React, { useContext, useState } from 'react';
 import { useAccount, useNetwork } from 'wagmi';
 import { AppDataContext } from '../context/AppDataProvider';
@@ -6,9 +6,11 @@ import DepositModal from '../modals/DepositModal';
 import WithdrawModal from '../modals/WithdrawModal';
 import { WalletContext } from '../context/WalletContextProvider';
 import { dollarFormatter, tokenFormatter } from '../../src/const';
+import { BsFillCaretDownFill, BsFillCaretUpFill } from 'react-icons/bs';
 
 export default function Collateral({ handleChange }: any) {
 	const [nullValue, setNullValue] = useState(false);
+	const [displayLimit, setDisplayLimit] = useState(2);
 
 	const {
 		totalCollateral,
@@ -38,21 +40,22 @@ export default function Collateral({ handleChange }: any) {
 	const {chain: activeChain} = useNetwork();
 
 	return (
-		<Box pb={4} height='100%'>
+		<Box height='100%'>
 			<Flex
 				flexDir={'column'}
 				justify="space-between"
-				height={'200px'}
+				height={'180px'}
 				bgColor="gray.200"
 				width={'100%'}
 				color="black"
 				p={'12px'}
-				rounded={10}>
+				rounded={10}
+				>
 				<Box>
 					<Text fontSize='md' color='gray.600'>
 						Balance
 					</Text>
-					<Text fontSize={'3xl'} mt={-1} fontWeight="bold">
+					<Text fontSize={'3xl'} fontWeight="bold">
 						{dollarFormatter?.format(totalCollateral)}
 					</Text>
 				</Box>
@@ -62,13 +65,14 @@ export default function Collateral({ handleChange }: any) {
 			</Flex>
 
 			{ collaterals.length > 0 ? <Box>
-			{collaterals.map((collateral, index) => (
+			{collaterals.slice(0, displayLimit).map((collateral, index) => (
 				<>
 				<Flex
 					key={index}
 					justify="space-between"
 					p={'12px'}
-					mt="12px"
+					my={1}
+					mt={index == 0 ? 3 : 1}
 					>
 					<Flex>
 						<Image
@@ -105,16 +109,20 @@ export default function Collateral({ handleChange }: any) {
 						handleWithdraw={handleWithdraw}
 					/>
 				</Flex>
-				{(index != (collaterals.length - 1)) && <Divider width={'90%'} mx='auto' borderColor={'#3C3C3C'} />}
+				<Divider width={'90%'} mx='auto' borderColor={'gray.600'} />
 				</>
 			))}
+
+			<Flex justify='center' my={1}>
+			<Button size={'xs'} variant='unstyled' color={'gray.400'} display='flex' gap={1} onClick={() => setDisplayLimit( displayLimit == 2 ? collaterals.length : 2)}>View { displayLimit == 2 ? <>More <BsFillCaretDownFill/> </> : <>Less <BsFillCaretUpFill/> </>} </Button>
+			</Flex>
 			</Box> : <>
 			
 			<Skeleton
 					color={"gray"}
 					bgColor={"gray"}
-					height={"75px"}
-					mt={5}
+					height={"20px"}
+					my={5}
 					mx={5}
 					rounded={"10"}
 				></Skeleton>

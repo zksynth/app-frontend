@@ -33,6 +33,7 @@ import { useContext } from "react";
 import { AppDataContext } from "./context/AppDataProvider";
 import { ChainID } from "../src/chains";
 import { BigNumber } from "ethers";
+import { BiCoinStack, BiStats } from "react-icons/bi";
 
 function NavBar() {
 	// const [address, setAddress] = useState(null);
@@ -68,7 +69,6 @@ function NavBar() {
 			(window as any).ethereum.on(
 				"accountsChanged",
 				function (accounts: any[]) {
-					console.log(activeConnector);
 					// Time to reload your interface with accounts[0]!
 					fetchData(accounts[0], activeConnector?.chains[0].id);
 					setChain(activeConnector?.chains[0].id);
@@ -104,7 +104,19 @@ function NavBar() {
 			setInit(true);
 			fetchData(null, ChainID.ARB_GOERLI);
 		}
-	}, [isConnected, isConnecting, activeConnector, fetchData, setChain, chain, isDataReady, isFetchingData, init, chains, address]);
+	}, [
+		isConnected,
+		isConnecting,
+		activeConnector,
+		fetchData,
+		setChain,
+		chain,
+		isDataReady,
+		isFetchingData,
+		init,
+		chains,
+		address,
+	]);
 
 	return (
 		<>
@@ -129,20 +141,37 @@ function NavBar() {
 					display={{ sm: "none", md: "flex" }}
 				>
 					<Flex gap={0}>
-						<NavLink
+						<NavLocalLink
 							path={"/"}
 							title={"Dashboard"}
 							pathname={router.pathname}
 						>
 							<MdSpaceDashboard />
-						</NavLink>
-						<NavLink
+						</NavLocalLink>
+						<NavLocalLink
 							path={"/exchange"}
 							title="Swap"
 							pathname={router.pathname}
 						>
 							<MdSwapHorizontalCircle />
-						</NavLink>
+						</NavLocalLink>
+
+						<NavLocalLink
+							path={"/syn"}
+							title="SYN"
+							pathname={router.pathname}
+						>
+							<BiCoinStack />
+						</NavLocalLink>
+
+						<NavExternalLink
+							path={"https://stats.synthex.finance"}
+							newTab={true}
+							title="Analytics"
+							pathname={router.pathname}
+						>
+							<BiStats />
+						</NavExternalLink>
 					</Flex>
 				</Flex>
 
@@ -211,7 +240,62 @@ function NavBar() {
 	);
 }
 
-const NavLink = ({ path, title, pathname, children }: any) => {
+const NavLink = ({
+	path,
+	title,
+	target = "_parent",
+	newTab = false,
+	pathname,
+	children,
+}: any) => {
+	const [isPath, setIsPath] = useState(false);
+
+	useEffect(() => {
+		setIsPath(pathname == path);
+	}, [setIsPath, pathname, path]);
+
+	return (
+		<Flex align={"center"}>
+			<Flex
+				align={"center"}
+				h={10}
+				px={4}
+				cursor="pointer"
+				rounded={100}
+				bgColor={isPath ? "gray.700" : "transparent"}
+				_hover={{ bgColor: "gray.800" }}
+			>
+				<Box
+					color={isPath ? "primary" : "gray.100"}
+					my="1rem"
+					fontFamily="Roboto"
+					fontWeight={"bold"}
+					fontSize="sm"
+				>
+					<Flex align={"center"} gap={2}>
+						{children}
+						<Text>{title}</Text>
+					</Flex>
+				</Box>
+			</Flex>
+		</Flex>
+	);
+};
+
+const NavLocalLink = ({ path, title, pathname, children }: any) => {
+	return (
+		<Link href={`${path}`} as={`${path}`}>
+			<Box>
+				<NavLink path={path} title={title} pathname={pathname}>
+					{" "}
+					{children}{" "}
+				</NavLink>
+			</Box>
+		</Link>
+	);
+};
+
+const NavExternalLink = ({ path, title, pathname, children }: any) => {
 	const [isPath, setIsPath] = useState(false);
 
 	useEffect(() => {
@@ -220,30 +304,14 @@ const NavLink = ({ path, title, pathname, children }: any) => {
 
 	return (
 		<Link href={`${path}`} as={`${path}`}>
-			<Flex align={"center"}>
-				<Flex
-					align={"center"}
-					h={10}
-					px={4}
-					cursor="pointer"
-					rounded={100}
-					bgColor={isPath ? "gray.700" : "transparent"}
-				>
-					<Box
-						color={isPath ? "primary" : "gray.100"}
-						my="1rem"
-						fontFamily="Roboto"
-						fontWeight={"bold"}
-						fontSize="sm"
-					>
-						<Flex align={"center"} gap={2}>
-							{children}
-							<Text>{title}</Text>
-						</Flex>
-					</Box>
-				</Flex>
-			</Flex>
+			<a target={"_blank"} rel="noreferrer">
+				<NavLink path={path} title={title} pathname={pathname}>
+					{" "}
+					{children}{" "}
+				</NavLink>
+			</a>
 		</Link>
 	);
 };
+
 export default NavBar;
