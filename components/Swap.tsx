@@ -52,7 +52,7 @@ function Swap({ handleChange }: any) {
 		let outputAmount =
 			(e.target.value * inputToken().lastPriceUSD) /
 			outputToken().lastPriceUSD;
-		setOutputAmount((Big(1).minus(Big(pools[tradingPool]._fee).div(1e18)).times(outputAmount)).toNumber());
+		setOutputAmount((Big(1).minus(Big(pools[tradingPool]._fee).div(1e22)).times(outputAmount)).toNumber());
 	};
 
 	const updateInputAssetIndex = (e: any) => {
@@ -62,7 +62,7 @@ function Swap({ handleChange }: any) {
 		setInputAssetIndex(e.target.value);
 		// calculate output amount
 		let _outputAmount = Big(inputAmount).times(inputToken(e.target.value).lastPriceUSD).div(outputToken().lastPriceUSD);
-		setOutputAmount((Big(1).minus(Big(pools[tradingPool]._fee).div(1e18)).times(_outputAmount)).toNumber());
+		setOutputAmount((Big(1).minus(Big(pools[tradingPool]._fee).div(1e22)).times(_outputAmount)).toNumber());
 	};
 
 	const updateOutputAmount = (e: any) => {
@@ -70,7 +70,7 @@ function Swap({ handleChange }: any) {
 		let inputAmount = Big(e.target.value)
 			.times(pools[tradingPool]._mintedTokens[outputAssetIndex].lastPriceUSD)
 			.div(pools[tradingPool]._mintedTokens[inputAssetIndex].lastPriceUSD);
-		setInputAmount((Big(1).minus(Big(pools[tradingPool]._fee).div(1e18)).times(inputAmount).toNumber()));
+		setInputAmount((Big(1).minus(Big(pools[tradingPool]._fee).div(1e22)).times(inputAmount).toNumber()));
 	};
 
 	const updateOutputAssetIndex = (e: any) => {
@@ -80,7 +80,7 @@ function Swap({ handleChange }: any) {
 		setOutputAssetIndex(e.target.value);
 		// calculate input amount
 		let _inputAmount = Big(outputAmount).times(outputToken(e.target.value).lastPriceUSD).div(inputToken().lastPriceUSD);
-		setInputAmount((Big(1).minus(Big(pools[tradingPool]._fee).div(1e18)).times(_inputAmount)).toNumber());
+		setInputAmount((Big(1).minus(Big(pools[tradingPool]._fee).div(1e22)).times(_inputAmount)).toNumber());
 	};
 
 	const switchTokens = () => {
@@ -185,7 +185,7 @@ function Swap({ handleChange }: any) {
 		let _inputAmount = Big(inputToken().balance).div(1e18);
 		setInputAmount(_inputAmount);
 		let _outputAmount = Big(_inputAmount).times(inputToken().lastPriceUSD).div(outputToken().lastPriceUSD)
-		setOutputAmount(Big(1).minus(Big(pools[tradingPool]._fee).div(1e18)).times(_outputAmount).toNumber());
+		setOutputAmount(Big(1).minus(Big(pools[tradingPool]._fee).div(1e22)).times(_outputAmount).toNumber());
 	};
 
 	const inputToken = (_inputAssetIndex = inputAssetIndex) => {
@@ -370,7 +370,7 @@ function Swap({ handleChange }: any) {
 
 					<Flex align={'center'} mt={6} justify='space-between'>
 					<Text fontSize={"xs"} color="gray.400">
-						Trading Fee: {pools[tradingPool]._fee/1e16} %
+						Trading Fee: {pools[tradingPool]._fee/1e20} %
 					</Text>
 					<Text fontSize={"xs"} color="gray.400">
 						Slippage: {0} %

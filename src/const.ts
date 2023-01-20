@@ -17,11 +17,20 @@ export const Endpoints: any = {
 export const dollarFormatter = new Intl.NumberFormat("en-US", {
 	style: "currency",
 	currency: "USD",
-	maximumSignificantDigits: 6
+	maximumSignificantDigits: 6,
+	roundingMode: "floor",
 });
 
 export const tokenFormatter = new Intl.NumberFormat("en-US", {
 	maximumSignificantDigits: 8,
+	roundingMode: "floor",
+});
+
+export const compactTokenFormatter = new Intl.NumberFormat("en-US", {
+	maximumSignificantDigits: 4,
+	// compact
+	notation: "compact",
+	roundingMode: "floor",
 });
 
 

@@ -24,6 +24,7 @@ import Index from './_index';
 import { AppDataProvider } from '../components/context/AppDataProvider';
 import { theme } from '../styles/theme';
 import rainbowTheme from '../styles/rainbowTheme';
+import { TokenContextProvider } from '../components/context/TokenContext';
 
 
 const { chains, provider } = configureChains(
@@ -58,9 +59,13 @@ function MyApp({ Component, pageProps }: AppProps) {
 			<RainbowKitProvider chains={chains} theme={rainbowTheme}>
 				<WalletContextProvider>
 					<AppDataProvider>
+						<TokenContextProvider>
+							
 						<Index>
 							<Component {...pageProps} />
 						</Index>
+
+						</TokenContextProvider>
 					</AppDataProvider>
 				</WalletContextProvider>
 				</RainbowKitProvider>

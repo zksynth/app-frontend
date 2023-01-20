@@ -10,6 +10,8 @@ import {
 	AlertIcon,
 	Alert,
 	Select,
+	InputGroup,
+	NumberInputField,
 } from "@chakra-ui/react";
 
 import {
@@ -20,10 +22,11 @@ import {
 	ModalFooter,
 	ModalBody,
 	ModalCloseButton,
+	NumberInput
 } from "@chakra-ui/react";
-
+import Image from "next/image";
 import { BiMinusCircle } from "react-icons/bi";
-import { AiOutlineInfoCircle } from "react-icons/ai";
+import { AiOutlineInfoCircle, AiOutlineMinus } from "react-icons/ai";
 import { getContract, send } from "../../src/contract";
 import { useContext } from "react";
 import { AppDataContext } from "../context/AppDataProvider";
@@ -112,64 +115,124 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 	return (
 		<Box>
 			<IconButton
-				// disabled={!isConnected}
-				variant="ghost"
 				onClick={onOpen}
-				icon={<BiMinusCircle size={25} color="gray" />}
+				icon={<AiOutlineMinus />}
 				aria-label={""}
 				isRound={true}
-				bgColor="white"
 				size={"md"}
-				my={1}
 				_hover={{opacity: 0.6}}
 			></IconButton>
 			<Modal isCentered isOpen={isOpen} onClose={_onClose}>
 				<ModalOverlay bg="blackAlpha.100" backdropFilter="blur(30px)" />
 				<ModalContent width={"30rem"}>
 					<ModalCloseButton />
-					<ModalHeader>Repay {asset["symbol"]}</ModalHeader>
+					<ModalHeader>{asset.name}</ModalHeader>
 					<ModalBody>
-						<Flex justify={'space-between'}>
-							<Text fontSize="xs">
-								Balance:{" "}
-								{tokenFormatter.format(
-									asset._mintedTokens[selectedAssetIndex]
-										.balance /
-										10 ** asset.inputToken.decimals
-								)}{" "}
-								{asset._mintedTokens[selectedAssetIndex].symbol}
-							</Text>
+					<Box mt={4} mb={10}>
+						<Flex justify={"center"} mb={2}>
+							<Flex
+								width={"33%"}
+								justify={"center"}
+								align="center"
+								gap={2}
+								bg="gray.600"
+								rounded="full"
+								pl={2}
+							>
+								<Image
+									src={`/icons/${asset._mintedTokens[
+										selectedAssetIndex
+									].symbol.toUpperCase()}.png`}
+									alt=""
+									width={"40"}
+									height={"40"}
+								/>
 
-							<Text fontSize="xs">
-								Pool Debt:{" "}
-								{dollarFormatter.format(
-									asset
-										.balance /
-										10 ** asset.inputToken.decimals
-								)}
-							</Text>
+								<Select
+									variant={"unstyled"}
+									my={2}
+									placeholder="Select asset to issue"
+									value={selectedAssetIndex}
+									onChange={(e) =>
+										{
+											setSelectedAssetIndex(
+											parseInt(e.target.value)
+										)
+										setAmount(0)
+									}
+									}
+								>
+									{asset._mintedTokens.map(
+										(token: any, index: number) => (
+											<option value={index} key={index}>
+												{token.symbol}
+											</option>
+										)
+									)}
+								</Select>
+							</Flex>
 						</Flex>
-						<Select
-							my={2}
-							placeholder="Select asset to issue"
-							value={selectedAssetIndex}
-							onChange={(e) =>
-								setSelectedAssetIndex(parseInt(e.target.value))
-							}
+						<InputGroup variant={"unstyled"} display="flex">
+							<NumberInput
+								w={"100%"}
+								value={amount || 0}
+								onChange={(e) => setAmount(Number(e))}
+								max={max()}
+								min={0}
+								step={0.01}
+								display="flex"
+								alignItems="center"
+								justifyContent={"center"}
+							>
+								<NumberInputField
+									textAlign={"center"}
+									pr={0}
+									fontSize={"5xl"}
+								/>
+							</NumberInput>
+						</InputGroup>
+
+						<Text
+							fontSize="sm"
+							textAlign={"center"}
+							color={"gray.400"}
 						>
-							{asset._mintedTokens.map(
-								(token: any, index: number) => (
-									<option value={index} key={index}>
-										{token.symbol}
-									</option>
-								)
+							{dollarFormatter.format(
+								asset._mintedTokens[selectedAssetIndex]
+									?.lastPriceUSD * amount
 							)}
-						</Select>
-						<InputWithSlider asset={asset._mintedTokens[selectedAssetIndex]} max={max()} min={0} onUpdate={(_value: any) => {setAmount(_value)}} color='red.400'/>
+						</Text>
+
+						</Box>
+
+
 						<Flex mt={2} justify="space-between">
 							<Text fontSize={"xs"} color="gray.400">
-								1 {asset._mintedTokens[selectedAssetIndex].symbol} = {asset._mintedTokens[selectedAssetIndex].lastPriceUSD} USD
+								1 {asset._mintedTokens[selectedAssetIndex].symbol} = {dollarFormatter.format(asset._mintedTokens[selectedAssetIndex].lastPriceUSD)}
 							</Text>
+							{/* <Text fontSize={"xs"} color="gray.400">
+								Market LTV = {parseFloat(asset.maximumLTV)} %
+							</Text> */}
+
+							<Flex gap={1}>
+								<Text fontSize={"xs"} color="gray.400">
+									Available:
+								</Text>
+
+								<Text
+									cursor={"pointer"}
+									onClick={() => setAmount(Number(tokenFormatter.format(max())))}
+									textDecor="underline"
+									fontSize={"xs"}
+									color="gray.400"
+								>
+									{tokenFormatter.format(max())}{" "}
+									{
+										asset._mintedTokens[selectedAssetIndex]
+											.symbol
+									}
+								</Text>
+							</Flex>
 						</Flex>
 						<Button
 							disabled={
@@ -181,11 +244,13 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 								amount > max()
 							}
 							isLoading={loading}
-							bgColor='red.400'
+							bgColor='secondary'
 							width="100%"
 							mt={4}
 							onClick={repay}
 							loadingText="Please sign the transaction"
+							size={'lg'}
+							rounded={16}
 						>
 							{(isConnected && !activeChain?.unsupported) ? (
 								amount > max() ? (
@@ -193,7 +258,7 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 								) : !amount || amount == 0 ? (
 									<>Enter amount</>
 								) : (
-									<>Repay</>
+									<>Burn </>
 								)
 							) : (
 								<>Please connect your wallet</>
@@ -204,7 +269,7 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 					</ModalBody>
 
 					<InfoFooter message='
-						Repaying your debt will reduce your liquidation risk. If your health falls below the minimum (1.0), you will be liquidated and your collateral will be sold to repay your debt.
+						Repaying your debt will reduce your liquidation risk. If your health falls below the minimum 1, you will be liquidated and your collateral will be sold to repay your debt.
 					'/>
 
 				</ModalContent>

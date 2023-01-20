@@ -13,6 +13,7 @@ import {
 	Skeleton,
 	AvatarGroup,
 	Avatar,
+	Tooltip,
 } from "@chakra-ui/react";
 
 import IssueModel from "./modals/IssueModal";
@@ -34,7 +35,7 @@ import {
 	PaginationPageGroup,
 } from "@ajna/pagination";
 import { AppDataContext } from "./context/AppDataProvider";
-import { useAccount, useNetwork } from 'wagmi';
+import { useAccount, useNetwork } from "wagmi";
 import { useEffect } from "react";
 
 const IssuanceTable = ({ handleChange }: any) => {
@@ -99,8 +100,11 @@ const IssuanceTable = ({ handleChange }: any) => {
 
 	const rowStyle = (poolIndex: number) => {
 		return {
-			borderColor: "gray.700",
-			// backgroundColor: expandedRows[poolIndex] ? 'gray.700' : 'transparent',
+			borderColor: "gray.800",
+			borderBottom: "4px",
+			bg: "gray.700",
+			px: "7",
+			py: "8",
 		};
 	};
 
@@ -108,11 +112,12 @@ const IssuanceTable = ({ handleChange }: any) => {
 		fontSize: "xs",
 		fontFamily: "Poppins",
 		color: "gray.500",
-		borderColor: "gray.600",
+		borderColor: "transparent",
+		px: "7",
 	};
 
 	return (
-		<Box minH={'400px'}>
+		<Box mx={-4}>
 			{pools.length > 0 ? (
 				<>
 					{" "}
@@ -120,11 +125,10 @@ const IssuanceTable = ({ handleChange }: any) => {
 						<Table overflow={"auto"} variant="simple">
 							<Thead>
 								<Tr>
-									<Th {...rowHeadStyle}>Pool</Th>
-
+									<Th {...rowHeadStyle}>Debt Pool</Th>
 									<Th {...rowHeadStyle}>Protocol Debt</Th>
 									<Th {...rowHeadStyle}>Liquidity</Th>
-									<Th {...rowHeadStyle}>APY ($SYN)</Th>
+									<Th {...rowHeadStyle}>% APY</Th>
 									<Th {...rowHeadStyle}></Th>
 								</Tr>
 							</Thead>
@@ -137,22 +141,14 @@ const IssuanceTable = ({ handleChange }: any) => {
 									.map((pool: any, poolIndex: number) => {
 										return (
 											<Tr key={poolIndex}>
-												<Td
-													{...rowStyle(poolIndex)}
-													// {...expandOnClick(poolIndex)}
-													mt={
-														poolIndex == 0
-															? 20
-															: 0
-													}
-												>
+												<Td {...rowStyle(poolIndex)}>
 													<Flex
 														align={"center"}
 														gap={2}
 													>
 														<Box>
 															<Text
-																fontSize="lg"
+																fontSize="xl"
 																fontWeight="bold"
 																textAlign="left"
 															>
@@ -162,7 +158,7 @@ const IssuanceTable = ({ handleChange }: any) => {
 																fontSize="xs"
 																fontWeight="light"
 																textAlign="left"
-																mt={1}
+																mt={2}
 															>
 																{
 																	pool
@@ -176,7 +172,6 @@ const IssuanceTable = ({ handleChange }: any) => {
 														size="md"
 														max={7}
 														mt={5}
-														colorScheme="pink"
 														fontSize={"sm"}
 													>
 														{pool._mintedTokens.map(
@@ -191,9 +186,7 @@ const IssuanceTable = ({ handleChange }: any) => {
 																	borderColor={
 																		"transparent"
 																	}
-																	key={
-																		index
-																	}
+																	key={index}
 																	name={
 																		token.name
 																	}
@@ -210,15 +203,14 @@ const IssuanceTable = ({ handleChange }: any) => {
 													<Box>
 														<Text
 															fontSize="sm"
-															textAlign={
-																"left"
-															}
+															textAlign={"left"}
 														>
-															{(isEvmConnected && !activeChain?.unsupported)
+															{isEvmConnected &&
+															!activeChain?.unsupported
 																? dollarFormatter.format(
 																		pool.balance /
 																			1e18
-																	)
+																  )
 																: "-"}{" "}
 															{pool["symbol"]}
 														</Text>
@@ -238,23 +230,24 @@ const IssuanceTable = ({ handleChange }: any) => {
 													{...rowStyle(poolIndex)}
 													// {...expandOnClick(poolIndex)}
 												>
-													<Text
-														fontSize="sm"
-														// fontWeight="bold"
-														textAlign={"left"}
-													>
-														{tokenFormatter.format(
-															(100 *
-																((0.01 *
-																	3600 *
-																	24 *
-																	365 *
-																	pool._rewardSpeed) /
-																	1e18)) /
-																pool.totalBorrowBalanceUSD
-														)}{" "}
-														%
-													</Text>
+													{pool.rewardTokens.map(
+														(
+															token: any,
+															index: number
+														) => (
+															<>
+																<Text
+																	fontSize="sm"
+																	textAlign={
+																		"left"
+																	}
+																>
+
+																	{(pool.rewardTokenEmissionsUSD * 365 /pool.totalBorrowBalanceUSD).toFixed(2)} % {token.token.symbol}
+																</Text>
+															</>
+														)
+													)}
 												</Td>
 												<Td
 													isNumeric
@@ -320,12 +313,65 @@ const IssuanceTable = ({ handleChange }: any) => {
 					</Flex>
 				</>
 			) : (
-				<Skeleton
-					color={"gray"}
-					bgColor={"gray"}
-					height={"382px"}
-					rounded={"10"}
-				></Skeleton>
+				<Box h={"422px"} px={4}>
+					<Flex justify={"space-between"} mt={2}>
+						<Skeleton
+							height={"30px"}
+							width={"25%"}
+							rounded={"10"}
+						></Skeleton>
+
+						<Skeleton
+							height={"30px"}
+							width={"25%"}
+							rounded={"10"}
+						></Skeleton>
+
+						<Skeleton
+							color={"gray"}
+							bgColor={"gray"}
+							height={"30px"}
+							width={"25%"}
+							rounded={"10"}
+						></Skeleton>
+					</Flex>
+
+					<Skeleton
+						mt={10}
+						color={"gray"}
+						bgColor={"gray"}
+						height={"60px"}
+						width={"100%"}
+						rounded={"10"}
+					></Skeleton>
+
+					<Skeleton
+						mt={10}
+						color={"gray"}
+						bgColor={"gray"}
+						height={"60px"}
+						width={"100%"}
+						rounded={"10"}
+					></Skeleton>
+
+					<Skeleton
+						mt={10}
+						color={"gray"}
+						bgColor={"gray"}
+						height={"60px"}
+						width={"100%"}
+						rounded={"10"}
+					></Skeleton>
+
+					<Skeleton
+						mt={10}
+						color={"gray"}
+						bgColor={"gray"}
+						height={"30px"}
+						width={"100%"}
+						rounded={"10"}
+					></Skeleton>
+				</Box>
 			)}
 		</Box>
 	);

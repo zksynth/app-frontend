@@ -34,6 +34,9 @@ import { AppDataContext } from "./context/AppDataProvider";
 import { ChainID } from "../src/chains";
 import { BigNumber } from "ethers";
 import { BiCoinStack, BiStats } from "react-icons/bi";
+import { RiCopperCoinFill } from "react-icons/ri";
+import { FiBarChart2 } from "react-icons/fi";
+import { TokenContext } from "./context/TokenContext";
 
 function NavBar() {
 	// const [address, setAddress] = useState(null);
@@ -43,6 +46,7 @@ function NavBar() {
 
 	const { fetchData, isDataReady, isFetchingData, setChain } =
 		useContext(AppDataContext);
+	const { fetchData: fetchTokenData } = useContext(TokenContext);
 
 	const { chain, chains } = useNetwork();
 	const [init, setInit] = useState(false);
@@ -57,6 +61,7 @@ function NavBar() {
 			if ((chain as any).unsupported) return;
 			fetchData(address!, connector!.chains[0].id);
 			setChain(connector!.chains[0].id);
+			fetchTokenData(address!, connector!.chains[0].id);
 		},
 		onDisconnect() {
 			fetchData(null, ChainID.ARB_GOERLI);
@@ -140,7 +145,7 @@ function NavBar() {
 					width={"33%"}
 					display={{ sm: "none", md: "flex" }}
 				>
-					<Flex gap={0}>
+					<Flex gap={1}>
 						<NavLocalLink
 							path={"/"}
 							title={"Dashboard"}
@@ -149,7 +154,7 @@ function NavBar() {
 							<MdSpaceDashboard />
 						</NavLocalLink>
 						<NavLocalLink
-							path={"/exchange"}
+							path={"/swap"}
 							title="Swap"
 							pathname={router.pathname}
 						>
@@ -158,10 +163,10 @@ function NavBar() {
 
 						<NavLocalLink
 							path={"/syn"}
-							title="SYN"
+							title="xSYN"
 							pathname={router.pathname}
 						>
-							<BiCoinStack />
+							<RiCopperCoinFill />
 						</NavLocalLink>
 
 						<NavExternalLink
@@ -170,7 +175,7 @@ function NavBar() {
 							title="Analytics"
 							pathname={router.pathname}
 						>
-							<BiStats />
+							<FiBarChart2 />
 						</NavExternalLink>
 					</Flex>
 				</Flex>
@@ -263,7 +268,7 @@ const NavLink = ({
 				cursor="pointer"
 				rounded={100}
 				bgColor={isPath ? "gray.700" : "transparent"}
-				_hover={{ bgColor: "gray.800" }}
+				_hover={{ bgColor: "gray.600" }}
 			>
 				<Box
 					color={isPath ? "primary" : "gray.100"}
@@ -303,13 +308,11 @@ const NavExternalLink = ({ path, title, pathname, children }: any) => {
 	}, [setIsPath, pathname, path]);
 
 	return (
-		<Link href={`${path}`} as={`${path}`}>
-			<a target={"_blank"} rel="noreferrer">
+		<Link href={`${path}`} as={`${path}`} target={"_blank"} rel="noreferrer">
 				<NavLink path={path} title={title} pathname={pathname}>
 					{" "}
 					{children}{" "}
 				</NavLink>
-			</a>
 		</Link>
 	);
 };

@@ -37,8 +37,18 @@ export default function _index({ children }: any) {
 	const [init, setInit] = useState(false);
 
 	const backgroundStyle = {
-		backgroundColor: 'gray.900'
+		// backgroundColor: 'gray.800'
+		// bgGradient: 'radial(#12131B, gray.900)',
+		bgGradient: 'radial(gray.900, #12131B)',
 	};
+
+	const [hydrated, setHydrated] = useState(false);
+
+	useEffect(() => {
+		setHydrated(true);
+	}, [isDataReady]);
+
+	if(!hydrated) return <></>;
 
 	return (
 		<Box>

@@ -23,7 +23,6 @@ interface AppDataValue {
 	dollarFormatter: any;
 	tokenFormatter: any;
 	tradingBalanceOf: (_: string) => number;
-	minCRatio: number;
 	safeCRatio: number;
 	availableToBorrow: () => number;
 	cRatio: () => number;
@@ -65,8 +64,7 @@ function AppDataProvider({ children }: any) {
 	const [pools, setPools] = React.useState<any[]>([]);
 	const [tradingPool, setTradingPool] = React.useState(0);
 
-	const [minCRatio, setMinCRatio] = React.useState(130);
-	const [safeCRatio, setSafeCRatio] = React.useState(200);
+	const [safeCRatio, setSafeCRatio] = React.useState(2);
 
 	const [chain, setChain] = React.useState(ChainID.ARB_GOERLI);
 
@@ -113,8 +111,20 @@ function AppDataProvider({ children }: any) {
 									totalBorrowBalanceUSD
 									inputTokenPriceUSD
 									maximumLTV
-									_rewardSpeed
+									rewardTokens{
+										token{
+											id
+											name
+											symbol
+											decimals
+											lastPriceUSD
+										}
+									}
+									rewardTokenEmissionsAmount
+									rewardTokenEmissionsUSD
 									_fee
+									_issuerAlloc
+									_capacity
 									_mintedTokens (orderBy: _totalSupplyUSD, orderDirection: desc) {
 										id
 										name
@@ -196,7 +206,6 @@ function AppDataProvider({ children }: any) {
 			for (let i = 0; i < _collaterals.length; i++) {
 				if(_collaterals[i].inputToken.id === "0x0000000000000000000000000000000000000000"){
 					// getEthBalance
-					console.log(helper.interface);
 					calls.push([
 						helper.address,
 						helper.interface.encodeFunctionData("getEthBalance", [_address]),
@@ -281,9 +290,6 @@ function AppDataProvider({ children }: any) {
 				);
 			}
 
-			console.log(_collaterals)
-
-
 			setAdjustedCollateral(_adjustedCollateral.toNumber());
 			setTotalCollateral(_totalCollateral.toNumber());
 			setCollaterals(_collaterals);
@@ -301,13 +307,14 @@ function AppDataProvider({ children }: any) {
 			let calls = [];
 			const itf = new ethers.utils.Interface(getABI("MockToken"));
 			const synthexitf = new ethers.utils.Interface(getABI("SyntheX"));
+			const poolitf = new ethers.utils.Interface(getABI("DebtPool"));
+
 
 			for (let i = 0; i < _pools.length; i++) {
 				calls.push([
-					getAddress("SyntheX", _chain),
-					synthexitf.encodeFunctionData("getUserPoolDebtUSD", [
-						_address,
-						_pools[i].id,
+					_pools[i].id,
+					poolitf.encodeFunctionData("getUserDebtUSD", [
+						_address
 					]),
 				]);
 				calls.push([
@@ -538,7 +545,6 @@ function AppDataProvider({ children }: any) {
 		dollarFormatter,
 		tokenFormatter,
 		tradingBalanceOf,
-		minCRatio,
 		safeCRatio,
 		availableToBorrow,
 		cRatio,

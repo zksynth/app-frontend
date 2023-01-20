@@ -54,13 +54,13 @@ function ExchangeSideBar({}) {
 			</Select>
 
 			<TableContainer rounded={6} color={"white"}>
-				<Table variant="simple" size="sm">
+				<Table variant="simple" size="sm" >
 					<Thead>
 						<Tr>
-							<Th color="gray.400" borderColor={"gray.700"}>
+							<Th color="gray.400" borderColor={"gray.700"} px={2}>
 								Asset
 							</Th>
-							<Th color="gray.400" borderColor={"gray.700"} isNumeric>
+							<Th color="gray.400" borderColor={"gray.700"} px={2} isNumeric>
 								Balance
 							</Th>
 						</Tr>
@@ -72,7 +72,7 @@ function ExchangeSideBar({}) {
 									(_synth: any, index: number) => {
 										return (
 											<Tr key={index}>
-												<Td borderColor={"gray.700"} py={1}>
+												<Td borderColor={"gray.700"} py={1} px={2}>
 													<Flex
 														align={"center"}
 														gap={"1"}
@@ -92,7 +92,7 @@ function ExchangeSideBar({}) {
 														{_synth.name}
 													</Flex>
 												</Td>
-												<Td borderColor={"gray.700"} isNumeric>
+												<Td borderColor={"gray.700"} px={2} isNumeric>
 													{_synth.balance ? tokenFormatter.format(
 														
 															_synth.balance

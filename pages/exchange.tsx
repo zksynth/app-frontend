@@ -35,7 +35,7 @@ function Exchange() {
 					justify="stretch"
 					mb={10}>
 					<Box
-						width={{sm: '100%', md: '35%'}}
+						width={{sm: '100%', md: '32%'}}
 						px={{sm: '4', md: '5'}}
 						bgColor={'gray.800'}
 						color={'white'}
@@ -46,7 +46,7 @@ function Exchange() {
 					</Box>
 					<Box
 						my={'auto'}
-						width={{sm: '100%', md: '64%'}}
+						width={{sm: '100%', md: '67%'}}
 						bgColor={'gray.700'}
 						color={'white'}
 						rounded={10}

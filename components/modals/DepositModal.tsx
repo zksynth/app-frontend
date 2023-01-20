@@ -24,19 +24,14 @@ import {
 
 const Big = require("big.js");
 
-import { AiFillPlusCircle, AiOutlineInfoCircle, AiOutlinePlusCircle } from "react-icons/ai";
 import { getAddress, getContract, send, call } from "../../src/contract";
 import { useEffect, useContext } from "react";
-import { WalletContext } from "../context/WalletContextProvider";
 import { BiPlusCircle } from "react-icons/bi";
 import { AppDataContext } from "../context/AppDataProvider";
-import axios from "axios";
-import { ChainID } from "../../src/chains";
 import { useAccount, useBalance, useNetwork } from "wagmi";
 import { ethers } from "ethers";
 import { tokenFormatter } from "../../src/const";
 import InputWithSlider from "../inputs/InputWithSlider";
-import { MdOutlineAddCircle } from 'react-icons/md';
 import { FaCoins, FaPlusCircle } from "react-icons/fa";
 import Response from "./utils/Response";
 import InfoFooter from "./utils/InfoFooter";
@@ -201,11 +196,12 @@ const DepositModal = ({ handleDeposit }: any) => {
 	return (
 		<Box>
 			<Button
-				width={"100%"}
+			variant={'outline'}
 				size="lg"
 				rounded={40}
 				onClick={onOpen}
-				bgColor="primary"
+				color="primary"
+				borderColor={"primary"}
 				_hover={{ opacity: 0.6 }}
 				gap={1}
 			>

@@ -19,7 +19,8 @@ export default function Response({response, message, hash, confirmed}: any) {
 								: "error"
 						}
 						variant="top-accent"
-						rounded={6}
+						rounded={16}
+						
 					>
 						<AlertIcon />
 						<Box>

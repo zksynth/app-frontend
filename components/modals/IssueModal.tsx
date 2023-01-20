@@ -5,13 +5,9 @@ import {
 	Text,
 	Flex,
 	useDisclosure,
-	Link,
-	Alert,
-	AlertIcon,
 	Select,
-} from "@chakra-ui/react";
-
-import {
+	IconButton,
+	InputGroup,
 	Modal,
 	ModalOverlay,
 	ModalContent,
@@ -19,19 +15,21 @@ import {
 	ModalFooter,
 	ModalBody,
 	ModalCloseButton,
+	NumberInput,
+	NumberInputField,
 } from "@chakra-ui/react";
 
-import { AiOutlineInfoCircle } from "react-icons/ai";
+import { AiOutlineInfoCircle, AiOutlinePlus } from "react-icons/ai";
 import { getContract, send } from "../../src/contract";
 import { useContext } from "react";
 import { AppDataContext } from "../context/AppDataProvider";
 import { useAccount, useNetwork } from "wagmi";
-import { dollarFormatter, tokenFormatter } from '../../src/const';
+import { dollarFormatter, tokenFormatter } from "../../src/const";
 import Big from "big.js";
-import InputWithSlider from '../inputs/InputWithSlider';
-import { MdOutlineAddCircle } from "react-icons/md";
+import InputWithSlider from "../inputs/InputWithSlider";
 import Response from "./utils/Response";
 import InfoFooter from "./utils/InfoFooter";
+import Image from "next/image";
 
 const ROUNDING = 0.98;
 
@@ -42,7 +40,7 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 	const [response, setResponse] = useState<string | null>(null);
 	const [hash, setHash] = useState(null);
 	const [confirmed, setConfirmed] = useState(false);
-	const [message, setMessage] = useState('');
+	const [message, setMessage] = useState("");
 
 	const [selectedAssetIndex, setSelectedAssetIndex] = useState(0);
 
@@ -53,19 +51,28 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 		setResponse(null);
 		setHash(null);
 		setConfirmed(false);
-		setMessage('');
+		setMessage("");
 		setAmount(0);
 		onClose();
 	};
 
-	const { chain, togglePoolEnabled, adjustedCollateral, adjustedDebt, safeCRatio } =
-		useContext(AppDataContext);
+	const {
+		chain,
+		togglePoolEnabled,
+		adjustedCollateral,
+		adjustedDebt,
+		safeCRatio,
+	} = useContext(AppDataContext);
 
 	const max = () => {
-		if(!Number(safeCRatio)) return 0;
-		if(!Number(asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD)) return NaN;
+		if (!Number(safeCRatio)) return 0;
+		if (!Number(asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD))
+			return NaN;
 		// MAX = ((Ac/safeC) - Ad)*Vr
-		return Big(asset.maximumLTV/100).times(Big(adjustedCollateral).div(safeCRatio).minus(adjustedDebt)).div(asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD).toNumber();
+		return Big(asset.maximumLTV / 100)
+			.times(Big(adjustedCollateral).div(safeCRatio).minus(adjustedDebt))
+			.div(asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD)
+			.toNumber();
 	};
 
 	const issue = async () => {
@@ -73,13 +80,19 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 		setLoading(true);
 		setConfirmed(false);
 		setHash(null);
-		setResponse('');
-		setMessage('');
+		setResponse("");
+		setMessage("");
 
 		let synthex = await getContract("SyntheX", chain);
-		let value = Big(amount).times(10 ** asset.inputToken.decimals).toFixed(0);
-		console.log(value)
-		send(synthex, 'issue', [asset.id, asset._mintedTokens[selectedAssetIndex].id, value], chain)
+		let value = Big(amount)
+			.times(10 ** asset.inputToken.decimals)
+			.toFixed(0);
+		send(
+			synthex,
+			"issue",
+			[asset.id, asset._mintedTokens[selectedAssetIndex].id, value],
+			chain
+		)
 			.then(async (res: any) => {
 				setLoading(false);
 				setResponse("Transaction sent! Waiting for confirmation...");
@@ -89,9 +102,14 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 				handleIssue(asset._mintedTokens[selectedAssetIndex].id, value);
 				if (!asset.isEnabled) togglePoolEnabled(asset.id);
 				setResponse("Transaction Successful!");
-				setMessage(`You have successfully issued ${tokenFormatter.format(amount)} ${asset._mintedTokens[selectedAssetIndex].symbol}`)
+				setMessage(
+					`You have successfully issued ${tokenFormatter.format(
+						amount
+					)} ${asset._mintedTokens[selectedAssetIndex].symbol}`
+				);
 			})
 			.catch((err: any) => {
+				console.log(err);
 				setLoading(false);
 				setConfirmed(true);
 				setResponse("Transaction failed. Please try again!");
@@ -104,7 +122,7 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 
 	return (
 		<Box>
-			<Button
+			{/* <Button
 				onClick={onOpen}
 				variant={"ghost"}
 				size="md"
@@ -114,49 +132,134 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 				my={1}
 				_hover={{ opacity: 0.6 }}
 			>
-				<MdOutlineAddCircle /> <Text ml={1}>Mint</Text>
-			</Button>
+				<MdOutlineAddCircle />
+			</Button> */}
+			<IconButton
+				variant="solid"
+				onClick={onOpen}
+				icon={<AiOutlinePlus />}
+				aria-label={""}
+				isRound={true}
+				p={2}
+			></IconButton>
 			<Modal isCentered isOpen={isOpen} onClose={_onClose}>
 				<ModalOverlay bg="blackAlpha.100" backdropFilter="blur(30px)" />
 				<ModalContent width={"30rem"} bgColor="">
 					<ModalCloseButton />
-					<ModalHeader>Issue</ModalHeader>
+					<ModalHeader>{asset.name}</ModalHeader>
 					<ModalBody>
-						<Flex justify={'space-between'}>
-							<Text fontSize='xs'>Price: {dollarFormatter.format(asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD)}</Text>
-							<Text fontSize='xs'>Available to borrow: {dollarFormatter.format(asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD * max())}</Text>
+						
+
+						<Box mb={10} mt={4}>
+						<Flex justify={"center"} mb={2}>
+							<Flex
+								width={"33%"}
+								justify={"center"}
+								align="center"
+								gap={2}
+								bg="gray.600"
+								rounded="full"
+								pl={2}
+							>
+								<Image
+									src={`/icons/${asset._mintedTokens[
+										selectedAssetIndex
+									].symbol.toUpperCase()}.png`}
+									alt=""
+									width={"40"}
+									height={"40"}
+								/>
+
+								<Select
+									variant={"unstyled"}
+									my={2}
+									placeholder="Select asset to issue"
+									value={selectedAssetIndex}
+									onChange={(e) =>
+										{
+											setSelectedAssetIndex(
+											parseInt(e.target.value)
+										)
+										setAmount(0)
+									}
+									}
+								>
+									{asset._mintedTokens.map(
+										(token: any, index: number) => (
+											<option value={index} key={index}>
+												{token.symbol}
+											</option>
+										)
+									)}
+								</Select>
+							</Flex>
 						</Flex>
-						<Select my={2} placeholder="Select asset to issue" value={selectedAssetIndex} onChange={(e) => setSelectedAssetIndex(parseInt(e.target.value))}>
-							{asset._mintedTokens.map((token: any, index: number) => (
-								<option value={index} key={index}>
-									{token.symbol}
-								</option>
-							))}
-						</Select>
-						<InputWithSlider 
-						asset={asset._mintedTokens[selectedAssetIndex]} 
-						max={max()} 
-						softMax={ROUNDING * max()}
-						min={0}
-						onUpdate={(_value: any) => {
-							setAmount(_value);
-						}}
-						color='secondary'
-						/>
+						<InputGroup variant={"unstyled"} display="flex">
+							<NumberInput
+								w={"100%"}
+								value={amount || 0}
+								onChange={(e) => setAmount(Number(e))}
+								max={max()}
+								min={0}
+								step={0.01}
+								display="flex"
+								alignItems="center"
+								justifyContent={"center"}
+							>
+								<NumberInputField
+									textAlign={"center"}
+									pr={0}
+									fontSize={"5xl"}
+								/>
+							</NumberInput>
+						</InputGroup>
+
+						<Text
+							fontSize="sm"
+							textAlign={"center"}
+							color={"gray.400"}
+						>
+							{dollarFormatter.format(
+								asset._mintedTokens[selectedAssetIndex]
+									?.lastPriceUSD * amount
+							)}
+						</Text>
+
+						</Box>
+
 						<Flex mt={2} justify="space-between">
 							{/* <Text fontSize={"xs"} color="gray.400">
 								1 {asset._mintedTokens[selectedAssetIndex].symbol} = {asset._mintedTokens[selectedAssetIndex].lastPriceUSD}{" "}
 								USD
 							</Text> */}
 							<Text fontSize={"xs"} color="gray.400">
-								Market LTV ={" "}
-								{parseFloat(asset.maximumLTV)} %
+								Market LTV = {parseFloat(asset.maximumLTV)} %
 							</Text>
+
+							<Flex gap={1}>
+								<Text fontSize={"xs"} color="gray.400">
+									Max:
+								</Text>
+
+								<Text
+									cursor={"pointer"}
+									onClick={() => setAmount(Number(tokenFormatter.format(max())))}
+									textDecor="underline"
+									fontSize={"xs"}
+									color="gray.400"
+								>
+									{tokenFormatter.format(max())}{" "}
+									{
+										asset._mintedTokens[selectedAssetIndex]
+											.symbol
+									}
+								</Text>
+							</Flex>
 						</Flex>
 						<Button
 							disabled={
 								loading ||
-								!(isConnected) || 
+								!isConnected ||
 								activeChain?.unsupported ||
 								!amount ||
 								amount == 0 ||
@@ -164,10 +267,16 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 							}
 							isLoading={loading}
 							loadingText="Please sign the transaction"
-							bgColor="secondary"
+							bgColor="primary"
 							width="100%"
+							color="gray.700"
 							mt={4}
 							onClick={issue}
+							size="lg"
+							rounded={16}
+							_hover={{
+								opacity: "0.5",
+							}}
 						>
 							{isConnected && !activeChain?.unsupported ? (
 								amount > max() ? (
@@ -175,18 +284,25 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 								) : !amount || amount == 0 ? (
 									<>Enter amount</>
 								) : (
-									<>Issue</>
+									<>Mint ✨</>
 								)
 							) : (
 								<>Please connect your wallet</>
 							)}
 						</Button>
-				
-						<Response response={response} message={message} hash={hash} confirmed={confirmed} />
+
+						<Response
+							response={response}
+							message={message}
+							hash={hash}
+							confirmed={confirmed}
+						/>
 					</ModalBody>
-					<InfoFooter message='
+					<InfoFooter
+						message="
 						You can issue a new asset against your collateral. Debt is dynamic and depends on total debt of the pool.
-					'/>
+					"
+					/>
 				</ModalContent>
 			</Modal>
 		</Box>
