@@ -134,8 +134,8 @@ function NavBar() {
 							}}
 							src={logo}
 							alt=""
-							width="30px"
-							height="30px"
+							width="30"
+							height="30"
 						/>
 					</Box>
 				</Box>
@@ -198,8 +198,8 @@ function NavBar() {
 							<Image
 								src={colorMode == "dark" ? darklogo : lightlogo}
 								alt=""
-								width="100px"
-								height="100px"
+								width="100"
+								height="100"
 							/>
 						</Flex>
 

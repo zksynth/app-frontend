@@ -232,8 +232,8 @@ function Swap({ handleChange }: any) {
 										inputToken()?.symbol.toUpperCase() +
 										".png"
 									}
-									height={"60px"}
-									width={"60px"}
+									height={"60"}
+									width={"60"}
 									style={{
 										maxHeight: "60px",
 										maxWidth: "60px",

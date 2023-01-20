@@ -211,8 +211,8 @@ const DepositModal = ({
 								<Image
 									src={`/icons/${asset?.inputToken.symbol?.toUpperCase()}.png`}
 									alt=""
-									width={"60px"}
-									height={"60px"}
+									width={"20"}
+									height={"20"}
 									my={1}
 								/>
 								<Text fontSize={"sm"} color="gray.400">

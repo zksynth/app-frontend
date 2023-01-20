@@ -19,19 +19,19 @@ export const dollarFormatter = new Intl.NumberFormat("en-US", {
 	currency: "USD",
 	maximumSignificantDigits: 6,
 	roundingMode: "floor",
-});
+} as any);
 
 export const tokenFormatter = new Intl.NumberFormat("en-US", {
 	maximumSignificantDigits: 8,
 	roundingMode: "floor",
-});
+} as any);
 
 export const compactTokenFormatter = new Intl.NumberFormat("en-US", {
 	maximumSignificantDigits: 4,
 	// compact
 	notation: "compact",
 	roundingMode: "floor",
-});
+} as any);
 
 
 const COLORS_GREEN = [
