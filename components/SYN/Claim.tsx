@@ -17,6 +17,7 @@ import { MdGeneratingTokens } from 'react-icons/md';
 import Big from "big.js";
 import { useContext } from 'react';
 import { AppDataContext } from "../context/AppDataProvider";
+import { TokenContext } from "../context/TokenContext";
 
 export default function Claim() {
 	const [tabIndex, setTabIndex] = React.useState(0);
@@ -28,6 +29,8 @@ export default function Claim() {
 	const [claiming, setClaiming] = useState(false);
 
 	const {pools} = useContext(AppDataContext);
+
+	const { claimed } = useContext(TokenContext);
 
     useEffect(() => {
 		if (connectedChain) {
@@ -65,6 +68,7 @@ export default function Claim() {
 				await result.wait(1);
 				setClaiming(false);
 				setSynAccrued("0");
+				claimed((synAccrued/1e18).toString());
 			})
 			.catch((err: any) => {
 				console.log(err);

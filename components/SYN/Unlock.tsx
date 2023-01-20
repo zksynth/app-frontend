@@ -196,31 +196,25 @@ export default function Unlock() {
 
 				<Text decoration={"underline"}>Note</Text>
 				<Text fontSize={"sm"}>
-					Unlocking will start on{" "}
-					{new Date(
-						Date.now() + parseInt(tokenUnlocks.lockupPeriod ?? 0) * 1000
-					).toDateString()}
+					Unlocking will start in{" "}
+					{parseInt(tokenUnlocks.lockupPeriod ?? 0)/(30*24*3600)} months
 				</Text>
 				<Text fontSize={"sm"}>
-					Release on{" "}
-					{new Date(
-						Date.now() + parseInt(tokenUnlocks.lockupPeriod ?? 0) * 1000
-					).toDateString()}{" "}
-					<u>
-						{" "}
-						{tokenFormatter.format(
+					Release {" "} {tokenFormatter.format(
 							parseInt(tokenUnlocks.percUnlockAtRelease ?? 0) / 1e2
-						)}{" "}
-						%
-					</u>
+						)}
+						% on unlock
 				</Text>
 				<Text fontSize={"sm"}>
-					Linear unlocking till{" "}
+					Linear unlocking from {new Date(
+						Date.now() +
+							parseInt(tokenUnlocks.lockupPeriod ?? 0) * 1000
+					).toLocaleDateString()} till{" "}
 					{new Date(
 						Date.now() +
 							parseInt(tokenUnlocks.lockupPeriod ?? 0) * 1000 +
 							parseInt(tokenUnlocks.unlockPeriod ?? 0) * 1000
-					).toDateString()}
+					).toLocaleDateString()}
 				</Text>
 
 				{/* Pending unlocks */}

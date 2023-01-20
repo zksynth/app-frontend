@@ -29,18 +29,7 @@ import { FaCoins, FaPlusCircle } from "react-icons/fa";
 import InputWithMax from "../../inputs/InputWithMax";
 import { ArrowDownIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { IoIosArrowBack } from "react-icons/io";
-import {
-	Menu,
-	MenuButton,
-	MenuList,
-	MenuItem,
-	MenuItemOption,
-	MenuGroup,
-	MenuOptionGroup,
-	MenuDivider,
-} from "@chakra-ui/react";
-import { BsBack } from "react-icons/bs";
-import { MdOpenInNew } from "react-icons/md";
+import Response from "../utils/Response";
 
 const CLAIM_AMOUNTS: any = {
 	USDC: "1000",
@@ -56,15 +45,15 @@ const DepositModal = ({
 	setSelectedAsset,
 }: any) => {
 	const {
-		collaterals,
 		chain,
 		updateCollateralWalletBalance,
 		addCollateralAllowance,
-		explorer,
 		toggleCollateralEnabled,
 	} = useContext(AppDataContext);
 
-	const [amount, setAmount] = React.useState(0);
+	const [amount, setAmount] = React.useState("0");
+	const [amountNumber, setAmountNumber] = useState(0);
+
 	const [claimLoading, setClaimLoading] = useState(false);
 
 	const [loading, setLoading] = useState(false);
@@ -83,11 +72,14 @@ const DepositModal = ({
 	const balance = () => {
 		if (!asset) return 0;
 		if (!asset.walletBalance) return 0;
-		return asset.walletBalance / 10 ** asset.inputToken.decimals;
+		return Big(asset.walletBalance).div(10 ** asset.inputToken.decimals).toString();
 	};
 
 	const handleMax = () => {
 		setAmount(balance());
+		setAmountNumber(
+			isNaN(Number(balance())) ? 0 : Number(balance())
+		);
 	};
 
 	const deposit = async () => {
@@ -190,9 +182,14 @@ const DepositModal = ({
 		if (!asset) return true;
 		if (!asset.allowance) return true;
 		return Big(asset?.allowance).lt(
-			amount * 10 ** (asset?.inputToken.decimals ?? 18) || 1
+			parseFloat(amount) * 10 ** (asset?.inputToken.decimals ?? 18) || 1
 		);
 	};
+
+	const _setAmount = (e: string) => {
+		setAmount(e);
+		setAmountNumber(isNaN(Number(e)) ? 0 : Number(e));
+	}
 
 	return (
 		<Box>
@@ -281,11 +278,10 @@ const DepositModal = ({
 								<InputGroup variant={"unstyled"} display="flex">
 									<NumberInput
 										w={"100%"}
-										value={amount || 0}
-										onChange={(_value: any) => {
-											setAmount(_value);
-										}}
-										max={balance()}
+										value={Number(amount) > 0
+											? tokenFormatter.format(parseFloat(amount))
+											: amount}
+										onChange={_setAmount}
 										min={0}
 										step={0.01}
 										display="flex"
@@ -302,7 +298,7 @@ const DepositModal = ({
 
 								<Text color={"gray.400"}>
 									{dollarFormatter.format(
-										amount * asset.inputTokenPriceUSD
+										parseFloat(amount) * asset.inputTokenPriceUSD
 									)}
 								</Text>
 							</Box>
@@ -354,8 +350,8 @@ const DepositModal = ({
 									loading ||
 									!isConnected ||
 									!amount ||
-									amount == 0 ||
-									amount > balance()
+									amountNumber == 0 ||
+									amountNumber > balance()
 								}
 								bgColor="#3EE6C4"
 								color={"gray.800"}
@@ -366,11 +362,11 @@ const DepositModal = ({
                                 rounded={16}
 							>
 								{isConnected ? (
-									!amount || amount == 0 ? (
+									!amount || amountNumber == 0 ? (
 										"Enter amount"
 									) : amountLowerThanMin() ? (
 										"Amount too less"
-									) : amount > balance() ? (
+									) : amountNumber > balance() ? (
 										"Insufficient Balance"
 									) : (
 										<>Deposit</>
@@ -394,6 +390,13 @@ const DepositModal = ({
 					>
 						<IoIosArrowBack /> Go Back
 					</Button>
+
+					<Response
+							response={response}
+							message={message}
+							hash={hash}
+							confirmed={confirmed}
+						/>
 				</>
 			)}
 		</Box>

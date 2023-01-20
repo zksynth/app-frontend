@@ -29,21 +29,15 @@ import { FaCoins, FaPlusCircle } from "react-icons/fa";
 import InputWithMax from "../../inputs/InputWithMax";
 import { ArrowDownIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { IoIosArrowBack } from "react-icons/io";
+import Response from "../utils/Response";
 
+const WithdrawStep2 = ({ handleWithdraw, asset, setSelectedAsset }: any) => {
+	const { chain, safeCRatio, adjustedCollateral, adjustedDebt } =
+		useContext(AppDataContext);
 
-const WithdrawStep2 = ({
-	handleWithdraw,
-	asset,
-	setSelectedAsset,
-}: any) => {
-	const {
-		chain,
-		safeCRatio,
-		adjustedCollateral,
-		adjustedDebt
-	} = useContext(AppDataContext);
+	const [amount, setAmount] = React.useState("0");
+	const [amountNumber, setAmountNumber] = useState(0);
 
-	const [amount, setAmount] = React.useState(0);
 	const [claimLoading, setClaimLoading] = useState(false);
 
 	const [loading, setLoading] = useState(false);
@@ -59,16 +53,24 @@ const WithdrawStep2 = ({
 		address,
 	});
 
-
 	const max = () => {
-		if(!Number(safeCRatio)) return 0;
-		if(!Number(asset.inputTokenPriceUSD)) return 0;
+		if (!Number(safeCRatio)) return 0;
+		if (!Number(asset.inputTokenPriceUSD)) return 0;
 		console.log(asset);
-		return Math.min(Big(asset.maximumLTV/100).times(Big(adjustedCollateral).div(safeCRatio).minus(adjustedDebt)).div(asset.inputTokenPriceUSD).toNumber(), asset.balance);
+		return Math.min(
+			Big(asset.maximumLTV / 100)
+				.times(
+					Big(adjustedCollateral).div(safeCRatio).minus(adjustedDebt)
+				)
+				.div(asset.inputTokenPriceUSD)
+				.toNumber(),
+			asset.balance
+		);
 	};
 
 	const handleMax = () => {
-		setAmount(max());
+		setAmount(max().toString());
+		setAmountNumber(max());
 	};
 
 	const withdraw = async () => {
@@ -92,15 +94,25 @@ const WithdrawStep2 = ({
 				await res.wait(1);
 				setConfirmed(true);
 				handleWithdraw(asset.id, value);
-				setMessage(`You have successfully withdrawn ${_amount} ${_asset} from your position!`)
+				setMessage(
+					`You have successfully withdrawn ${_amount} ${_asset} from your position!`
+				);
 				setResponse("Transaction Successful!");
 			})
 			.catch((err: any) => {
+				console.log(err)
 				setLoading(false);
 				setConfirmed(true);
-				setMessage(JSON.stringify(err))
+				setMessage(JSON.stringify(err));
 				setResponse("Transaction failed. Please try again!");
 			});
+	};
+
+	console.log(loading, response, hash, confirmed, message);
+
+	const _setAmount = (e: string) => {
+		setAmount(e);
+		setAmountNumber(isNaN(Number(e)) ? 0 : Number(e));
 	};
 
 	return (
@@ -135,9 +147,7 @@ const WithdrawStep2 = ({
 								<NumberInput
 									w={"100%"}
 									value={amount || 0}
-									onChange={(_value: any) => {
-										setAmount(_value);
-									}}
+									onChange={_setAmount}
 									max={max()}
 									min={0}
 									step={0.01}
@@ -155,7 +165,7 @@ const WithdrawStep2 = ({
 
 							<Text color={"gray.400"}>
 								{dollarFormatter.format(
-									amount * asset.inputTokenPriceUSD
+									amountNumber * asset.inputTokenPriceUSD
 								)}
 							</Text>
 						</Box>
@@ -164,7 +174,7 @@ const WithdrawStep2 = ({
 								Maximum LTV: {asset?.maximumLTV} %
 							</Text>
 
-							<Flex align={'center'} gap={1}>
+							<Flex align={"center"} gap={1}>
 								<Text fontSize={"xs"} color="gray.400">
 									Available:
 								</Text>
@@ -179,33 +189,31 @@ const WithdrawStep2 = ({
 									{tokenFormatter.format(max())}{" "}
 									{asset?.inputToken.symbol}
 								</Text>
-
-								
 							</Flex>
 						</Flex>
 						<Button
-							size={'lg'}
+							size={"lg"}
 							disabled={
 								loading ||
-								!isConnected || 
+								!isConnected ||
 								activeChain?.unsupported ||
 								!amount ||
-								amount == 0 ||
-								amount > max()
+								amountNumber == 0 ||
+								amountNumber > max()
 							}
 							loadingText="Please sign the transaction"
 							isLoading={loading}
-							bgColor='secondary'
+							bgColor="secondary"
 							width="100%"
 							mt={4}
 							onClick={withdraw}
-							color='white'
+							color="white"
 							rounded={16}
 						>
 							{isConnected && !activeChain?.unsupported ? (
-								amount > max() ? (
+								amountNumber > max() ? (
 									<>Insufficient Collateral</>
-								) : !amount || amount == 0 ? (
+								) : !amount || amountNumber == 0 ? (
 									<>Enter amount</>
 								) : (
 									<>Withdraw</>
@@ -228,6 +236,13 @@ const WithdrawStep2 = ({
 					>
 						<IoIosArrowBack /> Go Back
 					</Button>
+
+					<Response
+						response={response}
+						message={message}
+						hash={hash}
+						confirmed={confirmed}
+					/>
 				</>
 			)}
 		</Box>

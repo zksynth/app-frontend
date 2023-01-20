@@ -225,6 +225,7 @@ function TokenContextProvider({ children }: any) {
 		_staking.staked = Big(_staking.staked).add(amount).toString();
 		_syn.sealedBalance = Big(_syn.sealedBalance).sub(amount).toString();
 		setStaking(_staking);
+		setSyn(_syn);
 		setRefresh(Math.random());
 	}
 
@@ -242,6 +243,13 @@ function TokenContextProvider({ children }: any) {
 		setRefresh(Math.random());
 	}
 
+	const claimed = async (amount: string) => {
+		const _syn = syn;
+		_syn.sealedBalance = Big(_syn.sealedBalance).add(amount).toString();
+		setSyn(_syn);
+		setRefresh(Math.random());
+	}
+
 	const value: TokenValue = {
 		fetchData,
 		tokenUnlocks,
@@ -250,7 +258,8 @@ function TokenContextProvider({ children }: any) {
 		increaseUnlockAllowance,
 		increaseStakingAllowance,
 		staked,
-		addedToUnlock
+		addedToUnlock,
+		claimed
 	};
 
 	return (
@@ -267,6 +276,7 @@ interface TokenValue {
 	increaseUnlockAllowance: (amount: string) => void;
 	increaseStakingAllowance: (amount: string) => void;
 	addedToUnlock: (amount: string) => void;
+	claimed: (amount: string) => void;
 }
 
 export { TokenContextProvider, TokenContext };

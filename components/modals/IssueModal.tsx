@@ -44,7 +44,8 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 
 	const [selectedAssetIndex, setSelectedAssetIndex] = useState(0);
 
-	const [amount, setAmount] = React.useState(0);
+	const [amount, setAmount] = React.useState("0");
+	const [amountNumber, setAmountNumber] = useState(0);
 
 	const _onClose = () => {
 		setLoading(false);
@@ -52,7 +53,8 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 		setHash(null);
 		setConfirmed(false);
 		setMessage("");
-		setAmount(0);
+		setAmount('0');
+		setAmountNumber(0);
 		onClose();
 	};
 
@@ -65,14 +67,13 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 	} = useContext(AppDataContext);
 
 	const max = () => {
-		if (!Number(safeCRatio)) return 0;
-		if (!Number(asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD))
-			return NaN;
+		if (!Number(safeCRatio)) return '0';
+		if (!Number(asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD)) return '0';
 		// MAX = ((Ac/safeC) - Ad)*Vr
 		return Big(asset.maximumLTV / 100)
 			.times(Big(adjustedCollateral).div(safeCRatio).minus(adjustedDebt))
 			.div(asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD)
-			.toNumber();
+			.toString();
 	};
 
 	const issue = async () => {
@@ -104,7 +105,7 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 				setResponse("Transaction Successful!");
 				setMessage(
 					`You have successfully issued ${tokenFormatter.format(
-						amount
+						amountNumber
 					)} ${asset._mintedTokens[selectedAssetIndex].symbol}`
 				);
 			})
@@ -120,20 +121,21 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 	const { isConnected } = useAccount();
 	const { chain: activeChain } = useNetwork();
 
+	const _setAmount = (e: string) => {
+		setAmount(e);
+		setAmountNumber(isNaN(Number(e)) ? 0 : Number(e));
+	}
+
+	const handleMax = () => {
+		setAmount(max());
+		setAmountNumber(
+			isNaN(Number(max())) ? 0 : Number(max())
+		);
+	};
+
+
 	return (
 		<Box>
-			{/* <Button
-				onClick={onOpen}
-				variant={"ghost"}
-				size="md"
-				bgColor={"secondary"}
-				rounded={100}
-				color="white"
-				my={1}
-				_hover={{ opacity: 0.6 }}
-			>
-				<MdOutlineAddCircle />
-			</Button> */}
 			<IconButton
 				variant="solid"
 				onClick={onOpen}
@@ -180,7 +182,8 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 											setSelectedAssetIndex(
 											parseInt(e.target.value)
 										)
-										setAmount(0)
+										setAmount('0')
+										setAmountNumber(0)
 									}
 									}
 								>
@@ -197,9 +200,10 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 						<InputGroup variant={"unstyled"} display="flex">
 							<NumberInput
 								w={"100%"}
-								value={amount || 0}
-								onChange={(e) => setAmount(Number(e))}
-								max={max()}
+								value={Number(amount) > 0
+									? tokenFormatter.format(parseFloat(amount))
+									: amount}
+								onChange={_setAmount}
 								min={0}
 								step={0.01}
 								display="flex"
@@ -221,7 +225,7 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 						>
 							{dollarFormatter.format(
 								asset._mintedTokens[selectedAssetIndex]
-									?.lastPriceUSD * amount
+									?.lastPriceUSD * amountNumber
 							)}
 						</Text>
 
@@ -243,12 +247,12 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 
 								<Text
 									cursor={"pointer"}
-									onClick={() => setAmount(Number(tokenFormatter.format(max())))}
+									onClick={handleMax}
 									textDecor="underline"
 									fontSize={"xs"}
 									color="gray.400"
 								>
-									{tokenFormatter.format(max())}{" "}
+									{tokenFormatter.format(parseFloat(max()))}{" "}
 									{
 										asset._mintedTokens[selectedAssetIndex]
 											.symbol
@@ -262,8 +266,8 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 								!isConnected ||
 								activeChain?.unsupported ||
 								!amount ||
-								amount == 0 ||
-								amount > max()
+								amountNumber == 0 ||
+								amountNumber > parseFloat(max())
 							}
 							isLoading={loading}
 							loadingText="Please sign the transaction"
@@ -279,9 +283,9 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 							}}
 						>
 							{isConnected && !activeChain?.unsupported ? (
-								amount > max() ? (
+								amountNumber > parseFloat(max()) ? (
 									<>Insufficient Collateral</>
-								) : !amount || amount == 0 ? (
+								) : !amount || amountNumber == 0 ? (
 									<>Enter amount</>
 								) : (
 									<>Mint ✨</>

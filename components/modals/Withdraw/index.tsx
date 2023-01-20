@@ -37,7 +37,7 @@ import { Step, Steps, useSteps } from "chakra-ui-steps";
 import Step1 from "./Step1";
 import Step2 from "./Step2";
 
-const WithdrawModal = ({ handleDeposit }: any) => {
+const WithdrawModal = ({ handleWithdraw }: any) => {
 	const [selectedAsset, setSelectedAsset] = React.useState<number|null>(null);
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const {
@@ -100,7 +100,7 @@ const WithdrawModal = ({ handleDeposit }: any) => {
 							/>
 						) : (
 							<Step2
-								handleDeposit={handleDeposit}
+								handleWithdraw={handleWithdraw}
 								asset={collaterals[selectedAsset]}
 								setSelectedAsset={setSelectedAsset}
 							/>

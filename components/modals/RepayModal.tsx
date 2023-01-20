@@ -43,7 +43,8 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 	const [response, setResponse] = useState<string | null>(null);
 	const [hash, setHash] = useState(null);
 	const [confirmed, setConfirmed] = useState(false);
-	const [amount, setAmount] = React.useState(0);
+	const [amount, setAmount] = React.useState("0");
+	const [amountNumber, setAmountNumber] = useState(0);
 	const [message, setMessage] = useState('');
 
 	const [selectedAssetIndex, setSelectedAssetIndex] = useState(0);
@@ -55,12 +56,13 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 		setResponse(null);
 		setHash(null);
 		setConfirmed(false);
-		setAmount(0);
+		setAmount('0');
+		setAmountNumber(0);
 		onClose();
 	};
 
 	const max = () => {
-		if(!Number(asset._mintedTokens[selectedAssetIndex].lastPriceUSD)) return 0;
+		if(!Number(asset._mintedTokens[selectedAssetIndex].lastPriceUSD)) return '0';
 
 		return Math.min(
 			Big(asset._mintedTokens[selectedAssetIndex].balance ?? 0).div(
@@ -71,7 +73,7 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 			).div(
 				asset._mintedTokens[selectedAssetIndex].lastPriceUSD
 			).toNumber()
-		);
+		).toString();
 	};
 
 	const repay = async () => {
@@ -84,7 +86,7 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 		let synthex = await getContract("SyntheX", chain);
 		const _amount = amount;
 		const _asset = asset._mintedTokens[selectedAssetIndex].symbol;
-		let value = BigInt(_amount * 10 ** asset.inputToken.decimals).toString();
+		let value = Big(amount).times(10 ** asset.inputToken.decimals).toFixed(0);
 		send(
 			synthex,
 			"burn",
@@ -111,6 +113,18 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 
 	const { address, isConnected, isConnecting } = useAccount();
 	const { chain: activeChain } = useNetwork();
+	
+	const _setAmount = (e: string) => {
+		setAmount(e);
+		setAmountNumber(isNaN(Number(e)) ? 0 : Number(e));
+	}
+
+	const handleMax = () => {
+		setAmount(max());
+		setAmountNumber(
+			isNaN(Number(max())) ? 0 : Number(max())
+		);
+	};
 
 	return (
 		<Box>
@@ -158,7 +172,8 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 											setSelectedAssetIndex(
 											parseInt(e.target.value)
 										)
-										setAmount(0)
+										setAmount('0');
+										setAmountNumber(0);
 									}
 									}
 								>
@@ -176,8 +191,7 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 							<NumberInput
 								w={"100%"}
 								value={amount || 0}
-								onChange={(e) => setAmount(Number(e))}
-								max={max()}
+								onChange={_setAmount}
 								min={0}
 								step={0.01}
 								display="flex"
@@ -199,7 +213,7 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 						>
 							{dollarFormatter.format(
 								asset._mintedTokens[selectedAssetIndex]
-									?.lastPriceUSD * amount
+									?.lastPriceUSD * amountNumber
 							)}
 						</Text>
 
@@ -221,12 +235,12 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 
 								<Text
 									cursor={"pointer"}
-									onClick={() => setAmount(Number(tokenFormatter.format(max())))}
+									onClick={handleMax}
 									textDecor="underline"
 									fontSize={"xs"}
 									color="gray.400"
 								>
-									{tokenFormatter.format(max())}{" "}
+									{tokenFormatter.format(parseFloat(max()))}{" "}
 									{
 										asset._mintedTokens[selectedAssetIndex]
 											.symbol
@@ -240,8 +254,8 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 								!isConnected ||
 								activeChain?.unsupported ||
 								!amount ||
-								amount == 0 ||
-								amount > max()
+								amountNumber == 0 ||
+								amountNumber > parseFloat(max())
 							}
 							isLoading={loading}
 							bgColor='secondary'
@@ -253,9 +267,9 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 							rounded={16}
 						>
 							{(isConnected && !activeChain?.unsupported) ? (
-								amount > max() ? (
+								amountNumber > parseFloat(max()) ? (
 									<>Insufficient Debt</>
-								) : !amount || amount == 0 ? (
+								) : !amount || amountNumber == 0 ? (
 									<>Enter amount</>
 								) : (
 									<>Burn </>

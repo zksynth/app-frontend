@@ -31,6 +31,12 @@ export default function MainPanel({ handleChange }: any) {
 		handleChange();
 	};
 
+	const handleWithdraw = (collateral: string, value: string) => {
+		updateCollateralWalletBalance(collateral, value, false);
+		updateCollateralAmount(collateral, value, true);
+		handleChange();
+	};
+
 	return (
 		<Flex justify="space-between" px={"30px"} py="22px" height={"100%"}>
 			<Flex
@@ -50,7 +56,7 @@ export default function MainPanel({ handleChange }: any) {
 				</Box>
 				<Flex mt={2} justify='center' gap={2}>
 					<DepositModal handleDeposit={handleDeposit} />
-					<WithdrawModal handleDeposit={handleDeposit}/>
+					<WithdrawModal handleWithdraw={handleWithdraw}/>
 				</Flex>
 			</Flex>
 

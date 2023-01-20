@@ -117,7 +117,6 @@ export default function Stake() {
 
 	const _setMax = () => {
 		setAmount(syn.sealedBalance);
-		console.log(syn.sealedBalance);
 		setAmountNumber(
 			isNaN(Number(syn.sealedBalance)) ? 0 : Number(syn.sealedBalance)
 		);
