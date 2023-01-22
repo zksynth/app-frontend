@@ -14,6 +14,7 @@ import {
 	AvatarGroup,
 	Avatar,
 	Tooltip,
+	Button,
 } from "@chakra-ui/react";
 
 import IssueModel from "./modals/IssueModal";
@@ -24,6 +25,18 @@ import {
 	MdNavigateBefore,
 	MdNavigateNext,
 } from "react-icons/md";
+
+import {
+	Popover,
+	PopoverTrigger,
+	PopoverContent,
+	PopoverHeader,
+	PopoverBody,
+	PopoverFooter,
+	PopoverArrow,
+	PopoverCloseButton,
+	PopoverAnchor,
+} from "@chakra-ui/react";
 
 import {
 	Pagination,
@@ -37,6 +50,8 @@ import {
 import { AppDataContext } from "./context/AppDataProvider";
 import { useAccount, useNetwork } from "wagmi";
 import { useEffect } from "react";
+import Image from "next/image";
+import { FaBurn } from "react-icons/fa";
 
 const IssuanceTable = ({ handleChange }: any) => {
 	const [nullValue, setNullValue] = useState(false);
@@ -139,6 +154,20 @@ const IssuanceTable = ({ handleChange }: any) => {
 										currentPage * 8
 									)
 									.map((pool: any, poolIndex: number) => {
+										let totalAPY = 0;
+										for (let i in pool.rewardTokens) {
+											totalAPY += Number(
+												pool.rewardTokenEmissionsUSD[i]
+											);
+										}
+										totalAPY += Number(
+											pool.avgDailySupplySideRevenueUSD
+										);
+										totalAPY =
+											(totalAPY /
+												pool.totalBorrowBalanceUSD) *
+											365 *
+											100;
 										return (
 											<Tr key={poolIndex}>
 												<Td {...rowStyle(poolIndex)}>
@@ -230,24 +259,131 @@ const IssuanceTable = ({ handleChange }: any) => {
 													{...rowStyle(poolIndex)}
 													// {...expandOnClick(poolIndex)}
 												>
-													{pool.rewardTokens.map(
-														(
-															token: any,
-															index: number
-														) => (
-															<>
-																<Text
-																	fontSize="sm"
-																	textAlign={
-																		"left"
-																	}
-																>
+													<Flex gap={2}>
+														<Text mb={2} fontSize='sm'>
+															{" "}
+															{totalAPY.toFixed(
+																2
+															)}
+															%{" "}
+														</Text>
 
-																	{(pool.rewardTokenEmissionsUSD * 365 /pool.totalBorrowBalanceUSD).toFixed(2)} % {token.token.symbol}
-																</Text>
-															</>
-														)
-													)}
+														<Popover trigger="hover">
+															<PopoverTrigger>
+																<Text>✨</Text>
+															</PopoverTrigger>
+															<PopoverContent >
+																<PopoverArrow />
+																<PopoverHeader
+																	bg={
+																		"gray.600"
+																	}
+																	borderRadius={5}
+																>
+																	<Text
+																		fontSize={
+																			"xs"
+																		}
+																	>
+																		Total
+																		APR
+																	</Text>
+																	<Text>
+																		{totalAPY.toFixed(
+																			2
+																		)}{" "}
+																		%
+																	</Text>
+																</PopoverHeader>
+																<PopoverBody bg={"gray.700"} borderRadius={5}>
+																	<Flex
+																		gap={1}
+																		align="center"
+																	>
+																		<Text
+																			fontSize="sm"
+																			textAlign={
+																				"left"
+																			}
+																		>
+																			{(
+																				(100 *
+																					(pool.avgDailySupplySideRevenueUSD *
+																						365)) /
+																				pool.totalBorrowBalanceUSD
+																			).toFixed(
+																				2
+																			)}{" "}
+																			%{" "}
+																		</Text>
+																		<Text
+																			fontSize={
+																				"xs"
+																			}
+																			color="gray.400"
+																		>
+																			Swap
+																			and
+																			Mint
+																			Fees
+																		</Text>
+																	</Flex>
+																	{pool.rewardTokens.map(
+																		(
+																			token: any,
+																			index: number
+																		) => (
+																			<Flex
+																				key={
+																					index
+																				}
+																				gap={
+																					1
+																				}
+																				align="center"
+																				my={
+																					1
+																				}
+																			>
+																				<Text
+																					fontSize="sm"
+																					textAlign={
+																						"left"
+																					}
+																				>
+																					{(
+																						(100 *
+																							(pool
+																								.rewardTokenEmissionsUSD[
+																								index
+																							] *
+																								365)) /
+																						pool.totalBorrowBalanceUSD
+																					).toFixed(
+																						2
+																					)}{" "}
+																					%{" "}
+																				</Text>
+																				<Text
+																					fontSize={
+																						"xs"
+																					}
+																					color="gray.400"
+																				>
+																					{
+																						token
+																							.token
+																							.symbol
+																					}{" "}
+																					Rewards
+																				</Text>
+																			</Flex>
+																		)
+																	)}
+																</PopoverBody>
+															</PopoverContent>
+														</Popover>
+													</Flex>
 												</Td>
 												<Td
 													isNumeric

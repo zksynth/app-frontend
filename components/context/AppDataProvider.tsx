@@ -125,6 +125,9 @@ function AppDataProvider({ children }: any) {
 									_fee
 									_issuerAlloc
 									_capacity
+									dailySnapshots(first: 7, orderBy: timestamp, orderDirection: desc){
+										dailySupplySideRevenueUSD
+									}
 									_mintedTokens (orderBy: _totalSupplyUSD, orderDirection: desc) {
 										id
 										name
@@ -289,11 +292,10 @@ function AppDataProvider({ children }: any) {
 					BigNumber.from(res.returnData[i + 3]).toNumber()
 				);
 			}
-
+			
 			setAdjustedCollateral(_adjustedCollateral.toNumber());
 			setTotalCollateral(_totalCollateral.toNumber());
 			setCollaterals(_collaterals);
-			
 		});
 	};
 
@@ -367,6 +369,17 @@ function AppDataProvider({ children }: any) {
 				}
 				setAdjustedDebt(_adjustedDebt.toNumber());
 				setTotalDebt(_totalDebt.toNumber());
+
+				// calculate avg supply side revenue 
+				for(let i in _pools){
+					let avgDailySupplySideRevenueUSD = Big(0);
+					for(let j in _pools[i].dailySnapshots){
+						// const revenue = _pools[i].dailySnapshots[j].dailySupplySideRevenueUSD;
+						avgDailySupplySideRevenueUSD = avgDailySupplySideRevenueUSD.plus(_pools[i].dailySnapshots[j].dailySupplySideRevenueUSD);
+					}
+					avgDailySupplySideRevenueUSD = avgDailySupplySideRevenueUSD.div(_pools[i].dailySnapshots.length);
+					_pools[i].avgDailySupplySideRevenueUSD = avgDailySupplySideRevenueUSD.toString();
+				}
 				setPools(_pools);
 			});
 		});

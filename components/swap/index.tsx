@@ -27,7 +27,7 @@ import InfoFooter from "../modals/utils/InfoFooter";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 const Big = require("big.js");
 
-function Swap({ handleChange }: any) {
+function Swap() {
 	const [inputAssetIndex, setInputAssetIndex] = useState(1);
 	const [outputAssetIndex, setOutputAssetIndex] = useState(0);
 	const [inputAmount, setInputAmount] = useState(0);
@@ -178,6 +178,7 @@ function Swap({ handleChange }: any) {
 				setResponse("Transaction Successful!");
 			})
 			.catch((err: any) => {
+				console.log(err);
 				setMessage(JSON.stringify(err));
 				setLoading(false);
 				setConfirmed(true);
@@ -200,7 +201,6 @@ function Swap({ handleChange }: any) {
 		updateSynthBalance(dst, dstValue, false);
 		updateSynthBalance(src, srcValue, true);
 		setNullValue(!nullValue);
-		handleChange();
 	};
 
 	useEffect(() => {
@@ -393,11 +393,6 @@ function Swap({ handleChange }: any) {
 							</Flex>
 						</Flex>
 
-
-						{/* <Flex justify={'end'} align={'center'} bg='gray.700'  rounded={16} py={2} px={4} my={4}>
-							<Text color={'gray.300'} fontWeight='medium'>1 {inputToken().symbol} = {tokenFormatter.format(inputToken().lastPriceUSD/outputToken().lastPriceUSD)} {outputToken().symbol}</Text>
-						</Flex> */}
-
 						<Button
 						mt={8}
 							size="lg"
@@ -440,7 +435,7 @@ function Swap({ handleChange }: any) {
 											: "error"
 									}
 									variant="top-accent"
-									rounded={6}
+									rounded={16}
 								>
 									<AlertIcon />
 									<Box>
@@ -479,27 +474,6 @@ function Swap({ handleChange }: any) {
 								Slippage: {0} %
 							</Text>
 						</Flex>
-
-						{/* <Flex mb={5}>
-							<Flex
-								flexDir={"column"}
-								align="center"
-								width={10}
-								mr={2}
-							>
-								<Text fontSize={"10px"} mb={"1px"}>
-									Note
-								</Text>
-								<AiOutlineInfoCircle size={18} />
-							</Flex>
-							<Box>
-								<Text fontSize={"11px"}>
-									Cross-pool swaps are not yet supported.
-									Please use the individual pools on Balancer/Curve to swap
-									between tokens from different pools.
-								</Text>
-							</Box>
-						</Flex> */}
 					</Box>
 				</Box>
 			) : (

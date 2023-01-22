@@ -84,8 +84,6 @@ function TokenContextProvider({ children }: any) {
 			};
 		});
 
-		console.log(unlockData);
-
 		// sealed syn balance
 		const sealedSYN = await getContract("SealedSYN", chain);
 		const sealedSYNBalance = BigNumber.from(
