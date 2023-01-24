@@ -90,9 +90,9 @@ export default function MainPanel({ handleChange }: any) {
 						<Text fontSize={"2xl"} fontWeight="bold">
 							{
 								adjustedCollateral > 0
-									? (100 * adjustedCollateral / adjustedDebt).toFixed(0)
-									: Infinity
-							} %
+									? (100 * adjustedCollateral / adjustedDebt).toFixed(0) + '%'
+									: '-'
+							} 
 						</Text>
 					</Box>
 

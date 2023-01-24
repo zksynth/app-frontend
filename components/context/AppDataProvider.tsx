@@ -14,7 +14,7 @@ interface AppDataValue {
 	totalDebt: number;
 	pools: any[];
 	fetchData: (
-		_address: string|null,
+		_address: string | null,
 		chainId: number
 	) => Promise<unknown> | undefined;
 	tradingPool: number;
@@ -90,10 +90,12 @@ function AppDataProvider({ children }: any) {
 		}
 	};
 
-	const fetchData = (_address: string|null, chainId: number) => {
+	const fetchData = (_address: string | null, chainId: number) => {
 		return new Promise((resolve, reject) => {
 			setIsFetchingData(true);
-			console.log(`Fetching data for ${_address} through ${Endpoints[chainId]}`)
+			console.log(
+				`Fetching data for ${_address} through ${Endpoints[chainId]}`
+			);
 			axios
 				.post(Endpoints[chainId], {
 					query: `{
@@ -141,7 +143,7 @@ function AppDataProvider({ children }: any) {
 					variables: {},
 				})
 				.then(async (res) => {
-					if(res.data.errors){
+					if (res.data.errors) {
 						setDataFetchError(
 							"Failed to fetch data. Please refresh the page."
 						);
@@ -158,7 +160,25 @@ function AppDataProvider({ children }: any) {
 							_collaterals.push(markets[i]);
 						}
 					}
-					if(_address){
+					// calculate avg supply side revenue
+					for (let i in _pools) {
+						let avgDailySupplySideRevenueUSD = Big(0);
+						for (let j in _pools[i].dailySnapshots) {
+							// const revenue = _pools[i].dailySnapshots[j].dailySupplySideRevenueUSD;
+							avgDailySupplySideRevenueUSD =
+								avgDailySupplySideRevenueUSD.plus(
+									_pools[i].dailySnapshots[j]
+										.dailySupplySideRevenueUSD
+								);
+						}
+						avgDailySupplySideRevenueUSD =
+							avgDailySupplySideRevenueUSD.div(
+								_pools[i].dailySnapshots.length
+							);
+						_pools[i].avgDailySupplySideRevenueUSD =
+							avgDailySupplySideRevenueUSD.toString();
+					}
+					if (_address) {
 						const provider = new ethers.providers.Web3Provider(
 							(window as any).ethereum!,
 							"any"
@@ -174,6 +194,7 @@ function AppDataProvider({ children }: any) {
 							_address,
 							chainId
 						);
+
 						_setPools(_pools, multicallContract, _address, chainId);
 					} else {
 						setCollaterals(_collaterals);
@@ -207,16 +228,23 @@ function AppDataProvider({ children }: any) {
 
 			// for erc20Collaterals
 			for (let i = 0; i < _collaterals.length; i++) {
-				if(_collaterals[i].inputToken.id === "0x0000000000000000000000000000000000000000"){
+				if (
+					_collaterals[i].inputToken.id ===
+					"0x0000000000000000000000000000000000000000"
+				) {
 					// getEthBalance
 					calls.push([
 						helper.address,
-						helper.interface.encodeFunctionData("getEthBalance", [_address]),
+						helper.interface.encodeFunctionData("getEthBalance", [
+							_address,
+						]),
 					]);
 					calls.push([
 						helper.address,
-						helper.interface.encodeFunctionData("getEthBalance", [_address]) 
-					])
+						helper.interface.encodeFunctionData("getEthBalance", [
+							_address,
+						]),
+					]);
 				} else {
 					calls.push([
 						_collaterals[i].id,
@@ -246,25 +274,29 @@ function AppDataProvider({ children }: any) {
 					]),
 				]);
 			}
-			
+
 			const [res, safeCRatio] = await Promise.all([
-				helper.callStatic.aggregate(calls), 
-				synthex.safeCRatio()
-			])
-			
+				helper.callStatic.aggregate(calls),
+				synthex.safeCRatio(),
+			]);
+
 			setSafeCRatio(Number(ethers.utils.formatEther(safeCRatio)));
 			setBlock(parseInt(res[0].toString()));
 			for (let i = 0; i < res.returnData.length; i += 4) {
 				_collaterals[i / 4].walletBalance = BigNumber.from(
 					res.returnData[i]
 				).toString();
-				if(_collaterals[i / 4].inputToken.id === "0x0000000000000000000000000000000000000000"){
-					_collaterals[i / 4].allowance = ethers.constants.MaxUint256.toString();
+				if (
+					_collaterals[i / 4].inputToken.id ===
+					"0x0000000000000000000000000000000000000000"
+				) {
+					_collaterals[i / 4].allowance =
+						ethers.constants.MaxUint256.toString();
 				} else {
 					_collaterals[i / 4].allowance = BigNumber.from(
 						res.returnData[i + 1]
-						).toString();
-					}
+					).toString();
+				}
 				_collaterals[i / 4].balance = BigNumber.from(
 					res.returnData[i + 2]
 				).toString();
@@ -272,18 +304,14 @@ function AppDataProvider({ children }: any) {
 					Big(_collaterals[i / 4].balance)
 						.times(Big(_collaterals[i / 4].inputTokenPriceUSD))
 						.div(
-							Big(10).pow(
-								_collaterals[i / 4].inputToken.decimals
-							)
+							Big(10).pow(_collaterals[i / 4].inputToken.decimals)
 						)
 				);
 				_adjustedCollateral = _adjustedCollateral.plus(
 					Big(_collaterals[i / 4].balance)
 						.times(Big(_collaterals[i / 4].inputTokenPriceUSD))
 						.div(
-							Big(10).pow(
-								_collaterals[i / 4].inputToken.decimals
-							)
+							Big(10).pow(_collaterals[i / 4].inputToken.decimals)
 						)
 						.times(Big(_collaterals[i / 4].maximumLTV))
 						.div(100)
@@ -292,7 +320,7 @@ function AppDataProvider({ children }: any) {
 					BigNumber.from(res.returnData[i + 3]).toNumber()
 				);
 			}
-			
+
 			setAdjustedCollateral(_adjustedCollateral.toNumber());
 			setTotalCollateral(_totalCollateral.toNumber());
 			setCollaterals(_collaterals);
@@ -311,13 +339,10 @@ function AppDataProvider({ children }: any) {
 			const synthexitf = new ethers.utils.Interface(getABI("SyntheX"));
 			const poolitf = new ethers.utils.Interface(getABI("DebtPool"));
 
-
 			for (let i = 0; i < _pools.length; i++) {
 				calls.push([
 					_pools[i].id,
-					poolitf.encodeFunctionData("getUserDebtUSD", [
-						_address
-					]),
+					poolitf.encodeFunctionData("getUserDebtUSD", [_address]),
 				]);
 				calls.push([
 					getAddress("SyntheX", _chain),
@@ -370,16 +395,6 @@ function AppDataProvider({ children }: any) {
 				setAdjustedDebt(_adjustedDebt.toNumber());
 				setTotalDebt(_totalDebt.toNumber());
 
-				// calculate avg supply side revenue 
-				for(let i in _pools){
-					let avgDailySupplySideRevenueUSD = Big(0);
-					for(let j in _pools[i].dailySnapshots){
-						// const revenue = _pools[i].dailySnapshots[j].dailySupplySideRevenueUSD;
-						avgDailySupplySideRevenueUSD = avgDailySupplySideRevenueUSD.plus(_pools[i].dailySnapshots[j].dailySupplySideRevenueUSD);
-					}
-					avgDailySupplySideRevenueUSD = avgDailySupplySideRevenueUSD.div(_pools[i].dailySnapshots.length);
-					_pools[i].avgDailySupplySideRevenueUSD = avgDailySupplySideRevenueUSD.toString();
-				}
 				setPools(_pools);
 			});
 		});
@@ -506,24 +521,22 @@ function AppDataProvider({ children }: any) {
 						isMinus
 							? Big(_pools[i].totalBorrowBalanceUSD).minus(
 									Big(amount)
-									.times(_synths[j].lastPriceUSD)
-									.div(10 ** _synths[j].decimals)
+										.times(_synths[j].lastPriceUSD)
+										.div(10 ** _synths[j].decimals)
 							  )
 							: Big(_pools[i].totalBorrowBalanceUSD).plus(
 									Big(amount)
-									.times(_synths[j].lastPriceUSD)
-									.div(10 ** _synths[j].decimals)
+										.times(_synths[j].lastPriceUSD)
+										.div(10 ** _synths[j].decimals)
 							  )
 					).toString();
 					_pools[i].balance = (
 						isMinus
 							? Big(_pools[i].balance).minus(
-									Big(amount)
-									.times(_synths[j].lastPriceUSD)
+									Big(amount).times(_synths[j].lastPriceUSD)
 							  )
 							: Big(_pools[i].balance).plus(
-									Big(amount)
-									.times(_synths[j].lastPriceUSD)
+									Big(amount).times(_synths[j].lastPriceUSD)
 							  )
 					).toString();
 				}
@@ -535,7 +548,10 @@ function AppDataProvider({ children }: any) {
 	};
 
 	const availableToBorrow = () => {
-		const max = Big(100).times(totalCollateral).div(safeCRatio).sub(totalDebt);
+		const max = Big(100)
+			.times(totalCollateral)
+			.div(safeCRatio)
+			.sub(totalDebt);
 		return max.gt(0) ? max.toString() : "0";
 	};
 
@@ -572,7 +588,7 @@ function AppDataProvider({ children }: any) {
 		togglePoolEnabled,
 		adjustedDebt,
 		adjustedCollateral,
-		block
+		block,
 	};
 
 	return (

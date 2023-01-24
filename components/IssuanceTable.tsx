@@ -162,7 +162,7 @@ const IssuanceTable = ({ handleChange }: any) => {
 											);
 										}
 										totalAPY += Number(
-											pool.avgDailySupplySideRevenueUSD
+											pool.avgDailySupplySideRevenueUSD ?? 0
 										);
 										totalAPY =
 											(totalAPY /
