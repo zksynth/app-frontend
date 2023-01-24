@@ -51,15 +51,8 @@ function TokenSelector({
 		onTokenSelected(tokenIndex);
 	};
 
-	useEffect(() => {
-		if (pools.length > 0) {
-			setSearchPools([...pools]);
-		}
-	}, [pools]);
-
 	const searchToken = (searchTerm: string) => {
 		// search token from all pool _mintedTokens
-		console.log('---searchTerm---', searchTerm)
 		const _pools = [...pools];
 		const _searchedTokens = [];
 		for(let i in _pools) {
@@ -72,15 +65,22 @@ function TokenSelector({
 					_token.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
 					_token.symbol.toLowerCase().includes(searchTerm.toLowerCase())
 				){
-					_seachedPool._mintedTokens.push(_token)
+					_seachedPool._mintedTokens.push({..._token, poolIndex: i, tokenIndex: j})
 				}
 			}
 			_searchedTokens.push(_seachedPool)
 		}
-
+		console.log(_searchedTokens);
 		setSearchPools(_searchedTokens);
 	};
 
+	useEffect(() => {
+		if (pools.length > 0 && searchPools.length == 0) {
+			searchToken('');
+		}
+	}, [searchToken]);
+
+	
 	return (
 		<>
 			<Modal
@@ -159,8 +159,8 @@ function TokenSelector({
 												}}
 												onClick={() =>
 													selectToken(
-														tokenIndex,
-														index
+														_synth.tokenIndex,
+														_synth.poolIndex
 													)
 												}
 											>

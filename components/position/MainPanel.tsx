@@ -135,14 +135,14 @@ export default function MainPanel({ handleChange }: any) {
 						{dollarFormatter?.format(totalDebt)}
 					</Text>
 
-					<Text fontWeight={'medium'} mt={2} color="gray.400" fontSize={"sm"}>Available to Borrow</Text>
+					<Text fontWeight={'medium'} mt={2} color="gray.400" fontSize={"sm"}>Borrow Capacity</Text>
 					<Text fontWeight={'medium'} color="gray.200" fontSize={"xl"}>
 						{dollarFormatter?.format(
-							Big(
-								Big(adjustedCollateral)
-									.div(safeCRatio)
-									.minus(adjustedDebt)
-							).toNumber()
+							Big(adjustedCollateral)
+							.div(safeCRatio)
+							.minus(adjustedDebt).gt(0) ? Big(adjustedCollateral)
+							.div(safeCRatio)
+							.minus(adjustedDebt).toNumber() : 0
 						)}
 					</Text>
 				</Box>

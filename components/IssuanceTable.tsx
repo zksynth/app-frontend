@@ -118,8 +118,9 @@ const IssuanceTable = ({ handleChange }: any) => {
 			borderColor: "gray.800",
 			borderBottom: "4px",
 			bg: "gray.700",
-			px: "7",
+			px: "6",
 			py: "8",
+			
 		};
 	};
 
@@ -128,7 +129,7 @@ const IssuanceTable = ({ handleChange }: any) => {
 		fontFamily: "Poppins",
 		color: "gray.500",
 		borderColor: "transparent",
-		px: "7",
+		px: "7"
 	};
 
 	return (
@@ -137,7 +138,7 @@ const IssuanceTable = ({ handleChange }: any) => {
 				<>
 					{" "}
 					<TableContainer>
-						<Table overflow={"auto"} variant="simple">
+						<Table overflow={"auto"}>
 							<Thead>
 								<Tr>
 									<Th {...rowHeadStyle}>Debt Pool</Th>
@@ -170,7 +171,7 @@ const IssuanceTable = ({ handleChange }: any) => {
 											100;
 										return (
 											<Tr key={poolIndex}>
-												<Td {...rowStyle(poolIndex)}>
+												<Td {...rowStyle(poolIndex)} roundedLeft={'xl'}>
 													<Flex
 														align={"center"}
 														gap={2}
@@ -270,15 +271,15 @@ const IssuanceTable = ({ handleChange }: any) => {
 
 														<Popover trigger="hover">
 															<PopoverTrigger>
-																<Text>✨</Text>
+																<Text cursor={'pointer'}>✨</Text>
 															</PopoverTrigger>
-															<PopoverContent >
+															<PopoverContent maxW={'200px'} >
 																<PopoverArrow />
 																<PopoverHeader
 																	bg={
-																		"gray.600"
+																		"gray.700"
 																	}
-																	borderRadius={5}
+																	roundedTop={5}
 																>
 																	<Text
 																		fontSize={
@@ -295,7 +296,7 @@ const IssuanceTable = ({ handleChange }: any) => {
 																		%
 																	</Text>
 																</PopoverHeader>
-																<PopoverBody bg={"gray.700"} borderRadius={5}>
+																<PopoverBody bg={"gray.600"} roundedBottom={5}>
 																	<Flex
 																		gap={1}
 																		align="center"
@@ -388,6 +389,7 @@ const IssuanceTable = ({ handleChange }: any) => {
 												<Td
 													isNumeric
 													{...rowStyle(poolIndex)}
+													roundedRight="xl"
 												>
 													<Flex
 														alignItems={"end"}

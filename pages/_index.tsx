@@ -1,4 +1,4 @@
-import { Box, Flex, Progress, Text } from '@chakra-ui/react';
+import { Box, Flex, Progress, Text, useBreakpointValue } from '@chakra-ui/react';
 import React, { useContext } from 'react';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
@@ -13,6 +13,12 @@ import { useAccount, useConnect } from 'wagmi';
 import { DUMMY_ADDRESS } from '../src/const';
 
 export default function _index({ children }: any) {
+
+	// check chakra device size
+	const isMobile = useBreakpointValue({
+		base: true,
+		lg: false,
+	});
 
 	const {
 		isConnected,
@@ -52,17 +58,29 @@ export default function _index({ children }: any) {
 
 	return (
 		<Box>
+			<Box bgColor="gray.800" color={'gray.400'}>
 			{connectionError && (
 				<Text
 					textAlign={'center'}
 					width="100%"
 					fontSize={'md'}
 					fontWeight="bold"
-					p={2}
-					bgColor="gray.50">
+					p={2}>
 					{connectionError}
 				</Text>
 			)}
+			{isMobile && (
+				<Text
+					textAlign={'center'}
+					width="100%"
+					fontSize={'md'}
+					fontWeight="bold"
+					p={2}
+					>
+					SyntheX is not optimised for mobile yet
+				</Text>
+			)}
+			</Box>
 			<Box {...backgroundStyle}>
 				<Flex
 					justify={'center'}

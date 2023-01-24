@@ -57,7 +57,7 @@ function Index() {
 						}}
 						justifyContent="space-between"
 						flexWrap="wrap">
-						<Box {...TableStyle} bg='gray.800' border='1px' borderColor='rgba(255, 255, 255, 0.03)' rounded={15}>
+						<Box {...TableStyle} bg='gray.800' rounded={15}>
 							<IssuanceTable handleChange={handleChange} />
 						</Box>
 					</Flex>

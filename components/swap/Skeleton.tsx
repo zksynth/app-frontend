@@ -8,7 +8,7 @@ export default function SwapSkeleton() {
 						h={"40%"}
 						bg="gray.700"
 						align={"center"}
-						px={10}
+						px={5}
 						roundedTop="15"
 						justify="space-between"
 					>
@@ -43,7 +43,7 @@ export default function SwapSkeleton() {
 					<Flex
 						flexDir={"column"}
 						justify="space-evenly"
-						px={10}
+						px={5}
 						h={"60%"}
 						bg="gray.800"
 						roundedBottom="15"

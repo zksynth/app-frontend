@@ -46,7 +46,7 @@ export default function SYN() {
 			</Flex>
 
 			<Box
-				w={"60%"}
+				w={"70%"}
 				minW="600px"
 				bgColor="gray.700"
 				textAlign={"center"}
@@ -142,7 +142,7 @@ export default function SYN() {
 			</Flex>
 
 			<Box
-				w="60%"
+				w="70%"
 				minW="600px"
 				mt={-7}
 				pb={10}

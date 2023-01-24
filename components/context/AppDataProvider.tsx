@@ -535,9 +535,8 @@ function AppDataProvider({ children }: any) {
 	};
 
 	const availableToBorrow = () => {
-		return (100 * totalCollateral) / safeCRatio - totalDebt > 0
-			? (100 * totalCollateral) / safeCRatio - totalDebt
-			: 0;
+		const max = Big(100).times(totalCollateral).div(safeCRatio).sub(totalDebt);
+		return max.gt(0) ? max.toString() : "0";
 	};
 
 	const cRatio = () => {

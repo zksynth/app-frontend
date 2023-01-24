@@ -70,10 +70,10 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 		if (!Number(safeCRatio)) return '0';
 		if (!Number(asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD)) return '0';
 		// MAX = ((Ac/safeC) - Ad)*Vr
-		return Big(asset.maximumLTV / 100)
-			.times(Big(adjustedCollateral).div(safeCRatio).minus(adjustedDebt))
-			.div(asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD)
-			.toString();
+		const _max = Big(asset.maximumLTV / 100)
+			.times(Big(adjustedCollateral).div(safeCRatio * 1.01).minus(adjustedDebt))
+			.div(asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD);
+		return _max.gt(0) ?_max.toString() : '0';
 	};
 
 	const issue = async () => {
