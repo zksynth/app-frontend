@@ -2,8 +2,8 @@ import { Box, Divider, Flex, Text, Image, Skeleton, Button } from '@chakra-ui/re
 import React, { useContext, useState } from 'react';
 import { useAccount, useNetwork } from 'wagmi';
 import { AppDataContext } from '../context/AppDataProvider';
-import DepositModal from '../modals/DepositModal';
-import WithdrawModal from '../modals/WithdrawModal';
+import DepositModal from '../modals/Deposit';
+import WithdrawModal from '../modals/Withdraw';
 import { WalletContext } from '../context/WalletContextProvider';
 import { dollarFormatter, tokenFormatter } from '../../src/const';
 import { BsFillCaretDownFill, BsFillCaretUpFill } from 'react-icons/bs';

@@ -20,8 +20,6 @@ import { AppDataContext } from "../context/AppDataProvider";
 import { TokenContext } from "../context/TokenContext";
 
 export default function Claim() {
-	const [tabIndex, setTabIndex] = React.useState(0);
-
 	const { address, isConnected, isConnecting } = useAccount();
 	const { chain: connectedChain } = useNetwork();
 
