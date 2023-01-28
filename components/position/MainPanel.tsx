@@ -96,8 +96,9 @@ export default function MainPanel({ handleChange }: any) {
 						</Text>
 					</Box>
 
-					<Flex justify={"start"} align={"center"} mt={4}>
+					<Flex justify={"start"} align={"center"} mt={4} cursor={'help'}>
 						<Tooltip
+								
 								fontSize={"xs"}
 								label={
 									<>

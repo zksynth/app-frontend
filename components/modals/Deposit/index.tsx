@@ -30,8 +30,8 @@ import { BiPlusCircle } from "react-icons/bi";
 import { AppDataContext } from "../../context/AppDataProvider";
 import { useAccount, useBalance, useNetwork } from "wagmi";
 import { ethers } from "ethers";
-import Response from "../utils/Response";
-import InfoFooter from "../utils/InfoFooter";
+import Response from "../_utils/Response";
+import InfoFooter from "../_utils/InfoFooter";
 import { Step, Steps, useSteps } from "chakra-ui-steps";
 
 import Step1 from "./Step1";

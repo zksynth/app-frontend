@@ -33,7 +33,7 @@ function Index() {
 				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
 			</Head>
 			{
-				<Flex flexDir={'column'} mt={10} mb={10} gap={3}>
+				<Flex flexDir={'column'} mt={10} mb={10} gap={6}>
 					<Flex
 						flexDirection={{
 							sm: 'column',
@@ -44,7 +44,7 @@ function Index() {
 						align="stretch" 
                         
 						>
-                            <Box width={'100%'}>
+                            <Box width={'100%'} bg='transparent' roundedTop={15}>
                                 <MainPanel handleChange={handleChange} />
                             </Box>
 					</Flex>

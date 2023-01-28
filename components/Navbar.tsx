@@ -8,11 +8,9 @@ import {
 	ListItem,
 	Drawer,
 	DrawerBody,
-	DrawerFooter,
 	DrawerHeader,
 	DrawerOverlay,
 	DrawerContent,
-	DrawerCloseButton,
 	useDisclosure,
 } from "@chakra-ui/react";
 
@@ -33,7 +31,6 @@ import { useContext } from "react";
 import { AppDataContext } from "./context/AppDataProvider";
 import { ChainID } from "../src/chains";
 import { BigNumber } from "ethers";
-import { BiCoinStack, BiStats } from "react-icons/bi";
 import { RiCopperCoinFill } from "react-icons/ri";
 import { FiBarChart2 } from "react-icons/fi";
 import { TokenContext } from "./context/TokenContext";

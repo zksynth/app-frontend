@@ -9,9 +9,9 @@ import {
 } from "@chakra-ui/react";
 import Head from "next/head";
 import React from "react";
-import SYN from "../components/SYN";
+import SYN from "../components/syn";
 
-export default function xsyn() {
+export default function syn() {
 	return (
 		<>
 			<Head>

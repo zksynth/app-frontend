@@ -29,7 +29,7 @@ import { FaCoins, FaPlusCircle } from "react-icons/fa";
 import InputWithMax from "../../inputs/InputWithMax";
 import { ArrowDownIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { IoIosArrowBack } from "react-icons/io";
-import Response from "../utils/Response";
+import Response from "../_utils/Response";
 
 const CLAIM_AMOUNTS: any = {
 	USDC: "1000",

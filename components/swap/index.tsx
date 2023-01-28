@@ -23,7 +23,7 @@ import TokenSelector from "./TokenSelector";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { dollarFormatter } from "../../src/const";
 import SwapSkeleton from "./Skeleton";
-import InfoFooter from "../modals/utils/InfoFooter";
+import InfoFooter from "../modals/_utils/InfoFooter";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 const Big = require("big.js");
 

@@ -43,9 +43,9 @@ export default function _index({ children }: any) {
 	const [init, setInit] = useState(false);
 
 	const backgroundStyle = {
-		// backgroundColor: 'gray.800'
-		// bgGradient: 'radial(#12131B, gray.900)',
-		bgGradient: 'radial(gray.900, #12131B)',
+		// backgroundColor: '#0E1015'
+		bgGradient: 'radial(#0E1015, gray.900)',
+		// bgGradient: 'radial(gray.900, #12131B)',
 	};
 
 	const [hydrated, setHydrated] = useState(false);

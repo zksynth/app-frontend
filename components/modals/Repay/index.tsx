@@ -5,9 +5,13 @@ import {
 	Text,
 	Flex,
 	useDisclosure,
-	Select,
 	IconButton,
+	Select,
 	InputGroup,
+	NumberInputField,
+} from "@chakra-ui/react";
+
+import {
 	Modal,
 	ModalOverlay,
 	ModalContent,
@@ -15,82 +19,72 @@ import {
 	ModalFooter,
 	ModalBody,
 	ModalCloseButton,
-	NumberInput,
-	NumberInputField,
+	NumberInput
 } from "@chakra-ui/react";
-
-import { AiOutlineInfoCircle, AiOutlinePlus } from "react-icons/ai";
-import { getContract, send } from "../../src/contract";
-import { useContext } from "react";
-import { AppDataContext } from "../context/AppDataProvider";
-import { useAccount, useNetwork } from "wagmi";
-import { dollarFormatter, tokenFormatter } from "../../src/const";
-import Big from "big.js";
-import InputWithSlider from "../inputs/InputWithSlider";
-import Response from "./utils/Response";
-import InfoFooter from "./utils/InfoFooter";
 import Image from "next/image";
+import { AiOutlineMinus } from "react-icons/ai";
+import { getContract, send } from "../../../src/contract";
+import { useContext } from "react";
+import { AppDataContext } from "../../context/AppDataProvider";
+import { useAccount, useNetwork } from "wagmi";
+import { tokenFormatter, dollarFormatter } from '../../../src/const';
+import Big from "big.js";
+import Response from "../_utils/Response";
+import InfoFooter from "../_utils/InfoFooter";
 
-const ROUNDING = 0.98;
-
-const IssueModal = ({ asset, handleIssue }: any) => {
+const RepayModal = ({ asset, handleRepay }: any) => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
-
 	const [loading, setLoading] = useState(false);
 	const [response, setResponse] = useState<string | null>(null);
 	const [hash, setHash] = useState(null);
 	const [confirmed, setConfirmed] = useState(false);
-	const [message, setMessage] = useState("");
+	const [amount, setAmount] = React.useState("0");
+	const [amountNumber, setAmountNumber] = useState(0);
+	const [message, setMessage] = useState('');
 
 	const [selectedAssetIndex, setSelectedAssetIndex] = useState(0);
 
-	const [amount, setAmount] = React.useState("0");
-	const [amountNumber, setAmountNumber] = useState(0);
+	const { chain } = useContext(AppDataContext);
 
 	const _onClose = () => {
 		setLoading(false);
 		setResponse(null);
 		setHash(null);
 		setConfirmed(false);
-		setMessage("");
 		setAmount('0');
 		setAmountNumber(0);
 		onClose();
 	};
 
-	const {
-		chain,
-		togglePoolEnabled,
-		adjustedCollateral,
-		adjustedDebt,
-		safeCRatio,
-	} = useContext(AppDataContext);
-
 	const max = () => {
-		if (!Number(safeCRatio)) return '0';
-		if (!Number(asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD)) return '0';
-		// MAX = ((Ac/safeC) - Ad)*Vr
-		const _max = Big(asset.maximumLTV / 100)
-			.times(Big(adjustedCollateral).div(safeCRatio * 1.01).minus(adjustedDebt))
-			.div(asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD);
-		return _max.gt(0) ?_max.toString() : '0';
+		if(!Number(asset._mintedTokens[selectedAssetIndex].lastPriceUSD)) return '0';
+
+		return Math.min(
+			Big(asset._mintedTokens[selectedAssetIndex].balance ?? 0).div(
+				10 ** asset.inputToken.decimals
+			).toNumber(),
+			Big(asset.balance ?? 0).div(
+				10 ** asset.inputToken.decimals
+			).div(
+				asset._mintedTokens[selectedAssetIndex].lastPriceUSD
+			).toNumber()
+		).toString();
 	};
 
-	const issue = async () => {
+	const repay = async () => {
 		if (!amount) return;
 		setLoading(true);
 		setConfirmed(false);
 		setHash(null);
 		setResponse("");
-		setMessage("");
-
+		setMessage('');
 		let synthex = await getContract("SyntheX", chain);
-		let value = Big(amount)
-			.times(10 ** asset.inputToken.decimals)
-			.toFixed(0);
+		const _amount = amount;
+		const _asset = asset._mintedTokens[selectedAssetIndex].symbol;
+		let value = Big(amount).times(10 ** asset.inputToken.decimals).toFixed(0);
 		send(
 			synthex,
-			"issue",
+			"burn",
 			[asset.id, asset._mintedTokens[selectedAssetIndex].id, value],
 			chain
 		)
@@ -100,27 +94,21 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 				setHash(res.hash);
 				await res.wait(1);
 				setConfirmed(true);
-				handleIssue(asset._mintedTokens[selectedAssetIndex].id, value);
-				if (!asset.isEnabled) togglePoolEnabled(asset.id);
+				handleRepay(asset._mintedTokens[selectedAssetIndex].id, value);
+				setMessage(`Repaid ${_amount} ${_asset}`);
 				setResponse("Transaction Successful!");
-				setMessage(
-					`You have successfully issued ${tokenFormatter.format(
-						amountNumber
-					)} ${asset._mintedTokens[selectedAssetIndex].symbol}`
-				);
 			})
 			.catch((err: any) => {
-				console.log(err);
 				setLoading(false);
 				setConfirmed(true);
-				setResponse("Transaction failed. Please try again!");
 				setMessage(JSON.stringify(err));
+				setResponse("Transaction failed. Please try again!");
 			});
 	};
 
-	const { isConnected } = useAccount();
+	const { address, isConnected, isConnecting } = useAccount();
 	const { chain: activeChain } = useNetwork();
-
+	
 	const _setAmount = (e: string) => {
 		setAmount(e);
 		setAmountNumber(isNaN(Number(e)) ? 0 : Number(e));
@@ -133,26 +121,23 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 		);
 	};
 
-
 	return (
 		<Box>
 			<IconButton
-				variant="solid"
 				onClick={onOpen}
-				icon={<AiOutlinePlus />}
+				icon={<AiOutlineMinus />}
 				aria-label={""}
 				isRound={true}
-				p={2}
+				size={"md"}
+				_hover={{opacity: 0.6}}
 			></IconButton>
 			<Modal isCentered isOpen={isOpen} onClose={_onClose}>
 				<ModalOverlay bg="blackAlpha.100" backdropFilter="blur(30px)" />
-				<ModalContent width={"30rem"} bgColor="">
+				<ModalContent width={"30rem"} bgColor="gray.800">
 					<ModalCloseButton />
 					<ModalHeader>{asset.name}</ModalHeader>
 					<ModalBody>
-						
-
-						<Box mb={10} mt={4}>
+					<Box mt={4} mb={10}>
 						<Flex justify={"center"} mb={2}>
 							<Flex
 								width={"33%"}
@@ -182,8 +167,8 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 											setSelectedAssetIndex(
 											parseInt(e.target.value)
 										)
-										setAmount('0')
-										setAmountNumber(0)
+										setAmount('0');
+										setAmountNumber(0);
 									}
 									}
 								>
@@ -200,9 +185,7 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 						<InputGroup variant={"unstyled"} display="flex">
 							<NumberInput
 								w={"100%"}
-								value={Number(amount) > 0
-									? tokenFormatter.format(parseFloat(amount))
-									: amount}
+								value={amount || 0}
 								onChange={_setAmount}
 								min={0}
 								step={0.01}
@@ -231,18 +214,18 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 
 						</Box>
 
+
 						<Flex mt={2} justify="space-between">
-							{/* <Text fontSize={"xs"} color="gray.400">
-								1 {asset._mintedTokens[selectedAssetIndex].symbol} = {asset._mintedTokens[selectedAssetIndex].lastPriceUSD}{" "}
-								USD
-							</Text> */}
 							<Text fontSize={"xs"} color="gray.400">
-								Market LTV = {parseFloat(asset.maximumLTV)} %
+								1 {asset._mintedTokens[selectedAssetIndex].symbol} = {dollarFormatter.format(asset._mintedTokens[selectedAssetIndex].lastPriceUSD)}
 							</Text>
+							{/* <Text fontSize={"xs"} color="gray.400">
+								Market LTV = {parseFloat(asset.maximumLTV)} %
+							</Text> */}
 
 							<Flex gap={1}>
 								<Text fontSize={"xs"} color="gray.400">
-									Max:
+									Available:
 								</Text>
 
 								<Text
@@ -270,47 +253,38 @@ const IssueModal = ({ asset, handleIssue }: any) => {
 								amountNumber > parseFloat(max())
 							}
 							isLoading={loading}
-							loadingText="Please sign the transaction"
-							bgColor="primary"
+							bgColor='secondary'
 							width="100%"
-							color="gray.700"
 							mt={4}
-							onClick={issue}
-							size="lg"
+							onClick={repay}
+							loadingText="Please sign the transaction"
+							size={'lg'}
 							rounded={16}
-							_hover={{
-								opacity: "0.5",
-							}}
 						>
-							{isConnected && !activeChain?.unsupported ? (
+							{(isConnected && !activeChain?.unsupported) ? (
 								amountNumber > parseFloat(max()) ? (
-									<>Insufficient Collateral</>
+									<>Insufficient Debt</>
 								) : !amount || amountNumber == 0 ? (
 									<>Enter amount</>
 								) : (
-									<>Mint ✨</>
+									<>Burn </>
 								)
 							) : (
 								<>Please connect your wallet</>
 							)}
 						</Button>
 
-						<Response
-							response={response}
-							message={message}
-							hash={hash}
-							confirmed={confirmed}
-						/>
+						<Response response={response} message={message} hash={hash} confirmed={confirmed} />
 					</ModalBody>
-					<InfoFooter
-						message="
-						You can issue a new asset against your collateral. Debt is dynamic and depends on total debt of the pool.
-					"
-					/>
+
+					<InfoFooter message='
+						Repaying your debt will reduce your liquidation risk. If your health falls below the minimum 1, you will be liquidated and your collateral will be sold to repay your debt.
+					'/>
+
 				</ModalContent>
 			</Modal>
 		</Box>
 	);
 };
 
-export default IssueModal;
+export default RepayModal;

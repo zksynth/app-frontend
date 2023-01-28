@@ -17,8 +17,8 @@ import {
 	Button,
 } from "@chakra-ui/react";
 
-import IssueModel from "./modals/IssueModal";
-import RepayModel from "./modals/RepayModal";
+import IssueModel from "./modals/Issue";
+import RepayModel from "./modals/Repay";
 import { WalletContext } from "./context/WalletContextProvider";
 import {
 	MdArrowBackIos,
@@ -115,36 +115,37 @@ const IssuanceTable = ({ handleChange }: any) => {
 
 	const rowStyle = (poolIndex: number) => {
 		return {
-			borderColor: "gray.800",
-			borderBottom: "4px",
-			bg: "gray.700",
-			px: "6",
+			borderColor: "transparent",
+			// borderBottom: "4px",
+			mb: "20px",
+			// bg: "gray.700",
 			py: "8",
-			
+			px: "7",
+
 		};
 	};
 
 	const rowHeadStyle = {
-		fontSize: "xs",
+		fontSize: "11px",
 		fontFamily: "Poppins",
-		color: "gray.500",
-		borderColor: "transparent",
+		color: "gray.400",
+		// borderColor: "transparent",
+		borderColor: "gray.700",
 		px: "7"
 	};
 
 	return (
-		<Box mx={-4}>
+		<Box >
 			{pools.length > 0 ? (
 				<>
-					{" "}
-					<TableContainer>
+					<TableContainer mt={2}>
 						<Table overflow={"auto"}>
 							<Thead>
 								<Tr>
 									<Th {...rowHeadStyle}>Debt Pool</Th>
 									<Th {...rowHeadStyle}>Protocol Debt</Th>
 									<Th {...rowHeadStyle}>Liquidity</Th>
-									<Th {...rowHeadStyle}>% APY</Th>
+									<Th {...rowHeadStyle} isNumeric>APY</Th>
 									<Th {...rowHeadStyle}></Th>
 								</Tr>
 							</Thead>
@@ -184,7 +185,7 @@ const IssuanceTable = ({ handleChange }: any) => {
 															>
 																{pool.name}
 															</Text>
-															<Text
+															{/* <Text
 																fontSize="xs"
 																fontWeight="light"
 																textAlign="left"
@@ -195,7 +196,7 @@ const IssuanceTable = ({ handleChange }: any) => {
 																		.inputToken
 																		.symbol
 																}
-															</Text>
+															</Text> */}
 														</Box>
 													</Flex>
 													<AvatarGroup
@@ -259,8 +260,9 @@ const IssuanceTable = ({ handleChange }: any) => {
 												<Td
 													{...rowStyle(poolIndex)}
 													// {...expandOnClick(poolIndex)}
+													
 												>
-													<Flex gap={2}>
+													<Flex gap={2} justify='end'>
 														<Text mb={2} fontSize='sm'>
 															{" "}
 															{totalAPY.toFixed(
@@ -273,7 +275,7 @@ const IssuanceTable = ({ handleChange }: any) => {
 															<PopoverTrigger>
 																<Text cursor={'pointer'}>✨</Text>
 															</PopoverTrigger>
-															<PopoverContent maxW={'200px'} >
+															<PopoverContent maxW={'200px'} borderColor='transparent'>
 																<PopoverArrow />
 																<PopoverHeader
 																	bg={

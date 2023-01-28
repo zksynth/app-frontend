@@ -2,7 +2,7 @@ import Big from "big.js";
 import { BigNumber, ethers } from "ethers";
 import * as React from "react";
 import { getContract } from "../../src/contract";
-import SYN from "../SYN/index";
+import SYN from "../syn/index";
 
 const TokenContext = React.createContext<TokenValue>({} as TokenValue);
 
