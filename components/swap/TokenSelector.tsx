@@ -8,17 +8,7 @@ import {
 	Input,
 	Tooltip,
 } from "@chakra-ui/react";
-import {
-	Table,
-	Thead,
-	Tbody,
-	Tfoot,
-	Tr,
-	Th,
-	Td,
-	TableCaption,
-	TableContainer,
-} from "@chakra-ui/react";
+
 import Image from "next/image";
 import { useContext, useState, useEffect } from "react";
 import { AppDataContext } from "../context/AppDataProvider";

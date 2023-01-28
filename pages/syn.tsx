@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 import Head from "next/head";
 import React from "react";
-import SYN from "../components/syn";
+import SYN from "../components/SYN";
 
 export default function syn() {
 	return (
