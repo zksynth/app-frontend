@@ -31,7 +31,7 @@ const SelectAsset = ({ setAmount, setSelectedAsset }: any) => {
 					<Box
 						key={index}
 						_hover={{
-							bg: "gray.600",
+							bg: "#353F51",
 							cursor: "pointer",
 						}}
 						mx={-6}
@@ -83,7 +83,7 @@ const SelectAsset = ({ setAmount, setSelectedAsset }: any) => {
                                 </Text>
 
 								<Text color={"gray.500"} fontSize={"xs"}>
-									Available: {compactTokenFormatter.format(Big(collateral._capacity).div(10**(collateral.inputToken.decimals ?? 18)).toFixed(0))} {collateral.inputToken.symbol}
+									Cap: {compactTokenFormatter.format(Big(collateral._capacity).div(10**(collateral.inputToken.decimals ?? 18)).toFixed(0))} {collateral.inputToken.symbol}
 								</Text>
 							</Box>
 						</Flex>

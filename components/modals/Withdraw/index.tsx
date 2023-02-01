@@ -10,6 +10,7 @@ import {
 	Select,
 	Alert,
 	AlertIcon,
+	IconButton,
 } from "@chakra-ui/react";
 
 import {
@@ -26,7 +27,7 @@ const Big = require("big.js");
 
 import { getAddress, getContract, send, call } from "../../../src/contract";
 import { useEffect, useContext } from "react";
-import { BiPlusCircle, BiMinusCircle } from 'react-icons/bi';
+import { BiPlusCircle, BiMinusCircle } from "react-icons/bi";
 import { AppDataContext } from "../../context/AppDataProvider";
 import { useAccount, useBalance, useNetwork } from "wagmi";
 import { ethers } from "ethers";
@@ -36,9 +37,12 @@ import { Step, Steps, useSteps } from "chakra-ui-steps";
 
 import Step1 from "./Step1";
 import Step2 from "./Step2";
+import { IoIosArrowBack } from "react-icons/io";
 
 const WithdrawModal = ({ handleWithdraw }: any) => {
-	const [selectedAsset, setSelectedAsset] = React.useState<number|null>(null);
+	const [selectedAsset, setSelectedAsset] = React.useState<number | null>(
+		null
+	);
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const {
 		collaterals,
@@ -85,41 +89,55 @@ const WithdrawModal = ({ handleWithdraw }: any) => {
 				<BiMinusCircle size={20} />
 			</Button>
 
-			{collaterals.length > 0 && <Modal isCentered isOpen={isOpen} onClose={_onClose}>
-				<ModalOverlay backdropFilter="blur(30px)" />
-				<ModalContent bg={"gray.800"}>
-					<ModalCloseButton />
-					<ModalHeader>
-						{selectedAsset == null ? "Select asset to withdraw" : `Withdraw ${collaterals[selectedAsset].inputToken.symbol}`}
-					</ModalHeader>
-					<ModalBody>
-						{selectedAsset == null ? (
-							<Step1
-								setSelectedAsset={setSelectedAsset}
-								setAmount={setAmount}
-							/>
-						) : (
-							<Step2
-								handleWithdraw={handleWithdraw}
-								asset={collaterals[selectedAsset]}
-								setSelectedAsset={setSelectedAsset}
-							/>
-						)}
+			{collaterals.length > 0 && (
+				<Modal isCentered isOpen={isOpen} onClose={_onClose}>
+					<ModalOverlay backdropFilter="blur(30px)" />
+					<ModalContent bg={"gray.800"}>
+						<ModalCloseButton />
+						<ModalHeader>
+							{selectedAsset == null ? (
+								"Select asset to withdraw"
+							) : (
+								<Flex align={"center"}>
+									<IconButton
+										aria-label="Go Back"
+										icon={<IoIosArrowBack />}
+										onClick={() => setSelectedAsset(null)}
+										variant="unstyled"
+									/>
+									<Text>{`Withdraw ${collaterals[selectedAsset].inputToken.symbol}`}</Text>
+								</Flex>
+							)}
+						</ModalHeader>
+						<ModalBody>
+							{selectedAsset == null ? (
+								<Step1
+									setSelectedAsset={setSelectedAsset}
+									setAmount={setAmount}
+								/>
+							) : (
+								<Step2
+									handleWithdraw={handleWithdraw}
+									asset={collaterals[selectedAsset]}
+									setSelectedAsset={setSelectedAsset}
+								/>
+							)}
 
-						<Response
-							response={response}
-							message={message}
-							hash={hash}
-							confirmed={confirmed}
-						/>
-					</ModalBody>
-					<InfoFooter
-						message="
+							<Response
+								response={response}
+								message={message}
+								hash={hash}
+								confirmed={confirmed}
+							/>
+						</ModalBody>
+						<InfoFooter
+							message="
 						Adding collateral would increase your borrowing power, and lower your liquidation risk. You can withdraw your collateral at any time.
 					"
-					/>
-				</ModalContent>
-			</Modal>}
+						/>
+					</ModalContent>
+				</Modal>
+			)}
 		</Box>
 	);
 };

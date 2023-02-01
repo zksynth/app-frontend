@@ -52,6 +52,7 @@ import { useAccount, useNetwork } from "wagmi";
 import { useEffect } from "react";
 import Image from "next/image";
 import { FaBurn } from "react-icons/fa";
+import { InfoIcon, InfoOutlineIcon } from "@chakra-ui/icons";
 
 const IssuanceTable = ({ handleChange }: any) => {
 	const [nullValue, setNullValue] = useState(false);
@@ -115,7 +116,7 @@ const IssuanceTable = ({ handleChange }: any) => {
 
 	const rowStyle = (poolIndex: number) => {
 		return {
-			borderColor: "transparent",
+			// borderColor: "transparent",
 			// borderBottom: "4px",
 			mb: "20px",
 			// bg: "gray.700",
@@ -262,8 +263,8 @@ const IssuanceTable = ({ handleChange }: any) => {
 													// {...expandOnClick(poolIndex)}
 													
 												>
-													<Flex gap={2} justify='end'>
-														<Text mb={2} fontSize='sm'>
+													<Flex gap={2} justify='end' align={'center'}>
+														<Text fontSize='sm'>
 															{" "}
 															{totalAPY.toFixed(
 																2
@@ -271,11 +272,11 @@ const IssuanceTable = ({ handleChange }: any) => {
 															%{" "}
 														</Text>
 
-														<Popover trigger="hover">
-															<PopoverTrigger>
-																<Text cursor={'pointer'}>✨</Text>
+														<Popover trigger="hover" >
+															<PopoverTrigger >
+																<InfoOutlineIcon color={'gray.400'} cursor={'help'}/>
 															</PopoverTrigger>
-															<PopoverContent maxW={'200px'} borderColor='transparent'>
+															<PopoverContent shadow={'2xl'} maxW={'200px'} borderColor='transparent'>
 																<PopoverArrow />
 																<PopoverHeader
 																	bg={
@@ -326,7 +327,7 @@ const IssuanceTable = ({ handleChange }: any) => {
 																			color="gray.400"
 																		>
 																			Swap
-																			and
+																			/
 																			Mint
 																			Fees
 																		</Text>

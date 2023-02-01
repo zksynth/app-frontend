@@ -24,9 +24,25 @@ const SelectAsset = ({ setAmount, setSelectedAsset }: any) => {
 		setAmount(0);
 	};
 
+	const [filtered, setFiltered] = useState(false);
+	const [filteredCollaterals, setFilteredCollaterals] = useState<any>([]);
+
+	useEffect(() => {
+		// filter collaterals whose balance is 0
+		if(!filtered){
+			if(collaterals.length === 0) return;
+			if(collaterals[0].balance === undefined) return;
+			const _filteredCollaterals = collaterals.filter((collateral: any) => {
+				return collateral.balance > 0;
+			});
+			setFilteredCollaterals(_filteredCollaterals);
+			setFiltered(true);
+		}
+	})
+
 	return (
 		<Box>
-			{collaterals.map((collateral: any, index: number) => {
+			{filtered && (filteredCollaterals.length === 0 ? <>No collateral deposited</> : filteredCollaterals.map((collateral: any, index: number) => {
 				return (
 					<Box
 						key={index}
@@ -84,7 +100,8 @@ const SelectAsset = ({ setAmount, setSelectedAsset }: any) => {
 						</Flex>
 					</Box>
 				);
-			})}
+			}))}
+
 		</Box>
 	);
 };

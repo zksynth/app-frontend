@@ -127,7 +127,7 @@ export default function Stake() {
 		setResponse(null);
 		setError(null);
 
-		const sealedSyn = await getContract("SealedSYN", chain);
+		const sealedSyn = await getContract("LockedSYN", chain);
 		const staking = await getAddress("StakingRewards", chain);
 
 		send(

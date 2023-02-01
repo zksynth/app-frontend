@@ -146,7 +146,6 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 								gap={2}
 								bg="gray.600"
 								rounded="full"
-								pl={2}
 							>
 								<Image
 									src={`/icons/${asset._mintedTokens[
@@ -185,7 +184,7 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 						<InputGroup variant={"unstyled"} display="flex">
 							<NumberInput
 								w={"100%"}
-								value={amount || 0}
+								value={amount}
 								onChange={_setAmount}
 								min={0}
 								step={0.01}
@@ -194,6 +193,7 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 								justifyContent={"center"}
 							>
 								<NumberInputField
+									placeholder="0"
 									textAlign={"center"}
 									pr={0}
 									fontSize={"5xl"}

@@ -146,7 +146,7 @@ const WithdrawStep2 = ({ handleWithdraw, asset, setSelectedAsset }: any) => {
 							<InputGroup variant={"unstyled"} display="flex">
 								<NumberInput
 									w={"100%"}
-									value={amount || 0}
+									value={amount}
 									onChange={_setAmount}
 									max={max()}
 									min={0}
@@ -156,6 +156,7 @@ const WithdrawStep2 = ({ handleWithdraw, asset, setSelectedAsset }: any) => {
 									justifyContent={"center"}
 								>
 									<NumberInputField
+										placeholder="0"
 										textAlign={"center"}
 										pr={0}
 										fontSize={"5xl"}
@@ -223,20 +224,6 @@ const WithdrawStep2 = ({ handleWithdraw, asset, setSelectedAsset }: any) => {
 							)}
 						</Button>
 					</>
-
-					<Button
-						width={"100%"}
-						variant="ghost"
-						mt={1.5}
-						onClick={() => setSelectedAsset(null)}
-						display={"flex"}
-						gap={1}
-						alignContent="center"
-						rounded={16}
-					>
-						<IoIosArrowBack /> Go Back
-					</Button>
-
 					<Response
 						response={response}
 						message={message}

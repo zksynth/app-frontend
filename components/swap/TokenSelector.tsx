@@ -79,7 +79,7 @@ function TokenSelector({
 				scrollBehavior={"inside"}
 				isCentered
 			>
-				<ModalOverlay />
+				<ModalOverlay backdropFilter="blur(30px)" />
 				<ModalContent maxH={"500px"}>
 					<ModalHeader>Select a token</ModalHeader>
 					<ModalCloseButton />

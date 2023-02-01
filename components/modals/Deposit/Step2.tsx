@@ -137,9 +137,11 @@ const DepositModal = ({
 			.toString();
 		send(token, "mint", [address, _amount], chain)
 			.then(async (res: any) => {
-				setAmount(CLAIM_AMOUNTS[asset.inputToken.symbol]);
-				setClaimLoading(false);
+				await res.wait(1)
 				updateCollateralWalletBalance(asset.id, _amount, false);
+				setAmount(CLAIM_AMOUNTS[asset.inputToken.symbol]);
+				setAmountNumber(Number(CLAIM_AMOUNTS[asset.inputToken.symbol]));
+				setClaimLoading(false);
 			})
 			.catch((err: any) => {
 				console.log(err);
@@ -254,7 +256,6 @@ const DepositModal = ({
 						<>
 							<Box mt={6} textAlign="center">
 								<Flex
-									// flexDir={"column"}
 									justify={"center"}
 									align="center"
 									gap={2}
@@ -278,9 +279,7 @@ const DepositModal = ({
 								<InputGroup variant={"unstyled"} display="flex">
 									<NumberInput
 										w={"100%"}
-										value={Number(amount) > 0
-											? tokenFormatter.format(parseFloat(amount))
-											: amount}
+										value={amount}
 										onChange={_setAmount}
 										min={0}
 										step={0.01}
@@ -289,9 +288,10 @@ const DepositModal = ({
 										justifyContent={"center"}
 									>
 										<NumberInputField
+											placeholder="0"
 											textAlign={"center"}
 											pr={0}
-											fontSize={"5xl"}
+											fontSize={"6xl"}
 										/>
 									</NumberInput>
 								</InputGroup>
@@ -335,7 +335,7 @@ const DepositModal = ({
 										>
 											<FaCoins />{" "}
 											<Text ml={2}>
-												Claim{" "}
+												Claim
 											</Text>
 										</Button>
 									)}
@@ -377,19 +377,6 @@ const DepositModal = ({
 							</Button>
 						</>
 					)}
-
-					<Button
-						width={"100%"}
-						variant="ghost"
-						mt={1.5}
-						onClick={() => setSelectedAsset(null)}
-						display={"flex"}
-						gap={1}
-						alignContent="center"
-                        rounded={16}
-					>
-						<IoIosArrowBack /> Go Back
-					</Button>
 
 					<Response
 							response={response}

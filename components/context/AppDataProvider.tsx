@@ -173,7 +173,7 @@ function AppDataProvider({ children }: any) {
 						}
 						avgDailySupplySideRevenueUSD =
 							avgDailySupplySideRevenueUSD.div(
-								_pools[i].dailySnapshots.length
+								_pools[i].dailySnapshots.length || 1
 							);
 						_pools[i].avgDailySupplySideRevenueUSD =
 							avgDailySupplySideRevenueUSD.toString();

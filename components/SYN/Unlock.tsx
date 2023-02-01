@@ -56,7 +56,7 @@ export default function Unlock() {
 	};
 
 	const approve = async () => {
-		const sealedSyn = await getContract("SealedSYN", chain);
+		const sealedSyn = await getContract("LockedSYN", chain);
 		const staking = await getAddress("TokenUnlocker", chain);
 
 		send(

@@ -65,7 +65,7 @@ const Issue = ({ asset, handleIssue }: any) => {
 
 	const max = () => {
 		if (!Number(safeCRatio)) return '0';
-		if (!Number(asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD)) return '0';
+		if (!Number(asset._mintedTokens[selectedAssetIndex]?.lastPriceUSD)) return '10000000';
 		// MAX = ((Ac/safeC) - Ad)*Vr
 		const _max = Big(asset.maximumLTV / 100)
 			.times(Big(adjustedCollateral).div(safeCRatio * 1.01).minus(adjustedDebt))
@@ -157,7 +157,6 @@ const Issue = ({ asset, handleIssue }: any) => {
 								gap={2}
 								bg="gray.600"
 								rounded="full"
-								pl={2}
 							>
 								<Image
 									src={`/icons/${asset._mintedTokens[
@@ -193,23 +192,23 @@ const Issue = ({ asset, handleIssue }: any) => {
 								</Select>
 							</Flex>
 						</Flex>
-						<InputGroup variant={"unstyled"} display="flex">
+						<InputGroup variant={"unstyled"} display="flex" placeholder="Enter amount">
 							<NumberInput
 								w={"100%"}
-								value={Number(amount) > 0
-									? tokenFormatter.format(parseFloat(amount))
-									: amount}
+								value={amount}
 								onChange={_setAmount}
 								min={0}
 								step={0.01}
 								display="flex"
 								alignItems="center"
 								justifyContent={"center"}
+								
 							>
 								<NumberInputField
 									textAlign={"center"}
 									pr={0}
 									fontSize={"5xl"}
+									placeholder="0"
 								/>
 							</NumberInput>
 						</InputGroup>

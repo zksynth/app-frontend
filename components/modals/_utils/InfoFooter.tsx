@@ -1,4 +1,5 @@
 import { Box, ModalFooter, Text, Flex } from "@chakra-ui/react";
+import Link from "next/link";
 import React from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 
@@ -11,7 +12,7 @@ export default function InfoFooter({message}: any) {
 			</Flex>
 			<Box>
 				<Text fontSize={"11px"}>
-					{message}
+					{message} <Link href={'https://docs.synthex.finance/synthex/concepts'} target='_blank' style={{textDecoration: 'underline'}}>Read More</Link>
 				</Text>
 			</Box>
 		</ModalFooter>

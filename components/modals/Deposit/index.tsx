@@ -10,6 +10,7 @@ import {
 	Select,
 	Alert,
 	AlertIcon,
+	IconButton,
 } from "@chakra-ui/react";
 
 import {
@@ -36,6 +37,7 @@ import { Step, Steps, useSteps } from "chakra-ui-steps";
 
 import Step1 from "./Step1";
 import Step2 from "./Step2";
+import { IoIosArrowBack } from "react-icons/io";
 
 const DepositModal = ({ handleDeposit }: any) => {
 	const [selectedAsset, setSelectedAsset] = React.useState<number|null>(null);
@@ -87,7 +89,16 @@ const DepositModal = ({ handleDeposit }: any) => {
 				<ModalContent bg={"gray.800"}>
 					<ModalCloseButton />
 					<ModalHeader>
-						{selectedAsset == null ? "Select asset to deposit" : `Deposit ${collaterals[selectedAsset].inputToken.symbol}`}
+						{selectedAsset == null ? "Select asset to deposit" : 
+						<Flex align={'center'}>
+					<IconButton 
+						aria-label="Go Back"
+						icon={<IoIosArrowBack />}
+						onClick={() => setSelectedAsset(null)}
+						variant="unstyled"
+					/>
+					<Text>{`Deposit ${collaterals[selectedAsset].inputToken.symbol}`}</Text>
+						</Flex>}
 					</ModalHeader>
 					<ModalBody>
 						{selectedAsset == null ? (
@@ -112,7 +123,7 @@ const DepositModal = ({ handleDeposit }: any) => {
 					</ModalBody>
 					<InfoFooter
 						message="
-						Adding collateral would increase your borrowing power, and lower your liquidation risk. You can withdraw your collateral at any time.
+						Adding collateral would increase your borrowing power, and lower your liquidation risk. 
 					"
 					/>
 				</ModalContent>
