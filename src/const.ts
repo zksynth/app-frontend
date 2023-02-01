@@ -11,7 +11,7 @@ export const DUMMY_ADDRESS = {
 export const Endpoints: any = {
 	[ChainID.NILE]: "https://api.synthex.finance/",
 	[ChainID.AURORA]: "https://aurora.api.synthex.finance/", // 'http://localhost:3030/',
-	[ChainID.ARB_GOERLI]: process.env.NODE_ENV == 'development' ? "https://api.thegraph.com/subgraphs/name/prasad-kumkar/synthex-dev" : "https://api.thegraph.com/subgraphs/name/prasad-kumkar/synthex"
+	[ChainID.ARB_GOERLI]: process.env.NODE_ENV == 'production' ? "https://api.thegraph.com/subgraphs/name/prasad-kumkar/synthex" : "https://api.thegraph.com/subgraphs/name/prasad-kumkar/synthex-dev"
 };
 
 export const dollarFormatter = new Intl.NumberFormat("en-US", {
