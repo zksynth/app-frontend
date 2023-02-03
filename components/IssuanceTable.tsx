@@ -433,8 +433,8 @@ const IssuanceTable = ({ handleChange }: any) => {
 											rounded={"full"}
 											bgColor={
 												page === currentPage
-													? "gray.700"
-													: "gray.800"
+													? "gray.800"
+													: "gray.700"
 											}
 											_hover={{ bgColor: "gray.700" }}
 										/>

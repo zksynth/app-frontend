@@ -134,28 +134,30 @@ const Issue = ({ asset, handleIssue }: any) => {
 	return (
 		<Box>
 			<IconButton
+				bg={'blackAlpha.300'}
+				_hover={{ bg: 'blackAlpha.600' }}
 				variant="solid"
 				onClick={onOpen}
 				icon={<AiOutlinePlus />}
 				aria-label={""}
+				size='lg'
 				isRound={true}
 				p={2}
 			></IconButton>
 			<Modal isCentered isOpen={isOpen} onClose={_onClose}>
 				<ModalOverlay bg="blackAlpha.100" backdropFilter="blur(30px)" />
-				<ModalContent width={"30rem"} bgColor="gray.800">
-					<ModalCloseButton />
+				<ModalContent width={"30rem"} bgColor="gray.800" rounded={16}>
+					<ModalCloseButton rounded={'full'} mt={1}/>
 					<ModalHeader>{asset.name}</ModalHeader>
 					<ModalBody>			
 
 						<Box mb={10} mt={4}>
 						<Flex justify={"center"} mb={2}>
 							<Flex
-								// width={"36%"}
 								justify={"center"}
 								align="center"
 								gap={0.5}
-								bg="gray.600"
+								bg="gray.700"
 								rounded="full"
 							>
 								<Image
@@ -178,8 +180,7 @@ const Issue = ({ asset, handleIssue }: any) => {
 										)
 										setAmount('0')
 										setAmountNumber(0)
-									}
-									}
+									}}
 								>
 									{asset._mintedTokens.map(
 										(token: any, index: number) => (

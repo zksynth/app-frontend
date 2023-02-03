@@ -329,7 +329,7 @@ function Swap() {
 				<Box>
 					<Box px="5" py={10} roundedTop={15} bg={"gray.700"}>
 						<Flex align="center" justify={"space-between"}>
-							<InputGroup width={"60%"}>
+							<InputGroup width={"70%"}>
 								<Input
 									{...inputStyle}
 									value={inputAmount}
@@ -399,7 +399,7 @@ function Swap() {
 					<Box px="5" pt={7} roundedBottom={15} bg={"gray.800"}>
 						{/* Output */}
 						<Flex align="center" justify={"space-between"}>
-							<InputGroup width={"60%"}>
+							<InputGroup width={"70%"}>
 								<Input
 									{...inputStyle}
 									value={outputAmount}
@@ -474,7 +474,7 @@ function Swap() {
 									)
 								</Text>
 							</Flex>
-							<Flex>
+							<Flex mr={-2}>
 								{!isOpen ? <RiArrowDropDownLine size={30} /> : <RiArrowDropUpLine size={30} />}
 							</Flex>
 						</Flex>
@@ -533,13 +533,14 @@ function Swap() {
 						>
 							{validateInput() > 0 ? ERROR_MSG[validateInput()] : "Swap"}
 						</Button>
-
+						<Box mt={-2} mb={8}>
 						<Response
 							response={response}
 							message={message}
 							hash={hash}
 							confirmed={confirmed}
 						/>
+						</Box>
 					</Box>
 				</Box>
 			) : (

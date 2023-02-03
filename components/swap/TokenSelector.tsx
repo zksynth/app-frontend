@@ -93,7 +93,7 @@ function TokenSelector({
 				<ModalContent maxH={"500px"} bg='gray.700' rounded={16}>
 					<ModalHeader>Select a token</ModalHeader>
 					<Box mx={5} mb={5}>
-					<Select placeholder="Select debt pool" value={tradingPool} onChange={(e) => setTradingPool(parseInt(e.target.value))} bg='gray.800' variant={'filled'}  _focus={{bg: 'gray.800'}} focusBorderColor='transparent'>
+					<Select rounded={'full'} placeholder="Select debt pool" value={tradingPool} onChange={(e) => setTradingPool(parseInt(e.target.value))} bg='gray.800' variant={'filled'}  _focus={{bg: 'gray.800'}} focusBorderColor='transparent'>
 							{pools.map((pool: any, index: number) => (
 								<option value={index} key={pool.id}>
 									{pool.name}
@@ -102,7 +102,7 @@ function TokenSelector({
 						</Select>
 						</Box>
 						{/* <Divider/> */}
-					<ModalCloseButton />
+					<ModalCloseButton rounded={'full'} mt={1} />
 					<ModalBody  bg='gray.800'>
 
 						{/* Token List */}

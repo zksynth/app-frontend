@@ -81,8 +81,8 @@ const DepositModal = ({ handleDeposit }: any) => {
 
 			{collaterals.length > 0 && <Modal isCentered isOpen={isOpen} onClose={_onClose}>
 				<ModalOverlay backdropFilter="blur(30px)" />
-				<ModalContent bg={"gray.800"}>
-					<ModalCloseButton />
+				<ModalContent bg={"gray.800"} rounded={16}>
+					<ModalCloseButton mt={2} rounded='full' />
 					<ModalHeader>
 						{selectedAsset == null ? "Select asset to deposit" : 
 						<Flex align={'center'}>

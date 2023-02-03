@@ -124,17 +124,18 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 	return (
 		<Box>
 			<IconButton
+				bg={'blackAlpha.300'}
+				_hover={{ bg: 'blackAlpha.600' }}
 				onClick={onOpen}
 				icon={<AiOutlineMinus />}
 				aria-label={""}
 				isRound={true}
-				size={"md"}
-				_hover={{opacity: 0.6}}
+				size={"lg"}
 			></IconButton>
 			<Modal isCentered isOpen={isOpen} onClose={_onClose}>
 				<ModalOverlay bg="blackAlpha.100" backdropFilter="blur(30px)" />
-				<ModalContent width={"30rem"} bgColor="gray.800">
-					<ModalCloseButton />
+				<ModalContent width={"30rem"} bgColor="gray.800" rounded={16}>
+					<ModalCloseButton rounded={'full'} mt={1}/>
 					<ModalHeader>{asset.name}</ModalHeader>
 					<ModalBody>
 					<Box mt={4} mb={10}>
@@ -278,7 +279,7 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 					</ModalBody>
 
 					<InfoFooter message='
-						Repaying your debt will reduce your liquidation risk. If your health falls below the minimum 1, you will be liquidated and your collateral will be sold to repay your debt.
+						Repaying your debt will reduce your liquidation risk. If your health falls below 100%, you will be liquidated and your collateral will be sold to repay your debt.
 					'/>
 
 				</ModalContent>
