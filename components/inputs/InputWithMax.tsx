@@ -47,7 +47,7 @@ export default function InputWithMax({
 		<Box>
             <Flex flexDir={'column'} justify={'center'} align='center' gap={2}>
 				<Image
-					src={`/icons/${asset.symbol.toUpperCase()}.svg`}
+					src={`/icons/${asset.symbol}.svg`}
 					alt=""
 					width={"30"}
 					height={"30"}

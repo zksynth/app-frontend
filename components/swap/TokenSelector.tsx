@@ -136,7 +136,7 @@ function TokenSelector({
 											<Image
 												src={
 													"/icons/" +
-													_synth.symbol.toUpperCase() +
+													_synth.symbol +
 													".svg"
 												}
 												height={40}

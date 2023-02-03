@@ -577,7 +577,7 @@ export function SelectBody({ asset, onOpen }: any) {
 				mr={-1}
 			>
 				<Image
-					src={"/icons/" + asset?.symbol.toUpperCase() + ".svg"}
+					src={"/icons/" + asset?.symbol + ".svg"}
 					height={40}
 					width={40}
 					alt={asset?.symbol}

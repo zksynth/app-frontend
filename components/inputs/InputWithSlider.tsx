@@ -68,7 +68,7 @@ export default function InputWithSlider({
 					borderColor={'gray.600'}
 				>
 					<Image
-						src={`/icons/${asset.symbol.toUpperCase()}.svg`}
+						src={`/icons/${asset.symbol}.svg`}
 						alt=""
 						width={"30"}
 						height={"30"}

@@ -216,7 +216,7 @@ const DepositModal = ({
 								gap={2}
 							>
 								<Image
-									src={`/icons/${asset?.inputToken.symbol?.toUpperCase()}.svg`}
+									src={`/icons/${asset?.inputToken.symbol}.svg`}
 									alt=""
 									width={"20"}
 									height={"20"}
@@ -270,7 +270,7 @@ const DepositModal = ({
 									gap={2}
 								>
 									<Image
-										src={`/icons/${asset.inputToken.symbol.toUpperCase()}.svg`}
+										src={`/icons/${asset.inputToken.symbol}.svg`}
 										alt=""
 										width={"30"}
 										height={"30"}

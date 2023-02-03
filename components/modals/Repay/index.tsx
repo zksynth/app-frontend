@@ -150,7 +150,7 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 								<Image
 									src={`/icons/${asset._mintedTokens[
 										selectedAssetIndex
-									].symbol.toUpperCase()}.svg`}
+									].symbol}.svg`}
 									alt=""
 									width={"40"}
 									height={"40"}

@@ -155,7 +155,7 @@ const CollateralDetails = ({ collateral, updateAsset }: any) => (
 					<Image
 						src={
 							"/icons/" +
-							collateral.inputToken.symbol.toUpperCase() +
+							collateral.inputToken.symbol +
 							".svg"
 						}
 						height={35}

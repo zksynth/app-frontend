@@ -214,7 +214,7 @@ const IssuanceTable = ({ handleChange }: any) => {
 																	name={
 																		token.name.split(" ").splice(2).join(" ")+ " (" + token.symbol+")"
 																	}
-																	src={`/icons/${token.symbol?.toUpperCase()}.svg`}
+																	src={`/icons/${token.symbol}.svg`}
 																	borderColor='transparent'
 																	iconLabel="aa"
 																	mx={-2}
