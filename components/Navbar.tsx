@@ -12,8 +12,19 @@ import {
 	DrawerOverlay,
 	DrawerContent,
 	useDisclosure,
+	IconButton,
 } from "@chakra-ui/react";
 
+import {
+	Menu,
+	MenuButton,
+	MenuList,
+	MenuItem,
+	MenuItemOption,
+	MenuGroup,
+	MenuOptionGroup,
+	MenuDivider,
+} from "@chakra-ui/react";
 import { ConnectButton as RainbowConnect } from "@rainbow-me/rainbowkit";
 import { FaBars } from "react-icons/fa";
 import { MdSpaceDashboard, MdSwapHorizontalCircle } from "react-icons/md";
@@ -31,7 +42,7 @@ import { useContext } from "react";
 import { AppDataContext } from "./context/AppDataProvider";
 import { ChainID } from "../src/chains";
 import { BigNumber } from "ethers";
-import { RiCopperCoinFill } from "react-icons/ri";
+import { RiCopperCoinFill, RiMenu5Fill } from "react-icons/ri";
 import { FiBarChart2 } from "react-icons/fi";
 import { TokenContext } from "./context/TokenContext";
 
@@ -122,7 +133,7 @@ function NavBar() {
 
 	return (
 		<>
-			<Flex alignItems={"center"}>
+			<Flex alignItems={"center"} justify='space-between'>
 				<Box width={"33%"} mt={2} py={5}>
 					<Box cursor="pointer" maxW={"30px"}>
 						<Image
@@ -157,27 +168,52 @@ function NavBar() {
 						>
 							<MdSwapHorizontalCircle />
 						</NavLocalLink>
-
-						<NavLocalLink
-							path={"/syn"}
-							title="xSYN"
-							pathname={router.pathname}
-						>
-							<RiCopperCoinFill />
-						</NavLocalLink>
-
-						<NavExternalLink
-							path={"https://stats.synthex.finance"}
-							newTab={true}
-							title="Analytics"
-							pathname={router.pathname}
-						>
-							<FiBarChart2 />
-						</NavExternalLink>
 					</Flex>
 				</Flex>
 
-				<Flex width={"33%"} justify="flex-end" align={"center"}>
+				<Flex width={"33%"} justify="flex-end" align={"center"} gap={2}>
+					<Box display={{ sm: "none", md: "block" }}>
+						<Menu
+						>
+							<MenuButton 
+								_hover={{ bg: 'gray.600' }}
+								color="white"
+								rounded={"full"}
+								aria-label={""}
+								_expanded={{ bg: 'secondary' }}
+								p={2}
+								>
+									<RiMenu5Fill size={20} />
+							</MenuButton>
+							<MenuList
+								bg={"none"}
+								width="20%"
+								border="0"
+								shadow={0}
+							>
+								<NavLocalLink
+									path={"/syn"}
+									title="xSYN"
+									pathname={router.pathname}
+									lighten={true}
+								>
+									<RiCopperCoinFill />
+								</NavLocalLink>
+
+								<Box my={1}/>
+
+								<NavExternalLink
+									path={"https://stats.synthex.finance"}
+									newTab={true}
+									title="Analytics"
+									pathname={router.pathname}
+									lighten={true}
+								>
+									<FiBarChart2 />
+								</NavExternalLink>
+							</MenuList>
+						</Menu>
+					</Box>
 					<Box display={{ sm: "none", md: "block" }}>
 						<RainbowConnect chainStatus={"icon"} />
 					</Box>
@@ -204,36 +240,41 @@ function NavBar() {
 					</DrawerHeader>
 					<DrawerBody>
 						<Box>
-							<UnorderedList
-								display={"flex"}
-								flexDirection="column"
-								alignItems="center"
-								justifyContent={"center"}
-								listStyleType="none"
-							>
-								<ListItem>
-									<NavLink
-										path={"/"}
-										title={"Dashboard"}
-										pathname={router.pathname}
-									>
-										<MdSpaceDashboard />
-									</NavLink>{" "}
-								</ListItem>
+						<NavLocalLink
+							path={"/"}
+							title={"Dashboard"}
+							pathname={router.pathname}
+						>
+							<MdSpaceDashboard />
+						</NavLocalLink>
+						<NavLocalLink
+							path={"/swap"}
+							title="Swap"
+							pathname={router.pathname}
+						>
+							<MdSwapHorizontalCircle />
+						</NavLocalLink>
 
-								<ListItem>
-									<NavLink
-										path={"/exchange"}
-										title="Swap"
-										pathname={router.pathname}
-									>
-										<MdSwapHorizontalCircle />
-									</NavLink>{" "}
-								</ListItem>
-								<ListItem my="1rem">
-									<RainbowConnect />
-								</ListItem>
-							</UnorderedList>
+						<NavLocalLink
+									path={"/syn"}
+									title="xSYN"
+									pathname={router.pathname}
+									lighten={true}
+								>
+									<RiCopperCoinFill />
+								</NavLocalLink>
+
+								<Box my={1}/>
+
+								<NavExternalLink
+									path={"https://stats.synthex.finance"}
+									newTab={true}
+									title="Analytics"
+									pathname={router.pathname}
+									lighten={true}
+								>
+									<FiBarChart2 />
+								</NavExternalLink>
 						</Box>
 					</DrawerBody>
 				</DrawerContent>
@@ -249,6 +290,7 @@ const NavLink = ({
 	newTab = false,
 	pathname,
 	children,
+	lighten = false,
 }: any) => {
 	const [isPath, setIsPath] = useState(false);
 
@@ -264,8 +306,8 @@ const NavLink = ({
 				px={4}
 				cursor="pointer"
 				rounded={100}
-				bgColor={isPath ? "gray.700" : "transparent"}
-				_hover={{ bgColor: "gray.600" }}
+				bgColor={isPath ? "gray.700" : lighten ? 'gray.800' : "transparent"}
+				_hover={{ bgColor: !isPath ? "gray.800" : "gray.700" }}
 			>
 				<Box
 					color={isPath ? "primary" : "gray.100"}
@@ -284,11 +326,11 @@ const NavLink = ({
 	);
 };
 
-const NavLocalLink = ({ path, title, pathname, children }: any) => {
+const NavLocalLink = ({ path, title, pathname, children, lighten }: any) => {
 	return (
 		<Link href={`${path}`} as={`${path}`}>
 			<Box>
-				<NavLink path={path} title={title} pathname={pathname}>
+				<NavLink path={path} title={title} pathname={pathname} lighten={lighten}>
 					{" "}
 					{children}{" "}
 				</NavLink>
@@ -297,7 +339,7 @@ const NavLocalLink = ({ path, title, pathname, children }: any) => {
 	);
 };
 
-const NavExternalLink = ({ path, title, pathname, children }: any) => {
+const NavExternalLink = ({ path, title, pathname, children, lighten }: any) => {
 	const [isPath, setIsPath] = useState(false);
 
 	useEffect(() => {
@@ -305,11 +347,16 @@ const NavExternalLink = ({ path, title, pathname, children }: any) => {
 	}, [setIsPath, pathname, path]);
 
 	return (
-		<Link href={`${path}`} as={`${path}`} target={"_blank"} rel="noreferrer">
-				<NavLink path={path} title={title} pathname={pathname}>
-					{" "}
-					{children}{" "}
-				</NavLink>
+		<Link
+			href={`${path}`}
+			as={`${path}`}
+			target={"_blank"}
+			rel="noreferrer"
+		>
+			<NavLink path={path} title={title} pathname={pathname} lighten={lighten}>
+				{" "}
+				{children}{" "}
+			</NavLink>
 		</Link>
 	);
 };

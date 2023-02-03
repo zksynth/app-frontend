@@ -19,23 +19,18 @@ const Big = require("big.js");
 
 import { getAddress, getContract, send, call } from "../../../src/contract";
 import { useEffect, useContext } from "react";
-import { BiPlusCircle } from "react-icons/bi";
 import { AppDataContext } from "../../context/AppDataProvider";
 import { useAccount, useBalance, useNetwork } from "wagmi";
 import { ethers } from "ethers";
-import { tokenFormatter, dollarFormatter } from "../../../src/const";
-import InputWithSlider from "../../inputs/InputWithSlider";
+import { tokenFormatter, dollarFormatter, compactTokenFormatter } from "../../../src/const";
 import { FaCoins, FaPlusCircle } from "react-icons/fa";
-import InputWithMax from "../../inputs/InputWithMax";
-import { ArrowDownIcon, ChevronDownIcon } from "@chakra-ui/icons";
-import { IoIosArrowBack } from "react-icons/io";
 import Response from "../_utils/Response";
+import { ArrowRightIcon } from "@chakra-ui/icons";
 
 const CLAIM_AMOUNTS: any = {
 	USDC: "1000",
-	ETH: "10",
-	NEAR: "1000",
-	WETH: "10",
+	stETH: "100",
+	WETH: "1",
 };
 
 const DepositModal = ({
@@ -49,6 +44,8 @@ const DepositModal = ({
 		updateCollateralWalletBalance,
 		addCollateralAllowance,
 		toggleCollateralEnabled,
+		adjustedCollateral,
+		adjustedDebt
 	} = useContext(AppDataContext);
 
 	const [amount, setAmount] = React.useState("0");
@@ -79,6 +76,18 @@ const DepositModal = ({
 		setAmount(balance());
 		setAmountNumber(
 			isNaN(Number(balance())) ? 0 : Number(balance())
+		);
+	};
+
+	const maxQuota = () => {
+		if(asset.inputTokenPriceUSD == 0) return 100;
+		return Big(asset._capacity).div(10**(asset.inputToken.decimals ?? 18)).sub(Big(asset.totalValueLockedUSD).div(asset.inputTokenPriceUSD)).toNumber()
+	}
+
+	const handleMaxQuota = () => {
+		setAmount(maxQuota());
+		setAmountNumber(
+			isNaN(Number(maxQuota())) ? 0 : Number(maxQuota())
 		);
 	};
 
@@ -208,7 +217,7 @@ const DepositModal = ({
 								gap={2}
 							>
 								<Image
-									src={`/icons/${asset?.inputToken.symbol?.toUpperCase()}.png`}
+									src={`/icons/${asset?.inputToken.symbol?.toUpperCase()}.svg`}
 									alt=""
 									width={"20"}
 									height={"20"}
@@ -221,6 +230,7 @@ const DepositModal = ({
 							</Flex>
 							<Button
 								disabled={
+									loading ||
 									ethBalance?.value.lt(
 										ethers.utils.parseEther("0.01")
 									) ||
@@ -261,7 +271,7 @@ const DepositModal = ({
 									gap={2}
 								>
 									<Image
-										src={`/icons/${asset.inputToken.symbol.toUpperCase()}.png`}
+										src={`/icons/${asset.inputToken.symbol.toUpperCase()}.svg`}
 										alt=""
 										width={"30"}
 										height={"30"}
@@ -303,11 +313,19 @@ const DepositModal = ({
 								</Text>
 							</Box>
 							<Flex mt={10} justify="space-between" align={'center'}>
+								<Box>
+
 								<Text fontSize={"xs"} color="gray.400">
-									Maximum LTV: {asset?.maximumLTV} %
+									LTV: {asset?.maximumLTV} %
 								</Text>
 
-								<Flex align={'center'} gap={1}>
+								<Text fontSize={"xs"} color="gray.400">
+									Health: {(adjustedDebt !== 0 && adjustedCollateral !== 0) ? (100 * adjustedCollateral / adjustedDebt).toFixed(0) : '-'} % <ArrowRightIcon w={'2'}/> {tokenFormatter.format((100 * (adjustedCollateral + (amountNumber*asset.inputTokenPriceUSD)) / adjustedDebt))} %
+								</Text>
+								</Box>
+								<Box>
+
+								<Flex align={'center'} gap={1} justify='end'>
 									<Text fontSize={"xs"} color="gray.400">
 										Balance:
 									</Text>
@@ -323,8 +341,7 @@ const DepositModal = ({
 										{asset?.inputToken.symbol}
 									</Text>
 
-									{asset.id !==
-										ethers.constants.AddressZero && (
+									{Object.keys(CLAIM_AMOUNTS).includes(asset.inputToken.symbol) && (
 										<Button
 											isLoading={claimLoading}
 											size={"xs"}
@@ -340,6 +357,26 @@ const DepositModal = ({
 										</Button>
 									)}
 								</Flex>
+
+								<Flex align={'center'} gap={1} justify='end'>
+									<Text fontSize={"xs"}
+										color="gray.400">
+									Remaining Quota: 
+									</Text>
+									{asset.inputTokenPriceUSD > 0 ? <Text
+										fontSize={"xs"}
+										color="gray.400"
+										onClick={handleMaxQuota}
+										cursor="pointer"
+										textDecor={"underline"}
+									>
+										{compactTokenFormatter.format(maxQuota())} {asset.inputToken.symbol}
+									</Text>
+									: '-'}
+								</Flex>
+
+								</Box>
+
 							</Flex>
 							<Button
 								size={"lg"}
@@ -351,7 +388,8 @@ const DepositModal = ({
 									!isConnected ||
 									!amount ||
 									amountNumber == 0 ||
-									amountNumber > balance()
+									amountNumber > balance() ||
+									amountNumber > maxQuota()
 								}
 								bgColor="#3EE6C4"
 								color={"gray.800"}
@@ -362,10 +400,11 @@ const DepositModal = ({
                                 rounded={16}
 							>
 								{isConnected ? (
+
 									!amount || amountNumber == 0 ? (
 										"Enter amount"
-									) : amountLowerThanMin() ? (
-										"Amount too less"
+									) : amountNumber > maxQuota() ? (
+										"Exceeding max quota"
 									) : amountNumber > balance() ? (
 										"Insufficient Balance"
 									) : (

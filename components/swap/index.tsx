@@ -5,14 +5,13 @@ import {
 	Input,
 	Button,
 	InputGroup,
-	Link,
-	Alert,
-	AlertIcon,
-	Skeleton,
 	useDisclosure,
+	Divider,
 } from "@chakra-ui/react";
+import { Collapse } from "@chakra-ui/collapse"
+
 import { useContext, useEffect, useState } from "react";
-import { getContract, send } from "../../src/contract";
+import { getContract, send, estimateGas } from "../../src/contract";
 import { useAccount, useNetwork } from "wagmi";
 import { MdOutlineSwapVert } from "react-icons/md";
 import { AppDataContext } from "../context/AppDataProvider";
@@ -20,11 +19,16 @@ import Head from "next/head";
 import Image from "next/image";
 import { ethers } from "ethers";
 import TokenSelector from "./TokenSelector";
-import { RiArrowDropDownLine } from "react-icons/ri";
-import { dollarFormatter } from "../../src/const";
+import { RiArrowDropDownLine, RiArrowDropUpLine, RiArrowUpFill } from "react-icons/ri";
+import { dollarFormatter, tokenFormatter } from "../../src/const";
 import SwapSkeleton from "./Skeleton";
-import InfoFooter from "../modals/_utils/InfoFooter";
-import { AiOutlineInfoCircle } from "react-icons/ai";
+import { InfoOutlineIcon } from "@chakra-ui/icons";
+import Response from "../modals/_utils/Response";
+import { BiDownArrow } from "react-icons/bi";
+import { AiOutlineDown } from "react-icons/ai";
+import { BsChevronDown, BsChevronUp } from "react-icons/bs";
+import { AnimatePresence, motion } from "framer-motion";
+import { ERRORS, ERROR_MSG } from '../../src/errors';
 const Big = require("big.js");
 
 function Swap() {
@@ -33,6 +37,9 @@ function Swap() {
 	const [inputAmount, setInputAmount] = useState(0);
 	const [outputAmount, setOutputAmount] = useState(0);
 	const [nullValue, setNullValue] = useState(false);
+	const [gas, setGas] = useState(0);
+	const { getButtonProps, getDisclosureProps, isOpen } = useDisclosure()
+	const [hidden, setHidden] = useState(!isOpen)
 
 	const {
 		isOpen: isInputOpen,
@@ -51,23 +58,26 @@ function Swap() {
 	const [confirmed, setConfirmed] = useState(false);
 	const [message, setMessage] = useState("");
 
-	const { chain, explorer } = useContext(AppDataContext);
+	const { chain } = useContext(AppDataContext);
 
 	const updateInputAmount = (e: any) => {
 		setInputAmount(e.target.value);
-		if(!Number(e.target.value)) return;
+		if (!Number(e.target.value)) return;
 		let outputAmount =
 			(e.target.value * inputToken().lastPriceUSD) /
 			outputToken().lastPriceUSD;
 		setOutputAmount(
-			Number(Big(1)
-				.minus(Big(pools[tradingPool]._fee).div(1e22))
-				.times(outputAmount)
-				.toFixed(10))
+			Number(
+				Big(1)
+					.minus(Big(pools[tradingPool]._fee).div(1e22))
+					.times(outputAmount)
+					.toFixed(10)
+			)
 		);
 	};
 
 	const onInputTokenSelected = (e: number) => {
+		console.log("onInputTokenSelected", e);
 		if (outputAssetIndex == e) {
 			setOutputAssetIndex(inputAssetIndex);
 		}
@@ -77,17 +87,19 @@ function Swap() {
 			.times(inputToken(e).lastPriceUSD)
 			.div(outputToken().lastPriceUSD);
 		setOutputAmount(
-			Number(Big(1)
-				.minus(Big(pools[tradingPool]._fee).div(1e22))
-				.times(_outputAmount)
-				.toFixed(10))
+			Number(
+				Big(1)
+					.minus(Big(pools[tradingPool]._fee).div(1e22))
+					.times(_outputAmount)
+					.toFixed(10)
+			)
 		);
 		onInputClose();
 	};
 
 	const updateOutputAmount = (e: any) => {
 		setOutputAmount(e.target.value);
-		if(!Number(e.target.value)) return;
+		if (!Number(e.target.value)) return;
 		let inputAmount = Big(e.target.value)
 			.times(
 				pools[tradingPool]._mintedTokens[outputAssetIndex].lastPriceUSD
@@ -96,10 +108,12 @@ function Swap() {
 				pools[tradingPool]._mintedTokens[inputAssetIndex].lastPriceUSD
 			);
 		setInputAmount(
-			Number(Big(1)
-				.minus(Big(pools[tradingPool]._fee).div(1e22))
-				.times(inputAmount)
-				.toFixed(10))
+			Number(
+				Big(1)
+					.minus(Big(pools[tradingPool]._fee).div(1e22))
+					.times(inputAmount)
+					.toFixed(10)
+			)
 		);
 	};
 
@@ -113,10 +127,12 @@ function Swap() {
 			.times(outputToken(e).lastPriceUSD)
 			.div(inputToken().lastPriceUSD);
 		setInputAmount(
-			Number(Big(1)
-				.minus(Big(pools[tradingPool]._fee).div(1e22))
-				.times(_inputAmount)
-				.toFixed(10))
+			Number(
+				Big(1)
+					.minus(Big(pools[tradingPool]._fee).div(1e22))
+					.times(_inputAmount)
+					.toFixed(10)
+			)
 		);
 		onOutputClose();
 	};
@@ -186,10 +202,33 @@ function Swap() {
 			});
 	};
 
+	useEffect(() => {
+		if (pools[tradingPool] && !isNaN(Number(inputAmount)) && validateInput() == 0)
+			getContract("SyntheX", chain).then((contract: any) => {
+				// estimate gas
+				contract.estimateGas
+					.exchange(
+						pools[tradingPool].id,
+						pools[tradingPool]._mintedTokens[inputAssetIndex].id,
+						pools[tradingPool]._mintedTokens[outputAssetIndex].id,
+						ethers.utils.parseEther(Number(inputAmount).toString())
+					)
+					.then((gas: any) => {
+						console.log('gas', gas);
+						setGas(
+							Number(ethers.utils.formatUnits(gas, "gwei")) * 2000
+						);
+					})
+					.catch((err: any) => {
+						console.log(err);
+					});
+			});
+	});
+
 	const { isConnected } = useAccount();
 	const { chain: activeChain } = useNetwork();
 
-	const { synths, tradingPool, pools, tokenFormatter, updateSynthBalance } =
+	const { synths, tradingPool, pools, updateSynthBalance } =
 		useContext(AppDataContext);
 
 	const handleExchange = (
@@ -225,10 +264,12 @@ function Swap() {
 			.times(inputToken().lastPriceUSD)
 			.div(outputToken().lastPriceUSD);
 		setOutputAmount(
-			Number(Big(1)
-				.minus(Big(pools[tradingPool]._fee).div(1e22))
-				.times(_outputAmount)
-				.toFixed(10))
+			Number(
+				Big(1)
+					.minus(Big(pools[tradingPool]._fee).div(1e22))
+					.times(_outputAmount)
+					.toFixed(10)
+			)
 		);
 	};
 
@@ -262,26 +303,33 @@ function Swap() {
 		placeholder: "Enter amount",
 	};
 
+	const validateInput = () => {
+		if(!isConnected) return ERRORS.NOT_CONNECTED
+		else if(activeChain?.unsupported) return ERRORS.UNSUPPORTED_CHAIN
+		else if (inputAmount <= 0) return ERRORS.INVALID_AMOUNT
+		else if (swapInputExceedsBalance()) return ERRORS.INSUFFICIENT_BALANCE
+		else return 0
+	}
+
+	if (pools.length == 0) return <></>;
+
 	return (
 		<>
 			<Head>
-				{tokenFormatter && (
-					<title>
-						{" "}
-						{tokenFormatter.format(
-							inputToken()?.lastPriceUSD /
-								outputToken()?.lastPriceUSD
-						)}{" "}
-						{outputToken()?.symbol}/{inputToken()?.symbol} | Synthex
-					</title>
-				)}
+				<title>
+					{" "}
+					{tokenFormatter.format(
+						inputToken()?.lastPriceUSD / outputToken()?.lastPriceUSD
+					)}{" "}
+					{outputToken()?.symbol}/{inputToken()?.symbol} | Synthex
+				</title>
 				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
 			</Head>
 			{pools[tradingPool] ? (
 				<Box>
 					<Box px="5" py={10} roundedTop={15} bg={"gray.700"}>
-						<Flex align="center">
-							<InputGroup>
+						<Flex align="center" justify={"space-between"}>
+							<InputGroup width={"60%"}>
 								<Input
 									{...inputStyle}
 									value={inputAmount}
@@ -350,8 +398,8 @@ function Swap() {
 
 					<Box px="5" pt={7} roundedBottom={15} bg={"gray.800"}>
 						{/* Output */}
-						<Flex gap={1}>
-							<InputGroup>
+						<Flex align="center" justify={"space-between"}>
+							<InputGroup width={"60%"}>
 								<Input
 									{...inputStyle}
 									value={outputAmount}
@@ -371,6 +419,7 @@ function Swap() {
 							justify={"space-between"}
 							align="center"
 							mt={4}
+							mb={-4}
 							mr={2}
 						>
 							<Text>
@@ -392,21 +441,89 @@ function Swap() {
 								</Text>
 							</Flex>
 						</Flex>
+					
+					{ gas > 0 && <>
+						<Flex
+							justify="space-between"
+							align={"center"}
+							mt={12}
+							bg="whiteAlpha.50"
+							color="gray.200"
+							rounded={16}
+							px={3}
+							py={3}
+							cursor="pointer"
+							{...getButtonProps()}
+							_hover={{ bg: "whiteAlpha.100" }}
+						>
+							<Flex align={"center"} gap={2} fontSize="md">
+								<InfoOutlineIcon />
+								<Text>
+									1 {inputToken().symbol} ={" "}
+									{tokenFormatter.format(
+										inputToken().lastPriceUSD /
+											outputToken().lastPriceUSD
+									)}{" "}
+									{outputToken().symbol}
+								</Text>
+								<Text color={"gray.400"}>
+									(
+									{dollarFormatter.format(
+										inputToken().lastPriceUSD
+									)}
+									)
+								</Text>
+							</Flex>
+							<Flex>
+								{!isOpen ? <RiArrowDropDownLine size={30} /> : <RiArrowDropUpLine size={30} />}
+							</Flex>
+						</Flex>
+
+						<motion.div
+        {...getDisclosureProps()}
+        hidden={hidden}
+        initial={false}
+        onAnimationStart={() => setHidden(false)}
+        onAnimationComplete={() => setHidden(!isOpen)}
+        animate={{ height: isOpen ? 94 : 0 }}
+        style={{
+          height: 94,
+		  width: '100%',
+		}}
+      >
+
+							{isOpen && 
+							
+							<Box border={'1px'} borderColor='gray.700' mt={2} px={4} py={2} rounded={16} fontSize='sm' color={'gray.400'}>
+								<Flex justify={'space-between'}>
+								<Text>Price Impact</Text>
+								<Text>{pools[tradingPool]._fee / 1e20} %</Text>
+								</Flex>
+								<Divider my={1}/>
+								<Flex justify={'space-between'} mb={0.5}>
+								<Text>Fee</Text>
+								<Text>{pools[tradingPool]._fee / 1e20} %</Text>
+								</Flex>
+								<Flex justify={'space-between'}>
+								<Text>Estimated Gas</Text>
+								<Text>{dollarFormatter.format(gas)}</Text>
+								</Flex>
+							</Box>}
+						</motion.div>
+						</>}
 
 						<Button
-						mt={8}
+							mt={gas == 0 ? 12 : 4}
+							mb={5}
 							size="lg"
-							fontSize={"lg"}
+							fontSize={"xl"}
 							width={"100%"}
 							bgColor={"primary"}
 							rounded={16}
 							onClick={exchange}
 							disabled={
 								loading ||
-								!isConnected ||
-								activeChain?.unsupported ||
-								inputAmount <= 0 ||
-								swapInputExceedsBalance()
+								validateInput() > 0
 							}
 							loadingText="Sign the transaction in your wallet"
 							isLoading={loading}
@@ -414,66 +531,15 @@ function Swap() {
 							color="#171717"
 							height={"55px"}
 						>
-							{isConnected && !activeChain?.unsupported
-								? swapInputExceedsBalance()
-									? "Insufficient Balance"
-									: inputAmount > 0
-									? "Swap"
-									: "Enter Amount"
-								: "Please connect your wallet"}
+							{validateInput() > 0 ? ERROR_MSG[validateInput()] : "Swap"}
 						</Button>
 
-						{response && (
-							<Box width={"100%"} mt={4}>
-								<Alert
-									status={
-										response.includes("confirm")
-											? "info"
-											: confirmed &&
-											  response.includes("Success")
-											? "success"
-											: "error"
-									}
-									variant="top-accent"
-									rounded={16}
-								>
-									<AlertIcon />
-									<Box>
-										<Text fontSize="md" mb={0}>
-											{response}
-										</Text>
-										<Text fontSize="xs" mb={0}>
-											{message.slice(0, 100)}
-										</Text>
-										{hash && (
-											<Link
-												href={explorer() + hash}
-												target="_blank"
-											>
-												{" "}
-												<Text fontSize={"xs"}>
-													View on explorer
-												</Text>
-											</Link>
-										)}
-									</Box>
-								</Alert>
-							</Box>
-						)}
-
-						<Flex
-							align={"center"}
-							mx={1}
-							my={4}
-							justify="space-between"
-						>
-							<Text fontSize={"xs"} color="gray.400">
-								Trading Fee: {pools[tradingPool]._fee / 1e20} %
-							</Text>
-							<Text fontSize={"xs"} color="gray.400">
-								Slippage: {0} %
-							</Text>
-						</Flex>
+						<Response
+							response={response}
+							message={message}
+							hash={hash}
+							confirmed={confirmed}
+						/>
 					</Box>
 				</Box>
 			) : (
@@ -497,13 +563,8 @@ function Swap() {
 }
 
 export function SelectBody({ asset, onOpen }: any) {
-	const selectStyle = {
-		minW: "30%",
-		maxW: "30%",
-		cursor: "pointer",
-	};
 	return (
-		<Box {...selectStyle} onClick={onOpen}>
+		<Box cursor="pointer" onClick={onOpen}>
 			<Flex
 				justify={"space-between"}
 				align={"center"}
@@ -512,10 +573,10 @@ export function SelectBody({ asset, onOpen }: any) {
 				shadow={"2xl"}
 				px={1}
 				py={1}
-				gap={1}
+				gap={0.5}
 			>
 				<Image
-					src={"/icons/" + asset?.symbol.toUpperCase() + ".png"}
+					src={"/icons/" + asset?.symbol.toUpperCase() + ".svg"}
 					height={40}
 					width={40}
 					alt={asset?.symbol}
@@ -524,8 +585,8 @@ export function SelectBody({ asset, onOpen }: any) {
 				<Text fontSize="xl" color="gray.200" fontWeight={"bold"}>
 					{asset.symbol}
 				</Text>
-				<Box ml={1}>
-					<RiArrowDropDownLine size={25} />
+				<Box>
+					<RiArrowDropDownLine size={30} />
 				</Box>
 			</Flex>
 		</Box>

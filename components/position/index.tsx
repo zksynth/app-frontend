@@ -29,11 +29,11 @@ function Index() {
 	return (
 		<>
 			<Head>
-				<title>SyntheX | Dashboard</title>
+				<title>Dashboard | SyntheX</title>
 				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
 			</Head>
 			{
-				<Flex flexDir={'column'} mt={10} mb={10} gap={6}>
+				<Flex flexDir={'column'} mt={10} mb={10} gap={12}>
 					<Flex
 						flexDirection={{
 							sm: 'column',

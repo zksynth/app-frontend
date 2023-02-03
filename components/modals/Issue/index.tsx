@@ -151,17 +151,17 @@ const Issue = ({ asset, handleIssue }: any) => {
 						<Box mb={10} mt={4}>
 						<Flex justify={"center"} mb={2}>
 							<Flex
-								width={"33%"}
+								// width={"36%"}
 								justify={"center"}
 								align="center"
-								gap={2}
+								gap={0.5}
 								bg="gray.600"
 								rounded="full"
 							>
 								<Image
 									src={`/icons/${asset._mintedTokens[
 										selectedAssetIndex
-									].symbol.toUpperCase()}.png`}
+									].symbol.toUpperCase()}.svg`}
 									alt=""
 									width={"40"}
 									height={"40"}
@@ -170,7 +170,6 @@ const Issue = ({ asset, handleIssue }: any) => {
 								<Select
 									variant={"unstyled"}
 									my={2}
-									placeholder="Select asset to issue"
 									value={selectedAssetIndex}
 									onChange={(e) =>
 										{
@@ -207,7 +206,7 @@ const Issue = ({ asset, handleIssue }: any) => {
 								<NumberInputField
 									textAlign={"center"}
 									pr={0}
-									fontSize={"5xl"}
+									fontSize={"6xl"}
 									placeholder="0"
 								/>
 							</NumberInput>

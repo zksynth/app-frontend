@@ -14,7 +14,7 @@ import Image from "next/image";
 import { useEffect, useContext } from "react";
 import { AppDataContext } from "../../context/AppDataProvider";
 import { SearchIcon } from "@chakra-ui/icons";
-import { tokenFormatter } from "../../../src/const";
+import { tokenFormatter, dollarFormatter } from '../../../src/const';
 
 const SelectAsset = ({ setAmount, setSelectedAsset }: any) => {
 	const { collaterals } = useContext(AppDataContext);
@@ -32,10 +32,11 @@ const SelectAsset = ({ setAmount, setSelectedAsset }: any) => {
 		if(!filtered){
 			if(collaterals.length === 0) return;
 			if(collaterals[0].balance === undefined) return;
-			const _filteredCollaterals = collaterals.filter((collateral: any) => {
-				return collateral.balance > 0;
+			// sort collaterals by balance
+			const _collaterals = collaterals.sort((a: any, b: any) => {
+				return b.balance * b.inputTokenPriceUSD - a.balance * a.inputTokenPriceUSD;
 			});
-			setFilteredCollaterals(_filteredCollaterals);
+			setFilteredCollaterals(_collaterals);
 			setFiltered(true);
 		}
 	})
@@ -64,7 +65,7 @@ const SelectAsset = ({ setAmount, setSelectedAsset }: any) => {
 										src={
 											"/icons/" +
 											collateral.inputToken.symbol.toUpperCase() +
-											".png"
+											".svg"
 										}
 										height={35}
 										width={35}
@@ -91,9 +92,9 @@ const SelectAsset = ({ setAmount, setSelectedAsset }: any) => {
 								px={2}
 								textAlign="right"
 							>
-								<Text color={'gray.400'} fontSize={"xs"}>Balance</Text>
+								<Text color={'gray.500'} fontSize={"xs"}>Balance</Text>
 								<Text fontSize={"xs"}>
-									{tokenFormatter.format(Big(collateral.balance ?? 0).div(1e18).toNumber())} {collateral.inputToken.symbol}
+									{tokenFormatter.format(Big(collateral.balance ?? 0).div(1e18).toNumber())} {collateral.inputToken.symbol}{" "}({dollarFormatter.format(Big(collateral.balance * collateral.inputTokenPriceUSD).div(1e18).toNumber())})
 								</Text>
 								
 							</Box>

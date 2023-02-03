@@ -1,5 +1,6 @@
 import { Alert, AlertIcon, Box, Text, Link } from "@chakra-ui/react";
 import React, { useContext } from "react";
+import { chainMapping } from "../../../src/chains";
 import { AppDataContext } from "../../context/AppDataProvider";
 
 export default function Response({response, message, hash, confirmed}: any) {
@@ -31,7 +32,7 @@ export default function Response({response, message, hash, confirmed}: any) {
 								{message.slice(0, 100)}
 							</Text>
 							{hash && (
-								<Link href={explorer() + hash} target="_blank">
+								<Link href={chainMapping[chain]?.blockExplorers.default.url + "tx/" + hash} target="_blank">
 									{" "}
 									<Text fontSize={"xs"}>
 										View on explorer

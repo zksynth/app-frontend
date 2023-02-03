@@ -128,7 +128,7 @@ const WithdrawStep2 = ({ handleWithdraw, asset, setSelectedAsset }: any) => {
 								gap={2}
 							>
 								<Image
-									src={`/icons/${asset.inputToken.symbol.toUpperCase()}.png`}
+									src={`/icons/${asset.inputToken.symbol.toUpperCase()}.svg`}
 									alt=""
 									width={"30"}
 									height={"30"}
@@ -159,7 +159,7 @@ const WithdrawStep2 = ({ handleWithdraw, asset, setSelectedAsset }: any) => {
 										placeholder="0"
 										textAlign={"center"}
 										pr={0}
-										fontSize={"5xl"}
+										fontSize={"6xl"}
 									/>
 								</NumberInput>
 							</InputGroup>

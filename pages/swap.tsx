@@ -8,7 +8,7 @@ export default function swap() {
 		<>
 			<Flex justify={"center"} align="center" h={"100%"}>
 				<Box
-					w={"44%"}
+					w={"42%"}
 					minW="400px"
 					bgColor={"gray.800"}
 					mt={"-40"}

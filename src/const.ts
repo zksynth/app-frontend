@@ -4,12 +4,10 @@ import { ChainID } from "./chains";
 
 
 export const DUMMY_ADDRESS = {
-	[ChainID.NILE]: "TU6nPbkDzMfhtg13nUnTMbuVFFMpLSs3P3",
 	[ChainID.AURORA]: ethers.constants.AddressZero,
 };
 
 export const Endpoints: any = {
-	[ChainID.NILE]: "https://api.synthex.finance/",
 	[ChainID.AURORA]: "https://aurora.api.synthex.finance/", // 'http://localhost:3030/',
 	[ChainID.ARB_GOERLI]: process.env.NODE_ENV == 'production' ? "https://api.thegraph.com/subgraphs/name/prasad-kumkar/synthex" : "https://api.thegraph.com/subgraphs/name/prasad-kumkar/synthex-dev"
 };

@@ -38,10 +38,7 @@ export default function SYN() {
 			<Flex flexDir={"column"} align={"center"} textAlign={"center"}>
 				<Heading size={"lg"}>xSYN</Heading>
 				<Text maxW={"50%"} fontSize="md" mt={6} mb={10}>
-					xSYN (Sealed SYN) is the reward token for SyntheX Protocol till official
-					token (SYN) is launched, which can be exchanged 1:1 for SYN
-					after unlocking. Users can earn xSYN by providing liquidity
-					to the debt pools and staking xSYN
+				xSYN is the interim reward token for SyntheX Protocol. It is earned by providing liquidity to debt pools and staking. Once the official SYN token is launched, xSYN can be exchanged 1:1 for SYN. Note that xSYN is sealed until SYN is unlocked.
 				</Text>
 			</Flex>
 

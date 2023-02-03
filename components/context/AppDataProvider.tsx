@@ -20,8 +20,6 @@ interface AppDataValue {
 	tradingPool: number;
 	setTradingPool: (_: number) => void;
 	dataFetchError: string | null;
-	dollarFormatter: any;
-	tokenFormatter: any;
 	tradingBalanceOf: (_: string) => number;
 	safeCRatio: number;
 	availableToBorrow: () => number;
@@ -36,7 +34,6 @@ interface AppDataValue {
 	updateSynthBalance: (_: string, __: string, ___: boolean) => void;
 	chain: number;
 	setChain: (_: number) => void;
-	explorer: () => string;
 	addCollateralAllowance(collateralAddress: string, value: string): void;
 	toggleCollateralEnabled(collateralAddress: string): void;
 	togglePoolEnabled(poolAddress: string): void;
@@ -71,15 +68,6 @@ function AppDataProvider({ children }: any) {
 	const [refresh, setRefresh] = React.useState(0);
 	const [block, setBlock] = React.useState(0);
 
-	React.useEffect(() => {
-		// fetchData(DUMMY_ADDRESS, ChainID.NILE);
-	}, []);
-
-	const explorer = () => {
-		return chain === ChainID.NILE
-			? "https://nile.explorer.org/#/transaction/"
-			: chainMapping[chain]?.blockExplorers.default.url + "tx/";
-	};
 
 	const tradingBalanceOf = (_s: string) => {
 		for (let i in synths) {
@@ -122,6 +110,7 @@ function AppDataProvider({ children }: any) {
 											lastPriceUSD
 										}
 									}
+									totalValueLockedUSD
 									rewardTokenEmissionsAmount
 									rewardTokenEmissionsUSD
 									_fee
@@ -222,6 +211,7 @@ function AppDataProvider({ children }: any) {
 			const itf = new ethers.utils.Interface(getABI("MockToken"));
 			const synthexitf = new ethers.utils.Interface(getABI("SyntheX"));
 			const synthex = await getContract("SyntheX", _chain);
+			if(!synthex) throw new Error("SyntheX contract not found");
 
 			let _totalCollateral = Big(0);
 			let _adjustedCollateral = Big(0);
@@ -434,6 +424,12 @@ function AppDataProvider({ children }: any) {
 						: Big(_collaterals[i].balance).plus(value)
 				).toString();
 
+				_collaterals[i].totalValueLockedUSD = (
+					isMinus
+						? Big(_collaterals[i].totalValueLockedUSD).minus(Big(value).mul(_collaterals[i].inputTokenPriceUSD).div(10 ** _collaterals[i].inputToken.decimals))
+						: Big(_collaterals[i].totalValueLockedUSD).plus(Big(value).mul(_collaterals[i].inputTokenPriceUSD).div(10 ** _collaterals[i].inputToken.decimals))
+				).toString();
+
 				const amountUSD = Big(value)
 					.times(_collaterals[i].inputTokenPriceUSD)
 					.div(10 ** _collaterals[i].inputToken.decimals);
@@ -487,7 +483,6 @@ function AppDataProvider({ children }: any) {
 				_collaterals[i].isEnabled = !_collaterals[i].isEnabled;
 			}
 		}
-		console.log("settin", _collaterals);
 		setCollaterals(_collaterals);
 	};
 
@@ -498,7 +493,6 @@ function AppDataProvider({ children }: any) {
 				_pools[i].isEnabled = !_pools[i].isEnabled;
 			}
 		}
-		console.log("settin", _pools);
 		setPools(_pools);
 	};
 
@@ -570,8 +564,6 @@ function AppDataProvider({ children }: any) {
 		setTradingPool,
 		fetchData,
 		dataFetchError,
-		dollarFormatter,
-		tokenFormatter,
 		tradingBalanceOf,
 		safeCRatio,
 		availableToBorrow,
@@ -582,7 +574,6 @@ function AppDataProvider({ children }: any) {
 		updateSynthBalance,
 		chain,
 		setChain,
-		explorer,
 		addCollateralAllowance,
 		toggleCollateralEnabled,
 		togglePoolEnabled,

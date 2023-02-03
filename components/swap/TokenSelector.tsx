@@ -7,6 +7,7 @@ import {
 	Button,
 	Input,
 	Tooltip,
+	Divider,
 } from "@chakra-ui/react";
 
 import Image from "next/image";
@@ -24,6 +25,7 @@ import {
 	ModalCloseButton,
 } from "@chakra-ui/react";
 import { SearchIcon } from "@chakra-ui/icons";
+import InfoFooter from "../modals/_utils/InfoFooter";
 
 function TokenSelector({
 	onTokenSelected,
@@ -36,8 +38,7 @@ function TokenSelector({
 
 	const [searchPools, setSearchPools] = useState<any[]>([]);
 
-	const selectToken = (tokenIndex: number, poolIndex: number) => {
-		setTradingPool(poolIndex);
+	const selectToken = (tokenIndex: number) => {
 		onTokenSelected(tokenIndex);
 	};
 
@@ -45,32 +46,38 @@ function TokenSelector({
 		// search token from all pool _mintedTokens
 		const _pools = [...pools];
 		const _searchedTokens = [];
-		for(let i in _pools) {
+		for (let i in _pools) {
 			const _mintedTokens = _pools[i]._mintedTokens;
-			const _seachedPool: any = {..._pools[i]};
-			_seachedPool._mintedTokens = []
-			for(let j in _mintedTokens){
+			const _seachedPool: any = { ..._pools[i] };
+			_seachedPool._mintedTokens = [];
+			for (let j in _mintedTokens) {
 				const _token = _mintedTokens[j];
-				if(
-					_token.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-					_token.symbol.toLowerCase().includes(searchTerm.toLowerCase())
-				){
-					_seachedPool._mintedTokens.push({..._token, poolIndex: i, tokenIndex: j})
+				if (
+					_token.name
+						.toLowerCase()
+						.includes(searchTerm.toLowerCase()) ||
+					_token.symbol
+						.toLowerCase()
+						.includes(searchTerm.toLowerCase())
+				) {
+					_seachedPool._mintedTokens.push({
+						..._token,
+						poolIndex: i,
+						tokenIndex: j,
+					});
 				}
 			}
-			_searchedTokens.push(_seachedPool)
+			_searchedTokens.push(_seachedPool);
 		}
-		console.log(_searchedTokens);
 		setSearchPools(_searchedTokens);
 	};
 
 	useEffect(() => {
 		if (pools.length > 0 && searchPools.length == 0) {
-			searchToken('');
+			searchToken("");
 		}
 	}, [searchToken]);
 
-	
 	return (
 		<>
 			<Modal
@@ -80,144 +87,105 @@ function TokenSelector({
 				isCentered
 			>
 				<ModalOverlay backdropFilter="blur(30px)" />
-				<ModalContent maxH={"500px"}>
+				<ModalContent maxH={"500px"} bg='gray.700'>
 					<ModalHeader>Select a token</ModalHeader>
-					<ModalCloseButton />
-					<ModalBody>
-						{/* Search Input */}
-						<Box
-							borderColor={"gray.700"}
-							px={2}
-							py={1}
-							mb={2}
-							rounded={10}
-						>
-							<Flex align={"center"} gap={4}>
-								<SearchIcon />
-								<Input
-									placeholder={"Search"}
-									variant={"unstyled"}
-									_focus={{
-										outline: "none",
-									}}
-									onChange={(e) =>
-										searchToken(e.target.value)
-									}
-								/>
-							</Flex>
+					<Box mx={5} mb={5}>
+					<Select placeholder="Select debt pool" value={tradingPool} onChange={(e) => setTradingPool(parseInt(e.target.value))} bg='gray.800' variant={'filled'}  _focus={{bg: 'gray.800'}} focusBorderColor='transparent'>
+							{pools.map((pool: any, index: number) => (
+								<option value={index} key={pool.id}>
+									{pool.name}
+								</option>
+							))}
+						</Select>
 						</Box>
+						{/* <Divider/> */}
+					<ModalCloseButton />
+					<ModalBody  bg='gray.800'>
 
 						{/* Token List */}
-						{searchPools.map((_pool: any, index: number) => (
-
-							
-							<Box key={index} >
+						<Box mx={-6} >
+						{pools[tradingPool]._mintedTokens.map(
+							(_synth: any, tokenIndex: number) => (
 								<Flex
-									align={"center"}
-									bg={"whiteAlpha.200"}
-									mx={-6}
-									px={6}
-									h={6}
+									key={tokenIndex}
 									justify="space-between"
-									
-								>
-									<Text fontSize={"sm"}>{_pool.name}</Text>
-
-									<Text fontSize={"sm"}>{tradingPool == index ? <>(Selected)</> : <>(Switch pool)</>}</Text>									
-								</Flex>
-
-
-								<Box
-									mx={-6}
-									bg={
-										tradingPool == index
-											? "transparent"
-											: "whiteAlpha.50"
+									align={"center"}
+									py={2}
+									px={6}
+									_hover={{
+										bg: "gray.700",
+										cursor: "pointer",
+									}}
+									onClick={() =>
+										selectToken(
+											tokenIndex
+										)
 									}
 								>
-									{_pool._mintedTokens.map(
-										(_synth: any, tokenIndex: number) => (
-											<Flex
-												key={index}
-												justify="space-between"
-												align={"center"}
-												py={1}
-												px={6}
-												_hover={{
-													bg: "gray.600",
-													cursor: "pointer",
-												}}
-												onClick={() =>
-													selectToken(
-														_synth.tokenIndex,
-														_synth.poolIndex
-													)
+									<Box
+										borderColor={"gray.700"}
+									>
+										<Flex
+											align={"center"}
+											gap={"1"}
+											ml={-1}
+										>
+											<Image
+												src={
+													"/icons/" +
+													_synth.symbol.toUpperCase() +
+													".svg"
 												}
-											>
-												<Box
-													borderColor={"gray.700"}
-													py={1}
+												height={40}
+												width={40}
+												alt={_synth.symbol}
+											/>
+
+											<Box>
+												<Text>
+													{_synth.symbol}
+												</Text>
+
+												<Text
+													color={
+														"gray.500"
+													}
+													fontSize={"sm"}
 												>
-													<Flex
-														align={"center"}
-														gap={"1"}
-														ml={-1}
-													>
-														<Image
-															src={
-																"/icons/" +
-																_synth.symbol.toUpperCase() +
-																".png"
-															}
-															height={40}
-															width={40}
-															alt={_synth.symbol}
-														/>
+													{_synth.name}
+												</Text>
+											</Box>
+										</Flex>
+									</Box>
 
-														<Box>
-															<Text>
-																{_synth.symbol}
-															</Text>
-
-															<Text
-																color={
-																	"gray.500"
-																}
-																fontSize={"sm"}
-															>
-																{_synth.name}
-															</Text>
-														</Box>
-													</Flex>
-												</Box>
-
-												<Box
-													borderColor={"gray.700"}
-													px={2}
-													textAlign="right"
-												>
-													<Text
-														color={"gray.500"}
-														fontSize={"sm"}
-													>
-														{_synth.balance
-															? tokenFormatter.format(
-																	_synth.balance /
-																		10 **
-																			(_synth.decimal ??
-																				18)
-															  )
-															: "-"}{" "}
-													</Text>
-												</Box>
-											</Flex>
-										)
-									)}
-								</Box>
-
-							</Box>
-						))}
+									<Box
+										borderColor={"gray.700"}
+										px={2}
+										textAlign="right"
+									>
+										<Text fontSize={'xs'} color={"gray.500"}>Balance</Text>
+										<Text
+											
+											fontSize={"sm"}
+										>
+											{_synth.balance
+												? tokenFormatter.format(
+														_synth.balance /
+															10 **
+																(_synth.decimal ??
+																	18)
+													)
+												: "-"}{" "}
+										</Text>
+									</Box>
+								</Flex>
+							)
+						)}
+						</Box>
 					</ModalBody>
+					{/* <Box bg='gray.700'>
+						<InfoFooter message='Atomic/Cross-pool asset swaps are not yet supported'/>
+					</Box> */}
 				</ModalContent>
 			</Modal>
 		</>

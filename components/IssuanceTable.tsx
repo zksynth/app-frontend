@@ -50,9 +50,8 @@ import {
 import { AppDataContext } from "./context/AppDataProvider";
 import { useAccount, useNetwork } from "wagmi";
 import { useEffect } from "react";
-import Image from "next/image";
-import { FaBurn } from "react-icons/fa";
 import { InfoIcon, InfoOutlineIcon } from "@chakra-ui/icons";
+import { dollarFormatter } from "../src/const";
 
 const IssuanceTable = ({ handleChange }: any) => {
 	const [nullValue, setNullValue] = useState(false);
@@ -74,8 +73,6 @@ const IssuanceTable = ({ handleChange }: any) => {
 
 	const {
 		synths: debts,
-		tokenFormatter,
-		dollarFormatter,
 		isDataReady,
 		updateSynthBalance,
 		pools,
@@ -118,9 +115,9 @@ const IssuanceTable = ({ handleChange }: any) => {
 		return {
 			// borderColor: "transparent",
 			// borderBottom: "4px",
-			mb: "20px",
+			// mb: "20px",
 			// bg: "gray.700",
-			py: "8",
+			py: "7",
 			px: "7",
 
 		};
@@ -184,7 +181,7 @@ const IssuanceTable = ({ handleChange }: any) => {
 																fontWeight="bold"
 																textAlign="left"
 															>
-																{pool.name}
+																{pool.name} ({pool.inputToken.symbol})
 															</Text>
 															{/* <Text
 																fontSize="xs"
@@ -201,28 +198,30 @@ const IssuanceTable = ({ handleChange }: any) => {
 														</Box>
 													</Flex>
 													<AvatarGroup
-														size="md"
-														max={7}
+														size="lg"
+														// max={10}
 														mt={5}
-														fontSize={"sm"}
+														spacing={-5}
+														variant='unstyled'
+														colorScheme='primarySchema'
+														bg={'transparent'}
 													>
 														{pool._mintedTokens.map(
 															(
 																token: any,
 																index: number
 															) => (
-																<Avatar
-																	bg={
-																		"gray.600"
-																	}
-																	borderColor={
-																		"transparent"
-																	}
+																
+																<TooltipAvatar
+																	bg={'transparent'}
 																	key={index}
 																	name={
-																		token.name
+																		token.name.split(" ").splice(2).join(" ")+ " (" + token.symbol+")"
 																	}
-																	src={`/icons/${token.symbol?.toUpperCase()}.png`}
+																	src={`/icons/${token.symbol?.toUpperCase()}.svg`}
+																	borderColor='transparent'
+																	iconLabel="aa"
+																	mx={-2}
 																/>
 															)
 														)}
@@ -280,7 +279,7 @@ const IssuanceTable = ({ handleChange }: any) => {
 																<PopoverArrow />
 																<PopoverHeader
 																	bg={
-																		"gray.700"
+																		"gray.600"
 																	}
 																	roundedTop={5}
 																>
@@ -292,14 +291,14 @@ const IssuanceTable = ({ handleChange }: any) => {
 																		Total
 																		APR
 																	</Text>
-																	<Text>
+																	<Text fontWeight={'medium'}>
 																		{totalAPY.toFixed(
 																			2
 																		)}{" "}
 																		%
 																	</Text>
 																</PopoverHeader>
-																<PopoverBody bg={"gray.600"} roundedBottom={5}>
+																<PopoverBody bg={"gray.700"} roundedBottom={5}>
 																	<Flex
 																		gap={1}
 																		align="center"
@@ -517,5 +516,11 @@ const IssuanceTable = ({ handleChange }: any) => {
 		</Box>
 	);
 };
+
+const TooltipAvatar: typeof Avatar = (props: any) => (
+	<Tooltip label={props.name} >
+	  <Avatar {...props} cursor='help'/>
+	</Tooltip>
+  );
 
 export default IssuanceTable;

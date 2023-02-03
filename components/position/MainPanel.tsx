@@ -9,6 +9,7 @@ import { AppDataContext } from "../context/AppDataProvider";
 import Big from "big.js";
 import DepositModal from "../modals/Deposit";
 import WithdrawModal from "../modals/Withdraw";
+import { dollarFormatter } from "../../src/const";
 
 export default function MainPanel({ handleChange }: any) {
 	const {
@@ -16,7 +17,6 @@ export default function MainPanel({ handleChange }: any) {
 		safeCRatio,
 		adjustedCollateral,
 		adjustedDebt,
-		dollarFormatter,
 	} = useContext(AppDataContext);
 
 	const {
@@ -38,12 +38,12 @@ export default function MainPanel({ handleChange }: any) {
 	};
 
 	return (
-		<Flex justify="space-between" px={"30px"} py="22px" height={"100%"}>
+		<Flex flexDir={{sm: 'column', md: 'row'}} justify="space-between" px={"30px"} py="22px" height={"100%"} gap={{sm: 10, md: 0}}>
 			<Flex
 				flexDir={"column"}
 				justify={"center"}
 				align='center'
-				width={"33%"}
+				w={{sm: '100%', md: "33%"}}
 				textAlign="center"
 			>
 				<Box>
@@ -61,7 +61,7 @@ export default function MainPanel({ handleChange }: any) {
 			</Flex>
 
 			<Flex
-				w={"33%"}
+				w={{sm: '100%', md: "33%"}}
 				flexDir={"column"}
 				justify="center"
 				align={"center"}
@@ -125,7 +125,7 @@ export default function MainPanel({ handleChange }: any) {
 				flexDir={"column"}
 				justify={"center"}
 				gap={10}
-				width={"33%"}
+				w={{sm: '100%', md: "33%"}}
 				textAlign={"center"}
 			>
 				<Box>

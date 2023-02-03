@@ -42,7 +42,7 @@ export default function Collateral({ handleChange }: any) {
 					>
 					<Flex>
 						<Image
-							src={`/icons/${collateral.inputToken.symbol?.toUpperCase()}.png`}
+							src={`/icons/${collateral.inputToken.symbol?.toUpperCase()}.svg`}
 							width={35}
 							height={35}
 							alt="logo"

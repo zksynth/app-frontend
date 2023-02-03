@@ -150,7 +150,7 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 								<Image
 									src={`/icons/${asset._mintedTokens[
 										selectedAssetIndex
-									].symbol.toUpperCase()}.png`}
+									].symbol.toUpperCase()}.svg`}
 									alt=""
 									width={"40"}
 									height={"40"}
@@ -196,7 +196,7 @@ const RepayModal = ({ asset, handleRepay }: any) => {
 									placeholder="0"
 									textAlign={"center"}
 									pr={0}
-									fontSize={"5xl"}
+									fontSize={"6xl"}
 								/>
 							</NumberInput>
 						</InputGroup>
