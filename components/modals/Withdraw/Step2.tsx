@@ -46,7 +46,6 @@ const WithdrawStep2 = ({ handleWithdraw, asset, setSelectedAsset }: any) => {
 	const [confirmed, setConfirmed] = useState(false);
 	const [message, setMessage] = useState("");
 
-	// const { isConnected, tronWeb, address } = useContext(WalletContext);
 	const { isConnected, address } = useAccount();
 	const { chain: activeChain } = useNetwork();
 	const { data: ethBalance } = useBalance({

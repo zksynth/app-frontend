@@ -24,7 +24,7 @@ import {
 	ModalBody,
 	ModalCloseButton,
 } from "@chakra-ui/react";
-import { SearchIcon } from "@chakra-ui/icons";
+import { InfoOutlineIcon, SearchIcon } from "@chakra-ui/icons";
 import InfoFooter from "../modals/_utils/InfoFooter";
 
 function TokenSelector({
@@ -78,6 +78,8 @@ function TokenSelector({
 		}
 	}, [searchToken]);
 
+	if(!pools[tradingPool]) return <></>
+
 	return (
 		<>
 			<Modal
@@ -85,9 +87,10 @@ function TokenSelector({
 				onClose={onClose}
 				scrollBehavior={"inside"}
 				isCentered
+				
 			>
 				<ModalOverlay backdropFilter="blur(30px)" />
-				<ModalContent maxH={"500px"} bg='gray.700'>
+				<ModalContent maxH={"500px"} bg='gray.700' rounded={16}>
 					<ModalHeader>Select a token</ModalHeader>
 					<Box mx={5} mb={5}>
 					<Select placeholder="Select debt pool" value={tradingPool} onChange={(e) => setTradingPool(parseInt(e.target.value))} bg='gray.800' variant={'filled'}  _focus={{bg: 'gray.800'}} focusBorderColor='transparent'>
@@ -183,9 +186,10 @@ function TokenSelector({
 						)}
 						</Box>
 					</ModalBody>
-					{/* <Box bg='gray.700'>
-						<InfoFooter message='Atomic/Cross-pool asset swaps are not yet supported'/>
-					</Box> */}
+					<Flex rounded={16} bg='gray.700' color={'gray.400'} align={'center'} px={6} gap={2} my={2}>
+						<InfoOutlineIcon width={3}/>
+						<Text fontSize={'xs'}>Atomic (or) Cross-pool asset swaps are not yet supported</Text>
+					</Flex>
 				</ModalContent>
 			</Modal>
 		</>

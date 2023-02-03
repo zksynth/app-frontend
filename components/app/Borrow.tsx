@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useContext, useState } from "react";
 import { AppDataContext } from "../context/AppDataProvider";
-import { tokenFormatter } from "../../src/const";
+import { dollarFormatter, tokenFormatter } from "../../src/const";
 import { useEffect } from "react";
 import { useAccount, useNetwork } from "wagmi";
 import { call, getABI, getAddress, getContract } from "../../src/contract";
@@ -27,7 +27,6 @@ export default function Borrow() {
 		adjustedCollateral,
 		adjustedDebt,
 		pools,
-		dollarFormatter,
 		chain,
 	} = useContext(AppDataContext);
 
@@ -90,7 +89,7 @@ export default function Borrow() {
 					<Box>
 						<Text fontSize={"sm"}>Borrow Balance</Text>
 						<Text fontSize={"2xl"} fontWeight="bold">
-							{dollarFormatter?.format(totalDebt)}
+							{dollarFormatter.format(totalDebt)}
 						</Text>
 					</Box>
 
@@ -142,7 +141,7 @@ export default function Borrow() {
 					<Box textAlign={"left"}>
 						<Text fontSize={"sm"}>Health Factor</Text>
 						<Text fontSize={"2xl"} fontWeight="bold">
-							{tokenFormatter?.format(
+							{tokenFormatter.format(
 								adjustedCollateral > 0
 									? adjustedCollateral / adjustedDebt
 									: Infinity

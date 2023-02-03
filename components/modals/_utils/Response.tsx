@@ -5,7 +5,7 @@ import { AppDataContext } from "../../context/AppDataProvider";
 
 export default function Response({response, message, hash, confirmed}: any) {
 
-    const { chain, explorer } = useContext(AppDataContext);
+    const { chain } = useContext(AppDataContext);
 
 	return (
 		<>

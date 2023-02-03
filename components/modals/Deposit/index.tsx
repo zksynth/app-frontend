@@ -43,12 +43,7 @@ const DepositModal = ({ handleDeposit }: any) => {
 	const [selectedAsset, setSelectedAsset] = React.useState<number|null>(null);
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const {
-		collaterals,
-		chain,
-		updateCollateralWalletBalance,
-		addCollateralAllowance,
-		explorer,
-		toggleCollateralEnabled,
+		collaterals
 	} = useContext(AppDataContext);
 
 	const [amount, setAmount] = React.useState(0);

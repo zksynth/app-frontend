@@ -2,15 +2,9 @@ import { Box, Flex, Progress, Text, useBreakpointValue } from '@chakra-ui/react'
 import React, { useContext } from 'react';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
-import { WalletContext } from '../components/context/WalletContextProvider';
 import { useEffect } from 'react';
-import { id } from 'ethers/lib/utils';
-import { useRouter } from 'next/router';
 import { AppDataContext } from '../components/context/AppDataProvider';
 import { useState } from 'react';
-import { ChainID, chainIndex } from '../src/chains';
-import { useAccount, useConnect } from 'wagmi';
-import { DUMMY_ADDRESS } from '../src/const';
 
 export default function _index({ children }: any) {
 
@@ -19,28 +13,6 @@ export default function _index({ children }: any) {
 		base: true,
 		lg: false,
 	});
-
-	const {
-		isConnected,
-		isConnecting,
-		address,
-		tronWeb,
-		connect,
-		connectionError,
-	} = useContext(WalletContext);
-
-	const {
-		collaterals,
-		synths,
-		totalCollateral,
-		totalDebt,
-		isDataReady,
-		availableToBorrow,
-		fetchData,
-		isFetchingData,
-		setChain
-	} = useContext(AppDataContext);
-	const [init, setInit] = useState(false);
 
 	const backgroundStyle = {
 		// backgroundColor: '#0E1015'
@@ -52,14 +24,14 @@ export default function _index({ children }: any) {
 
 	useEffect(() => {
 		setHydrated(true);
-	}, [isDataReady]);
+	}, []);
 
 	if(!hydrated) return <></>;
 
 	return (
 		<Box>
 			<Box bgColor="gray.800" color={'gray.400'}>
-			{connectionError && (
+			{/* {connectionError && (
 				<Text
 					textAlign={'center'}
 					width="100%"
@@ -68,7 +40,7 @@ export default function _index({ children }: any) {
 					p={2}>
 					{connectionError}
 				</Text>
-			)}
+			)} */}
 			{isMobile && (
 				<Text
 					textAlign={'center'}

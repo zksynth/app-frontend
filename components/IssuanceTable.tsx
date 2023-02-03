@@ -19,9 +19,7 @@ import {
 
 import IssueModel from "./modals/Issue";
 import RepayModel from "./modals/Repay";
-import { WalletContext } from "./context/WalletContextProvider";
 import {
-	MdArrowBackIos,
 	MdNavigateBefore,
 	MdNavigateNext,
 } from "react-icons/md";
@@ -61,8 +59,6 @@ const IssuanceTable = ({ handleChange }: any) => {
 			initialState: { currentPage: 1 },
 		});
 	const [extraTokens, setExtraTokens] = useState<any>([]);
-
-	const { isConnected } = useContext(WalletContext);
 	const { chain: activeChain } = useNetwork();
 
 	const {

@@ -15,7 +15,7 @@ export function getAddress(contractName: string, chain: number = ChainID.ARB_GOE
 
 export async function getContract(contractName: string, chain: number, address: string|null = null) {
   address = address ?? getAddress(contractName, chain);
-  if(!(window as any).ethereum) return
+  if(!(window as any).ethereum) throw new Error("Please connect your wallet");
   const provider = new ethers.providers.Web3Provider((window as any).ethereum);
   await provider.send('eth_requestAccounts', []);
   let contract = new ethers.Contract(address!, getABI(contractName), provider.getSigner());

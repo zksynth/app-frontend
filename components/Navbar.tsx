@@ -172,11 +172,14 @@ function NavBar() {
 				</Flex>
 
 				<Flex width={"33%"} justify="flex-end" align={"center"} gap={2}>
+				<Box display={{ sm: "none", md: "block" }}>
+						<RainbowConnect chainStatus={"icon"} />
+					</Box>
 					<Box display={{ sm: "none", md: "block" }}>
 						<Menu
 						>
 							<MenuButton 
-								_hover={{ bg: 'gray.600' }}
+								_hover={{ bg: 'gray.700' }}
 								color="white"
 								rounded={"full"}
 								aria-label={""}
@@ -187,10 +190,11 @@ function NavBar() {
 							</MenuButton>
 							<MenuList
 								bg={"none"}
-								width="20%"
 								border="0"
 								shadow={0}
+								mt={-1}
 							>
+								<Flex flexDir={'column'} align='end'>
 								<NavLocalLink
 									path={"/syn"}
 									title="xSYN"
@@ -211,12 +215,11 @@ function NavBar() {
 								>
 									<FiBarChart2 />
 								</NavExternalLink>
+								</Flex>
 							</MenuList>
 						</Menu>
 					</Box>
-					<Box display={{ sm: "none", md: "block" }}>
-						<RainbowConnect chainStatus={"icon"} />
-					</Box>
+					
 				</Flex>
 
 				<Box display={{ sm: "block", md: "none", lg: "none" }}>
@@ -307,7 +310,7 @@ const NavLink = ({
 				cursor="pointer"
 				rounded={100}
 				bgColor={isPath ? "gray.700" : lighten ? 'gray.800' : "transparent"}
-				_hover={{ bgColor: !isPath ? "gray.800" : "gray.700" }}
+				_hover={{ bgColor:  !isPath ? "gray.800" : "gray.700" }}
 			>
 				<Box
 					color={isPath ? "primary" : "gray.100"}

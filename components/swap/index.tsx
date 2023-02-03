@@ -64,8 +64,8 @@ function Swap() {
 		setInputAmount(e.target.value);
 		if (!Number(e.target.value)) return;
 		let outputAmount =
-			(e.target.value * inputToken().lastPriceUSD) /
-			outputToken().lastPriceUSD;
+			(e.target.value * inputToken()?.lastPriceUSD) /
+			outputToken()?.lastPriceUSD;
 		setOutputAmount(
 			Number(
 				Big(1)
@@ -311,7 +311,7 @@ function Swap() {
 		else return 0
 	}
 
-	if (pools.length == 0) return <></>;
+	// if (pools.length == 0) return <></>;
 
 	return (
 		<>
@@ -353,7 +353,7 @@ function Swap() {
 						>
 							<Text>
 								{dollarFormatter.format(
-									inputAmount * inputToken().lastPriceUSD
+									inputAmount * inputToken()?.lastPriceUSD
 								)}
 							</Text>
 							<Flex gap={1}>
@@ -424,7 +424,7 @@ function Swap() {
 						>
 							<Text>
 								{dollarFormatter.format(
-									outputAmount * outputToken().lastPriceUSD
+									outputAmount * outputToken()?.lastPriceUSD
 								)}
 							</Text>
 							<Flex gap={1}>
@@ -450,8 +450,8 @@ function Swap() {
 							bg="whiteAlpha.50"
 							color="gray.200"
 							rounded={16}
-							px={3}
-							py={3}
+							px={4}
+							py={2}
 							cursor="pointer"
 							{...getButtonProps()}
 							_hover={{ bg: "whiteAlpha.100" }}
@@ -461,15 +461,15 @@ function Swap() {
 								<Text>
 									1 {inputToken().symbol} ={" "}
 									{tokenFormatter.format(
-										inputToken().lastPriceUSD /
-											outputToken().lastPriceUSD
+										inputToken()?.lastPriceUSD /
+											outputToken()?.lastPriceUSD
 									)}{" "}
 									{outputToken().symbol}
 								</Text>
-								<Text color={"gray.400"}>
+								<Text fontSize={'sm'} color={"gray.400"}>
 									(
 									{dollarFormatter.format(
-										inputToken().lastPriceUSD
+										inputToken()?.lastPriceUSD
 									)}
 									)
 								</Text>
@@ -574,6 +574,7 @@ export function SelectBody({ asset, onOpen }: any) {
 				px={1}
 				py={1}
 				gap={0.5}
+				mr={-1}
 			>
 				<Image
 					src={"/icons/" + asset?.symbol.toUpperCase() + ".svg"}

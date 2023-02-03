@@ -4,7 +4,6 @@ import { useAccount, useNetwork } from 'wagmi';
 import { AppDataContext } from '../context/AppDataProvider';
 import DepositModal from '../modals/Deposit';
 import WithdrawModal from '../modals/Withdraw';
-import { WalletContext } from '../context/WalletContextProvider';
 import { dollarFormatter, tokenFormatter } from '../../src/const';
 import { BsFillCaretDownFill, BsFillCaretUpFill } from 'react-icons/bs';
 
@@ -18,9 +17,6 @@ export default function Collateral({ handleChange }: any) {
 		updateCollateralWalletBalance,
 		updateCollateralAmount,
 	} = useContext(AppDataContext);
-
-	const { isConnected, tronWeb } = useContext(WalletContext);
-
 	
 	const handleWithdraw = (collateral: string, value: string) => {
 		updateCollateralWalletBalance(collateral, value, false);
