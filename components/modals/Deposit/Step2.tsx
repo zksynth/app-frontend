@@ -263,7 +263,7 @@ const DepositModal = ({
 						</>
 					) : (
 						<>
-							<Box mt={6} textAlign="center">
+							<Box mt={4} mb={10} textAlign="center">
 								<Flex
 									justify={"center"}
 									align="center"
@@ -315,7 +315,7 @@ const DepositModal = ({
 								<Box>
 
 								<Text fontSize={"xs"} color="gray.400">
-									LTV: {asset?.maximumLTV} %
+									Asset LTV: {asset?.maximumLTV} %
 								</Text>
 
 								<Text fontSize={"xs"} color="gray.400">
@@ -415,7 +415,6 @@ const DepositModal = ({
 							</Button>
 						</>
 					)}
-
 					<Response
 							response={response}
 							message={message}

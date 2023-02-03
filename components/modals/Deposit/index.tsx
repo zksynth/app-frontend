@@ -90,7 +90,8 @@ const DepositModal = ({ handleDeposit }: any) => {
 						aria-label="Go Back"
 						icon={<IoIosArrowBack />}
 						onClick={() => setSelectedAsset(null)}
-						variant="unstyled"
+						variant="variant"
+						ml={-2}
 					/>
 					<Text>{`Deposit ${collaterals[selectedAsset].inputToken.symbol}`}</Text>
 						</Flex>}
@@ -117,9 +118,7 @@ const DepositModal = ({ handleDeposit }: any) => {
 						/>
 					</ModalBody>
 					<InfoFooter
-						message="
-						Adding collateral would increase your borrowing power, and lower your liquidation risk. 
-					"
+						message="Adding collateral would increase your borrowing power, and lower your liquidation risk. "
 					/>
 				</ModalContent>
 			</Modal>}

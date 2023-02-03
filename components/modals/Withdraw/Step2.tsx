@@ -4,12 +4,7 @@ import {
 	Box,
 	Text,
 	Flex,
-	useDisclosure,
-	Link,
 	Image,
-	Select,
-	Alert,
-	AlertIcon,
 	InputGroup,
 	NumberInput,
 	NumberInputField,
@@ -17,28 +12,18 @@ import {
 
 const Big = require("big.js");
 
-import { getAddress, getContract, send, call } from "../../../src/contract";
-import { useEffect, useContext } from "react";
-import { BiPlusCircle } from "react-icons/bi";
+import { getContract, send } from "../../../src/contract";
+import { useContext } from "react";
 import { AppDataContext } from "../../context/AppDataProvider";
 import { useAccount, useBalance, useNetwork } from "wagmi";
-import { ethers } from "ethers";
 import { tokenFormatter, dollarFormatter } from "../../../src/const";
-import InputWithSlider from "../../inputs/InputWithSlider";
-import { FaCoins, FaPlusCircle } from "react-icons/fa";
-import InputWithMax from "../../inputs/InputWithMax";
-import { ArrowDownIcon, ChevronDownIcon } from "@chakra-ui/icons";
-import { IoIosArrowBack } from "react-icons/io";
 import Response from "../_utils/Response";
 
 const WithdrawStep2 = ({ handleWithdraw, asset, setSelectedAsset }: any) => {
-	const { chain, safeCRatio, adjustedCollateral, adjustedDebt } =
-		useContext(AppDataContext);
+	const { chain, safeCRatio, adjustedCollateral, adjustedDebt } = useContext(AppDataContext);
 
 	const [amount, setAmount] = React.useState("0");
 	const [amountNumber, setAmountNumber] = useState(0);
-
-	const [claimLoading, setClaimLoading] = useState(false);
 
 	const [loading, setLoading] = useState(false);
 	const [response, setResponse] = useState<string | null>(null);
@@ -46,11 +31,8 @@ const WithdrawStep2 = ({ handleWithdraw, asset, setSelectedAsset }: any) => {
 	const [confirmed, setConfirmed] = useState(false);
 	const [message, setMessage] = useState("");
 
-	const { isConnected, address } = useAccount();
+	const { isConnected } = useAccount();
 	const { chain: activeChain } = useNetwork();
-	const { data: ethBalance } = useBalance({
-		address,
-	});
 
 	const max = () => {
 		if (!Number(safeCRatio)) return 0;
@@ -107,8 +89,6 @@ const WithdrawStep2 = ({ handleWithdraw, asset, setSelectedAsset }: any) => {
 			});
 	};
 
-	console.log(loading, response, hash, confirmed, message);
-
 	const _setAmount = (e: string) => {
 		setAmount(e);
 		setAmountNumber(isNaN(Number(e)) ? 0 : Number(e));
@@ -119,7 +99,7 @@ const WithdrawStep2 = ({ handleWithdraw, asset, setSelectedAsset }: any) => {
 			{asset && (
 				<>
 					<>
-						<Box mt={6} textAlign="center">
+						<Box mt={6} mb={10} textAlign="center">
 							<Flex
 								// flexDir={"column"}
 								justify={"center"}

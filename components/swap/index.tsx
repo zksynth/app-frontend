@@ -533,14 +533,14 @@ function Swap() {
 						>
 							{validateInput() > 0 ? ERROR_MSG[validateInput()] : "Swap"}
 						</Button>
-						<Box mt={-2} mb={8}>
+						{hash && <Box my={5} mt={-5}>
 						<Response
 							response={response}
 							message={message}
 							hash={hash}
 							confirmed={confirmed}
 						/>
-						</Box>
+						</Box>}
 					</Box>
 				</Box>
 			) : (

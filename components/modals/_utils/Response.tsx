@@ -10,7 +10,7 @@ export default function Response({response, message, hash, confirmed}: any) {
 	return (
 		<>
 			{response && (
-				<Box width={"100%"} mt={2} mb={-2}>
+				<Box width={"100%"} mt={4} mb={0}>
 					<Alert
 						status={
 							response.includes("confirm")
@@ -34,7 +34,7 @@ export default function Response({response, message, hash, confirmed}: any) {
 							{hash && (
 								<Link href={chainMapping[chain]?.blockExplorers.default.url + "tx/" + hash} target="_blank">
 									{" "}
-									<Text fontSize={"xs"}>
+									<Text fontSize={"xs"} textDecor='underline'>
 										View on explorer
 									</Text>
 								</Link>
