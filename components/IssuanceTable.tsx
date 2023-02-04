@@ -137,9 +137,9 @@ const IssuanceTable = ({ handleChange }: any) => {
 							<Thead>
 								<Tr>
 									<Th {...rowHeadStyle}>Debt Pool</Th>
-									<Th {...rowHeadStyle}>Protocol Debt</Th>
+									<Th {...rowHeadStyle}>Your Debt</Th>
 									<Th {...rowHeadStyle}>Liquidity</Th>
-									<Th {...rowHeadStyle} isNumeric>APY</Th>
+									<Th {...rowHeadStyle} isNumeric>Rewards</Th>
 									<Th {...rowHeadStyle}></Th>
 								</Tr>
 							</Thead>

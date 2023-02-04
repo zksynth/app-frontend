@@ -25,12 +25,9 @@ import {
 
 const Big = require("big.js");
 
-import { getAddress, getContract, send, call } from "../../../src/contract";
 import { useEffect, useContext } from "react";
 import { BiPlusCircle, BiMinusCircle } from "react-icons/bi";
 import { AppDataContext } from "../../context/AppDataProvider";
-import { useAccount, useBalance, useNetwork } from "wagmi";
-import { ethers } from "ethers";
 import Response from "../_utils/Response";
 import InfoFooter from "../_utils/InfoFooter";
 import { Step, Steps, useSteps } from "chakra-ui-steps";

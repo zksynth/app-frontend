@@ -62,9 +62,9 @@ function Swap() {
 
 	const updateInputAmount = (e: any) => {
 		setInputAmount(e.target.value);
-		if (!Number(e.target.value)) return;
+		if (isNaN(Number(e.target.value))) return;
 		let outputAmount =
-			(e.target.value * inputToken()?.lastPriceUSD) /
+			(Number(e.target.value) * inputToken()?.lastPriceUSD) /
 			outputToken()?.lastPriceUSD;
 		setOutputAmount(
 			Number(
@@ -77,7 +77,6 @@ function Swap() {
 	};
 
 	const onInputTokenSelected = (e: number) => {
-		console.log("onInputTokenSelected", e);
 		if (outputAssetIndex == e) {
 			setOutputAssetIndex(inputAssetIndex);
 		}
@@ -99,8 +98,8 @@ function Swap() {
 
 	const updateOutputAmount = (e: any) => {
 		setOutputAmount(e.target.value);
-		if (!Number(e.target.value)) return;
-		let inputAmount = Big(e.target.value)
+		if (isNaN(Number(e.target.value))) return;
+		let inputAmount = Big(Number(e.target.value))
 			.times(
 				pools[tradingPool]._mintedTokens[outputAssetIndex].lastPriceUSD
 			)
@@ -574,6 +573,7 @@ export function SelectBody({ asset, onOpen }: any) {
 				shadow={"2xl"}
 				px={1}
 				py={1}
+				pr={2}
 				gap={0.5}
 				mr={-1}
 			>

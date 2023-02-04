@@ -177,6 +177,7 @@ function NavBar() {
 					</Box>
 					<Box display={{ sm: "none", md: "block" }}>
 						<Menu
+							placement="bottom-end"
 						>
 							<MenuButton 
 								_hover={{ bg: 'gray.700' }}
@@ -193,6 +194,7 @@ function NavBar() {
 								border="0"
 								shadow={0}
 								mt={-1}
+								
 							>
 								<Flex flexDir={'column'} align='end'>
 								<NavLocalLink

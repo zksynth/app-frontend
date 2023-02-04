@@ -186,10 +186,13 @@ function TokenSelector({
 						)}
 						</Box>
 					</ModalBody>
-					<Flex rounded={16} bg='gray.700' color={'gray.400'} align={'center'} px={6} gap={2} my={2}>
+					{/* <Flex rounded={16} bg='gray.700' color={'gray.400'} align={'center'} px={6} gap={2} my={2}>
 						<InfoOutlineIcon width={3}/>
 						<Text fontSize={'xs'}>Atomic (or) Cross-pool asset swaps are not yet supported</Text>
-					</Flex>
+					</Flex> */}
+					<Box roundedBottom={16} py={2} bg='gray.800'>
+						
+					</Box>
 				</ModalContent>
 			</Modal>
 		</>
