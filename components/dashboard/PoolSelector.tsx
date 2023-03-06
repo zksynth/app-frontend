@@ -112,11 +112,12 @@ export default function PoolSelector() {
 							listStyle: "none",
 							display: "flex",
 							flexDirection: "column",
-							position: "absolute",
+							position: "fixed",
 							width: "400px",	
 							padding: "12px",
 							paddingBottom: "10px",	
 							backgroundColor: "#202837",
+							zIndex: 100,
 						}}
 					>
 						<motion.div
