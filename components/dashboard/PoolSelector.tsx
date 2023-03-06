@@ -114,12 +114,11 @@ export default function PoolSelector() {
 							flexDirection: "column",
 							position: "absolute",
 							width: "400px",	
+							padding: "12px",
+							paddingBottom: "10px",	
+							backgroundColor: "#202837",
 						}}
 					>
-						<Box shadow={'2xl'} bg='gray.800' style={{
-							padding: "12px",
-							paddingBottom: "10px",		
-						}}>
 						<motion.div
 							variants={{
 								open: {
@@ -241,7 +240,6 @@ export default function PoolSelector() {
 						{/* <Box py={1} mb={-6} mx={-3} px={3} bg='gray.700'>
 							<Text fontSize={'sm'}>Showing {pools.length} markets</Text>
 						</Box> */}
-						</Box>
 					</motion.ul>
 				</motion.nav>
 			</Box>

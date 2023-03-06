@@ -27,7 +27,7 @@ export default function TempPage() {
 	return (
 		<>
 		<Head>
-				<title>xSYN | SyntheX</title>
+				<title>Dashboard | SyntheX</title>
 				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
 			</Head>
 			<Flex pt="100px" justify={"space-between"}>
