@@ -18,7 +18,7 @@ export default function Footer() {
 
   return (
     <Box
-      bg={'gray.800'}
+      // bg={'gray.800'}
       color={'gray.200'}
       mt={10}>
       <Box

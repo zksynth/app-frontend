@@ -24,13 +24,13 @@ import {
 	MenuGroup,
 	MenuOptionGroup,
 	MenuDivider,
+	Image
 } from "@chakra-ui/react";
 import { ConnectButton as RainbowConnect } from "@rainbow-me/rainbowkit";
 import { FaBars } from "react-icons/fa";
 import { MdSpaceDashboard, MdSwapHorizontalCircle } from "react-icons/md";
 
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import "../styles/Home.module.css";
@@ -45,6 +45,7 @@ import { BigNumber } from "ethers";
 import { RiCopperCoinFill, RiMenu5Fill } from "react-icons/ri";
 import { FiBarChart2 } from "react-icons/fi";
 import { TokenContext } from "./context/TokenContext";
+import { motion } from 'framer-motion';
 
 function NavBar() {
 	// const [address, setAddress] = useState(null);
@@ -52,7 +53,7 @@ function NavBar() {
 	const { colorMode } = useColorMode();
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
-	const { fetchData, isDataReady, isFetchingData, setChain } =
+	const { status, message, fetchData, setChain } =
 		useContext(AppDataContext);
 	const { fetchData: fetchTokenData } = useContext(TokenContext);
 
@@ -111,63 +112,62 @@ function NavBar() {
 		}
 		if (
 			(!(isConnected && !isConnecting) || chain?.unsupported) &&
-			(!isDataReady || !isFetchingData) &&
+			(status !== "fetching") &&
 			!init
 		) {
 			setInit(true);
 			fetchData(null, ChainID.ARB_GOERLI);
 		}
-	}, [
-		isConnected,
-		isConnecting,
-		activeConnector,
-		fetchData,
-		setChain,
-		chain,
-		isDataReady,
-		isFetchingData,
-		init,
-		chains,
-		address,
-	]);
+	}, [isConnected, isConnecting, activeConnector, fetchData, setChain, chain, init, chains, address, status]);
 
 	return (
 		<>
-			<Flex alignItems={"center"} justify='space-between'>
-				<Box width={"33%"} mt={2} py={5}>
+			<Flex alignItems={"center"} justify='space-between' h={'100px'}>
+				<Flex align={'center'} gap={10} width={"33%"} mt={2}>
 					<Box cursor="pointer" maxW={"30px"}>
 						<Image
 							onClick={() => {
 								router.push("/");
 							}}
-							src={logo}
+							src={'/logo.svg'}
 							alt=""
-							width="30"
-							height="30"
+							width="35px"
+							height="35px"
+							minW={"28px"}
+							minH={"28px"}
 						/>
 					</Box>
-				</Box>
-
-				<Flex
-					justify={"center"}
-					width={"33%"}
-					display={{ sm: "none", md: "flex" }}
-				>
-					<Flex gap={1}>
+					<Flex gap={2}>
 						<NavLocalLink
 							path={"/"}
 							title={"Dashboard"}
 							pathname={router.pathname}
 						>
-							<MdSpaceDashboard />
+							{/* <MdSpaceDashboard /> */}
 						</NavLocalLink>
 						<NavLocalLink
 							path={"/swap"}
 							title="Swap"
 							pathname={router.pathname}
 						>
-							<MdSwapHorizontalCircle />
+							{/* <MdSwapHorizontalCircle /> */}
 						</NavLocalLink>
+
+						{/* <NavLocalLink
+							path={"/syx"}
+							title="DAO"
+							pathname={router.pathname}
+						>
+							<MdSwapHorizontalCircle />
+						</NavLocalLink> */}
+
+						{/* <NavLocalLink
+							path={"/temp"}
+							title="Analytics"
+							pathname={router.pathname}
+						>
+							<MdSwapHorizontalCircle />
+						</NavLocalLink> */}
 					</Flex>
 				</Flex>
 
@@ -175,115 +175,8 @@ function NavBar() {
 				<Box display={{ sm: "none", md: "block" }}>
 						<RainbowConnect chainStatus={"icon"} />
 					</Box>
-					<Box display={{ sm: "none", md: "block" }}>
-						<Menu
-							placement="bottom-end"
-						>
-							<MenuButton 
-								_hover={{ bg: 'gray.700' }}
-								color="white"
-								rounded={"full"}
-								aria-label={""}
-								_expanded={{ bg: 'secondary' }}
-								p={2}
-								>
-									<RiMenu5Fill size={20} />
-							</MenuButton>
-							<MenuList
-								bg={"none"}
-								border="0"
-								shadow={0}
-								mt={-1}
-								
-							>
-								<Flex flexDir={'column'} align='end'>
-								<NavLocalLink
-									path={"/syn"}
-									title="xSYN"
-									pathname={router.pathname}
-									lighten={true}
-								>
-									<RiCopperCoinFill />
-								</NavLocalLink>
-
-								<Box my={1}/>
-
-								<NavExternalLink
-									path={"https://stats.synthex.finance"}
-									newTab={true}
-									title="Analytics"
-									pathname={router.pathname}
-									lighten={true}
-								>
-									<FiBarChart2 />
-								</NavExternalLink>
-								</Flex>
-							</MenuList>
-						</Menu>
-					</Box>
-					
 				</Flex>
-
-				<Box display={{ sm: "block", md: "none", lg: "none" }}>
-					<FaBars size={20} onClick={onOpen} color="white" />
-				</Box>
 			</Flex>
-			<Drawer placement={"right"} onClose={onClose} isOpen={isOpen}>
-				<DrawerOverlay />
-				<DrawerContent alignItems={"center"} bgColor={"gray.800"}>
-					<DrawerHeader borderBottomWidth="1px">
-						<Flex alignItems={"center"}>
-							<Image
-								src={colorMode == "dark" ? darklogo : lightlogo}
-								alt=""
-								width="100"
-								height="100"
-							/>
-						</Flex>
-
-						<Box mt="1rem" minWidth={"100%"}></Box>
-					</DrawerHeader>
-					<DrawerBody>
-						<Box>
-						<NavLocalLink
-							path={"/"}
-							title={"Dashboard"}
-							pathname={router.pathname}
-						>
-							<MdSpaceDashboard />
-						</NavLocalLink>
-						<NavLocalLink
-							path={"/swap"}
-							title="Swap"
-							pathname={router.pathname}
-						>
-							<MdSwapHorizontalCircle />
-						</NavLocalLink>
-
-						<NavLocalLink
-									path={"/syn"}
-									title="xSYN"
-									pathname={router.pathname}
-									lighten={true}
-								>
-									<RiCopperCoinFill />
-								</NavLocalLink>
-
-								<Box my={1}/>
-
-								<NavExternalLink
-									path={"https://stats.synthex.finance"}
-									newTab={true}
-									title="Analytics"
-									pathname={router.pathname}
-									lighten={true}
-								>
-									<FiBarChart2 />
-								</NavExternalLink>
-						</Box>
-					</DrawerBody>
-				</DrawerContent>
-			</Drawer>
 		</>
 	);
 }
@@ -295,7 +188,6 @@ const NavLink = ({
 	newTab = false,
 	pathname,
 	children,
-	lighten = false,
 }: any) => {
 	const [isPath, setIsPath] = useState(false);
 
@@ -305,18 +197,22 @@ const NavLink = ({
 
 	return (
 		<Flex align={"center"}>
+			<motion.div
+				whileHover={{ scale: 1.1 }}
+				whileTap={{ scale: 0.95 }}
+			>
 			<Flex
 				align={"center"}
-				h={10}
+				h={'38px'}
 				px={4}
 				cursor="pointer"
 				rounded={100}
-				bgColor={isPath ? "gray.700" : lighten ? 'gray.800' : "transparent"}
-				_hover={{ bgColor:  !isPath ? "gray.800" : "gray.700" }}
+				bgColor={isPath ? "gray.700" : 'gray.800'}
+				_hover={{ bgColor:  !isPath ? "gray.700" : "gray.600" }}
 			>
 				<Box
 					color={isPath ? "primary" : "gray.100"}
-					my="1rem"
+					
 					fontFamily="Roboto"
 					fontWeight={"bold"}
 					fontSize="sm"
@@ -327,6 +223,7 @@ const NavLink = ({
 					</Flex>
 				</Box>
 			</Flex>
+			</motion.div>
 		</Flex>
 	);
 };

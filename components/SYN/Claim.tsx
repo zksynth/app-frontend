@@ -38,7 +38,6 @@ export default function Claim() {
 				!(connectedChain as any).unsupported &&
                 pools.length > 0
 			) {
-
 				_setSynAccrued();
 			}
 		}
@@ -47,11 +46,11 @@ export default function Claim() {
 	const _setSynAccrued = async () => {
 		const synthex = await getContract("SyntheX", connectedChain!.id);
 		const result = await synthex.callStatic.getRewardsAccrued(
-            pools[0].rewardTokens[0].token.id,
+            [pools[0].rewardTokens[0].id],
 			address,
 			pools.map((pool: any) => pool.id)
 		);
-		setSynAccrued(result.toString());
+		setSynAccrued(result[0].toString());
 	};
 
     const claim = async () => {
@@ -79,10 +78,10 @@ export default function Claim() {
 	return (
 		<>
 			<Box textAlign={"center"}>
-				<Heading size={"md"}>Claim your xSYN</Heading>
+				<Heading size={"md"}>Claim your esSYX</Heading>
 
 				<Text mt={2} mb={5} fontSize="sm">
-					Provide liquidity into debt pools to earn xSYN.
+					Provide liquidity into debt pools to earn esSYX.
 				</Text>
 
 				<Text fontSize={'sm'}>Available</Text>
@@ -100,7 +99,7 @@ export default function Claim() {
 					)}
 
 					<Text fontSize={"2xl"} fontWeight="bold">
-						xSYN
+						esSYX
 					</Text>
 				</Flex>
 

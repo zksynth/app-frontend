@@ -18,7 +18,7 @@ export default function syn() {
 				<title>xSYN | SyntheX</title>
 				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
 			</Head>
-			<Box maxW={'1200px'}>
+			<Box maxW={'1200px'} mt='100px'>
 				<SYN />
 			</Box>
 		</>

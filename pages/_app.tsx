@@ -25,7 +25,6 @@ import { theme } from '../styles/theme';
 import rainbowTheme from '../styles/rainbowTheme';
 import { TokenContextProvider } from '../components/context/TokenContext';
 
-
 const { chains, provider } = configureChains(
 	[{
 	  ...chain.arbitrumGoerli,

@@ -8,9 +8,9 @@ import {
 	Input,
 	Tooltip,
 	Divider,
+	Image
 } from "@chakra-ui/react";
 
-import Image from "next/image";
 import { useContext, useState, useEffect } from "react";
 import { AppDataContext } from "../context/AppDataProvider";
 import { tokenFormatter } from "../../src/const";
@@ -90,10 +90,11 @@ function TokenSelector({
 				
 			>
 				<ModalOverlay backdropFilter="blur(30px)" />
-				<ModalContent maxH={"500px"} bg='gray.700' rounded={16}>
+				<ModalContent maxH={"600px"} bg='gray.800' rounded={16}>
 					<ModalHeader>Select a token</ModalHeader>
 					<Box mx={5} mb={5}>
-					<Select rounded={'full'} placeholder="Select debt pool" value={tradingPool} onChange={(e) => setTradingPool(parseInt(e.target.value))} bg='gray.800' variant={'filled'}  _focus={{bg: 'gray.800'}} focusBorderColor='transparent'>
+					<Select rounded={'full'} placeholder="Select debt pool" value={tradingPool} onChange={(e) => {
+						if(e.target.value !== '') setTradingPool(parseInt(e.target.value))}} bg='gray.700' variant={'filled'}  _focus={{bg: 'gray.700'}} focusBorderColor='transparent'>
 							{pools.map((pool: any, index: number) => (
 								<option value={index} key={pool.id}>
 									{pool.name}
@@ -103,17 +104,19 @@ function TokenSelector({
 						</Box>
 						{/* <Divider/> */}
 					<ModalCloseButton rounded={'full'} mt={1} />
-					<ModalBody  bg='gray.800'>
+					<ModalBody bg='gray.800'>
 
 						{/* Token List */}
 						<Box mx={-6} >
-						{pools[tradingPool]._mintedTokens.map(
+						{pools[tradingPool].synths.map(
 							(_synth: any, tokenIndex: number) => (
+								<Box key={tokenIndex}>
+								<Divider/>
 								<Flex
-									key={tokenIndex}
+									
 									justify="space-between"
 									align={"center"}
-									py={2}
+									py={3}
 									px={6}
 									_hover={{
 										bg: "gray.700",
@@ -125,28 +128,28 @@ function TokenSelector({
 										)
 									}
 								>
+									
 									<Box
 										borderColor={"gray.700"}
 									>
 										<Flex
 											align={"center"}
-											gap={"1"}
+											gap={"2"}
 											ml={-1}
 										>
 											<Image
 												src={
 													"/icons/" +
-													_synth.symbol +
+													_synth.token.symbol +
 													".svg"
 												}
-												height={40}
-												width={40}
-												alt={_synth.symbol}
+												height={'46px'}
+												alt={_synth.token.symbol}
 											/>
 
 											<Box>
 												<Text>
-													{_synth.symbol}
+													{_synth.token.symbol}
 												</Text>
 
 												<Text
@@ -155,7 +158,7 @@ function TokenSelector({
 													}
 													fontSize={"sm"}
 												>
-													{_synth.name}
+													{_synth.token.name.split(" ").slice(1, -2).join(" ")}
 												</Text>
 											</Box>
 										</Flex>
@@ -168,20 +171,18 @@ function TokenSelector({
 									>
 										<Text fontSize={'xs'} color={"gray.500"}>Balance</Text>
 										<Text
-											
-											fontSize={"sm"}
+											fontSize={"md"}
 										>
-											{_synth.balance
+											{_synth.walletBalance
 												? tokenFormatter.format(
-														_synth.balance /
-															10 **
-																(_synth.decimal ??
-																	18)
+														_synth.walletBalance /
+															10 ** 18
 													)
 												: "-"}{" "}
 										</Text>
 									</Box>
 								</Flex>
+								</Box>
 							)
 						)}
 						</Box>
@@ -190,9 +191,11 @@ function TokenSelector({
 						<InfoOutlineIcon width={3}/>
 						<Text fontSize={'xs'}>Atomic (or) Cross-pool asset swaps are not yet supported</Text>
 					</Flex> */}
-					<Box roundedBottom={16} py={2} bg='gray.800'>
+					<Flex roundedBottom={16} py={1} justify='space-between' px={4} fontSize='sm' bg='gray.700'>
+						<Text>{pools[tradingPool].synths.length} Tokens</Text>
+						<Text>SyntheX</Text>
 						
-					</Box>
+					</Flex>
 				</ModalContent>
 			</Modal>
 		</>

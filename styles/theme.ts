@@ -7,7 +7,6 @@ const config: ThemeConfig = {
 	useSystemColorMode: false,
 };
 
-
 const breakpoints = {
 	sm: '360px',
 	md: '768px',
@@ -15,9 +14,22 @@ const breakpoints = {
 	xl: '1440px',
 	'2xl': '1680px',
 };
+
 export const theme = extendTheme({
 	components: {
-		Steps
+		Steps,
+		Progress: {
+			baseStyle: {
+			  filledTrack: {
+				bg: '#00FFD1',
+				rounded: 'full'
+			  }
+			}
+		  }
+	},
+	fonts: {
+		heading: `'Aileron', sans-serif`,
+		body: `'Aileron', sans-serif`,
 	},
 	// styles,
 	config,

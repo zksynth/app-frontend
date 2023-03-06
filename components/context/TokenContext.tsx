@@ -48,7 +48,7 @@ function TokenContextProvider({ children }: any) {
 
 	const fetchData = async (address: string, chain: number) => {
 		// token unlocks
-		const unlocker = await getContract("TokenUnlocker", chain);
+		const unlocker = await getContract("TokenRedeemer", chain);
 		const tokenUnlocks = BigNumber.from(
 			await unlocker.unlockRequestCount(address)
 		).toNumber();
@@ -85,7 +85,7 @@ function TokenContextProvider({ children }: any) {
 		});
 
 		// sealed syn balance
-		const sealedSYN = await getContract("LockedSYN", chain);
+		const sealedSYN = await getContract("EscrowedSYN", chain);
 		const sealedSYNBalance = BigNumber.from(
 			await sealedSYN.balanceOf(address)
 		).toString();

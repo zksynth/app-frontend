@@ -56,7 +56,7 @@ export default function Unlock() {
 	};
 
 	const approve = async () => {
-		const sealedSyn = await getContract("LockedSYN", chain);
+		const sealedSyn = await getContract("EscrowedSYN", chain);
 		const staking = await getAddress("TokenUnlocker", chain);
 
 		send(
@@ -94,7 +94,7 @@ export default function Unlock() {
 				align={"center"}
 				textAlign={"center"}
 			>
-				<Heading size={"md"}>Redeem 1:1 xSYN for SYN</Heading>
+				<Heading size={"md"}>Redeem 1:1 esSYX for SYN</Heading>
 
 				<Text mt={2} mb={5} fontSize="sm" w={"50%"}>
 					Unlocking process is irreversible and takes 6 months to
@@ -188,7 +188,7 @@ export default function Unlock() {
 						{tokenFormatter.format(
 							parseFloat(tokenUnlocks.remainingQuota ?? 0)
 						)}{" "}
-						xSYN
+						esSYX
 					</Text>
 				</Tooltip>
 

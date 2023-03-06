@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar';
 import { useEffect } from 'react';
 import { AppDataContext } from '../components/context/AppDataProvider';
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 
 export default function _index({ children }: any) {
 
@@ -63,7 +64,14 @@ export default function _index({ children }: any) {
 					px={{sm: '4', md: '0'}}
                     >
 						<Navbar />
+						<motion.div 
+                initial={{opacity: 0, y: 15}}
+                animate={{opacity: 1, y: 0}}
+                exit={{opacity: 0, y: 15}}
+                transition={{duration: 0.25}}
+                >
 						{children}
+						</motion.div>
 					</Box>
 				</Flex>
 				<Footer />

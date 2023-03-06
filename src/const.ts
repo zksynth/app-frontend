@@ -1,12 +1,9 @@
 import { ethers } from "ethers";
 import { ChainID } from "./chains";
 
-
-
-export const DUMMY_ADDRESS = {
-	[ChainID.AURORA]: ethers.constants.AddressZero,
-};
-
+export const ADDRESS_ZERO = ethers.constants.AddressZero;
+export const ETH_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+export const ESYX_PRICE = 0.1;
 export const Endpoints: any = {
 	[ChainID.AURORA]: "https://aurora.api.synthex.finance/", // 'http://localhost:3030/',
 	[ChainID.ARB_GOERLI]: process.env.NODE_ENV == 'production' ? "https://api.thegraph.com/subgraphs/name/prasad-kumkar/synthex" : "https://api.thegraph.com/subgraphs/name/prasad-kumkar/synthex-dev"
@@ -23,6 +20,12 @@ export const tokenFormatter = new Intl.NumberFormat("en-US", {
 	maximumSignificantDigits: 8,
 	roundingMode: "floor",
 } as any);
+
+export const preciseTokenFormatter = new Intl.NumberFormat("en-US", {
+	maximumSignificantDigits: 8,
+	roundingMode: "floor",
+} as any);
+
 
 export const compactTokenFormatter = new Intl.NumberFormat("en-US", {
 	maximumSignificantDigits: 4,

@@ -10,6 +10,7 @@ export function getABI(contractName: string) {
 }
 
 export function getAddress(contractName: string, chain: number = ChainID.ARB_GOERLI) {
+  console.log(contractName);
   return deployments.contracts[contractName].address;
 }
 

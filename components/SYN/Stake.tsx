@@ -58,7 +58,7 @@ export default function Stake() {
 				await res.wait(1);
 				staked(amount);
 				setLoading(false);
-				setResponse(`Staked ${amount} xSYN successfully`);
+				setResponse(`Staked ${amount} esSYX successfully`);
 			})
 			.catch((err: any) => {
 				setLoading(false);
@@ -127,7 +127,7 @@ export default function Stake() {
 		setResponse(null);
 		setError(null);
 
-		const sealedSyn = await getContract("LockedSYN", chain);
+		const sealedSyn = await getContract("EscrowedSYN", chain);
 		const staking = await getAddress("StakingRewards", chain);
 
 		send(
@@ -139,7 +139,7 @@ export default function Stake() {
 			.then(async (res: any) => {
 				await res.wait(1);
 				setLoading(false);
-				setResponse(`Approved ${amount} xSYN. You can now stake`);
+				setResponse(`Approved ${amount} esSYX. You can now stake`);
 				increaseStakingAllowance(
 					ethers.constants.MaxUint256.toString()
 				);
@@ -186,7 +186,7 @@ export default function Stake() {
 				</Flex>
 
 				<Text mt={2} mb={5} fontSize="sm">
-					Stake xSYN to earn more xSYN. You can unstake at any time.
+					Stake esSYX to earn more esSYX. You can unstake at any time.
 				</Text>
 
 				<Flex w={"50%"} align="center" justify={"center"}>

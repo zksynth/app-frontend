@@ -8,8 +8,6 @@ import {
 	useDisclosure,
 	Divider,
 } from "@chakra-ui/react";
-import { Collapse } from "@chakra-ui/collapse"
-
 import { useContext, useEffect, useState } from "react";
 import { getContract, send, estimateGas } from "../../src/contract";
 import { useAccount, useNetwork } from "wagmi";
@@ -24,10 +22,7 @@ import { dollarFormatter, tokenFormatter } from "../../src/const";
 import SwapSkeleton from "./Skeleton";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import Response from "../modals/_utils/Response";
-import { BiDownArrow } from "react-icons/bi";
-import { AiOutlineDown } from "react-icons/ai";
-import { BsChevronDown, BsChevronUp } from "react-icons/bs";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { ERRORS, ERROR_MSG } from '../../src/errors';
 const Big = require("big.js");
 
@@ -64,12 +59,12 @@ function Swap() {
 		setInputAmount(e.target.value);
 		if (isNaN(Number(e.target.value))) return;
 		let outputAmount =
-			(Number(e.target.value) * inputToken()?.lastPriceUSD) /
-			outputToken()?.lastPriceUSD;
+			(Number(e.target.value) * inputToken()?.priceUSD) /
+			outputToken()?.priceUSD;
 		setOutputAmount(
 			Number(
 				Big(1)
-					.minus(Big(pools[tradingPool]._fee).div(1e22))
+					.minus(Big(pools[tradingPool]._fee ?? 0).div(1e22))
 					.times(outputAmount)
 					.toFixed(10)
 			)
@@ -83,12 +78,12 @@ function Swap() {
 		setInputAssetIndex(e);
 		// calculate output amount
 		let _outputAmount = Big(inputAmount)
-			.times(inputToken(e).lastPriceUSD)
-			.div(outputToken().lastPriceUSD);
+			.times(inputToken(e).priceUSD)
+			.div(outputToken().priceUSD);
 		setOutputAmount(
 			Number(
 				Big(1)
-					.minus(Big(pools[tradingPool]._fee).div(1e22))
+					.minus(Big(pools[tradingPool]._fee ?? 0).div(1e22))
 					.times(_outputAmount)
 					.toFixed(10)
 			)
@@ -101,15 +96,15 @@ function Swap() {
 		if (isNaN(Number(e.target.value))) return;
 		let inputAmount = Big(Number(e.target.value))
 			.times(
-				pools[tradingPool]._mintedTokens[outputAssetIndex].lastPriceUSD
+				pools[tradingPool].synths[outputAssetIndex].priceUSD
 			)
 			.div(
-				pools[tradingPool]._mintedTokens[inputAssetIndex].lastPriceUSD
+				pools[tradingPool].synths[inputAssetIndex].priceUSD
 			);
 		setInputAmount(
 			Number(
 				Big(1)
-					.minus(Big(pools[tradingPool]._fee).div(1e22))
+					.minus(Big(pools[tradingPool]._fee ?? 0).div(1e22))
 					.times(inputAmount)
 					.toFixed(10)
 			)
@@ -123,12 +118,12 @@ function Swap() {
 		setOutputAssetIndex(e);
 		// calculate input amount
 		let _inputAmount = Big(outputAmount)
-			.times(outputToken(e).lastPriceUSD)
-			.div(inputToken().lastPriceUSD);
+			.times(outputToken(e).priceUSD)
+			.div(inputToken().priceUSD);
 		setInputAmount(
 			Number(
 				Big(1)
-					.minus(Big(pools[tradingPool]._fee).div(1e22))
+					.minus(Big(pools[tradingPool]._fee ?? 0).div(1e22))
 					.times(_inputAmount)
 					.toFixed(10)
 			)
@@ -153,21 +148,19 @@ function Swap() {
 		setHash(null);
 		setResponse("");
 		setMessage("");
-		let contract = await getContract("SyntheX", chain);
+		let contract = await getContract("ERC20X", chain, pools[tradingPool].synths[inputAssetIndex].token.id);
 		const _inputAmount = inputAmount;
 		const _inputAsset =
-			pools[tradingPool]._mintedTokens[inputAssetIndex].symbol;
+			pools[tradingPool].synths[inputAssetIndex].token.symbol;
 		const _outputAsset =
-			pools[tradingPool]._mintedTokens[outputAssetIndex].symbol;
+			pools[tradingPool].synths[outputAssetIndex].token.symbol;
 		const _outputAmount = outputAmount;
 		send(
 			contract,
-			"exchange",
+			"swap",
 			[
-				pools[tradingPool].id,
-				pools[tradingPool]._mintedTokens[inputAssetIndex].id,
-				pools[tradingPool]._mintedTokens[outputAssetIndex].id,
 				ethers.utils.parseEther(inputAmount.toString()),
+				pools[tradingPool].synths[outputAssetIndex].token.id,
 			],
 			chain
 		)
@@ -203,17 +196,14 @@ function Swap() {
 
 	useEffect(() => {
 		if (pools[tradingPool] && !isNaN(Number(inputAmount)) && validateInput() == 0)
-			getContract("SyntheX", chain).then((contract: any) => {
+			getContract("ERC20X", chain, pools[tradingPool].synths[inputAssetIndex].token.id).then((contract: any) => {
 				// estimate gas
 				contract.estimateGas
-					.exchange(
-						pools[tradingPool].id,
-						pools[tradingPool]._mintedTokens[inputAssetIndex].id,
-						pools[tradingPool]._mintedTokens[outputAssetIndex].id,
-						ethers.utils.parseEther(Number(inputAmount).toString())
+					.swap(
+						ethers.utils.parseEther(Number(inputAmount).toString()),
+						pools[tradingPool].synths[outputAssetIndex].token.id,
 					)
 					.then((gas: any) => {
-						console.log('gas', gas);
 						setGas(
 							Number(ethers.utils.formatUnits(gas, "gwei")) * 2000
 						);
@@ -227,7 +217,7 @@ function Swap() {
 	const { isConnected } = useAccount();
 	const { chain: activeChain } = useNetwork();
 
-	const { synths, tradingPool, pools, updateSynthBalance } =
+	const { pools, tradingPool, updateSynthWalletBalance } =
 		useContext(AppDataContext);
 
 	const handleExchange = (
@@ -236,36 +226,36 @@ function Swap() {
 		srcValue: string,
 		dstValue: string
 	) => {
-		updateSynthBalance(dst, dstValue, false);
-		updateSynthBalance(src, srcValue, true);
+		updateSynthWalletBalance(dst, pools[tradingPool].id, dstValue, false);
+		updateSynthWalletBalance(src, pools[tradingPool].id, srcValue, true);
 		setNullValue(!nullValue);
 	};
 
 	useEffect(() => {
 		if (
 			inputAssetIndex > 1 &&
-			pools[tradingPool]._mintedTokens.length < inputAssetIndex
+			pools[tradingPool].synths.length < inputAssetIndex
 		) {
 			setInputAssetIndex(0);
 		}
 		if (
 			outputAssetIndex > 1 &&
-			pools[tradingPool]._mintedTokens.length < outputAssetIndex
+			pools[tradingPool].synths.length < outputAssetIndex
 		) {
-			setOutputAssetIndex(pools[tradingPool]._mintedTokens.length - 1);
+			setOutputAssetIndex(pools[tradingPool].synths.length - 1);
 		}
-	}, [inputAssetIndex, outputAssetIndex, pools, synths, tradingPool]);
+	}, [inputAssetIndex, outputAssetIndex, pools, tradingPool]);
 
 	const handleMax = () => {
-		let _inputAmount = Big(inputToken().balance ?? 0).div(1e18);
+		let _inputAmount = Big(inputToken().walletBalance ?? 0).div(1e18);
 		setInputAmount(_inputAmount);
 		let _outputAmount = Big(_inputAmount)
-			.times(inputToken().lastPriceUSD)
-			.div(outputToken().lastPriceUSD);
+			.times(inputToken().priceUSD)
+			.div(outputToken().priceUSD);
 		setOutputAmount(
 			Number(
 				Big(1)
-					.minus(Big(pools[tradingPool]._fee).div(1e22))
+					.minus(Big(inputToken().burnFee ?? 0).add(outputToken().mintFee ?? 0).div(10000))
 					.times(_outputAmount)
 					.toFixed(10)
 			)
@@ -274,17 +264,17 @@ function Swap() {
 
 	const inputToken = (_inputAssetIndex = inputAssetIndex) => {
 		if (!pools[tradingPool]) return null;
-		return pools[tradingPool]._mintedTokens[_inputAssetIndex];
+		return pools[tradingPool].synths[_inputAssetIndex];
 	};
 
 	const outputToken = (_outputAssetIndex = outputAssetIndex) => {
 		if (!pools[tradingPool]) return null;
-		return pools[tradingPool]._mintedTokens[_outputAssetIndex];
+		return pools[tradingPool].synths[_outputAssetIndex];
 	};
 
 	const swapInputExceedsBalance = () => {
 		if (inputAmount) {
-			return inputAmount > inputToken().balance / 1e18;
+			return inputAmount > inputToken().walletBalance / 1e18;
 		}
 		return false;
 	};
@@ -318,9 +308,9 @@ function Swap() {
 				<title>
 					{" "}
 					{tokenFormatter.format(
-						inputToken()?.lastPriceUSD / outputToken()?.lastPriceUSD
+						inputToken()?.priceUSD / outputToken()?.priceUSD
 					)}{" "}
-					{outputToken()?.symbol}/{inputToken()?.symbol} | Synthex
+					{outputToken()?.token.symbol}/{inputToken()?.token.symbol} | Synthex
 				</title>
 				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
 			</Head>
@@ -352,7 +342,7 @@ function Swap() {
 						>
 							<Text>
 								{dollarFormatter.format(
-									inputAmount * inputToken()?.lastPriceUSD
+									inputAmount * inputToken()?.priceUSD / 1e8
 								)}
 							</Text>
 							<Flex gap={1}>
@@ -365,7 +355,7 @@ function Swap() {
 									{" "}
 									{tokenFormatter.format(
 										inputToken()
-											? Big(inputToken().balance ?? 0)
+											? Big(inputToken().walletBalance ?? 0)
 													.div(1e18)
 													.toNumber()
 											: 0
@@ -423,7 +413,7 @@ function Swap() {
 						>
 							<Text>
 								{dollarFormatter.format(
-									outputAmount * outputToken()?.lastPriceUSD
+									outputAmount * outputToken()?.priceUSD / 1e8
 								)}
 							</Text>
 							<Flex gap={1}>
@@ -432,7 +422,7 @@ function Swap() {
 									{" "}
 									{tokenFormatter.format(
 										outputToken()
-											? Big(outputToken().balance ?? 0)
+											? Big(outputToken().walletBalance ?? 0)
 													.div(1e18)
 													.toNumber()
 											: 0
@@ -458,17 +448,17 @@ function Swap() {
 							<Flex align={"center"} gap={2} fontSize="md">
 								<InfoOutlineIcon />
 								<Text>
-									1 {inputToken().symbol} ={" "}
+									1 {inputToken().token.symbol} ={" "}
 									{tokenFormatter.format(
-										inputToken()?.lastPriceUSD /
-											outputToken()?.lastPriceUSD
+										inputToken()?.priceUSD /
+											outputToken()?.priceUSD
 									)}{" "}
-									{outputToken().symbol}
+									{outputToken().token.symbol}
 								</Text>
 								<Text fontSize={'sm'} color={"gray.400"}>
 									(
 									{dollarFormatter.format(
-										inputToken()?.lastPriceUSD
+										inputToken()?.priceUSD/1e8
 									)}
 									)
 								</Text>
@@ -479,29 +469,31 @@ function Swap() {
 						</Flex>
 
 						<motion.div
-        {...getDisclosureProps()}
-        hidden={hidden}
-        initial={false}
-        onAnimationStart={() => setHidden(false)}
-        onAnimationComplete={() => setHidden(!isOpen)}
-        animate={{ height: isOpen ? 94 : 0 }}
-        style={{
-          height: 94,
-		  width: '100%',
-		}}
-      >
-
-							{isOpen && 
-							
+							{...getDisclosureProps()}
+							hidden={hidden}
+							initial={false}
+							onAnimationStart={() => setHidden(false)}
+							onAnimationComplete={() => setHidden(!isOpen)}
+							animate={{ height: isOpen ? 94 : 0 }}
+							style={{
+							height: 94,
+							width: '100%',
+							}}
+						>
+							{isOpen && 	
 							<Box border={'1px'} borderColor='gray.700' mt={2} px={4} py={2} rounded={16} fontSize='sm' color={'gray.400'}>
 								<Flex justify={'space-between'}>
 								<Text>Price Impact</Text>
-								<Text>{pools[tradingPool]._fee / 1e20} %</Text>
+								<Text>{Number(inputToken().burnFee) + Number(outputToken().mintFee) / 10000} %</Text>
 								</Flex>
 								<Divider my={1}/>
 								<Flex justify={'space-between'} mb={0.5}>
-								<Text>Fee</Text>
-								<Text>{pools[tradingPool]._fee / 1e20} %</Text>
+								<Text>Swap Fee</Text>
+								<Text>{Number(inputToken().burnFee) + Number(outputToken().mintFee) / 10000} %</Text>
+								</Flex>
+								<Flex justify={'space-between'} mb={0.5}>
+								<Text>Slippage</Text>
+								<Text>0 %</Text>
 								</Flex>
 								<Flex justify={'space-between'}>
 								<Text>Estimated Gas</Text>
@@ -512,7 +504,7 @@ function Swap() {
 						</>}
 
 						<Button
-							mt={gas == 0 ? 12 : 4}
+							mt={gas == 0 ? 12 : isOpen ? 8 : 3}
 							mb={5}
 							size="lg"
 							fontSize={"xl"}
@@ -532,7 +524,7 @@ function Swap() {
 						>
 							{validateInput() > 0 ? ERROR_MSG[validateInput()] : "Swap"}
 						</Button>
-						{hash && <Box my={5} mt={-5}>
+						{hash && <Box my={5} mt={-5} pb={4}>
 						<Response
 							response={response}
 							message={message}
@@ -578,14 +570,14 @@ export function SelectBody({ asset, onOpen }: any) {
 				mr={-1}
 			>
 				<Image
-					src={"/icons/" + asset?.symbol + ".svg"}
+					src={"/icons/" + asset?.token.symbol + ".svg"}
 					height={40}
 					width={40}
 					alt={asset?.symbol}
 				/>
 
 				<Text fontSize="xl" color="gray.200" fontWeight={"bold"}>
-					{asset.symbol}
+					{asset.token.symbol}
 				</Text>
 				<Box>
 					<RiArrowDropDownLine size={30} />

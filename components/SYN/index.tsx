@@ -17,7 +17,7 @@ import { UnlockIcon } from "@chakra-ui/icons";
 import Unlock from "./Unlock";
 import { useAccount } from 'wagmi';
 
-export default function SYN() {
+export default function SYX() {
 	const [tabIndex, setTabIndex] = React.useState(1);
 	const { staking, syn, tokenUnlocks } = useContext(TokenContext);
 
@@ -36,9 +36,9 @@ export default function SYN() {
 	return (
 		<Flex flexDir={"column"} align={"center"} mt={10} mb={10} rounded={15}>
 			<Flex flexDir={"column"} align={"center"} textAlign={"center"}>
-				<Heading size={"lg"}>xSYN</Heading>
+				<Heading size={"lg"}>esSYX</Heading>
 				<Text maxW={"50%"} fontSize="md" mt={6} mb={10}>
-				xSYN is the interim reward token for SyntheX Protocol. It is earned by providing liquidity to debt pools and staking. Once the official SYN token is launched, xSYN can be exchanged 1:1 for SYN. Note that xSYN is sealed until SYN is unlocked.
+					ESsYX token rewards SyntheX protocol users, unlocking 1:1 for SYX after linear time. Exclusive benefits and rewards for committed ecosystem engagement.
 				</Text>
 			</Flex>
 
@@ -52,11 +52,11 @@ export default function SYN() {
 				pb={10}
 				roundedTop={15}
 			>
-				<Heading size={"md"}>xSYN Overview</Heading>
+				<Heading size={"md"}>Overview</Heading>
 				<Flex justify="space-evenly" mt={5}>
 					<Box w={"33%"}>
 						<Heading size={"xs"} color="gray.300">
-							Wallet Balance
+							esSYX Balance
 						</Heading>
 						{syn.sealedBalance ? (
 							<Text mt={2}>
