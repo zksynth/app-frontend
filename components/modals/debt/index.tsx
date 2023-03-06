@@ -120,7 +120,7 @@ export default function Debt({ synth }: any) {
 			<Tr
 				cursor="pointer"
 				onClick={onOpen}
-				_hover={{ borderLeft: "1px", borderColor: "primary" }}
+				_hover={{ borderLeft: "2px", borderColor: "primary" }}
 			>
 				<Td {...borderStyle}>
 					<Flex gap={1}>

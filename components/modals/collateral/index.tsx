@@ -119,7 +119,7 @@ export default function CollateralModal({ collateral, tradingPool }: any) {
 
 	return (
 		<>
-			<Tr cursor="pointer" onClick={onOpen} _hover={{borderLeft: '1px', borderColor: 'primary'}}>
+			<Tr cursor="pointer" onClick={onOpen} _hover={{borderLeft: '2px', borderColor: 'primary'}}>
 				<Td {...borderStyle}>
 						<Flex gap={2}>
 							<Image

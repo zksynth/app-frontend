@@ -42,7 +42,7 @@ export default function TempPage() {
 						transition={{ duration: 0.45 }}
 						key={tradingPool}
 					>
-						<Flex gap={16}>
+						<Flex gap={16} zIndex={1}>
 							<Flex mt={4} gap={3} align="start">
 								<Image
 									h={"35px"}
@@ -144,7 +144,7 @@ export default function TempPage() {
 				</motion.div>
 			</Flex>
 
-			<Flex gap={8} pb={'100px'} mt={"80px"} >
+			<Flex gap={8} pb={'100px'} mt={"80px"} zIndex={1}>
 				<Box w={"33%"} bg={"gray.800"} rounded='10'>
 					<CollateralTable />
 				</Box>
