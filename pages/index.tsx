@@ -108,7 +108,7 @@ export default function TempPage() {
 					transition={{ duration: 0.45 }}
 					key={tradingPool}
 				>
-					<Box textAlign={"right"} alignSelf="end">
+					<Box textAlign={"right"} mt={2} alignSelf="end">
 						<Text fontSize={"sm"} mb={0.5} color="gray.400">
 							Debt Limit
 						</Text>

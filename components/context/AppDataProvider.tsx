@@ -56,7 +56,7 @@ function AppDataProvider({ children }: any) {
 				setTradingPool(parseInt(_tradingPool));
 			}
 		}
-	})
+	}, [])
 
 	const [chain, setChain] = React.useState(ChainID.ARB_GOERLI);
 
