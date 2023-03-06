@@ -6,7 +6,7 @@ import PoolSelector from "../components/dashboard/PoolSelector";
 import { dollarFormatter, tokenFormatter } from '../src/const';
 import IssuanceTable from "../components/dashboard/IssuanceTable";
 import { motion } from "framer-motion";
-
+import Head from 'next/head';
 export default function TempPage() {
 	const {
 		pools,
@@ -26,6 +26,10 @@ export default function TempPage() {
 
 	return (
 		<>
+		<Head>
+				<title>xSYN | SyntheX</title>
+				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
+			</Head>
 			<Flex pt="100px" justify={"space-between"}>
 				<Box>
 					<Box mb={4}>

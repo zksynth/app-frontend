@@ -31,6 +31,8 @@ const mintAmounts: any = {
     "wstETH": "10",
 };
 
+import Head from "next/head";
+
 import {
     Modal,
     ModalOverlay,
@@ -98,6 +100,10 @@ export default function Faucet() {
 
 	return (
 		<>
+        <Head>
+				<title>Test Faucet | SyntheX</title>
+				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
+			</Head>
 			<Heading mt={'80px'} fontSize={"3xl"}>Faucet</Heading>
             <Text color={'gray.400'} mb={10}>
                 Note: This is a testnet faucet. These tokens are not real and have no value.
