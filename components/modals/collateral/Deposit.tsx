@@ -259,7 +259,8 @@ export default function Deposit({ collateral, amount, amountNumber }: any) {
 						}
 						isLoading={loading}
 						loadingText="Please sign the transaction"
-						bg={"secondary"}
+						bg={"primary"}
+						color='gray.800'
 						_hover={{
 							opacity: 0.8,
 						}}

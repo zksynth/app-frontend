@@ -167,7 +167,7 @@ export default function Faucet() {
             </ModalBody>
 
             <ModalFooter justifyContent={'center'}>
-                <Button loadingText="Minting" isLoading={loading} colorScheme='blue' mb={2} rounded={16} onClick={mint} width='100%'>
+                <Button loadingText="Minting" isLoading={loading} bg='secondary' color={'white'} mb={2} rounded={16} onClick={mint} width='100%'>
                 Mint
                 </Button>
             </ModalFooter>

@@ -4,6 +4,7 @@ import { getContract, call, getAddress, getABI } from "../../src/contract";
 import { ADDRESS_ZERO, dollarFormatter, Endpoints, ETH_ADDRESS, tokenFormatter } from "../../src/const";
 import { ChainID, chainMapping } from "../../src/chains";
 import { BigNumber, ethers } from "ethers";
+import { useEffect } from 'react';
 const { Big } = require("big.js");
 
 interface AppDataValue {
@@ -47,6 +48,15 @@ function AppDataProvider({ children }: any) {
 
 	const [pools, setPools] = React.useState<any[]>([]);
 	const [tradingPool, setTradingPool] = React.useState(0);
+
+	useEffect(() => {
+		if(localStorage){
+			const _tradingPool = localStorage.getItem("tradingPool");
+			if(_tradingPool){
+				setTradingPool(parseInt(_tradingPool));
+			}
+		}
+	})
 
 	const [chain, setChain] = React.useState(ChainID.ARB_GOERLI);
 
@@ -253,6 +263,7 @@ function AppDataProvider({ children }: any) {
 	};
 
 	const _setTradingPool = (poolIndex: number, _pools: any[] = pools) => {
+		localStorage.setItem("tradingPool", poolIndex.toString());
 		setTradingPool(poolIndex);
 		let _totalCollateral = Big(0);
 		let _adjustedCollateral = Big(0);
@@ -296,14 +307,15 @@ function AppDataProvider({ children }: any) {
 					if (_pools[i].collaterals[j].token.id == collateralAddress) {
 						_pools[i].collaterals[j].walletBalance = (
 							isMinus
-								? Big(_pools[i].collaterals[j].walletBalance).minus(value)
-								: Big(_pools[i].collaterals[j].walletBalance).plus(value)
+								? Big(_pools[i].collaterals[j].walletBalance ?? 0).minus(value)
+								: Big(_pools[i].collaterals[j].walletBalance ?? 0).plus(value)
 						).toFixed(0);
 					}
 				}
 			}
 		}
 		setPools(_pools);
+		setRefresh(Math.random());
 	};
 
 	const updateCollateralAmount = (
@@ -317,7 +329,7 @@ function AppDataProvider({ children }: any) {
 			if (_pools[i].id == poolAddress) {
 				for (let j in _pools[i].collaterals) {
 					if (_pools[i].collaterals[j].token.id == collateralAddress) {
-						_pools[i].collaterals[j].balance = Big(_pools[i].collaterals[j].balance)[isMinus?'minus':'add'](value).toString();
+						_pools[i].collaterals[j].balance = Big(_pools[i].collaterals[j].balance ?? 0)[isMinus?'minus':'add'](value).toString();
 						setAdjustedCollateral(Big(adjustedCollateral)[isMinus?'minus':'add'](Big(value).div(10**_pools[i].collaterals[j].token.decimals).mul(_pools[i].collaterals[j].priceUSD).div(1e8).mul(_pools[i].collaterals[j].baseLTV).div(10000)));
 						setTotalCollateral(Big(totalCollateral)[isMinus?'minus':'add'](Big(value).div(10**_pools[i].collaterals[j].token.decimals).mul(_pools[i].collaterals[j].priceUSD).div(1e8)));
 					}
@@ -325,6 +337,7 @@ function AppDataProvider({ children }: any) {
 			}
 		}
 		setPools(_pools);
+		setRefresh(Math.random());
 	};
 
 	const addCollateralAllowance = (
@@ -342,6 +355,7 @@ function AppDataProvider({ children }: any) {
 			}
 		}
 		setPools(_pools);
+		setRefresh(Math.random());
 	};
 
 	const updateSynthWalletBalance = (
@@ -359,8 +373,8 @@ function AppDataProvider({ children }: any) {
 					if (_pools[i].synths[j].token.id == synthAddress) {
 						_pools[i].synths[j].walletBalance = (
 							isMinus
-								? Big(_pools[i].synths[j].walletBalance).minus(amount)
-								: Big(_pools[i].synths[j].walletBalance).plus(amount)
+								? Big(_pools[i].synths[j].walletBalance ?? 0).minus(amount)
+								: Big(_pools[i].synths[j].walletBalance ?? 0).plus(amount)
 						).toFixed(0);
 						// update total debt
 						if (updateDebt) {

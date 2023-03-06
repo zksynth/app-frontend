@@ -56,7 +56,7 @@ const Issue = ({ asset, amount, amountNumber }: any) => {
 	} = useContext(AppDataContext);
 
 	const max = () => {
-		const val = adjustedCollateral - totalDebt;
+		const val = Big(adjustedCollateral).sub(totalDebt).mul(1e8).div(asset.priceUSD).toNumber();
 		return (val > 0 ? val : 0).toString();
 	};
 

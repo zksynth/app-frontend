@@ -88,7 +88,7 @@ export default function Debt({ synth }: any) {
 
 	const max = () => {
 		if (tabSelected == 0) {
-			const val = adjustedCollateral - totalDebt;
+            const val = Big(adjustedCollateral).sub(totalDebt).mul(1e8).div(synth.priceUSD).toNumber();
 			return (val > 0 ? val : 0).toString();
 		} else {
 			return Math.min(
