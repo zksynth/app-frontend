@@ -29,13 +29,6 @@ export default function CollateralTable() {
 
 	return (
 		<>
-        <motion.div
-				initial={{ opacity: 0, y: 15 }}
-				animate={{ opacity: 1, y: 0 }}
-				exit={{ opacity: 0, y: 15 }}
-				transition={{ duration: 0.5 }}
-				key={tradingPool}
-			>
 			{pools[tradingPool]?.collaterals.length > 0 ? (
 					<TableContainer bg={"gray.800"} rounded={10} pt={1}>
 						<Table variant="simple">
@@ -61,16 +54,15 @@ export default function CollateralTable() {
 						</Table>
 					</TableContainer>
 			) : (
-				<>
+				<Box pt={0.5}>
 					<Skeleton height="50px" m={6} mt={10} rounded={12} />
 					<Skeleton height="50px" rounded={12} m={6} />
 					<Skeleton height="50px" rounded={12} m={6} />
 					<Skeleton height="50px" rounded={12} m={6} />
 					<Skeleton height="50px" rounded={12} m={6} />
 					<Skeleton height="50px" rounded={12} m={6} />
-				</>
+				</Box>
 			)}
-            </motion.div>
 		</>
 	);
 }

@@ -41,17 +41,7 @@ import Mint from "./mint";
 import Burn from "./burn";
 
 import Big from "big.js";
-import {
-	Pagination,
-	usePagination,
-	PaginationNext,
-	PaginationPage,
-	PaginationPrevious,
-	PaginationContainer,
-	PaginationPageGroup,
-} from "@ajna/pagination";
-import { MdNavigateBefore, MdNavigateNext } from "react-icons/md";
-import { Skeleton } from "@chakra-ui/react";
+
 
 export default function Debt({ synth }: any) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
@@ -190,6 +180,7 @@ export default function Debt({ synth }: any) {
 									<Image
 										src="https://cdn.consensys.net/uploads/metamask-1.svg"
 										w={"20px"}
+                                        alt=""
 									/>
 								}
                                 onClick={addToMetamask}
