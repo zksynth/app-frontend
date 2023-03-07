@@ -171,8 +171,8 @@ function Swap() {
 				await res.wait(1);
 				setConfirmed(true);
 				handleExchange(
-					inputToken().id,
-					outputToken().id,
+					inputToken().token.id,
+					outputToken().token.id,
 					Big(inputAmount)
 						.mul(10 ** 18)
 						.toString(),
