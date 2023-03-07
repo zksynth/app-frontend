@@ -275,7 +275,7 @@ function Swap() {
 
 	const swapInputExceedsBalance = () => {
 		if (inputAmount) {
-			return inputAmount > inputToken().walletBalance / 1e18;
+			return inputAmount > (inputToken().walletBalance ?? 0) / 1e18;
 		}
 		return false;
 	};
@@ -485,12 +485,12 @@ function Swap() {
 							<Box border={'1px'} borderColor='gray.700' mt={2} px={4} py={2} rounded={16} fontSize='sm' color={'gray.400'}>
 								<Flex justify={'space-between'}>
 								<Text>Price Impact</Text>
-								<Text>{Number(inputToken().burnFee) + Number(outputToken().mintFee) / 10000} %</Text>
+								<Text>{100*(Number(inputToken().burnFee) + Number(outputToken().mintFee)) / 10000} %</Text>
 								</Flex>
 								<Divider my={1}/>
 								<Flex justify={'space-between'} mb={0.5}>
 								<Text>Swap Fee</Text>
-								<Text>{Number(inputToken().burnFee) + Number(outputToken().mintFee) / 10000} %</Text>
+								<Text>{100*(Number(inputToken().burnFee) + Number(outputToken().mintFee))/ 10000} %</Text>
 								</Flex>
 								<Flex justify={'space-between'} mb={0.5}>
 								<Text>Slippage</Text>

@@ -50,7 +50,7 @@ export default function Deposit({ collateral, amount, amountNumber }: any) {
 
 	const max = () => {
 		return ethers.utils.formatUnits(
-			collateral.walletBalance,
+			collateral.walletBalance ?? 0,
 			collateral.token.decimals
 		);
 	};
@@ -166,6 +166,7 @@ export default function Deposit({ collateral, amount, amountNumber }: any) {
 						</Tooltip>
 
 						<Text fontSize={"md"}>
+							{collateral.totalDeposit}
 							{compactTokenFormatter.format(
 								Number(
 									ethers.utils.formatUnits(
@@ -234,7 +235,7 @@ export default function Deposit({ collateral, amount, amountNumber }: any) {
 								<Text fontSize={"md"} color="gray.400">
 									Health Factor
 								</Text>
-								<Text fontSize={"md"}>{(totalDebt/totalCollateral * 100).toFixed(1)} % {"->"} {(totalDebt /(totalCollateral + (amount*collateral.priceUSD)) * 100).toFixed(1)}%</Text>
+								<Text fontSize={"md"}>{(totalCollateral > 0 ? (totalDebt/totalCollateral * 100) : 0).toFixed(1)} % {"->"} {(totalDebt /(totalCollateral + (amount*collateral.priceUSD)) * 100).toFixed(1)}%</Text>
 							</Flex>
 							<Divider my={2} />
 							<Flex justify="space-between">

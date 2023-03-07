@@ -81,9 +81,11 @@ function AppDataProvider({ children }: any) {
 						  rewardTokens {
 							id
 						  }
-						  dayDatas(first:1, orderBy: dayId, orderDirection: desc){
+						  dayDatas(first:7, orderBy: dayId, orderDirection: desc){
 							dailyDebtIssuedUSD
 							dailyDebtBurnedUSD
+							dailyRevenueUSD
+							dailyBurnUSD
 						  }
 						  rewardSpeeds
 						  synths {
@@ -114,6 +116,7 @@ function AppDataProvider({ children }: any) {
 							baseLTV
 							liqThreshold
 							liqBonus
+							totalDeposits
 						  }
 						}
 						accounts(where: {id: "${_address?.toLowerCase() ?? ADDRESS_ZERO}"}){
@@ -218,6 +221,15 @@ function AppDataProvider({ children }: any) {
 						itf.encodeFunctionData("balanceOf", [_address]),
 					]);
 				}
+
+				let averageDailyBurn = Big(0);
+				let averageDailyRevenue = Big(0);
+				for(let j = 0; j < _pools[i].dayDatas.length; j++) {
+					averageDailyBurn = averageDailyBurn.plus(_pools[i].dayDatas[j].dailyBurnUSD);
+					averageDailyRevenue = averageDailyRevenue.plus(_pools[i].dayDatas[j].dailyRevenueUSD);
+				}
+				_pools[i].averageDailyBurn = averageDailyBurn.div(_pools[i].dayDatas.length).toString();
+				_pools[i].averageDailyRevenue = averageDailyRevenue.div(_pools[i].dayDatas.length).toString();
 			}
 
 
@@ -304,6 +316,7 @@ function AppDataProvider({ children }: any) {
 		for (let i in _pools) {
 			if (_pools[i].id == poolAddress) {
 				_pools[i].balance = Big(_pools[i].balance ?? 0)[isMinus?'minus' : 'add'](value).toString();
+				_pools[i].totalSupply = Big(_pools[i].totalSupply ?? 0)[isMinus?'minus' : 'add'](value).toString();
 				if(Big(_pools[i].totalSupply).gt(0)) setTotalDebt(Big(_pools[i].balance ?? 0).div(_pools[i].totalSupply).mul(_pools[i].totalDebtUSD));
 			}
 		}
@@ -378,7 +391,6 @@ function AppDataProvider({ children }: any) {
 		isMinus: boolean = false
 	) => {
 		let _pools = pools;
-		console.log(_pools, synthAddress, poolAddress, amount, isMinus);
 		for (let i in _pools) {
 			if (_pools[i].id == poolAddress) {
 				for (let j in _pools[i].synths) {

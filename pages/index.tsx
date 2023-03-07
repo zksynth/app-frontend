@@ -3,11 +3,12 @@ import React, { useContext } from "react";
 import { AppDataContext } from "../components/context/AppDataProvider";
 import CollateralTable from "../components/dashboard/CollateralTable";
 import PoolSelector from "../components/dashboard/PoolSelector";
-import { dollarFormatter, tokenFormatter } from '../src/const';
+import { dollarFormatter, ESYX_PRICE, tokenFormatter } from '../src/const';
 import IssuanceTable from "../components/dashboard/IssuanceTable";
 import { motion } from "framer-motion";
 import Head from 'next/head';
 import { InfoIcon, InfoOutlineIcon } from '@chakra-ui/icons';
+import Big from "big.js";
 export default function TempPage() {
 	const {
 		pools,
@@ -53,7 +54,7 @@ export default function TempPage() {
 								/>
 								<Box mt={-1}>
 									<Text fontSize={"sm"} color="gray.500" mb={0.5}>
-										Collateral Balance
+										Collateral
 									</Text>
 									<Heading fontSize={"xl"}>
 										{dollarFormatter.format(
@@ -80,12 +81,12 @@ export default function TempPage() {
 									</Tooltip>
 									</Flex>
 									<Heading fontSize={"xl"}>
-										{tokenFormatter.format(0)} %
+										{pools[tradingPool]?.totalDebtUSD > 0 ? tokenFormatter.format(Number(Big(pools[tradingPool]?.averageDailyBurn).div(1e18).mul(365).div(pools[tradingPool]?.totalDebtUSD).mul(100).toFixed(2))) : '0'} %
 									</Heading>
-									<Flex gap={1} mt={0.5}>
+									<Flex gap={1} mt={1}>
 										<Image src="/esSYX.svg" alt={'esSYN'} />
 										<Text fontSize={"sm"} color="gray.400">
-											{(pools[tradingPool]?.rewardSpeeds[0] + 1)**365 - 1} %
+											{(pools[tradingPool]?.rewardSpeeds[0]*365*24*60*60 * ESYX_PRICE / pools[tradingPool]?.totalDebtUSD).toFixed(2)} %
 										</Text>
 									</Flex>
 								</Box>

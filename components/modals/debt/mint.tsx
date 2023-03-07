@@ -32,6 +32,7 @@ import { dollarFormatter, tokenFormatter } from "../../../src/const";
 import Big from "big.js";
 import Response from "../_utils/Response";
 import InfoFooter from "../_utils/InfoFooter";
+import { ethers } from "ethers";
 
 const Issue = ({ asset, amount, amountNumber }: any) => {
 
@@ -89,8 +90,8 @@ const Issue = ({ asset, amount, amountNumber }: any) => {
 					}
 				});
 
+				updatePoolBalance(pools[tradingPool].id, decodedLogs[1].args.value.toString(), false);
 				updateSynthWalletBalance(asset.token.id, pools[tradingPool].id, decodedLogs[3].args.value.toString(), false);
-				updatePoolBalance(pools[tradingPool].id, decodedLogs[0].args.value.toString(), false);
 
 				setResponse("Transaction Successful!");
 				setMessage(
@@ -112,11 +113,36 @@ const Issue = ({ asset, amount, amountNumber }: any) => {
 	const { chain: activeChain } = useNetwork();
 
 	return (
-		<Box roundedBottom={16} px={5} pb={0.5} pt={0.5} bg='blackAlpha.200'>		
+		<Box roundedBottom={16} px={5} pb={0.5} pt={0.5} bg='blackAlpha.200'>	
 
-				{(
+		<Box
+					// border="1px"
+					// borderColor={"gray.700"}
+					mt={8}
+					rounded={8}
+					// p={2}
+				>
+					{/* <Flex justify="space-between">
+						<Text fontSize={"md"} color="gray.400">
+							Mint / Burn Fee
+						</Text>
+
+						<Text fontSize={"md"}>
+							{tokenFormatter.format(
+								Number(
+									asset.mintFee / 100
+								) 
+							)} {'%'} / {tokenFormatter.format(
+								Number(
+									asset.burnFee / 100
+								) 
+							)} {'%'}
+						</Text>
+					</Flex> */}
+				</Box>	
+
 					<Box>
-						<Text mt={8} fontSize={"sm"} color='gray.400' fontWeight={'bold'}>
+						<Text mt={4} fontSize={"sm"} color='gray.400' fontWeight={'bold'}>
 							Transaction Overview
 						</Text>
 						<Box
@@ -141,7 +167,6 @@ const Issue = ({ asset, amount, amountNumber }: any) => {
 							</Flex>
 						</Box>
 					</Box>
-				)}
 
 						<Flex mt={2} justify="space-between">
 						</Flex>

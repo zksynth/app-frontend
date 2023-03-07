@@ -74,7 +74,7 @@ const Burn = ({ asset, amount, amountNumber }: any) => {
 					}
 				});
 
-				updatePoolBalance(pools[tradingPool].id, decodedLogs[0].args.value.toString(), true);
+				updatePoolBalance(pools[tradingPool].id, decodedLogs[1].args.value.toString(), true);
 				updateSynthWalletBalance(asset.token.id, pools[tradingPool].id, decodedLogs[3].args.value.toString(), true);
 
 				setConfirmed(true);

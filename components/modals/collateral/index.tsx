@@ -89,7 +89,7 @@ export default function CollateralModal({ collateral, tradingPool }: any) {
 	const max = () => {
 		if (tabSelected == 0) {
 			return ethers.utils.formatUnits(
-				collateral.walletBalance,
+				collateral.walletBalance ?? 0,
 				collateral.token.decimals
 			);
 		} else {
