@@ -286,7 +286,7 @@ export default function TempPage() {
 					animate={{ opacity: 1, y: 0 }}
 					exit={{ opacity: 0, y: 15 }}
 					transition={{ duration: 0.5 }}
-					key={tradingPool}
+					key={tradingPool + 2}
 					style={{
 						width: "67%",
 						backgroundColor: "#1A202C",
