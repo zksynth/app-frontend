@@ -265,37 +265,36 @@ export default function TempPage() {
 				</motion.div>
 			</Flex>
 
-			<Flex gap={8} pb={"100px"} mt={"80px"} zIndex={1}>
-				<Box w={"33%"}>
-					<motion.div
-						initial={{ opacity: 0, y: 15 }}
-						animate={{ opacity: 1, y: 0 }}
-						exit={{ opacity: 0, y: 15 }}
-						transition={{ duration: 0.5 }}
-						key={tradingPool}
-					>
-						<Box
-							bg={"gray.800"}
-							rounded="10"
-						>
-							<CollateralTable />
-						</Box>
-					</motion.div>
-				</Box>
+			<Flex align={"stretch"} gap={8} pb={"100px"} mt={"80px"} zIndex={1}>
+				<motion.div
+					initial={{ opacity: 0, y: 15 }}
+					animate={{ opacity: 1, y: 0 }}
+					exit={{ opacity: 0, y: 15 }}
+					transition={{ duration: 0.5 }}
+					key={tradingPool}
+					style={{
+						width: "33%",
+						backgroundColor: "#1A202C",
+						borderRadius: 10,
+					}}
+				>
+					<CollateralTable />
+				</motion.div>
 
-				<Box w="67%">
-					<motion.div
-						initial={{ opacity: 0, y: 15 }}
-						animate={{ opacity: 1, y: 0 }}
-						exit={{ opacity: 0, y: 15 }}
-						transition={{ duration: 0.5 }}
-						key={tradingPool}
-					>
-						<Box bg={"gray.800"} rounded="10">
-							<IssuanceTable />
-						</Box>
-					</motion.div>
-				</Box>
+				<motion.div
+					initial={{ opacity: 0, y: 15 }}
+					animate={{ opacity: 1, y: 0 }}
+					exit={{ opacity: 0, y: 15 }}
+					transition={{ duration: 0.5 }}
+					key={tradingPool}
+					style={{
+						width: "67%",
+						backgroundColor: "#1A202C",
+						borderRadius: 10,
+					}}
+				>
+					<IssuanceTable />
+				</motion.div>
 			</Flex>
 		</>
 	);
