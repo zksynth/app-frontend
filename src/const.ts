@@ -13,6 +13,9 @@ export const dollarFormatter = new Intl.NumberFormat("en-US", {
 	style: "currency",
 	currency: "USD",
 	maximumSignificantDigits: 6,
+	maximumFractionDigits: 2,
+	maximumIntegerDigits: 6,
+	maximumDecimalDigits: 2,
 	roundingMode: "floor",
 } as any);
 
@@ -25,7 +28,6 @@ export const preciseTokenFormatter = new Intl.NumberFormat("en-US", {
 	maximumSignificantDigits: 8,
 	roundingMode: "floor",
 } as any);
-
 
 export const compactTokenFormatter = new Intl.NumberFormat("en-US", {
 	maximumSignificantDigits: 4,

@@ -73,6 +73,7 @@ export default function Debt({ synth }: any) {
 	};
 
 	const _setAmount = (e: string) => {
+        if(Number(e) && Big(e).gt(max())) return;
 		setAmount(e);
 		setAmountNumber(isNaN(Number(e)) ? 0 : Number(e));
 	};
@@ -88,15 +89,9 @@ export default function Debt({ synth }: any) {
 
 	const max = () => {
 		if (tabSelected == 0) {
-            const val = Big(adjustedCollateral).sub(totalDebt).mul(1e8).div(synth.priceUSD).toNumber();
-			return (val > 0 ? val : 0).toString();
+			return (Big(adjustedCollateral).sub(totalDebt).div(synth.priceUSD).gt(0) ? Big(adjustedCollateral).sub(totalDebt).div(synth.priceUSD) : 0).toString();
 		} else {
-			return Math.min(
-				Big(totalDebt).div(synth.priceUSD).mul(1e8).toNumber(),
-				Big(synth.walletBalance ?? 0)
-					.div(10 ** 18)
-					.toNumber()
-			).toString();
+			return (Big(totalDebt).div(synth.priceUSD).gt(Big(synth.walletBalance ?? 0).div(10 ** 18)) ? Big(synth.walletBalance ?? 0).div(10 ** 18) : Big(totalDebt).div(synth.priceUSD)).toString()
 		}
 	};
 
@@ -151,23 +146,21 @@ export default function Debt({ synth }: any) {
 					</Flex>
 				</Td>
 				<Td {...borderStyle} fontSize="sm">
-					{dollarFormatter.format(synth.priceUSD / 1e8)}
+					{dollarFormatter.format(synth.priceUSD)}
 				</Td>
 				<Td {...borderStyle} fontSize="sm">
 					{dollarFormatter.format(
-						Big(synth.token.totalSupply)
+						Big(synth.dayDatas[0]?.dailyMinted ?? 0).add(synth.dayDatas[0]?.dailyBurned ?? 0)
 							.mul(synth.priceUSD)
-							.div(1e8)
-							.div(1e18)
+                            .div(10**18)
 							.toNumber()
 					)}
 				</Td>
 				<Td {...borderStyle} fontSize="sm" isNumeric>
 					{dollarFormatter.format(
-						Big(synth.token.totalSupply)
+						Big(synth.totalSupply)
 							.mul(synth.priceUSD)
-							.div(1e8)
-							.div(1e18)
+                            .div(10**18)
 							.toNumber()
 					)}
 				</Td>
@@ -249,8 +242,7 @@ export default function Debt({ synth }: any) {
                                         >
                                             {dollarFormatter.format(
                                                 (synth.priceUSD *
-                                                    amountNumber) /
-                                                    1e8
+                                                    amountNumber)
                                             )}
                                         </Text>
                                     </Box>

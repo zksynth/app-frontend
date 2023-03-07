@@ -34,6 +34,7 @@ interface AppDataValue {
 	setChain: (_: number) => void;
 	addCollateralAllowance(collateralAddress: string, value: string): void;
 	block: number;
+	updatePoolBalance: (poolAddress: string, value: string, minus: boolean) => void;
 }
 
 const AppDataContext = React.createContext<AppDataValue>({} as AppDataValue);
@@ -80,6 +81,10 @@ function AppDataProvider({ children }: any) {
 						  rewardTokens {
 							id
 						  }
+						  dayDatas(first:1, orderBy: dayId, orderDirection: desc){
+							dailyDebtIssuedUSD
+							dailyDebtBurnedUSD
+						  }
 						  rewardSpeeds
 						  synths {
 							token {
@@ -87,11 +92,15 @@ function AppDataProvider({ children }: any) {
 							  name
 							  symbol
 							  decimals
-							  totalSupply
 							}
 							priceUSD
 							mintFee
 							burnFee
+							totalSupply
+							dayDatas(first:1, orderBy: dayId, orderDirection: desc){
+								dailyMinted
+								dailyBurned
+							}
 						  }
 						  collaterals {
 							token {
@@ -104,7 +113,6 @@ function AppDataProvider({ children }: any) {
 							cap
 							baseLTV
 							liqThreshold
-							liqProtocolFee
 							liqBonus
 						  }
 						}
@@ -274,25 +282,34 @@ function AppDataProvider({ children }: any) {
 				Big(_pools[poolIndex].collaterals[i].balance ?? 0)
 					.div(10 ** _pools[poolIndex].collaterals[i].token.decimals)
 					.mul(_pools[poolIndex].collaterals[i].priceUSD)
-					.div(1e8)
 			);
 			_adjustedCollateral = _adjustedCollateral.plus(
 				Big(_pools[poolIndex].collaterals[i].balance ?? 0)
 					.div(10 ** _pools[poolIndex].collaterals[i].token.decimals)
 					.mul(_pools[poolIndex].collaterals[i].priceUSD)
-					.div(1e8)
 					.mul(_pools[poolIndex].collaterals[i].baseLTV)
 					.div(10000)
 			);
 		}
 
-		if(Big(_pools[poolIndex].totalSupply).gt(0)) _totalDebt = Big(_pools[poolIndex].balance ?? 0).div(_pools[poolIndex].totalSupply).mul(_pools[poolIndex].totalDebtUSD).div(10**18);
+		if(Big(_pools[poolIndex].totalSupply).gt(0)) _totalDebt = Big(_pools[poolIndex].balance ?? 0).div(_pools[poolIndex].totalSupply).mul(_pools[poolIndex].totalDebtUSD);
 
 		setAdjustedCollateral(_adjustedCollateral.toNumber());
 		setTotalCollateral(_totalCollateral.toNumber());
 		setTotalDebt(_totalDebt.toNumber());
-
 	}
+
+	const updatePoolBalance = (poolAddress: string, value: string, isMinus: boolean = false) => {
+		let _pools = pools;
+		for (let i in _pools) {
+			if (_pools[i].id == poolAddress) {
+				_pools[i].balance = Big(_pools[i].balance ?? 0)[isMinus?'minus' : 'add'](value).toString();
+				if(Big(_pools[i].totalSupply).gt(0)) setTotalDebt(Big(_pools[i].balance ?? 0).div(_pools[i].totalSupply).mul(_pools[i].totalDebtUSD));
+			}
+		}
+		setPools(_pools);
+		setRefresh(Math.random());
+	};
 
 	const updateCollateralWalletBalance = (
 		collateralAddress: string,
@@ -305,11 +322,7 @@ function AppDataProvider({ children }: any) {
 			if (_pools[i].id == poolAddress) {
 				for (let j in _pools[i].collaterals) {
 					if (_pools[i].collaterals[j].token.id == collateralAddress) {
-						_pools[i].collaterals[j].walletBalance = (
-							isMinus
-								? Big(_pools[i].collaterals[j].walletBalance ?? 0).minus(value)
-								: Big(_pools[i].collaterals[j].walletBalance ?? 0).plus(value)
-						).toFixed(0);
+						_pools[i].collaterals[j].walletBalance = Big(_pools[i].collaterals[j].walletBalance ?? 0)[isMinus?'minus' : 'add'](value).toString();
 					}
 				}
 			}
@@ -330,8 +343,8 @@ function AppDataProvider({ children }: any) {
 				for (let j in _pools[i].collaterals) {
 					if (_pools[i].collaterals[j].token.id == collateralAddress) {
 						_pools[i].collaterals[j].balance = Big(_pools[i].collaterals[j].balance ?? 0)[isMinus?'minus':'add'](value).toString();
-						setAdjustedCollateral(Big(adjustedCollateral)[isMinus?'minus':'add'](Big(value).div(10**_pools[i].collaterals[j].token.decimals).mul(_pools[i].collaterals[j].priceUSD).div(1e8).mul(_pools[i].collaterals[j].baseLTV).div(10000)));
-						setTotalCollateral(Big(totalCollateral)[isMinus?'minus':'add'](Big(value).div(10**_pools[i].collaterals[j].token.decimals).mul(_pools[i].collaterals[j].priceUSD).div(1e8)));
+						setAdjustedCollateral(Big(adjustedCollateral)[isMinus?'minus':'add'](Big(value).div(10**_pools[i].collaterals[j].token.decimals).mul(_pools[i].collaterals[j].priceUSD).mul(_pools[i].collaterals[j].baseLTV).div(10000)));
+						setTotalCollateral(Big(totalCollateral)[isMinus?'minus':'add'](Big(value).div(10**_pools[i].collaterals[j].token.decimals).mul(_pools[i].collaterals[j].priceUSD)));
 					}
 				}
 			}
@@ -362,8 +375,7 @@ function AppDataProvider({ children }: any) {
 		synthAddress: string,
 		poolAddress: string,
 		amount: string,
-		isMinus: boolean = false,
-		updateDebt: boolean = true
+		isMinus: boolean = false
 	) => {
 		let _pools = pools;
 		console.log(_pools, synthAddress, poolAddress, amount, isMinus);
@@ -371,19 +383,7 @@ function AppDataProvider({ children }: any) {
 			if (_pools[i].id == poolAddress) {
 				for (let j in _pools[i].synths) {
 					if (_pools[i].synths[j].token.id == synthAddress) {
-						_pools[i].synths[j].walletBalance = (
-							isMinus
-								? Big(_pools[i].synths[j].walletBalance ?? 0).minus(amount)
-								: Big(_pools[i].synths[j].walletBalance ?? 0).plus(amount)
-						).toFixed(0);
-						// update total debt
-						if (updateDebt) {
-							setTotalDebt(
-								Big(totalDebt)[isMinus ? 'minus' : 'add'](
-									Big(amount).div(10 ** _pools[i].synths[j].token.decimals).mul(_pools[i].synths[j].priceUSD).div(1e8)
-								).toNumber()
-							);
-						}
+						_pools[i].synths[j].walletBalance = (Big(_pools[i].synths[j].walletBalance ?? 0)[isMinus?'minus':'add'](amount)).toFixed();
 					}
 				}
 			}
@@ -400,6 +400,7 @@ function AppDataProvider({ children }: any) {
 		pools,
 		tradingPool,
 		setTradingPool: _setTradingPool,
+		updatePoolBalance,
 		fetchData,
 		updateSynthWalletBalance,
 		updateCollateralWalletBalance,

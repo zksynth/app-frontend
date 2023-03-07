@@ -234,14 +234,14 @@ export default function Deposit({ collateral, amount, amountNumber }: any) {
 								<Text fontSize={"md"} color="gray.400">
 									Health Factor
 								</Text>
-								<Text fontSize={"md"}>{(totalDebt/totalCollateral * 100).toFixed(1)} % {"->"} {(totalDebt /(totalCollateral + (amount*collateral.priceUSD/1e8)) * 100).toFixed(1)}%</Text>
+								<Text fontSize={"md"}>{(totalDebt/totalCollateral * 100).toFixed(1)} % {"->"} {(totalDebt /(totalCollateral + (amount*collateral.priceUSD)) * 100).toFixed(1)}%</Text>
 							</Flex>
 							<Divider my={2} />
 							<Flex justify="space-between">
 								<Text fontSize={"md"} color="gray.400">
 									Available to issue
 								</Text>
-								<Text fontSize={"md"}>{dollarFormatter.format(adjustedCollateral - totalDebt)} {"->"} {dollarFormatter.format(adjustedCollateral + amount*collateral.priceUSD*collateral.baseLTV/10000/1e8 - totalDebt)}</Text>
+								<Text fontSize={"md"}>{dollarFormatter.format(adjustedCollateral - totalDebt)} {"->"} {dollarFormatter.format(adjustedCollateral + amount*collateral.priceUSD*collateral.baseLTV/10000 - totalDebt)}</Text>
 							</Flex>
 						</Box>
 					</Box>

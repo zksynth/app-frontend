@@ -168,17 +168,18 @@ function Swap() {
 				setLoading(false);
 				setResponse("Transaction sent! Waiting for confirmation...");
 				setHash(res.hash);
-				await res.wait(1);
+				const response = await res.wait(1);
+				// decode response.logs
+				const decodedLogs = response.logs.map((log: any) =>
+					contract.interface.parseLog(log)
+				);
+
 				setConfirmed(true);
 				handleExchange(
 					inputToken().token.id,
 					outputToken().token.id,
-					Big(inputAmount)
-						.mul(10 ** 18)
-						.toString(),
-					Big(outputAmount)
-						.mul(10 ** 18)
-						.toString()
+					decodedLogs[2].args.value.toString(),
+					decodedLogs[0].args.value.toString()
 				);
 				setMessage(
 					`Swapped ${_inputAmount} ${_inputAsset} for ${_outputAmount} ${_outputAsset}`
@@ -342,7 +343,7 @@ function Swap() {
 						>
 							<Text>
 								{dollarFormatter.format(
-									inputAmount * inputToken()?.priceUSD / 1e8
+									inputAmount * inputToken()?.priceUSD 
 								)}
 							</Text>
 							<Flex gap={1}>
@@ -413,7 +414,7 @@ function Swap() {
 						>
 							<Text>
 								{dollarFormatter.format(
-									outputAmount * outputToken()?.priceUSD / 1e8
+									outputAmount * outputToken()?.priceUSD
 								)}
 							</Text>
 							<Flex gap={1}>
@@ -458,7 +459,7 @@ function Swap() {
 								<Text fontSize={'sm'} color={"gray.400"}>
 									(
 									{dollarFormatter.format(
-										inputToken()?.priceUSD/1e8
+										inputToken()?.priceUSD
 									)}
 									)
 								</Text>

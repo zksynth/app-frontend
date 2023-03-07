@@ -62,7 +62,7 @@ export default function CollateralTable() {
 				key={tradingPool}
 			>
 				{pools[tradingPool]?.synths.length > 0 ? (
-					<TableContainer pt={2}>
+					<TableContainer pt={1}>
 						<Table variant="simple">
 							<Thead>
 								<Tr>

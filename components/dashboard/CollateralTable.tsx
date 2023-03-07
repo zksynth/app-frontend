@@ -37,7 +37,7 @@ export default function CollateralTable() {
 				key={tradingPool}
 			>
 			{pools[tradingPool]?.collaterals.length > 0 ? (
-					<TableContainer bg={"gray.800"} rounded={10} pt={2}>
+					<TableContainer bg={"gray.800"} rounded={10} pt={1}>
 						<Table variant="simple">
 							<Thead>
 								<Tr>
@@ -63,6 +63,7 @@ export default function CollateralTable() {
 			) : (
 				<>
 					<Skeleton height="50px" m={6} mt={10} rounded={12} />
+					<Skeleton height="50px" rounded={12} m={6} />
 					<Skeleton height="50px" rounded={12} m={6} />
 					<Skeleton height="50px" rounded={12} m={6} />
 					<Skeleton height="50px" rounded={12} m={6} />

@@ -98,7 +98,6 @@ export default function CollateralModal({ collateral, tradingPool }: any) {
 					? Big(adjustedCollateral)
 							.sub(totalDebt)
 							.div(collateral.priceUSD)
-							.mul(1e8)
 							.toNumber()
 					: 0;
 			return Math.min(
@@ -155,6 +154,7 @@ export default function CollateralModal({ collateral, tradingPool }: any) {
 							: "gray.500"
 					}
 					isNumeric
+                    fontSize={'md'}
 				>
 					{preciseTokenFormatter.format(
 						Big(collateral.balance ?? 0)
@@ -234,8 +234,7 @@ export default function CollateralModal({ collateral, tradingPool }: any) {
 												>
 													{dollarFormatter.format(
 														(collateral.priceUSD *
-															amountNumber) /
-															1e8
+															amountNumber)
 													)}
 												</Text>
 											</Box>

@@ -1,4 +1,4 @@
-import { Box, Flex, Image, Text, Heading, Progress } from "@chakra-ui/react";
+import { Box, Flex, Image, Text, Heading, Progress, Tooltip } from "@chakra-ui/react";
 import React, { useContext } from "react";
 import { AppDataContext } from "../components/context/AppDataProvider";
 import CollateralTable from "../components/dashboard/CollateralTable";
@@ -7,6 +7,7 @@ import { dollarFormatter, tokenFormatter } from '../src/const';
 import IssuanceTable from "../components/dashboard/IssuanceTable";
 import { motion } from "framer-motion";
 import Head from 'next/head';
+import { InfoIcon, InfoOutlineIcon } from '@chakra-ui/icons';
 export default function TempPage() {
 	const {
 		pools,
@@ -36,10 +37,10 @@ export default function TempPage() {
 						<PoolSelector />
 					</Box>
 					<motion.div
-						initial={{ opacity: 0, y: 15 }}
+						initial={{ opacity: 0, y: 0 }}
 						animate={{ opacity: 1, y: 0 }}
 						exit={{ opacity: 0, y: 15 }}
-						transition={{ duration: 0.45 }}
+						transition={{ duration: 0.75 }}
 						key={tradingPool}
 					>
 						<Flex gap={16} zIndex={1}>
@@ -48,10 +49,11 @@ export default function TempPage() {
 									h={"35px"}
 									minH="35px"
 									src="/icon1.svg"
+									alt='icon1'
 								/>
 								<Box mt={-1}>
-									<Text fontSize={"sm"} color="gray.500">
-										Collateral
+									<Text fontSize={"sm"} color="gray.500" mb={0.5}>
+										Collateral Balance
 									</Text>
 									<Heading fontSize={"xl"}>
 										{dollarFormatter.format(
@@ -66,16 +68,22 @@ export default function TempPage() {
 									h={"35px"}
 									minH="35px"
 									src="/icon2.svg"
+									alt={"icon2"}
 								/>
 								<Box mt={-1}>
+								<Flex mb={0.5} gap={1.5} align='center'>
 									<Text fontSize={"sm"} color="gray.500">
 										Rewards
 									</Text>
+									<Tooltip label={`Amount of your debt burned based on 7-day average data`}>
+										<InfoOutlineIcon cursor={'help'} color={'gray.400'}/>
+									</Tooltip>
+									</Flex>
 									<Heading fontSize={"xl"}>
 										{tokenFormatter.format(0)} %
 									</Heading>
-									<Flex gap={0.5} mt={0.5}>
-										<Image src="/esSYX.svg" />
+									<Flex gap={1} mt={0.5}>
+										<Image src="/esSYX.svg" alt={'esSYN'} />
 										<Text fontSize={"sm"} color="gray.400">
 											{(pools[tradingPool]?.rewardSpeeds[0] + 1)**365 - 1} %
 										</Text>
@@ -88,11 +96,18 @@ export default function TempPage() {
 									h={"35px"}
 									minH="35px"
 									src="/icon3.svg"
+									alt={"icon3"}
 								/>
 								<Box mt={-1}>
+									<Flex mb={0.5} gap={1.5} align='center'>
 									<Text fontSize={"sm"} color="gray.500">
 										Issued Debt
 									</Text>
+									<Tooltip label={`When you issue synths, you are allocated a share of the debt pool. As the pool's total value changes, your debt changes as well`}>
+										<InfoOutlineIcon cursor={'help'} color={'gray.400'}/>
+									</Tooltip>
+									</Flex>
+
 									<Heading fontSize={"xl"}>
 										{dollarFormatter.format(totalDebt)}
 									</Heading>
@@ -102,52 +117,60 @@ export default function TempPage() {
 					</motion.div>
 				</Box>
 				<motion.div
-					initial={{ opacity: 0, y: 15 }}
+					initial={{ opacity: 0, y: 0 }}
 					animate={{ opacity: 1, y: 0 }}
 					exit={{ opacity: 0, y: 15 }}
-					transition={{ duration: 0.45 }}
+					transition={{ duration: 0.75 }}
 					key={tradingPool}
 				>
-					<Box textAlign={"right"} mt={2} alignSelf="end">
-						<Text fontSize={"sm"} mb={0.5} color="gray.400">
+					<Box textAlign={"right"} mt={3} alignSelf="end">
+						<Flex justify={'end'} align='center' gap={1}>
+
+						<Text fontSize={"sm"} mb={1} color="gray.400">
 							Debt Limit
 						</Text>
-						<Heading fontSize={"3xl"} mb={2} color='primary'>
+
+						<Tooltip label={`Your Debt Limit depends on your LTV (Loan to Value) %. Account would be liquidated if LTV is greater than your Collateral's Liquidation Threshold`} >
+							<InfoOutlineIcon cursor={'help'} color={'gray.400'}/>
+						</Tooltip>
+						</Flex>
+						<Heading fontSize={"3xl"} mb={2} color={
+								totalCollateral > 0 ? 100*totalDebt / totalCollateral < 80 ? 'primary' : 100*totalDebt / totalCollateral < 90 ? 'yellow.400' : 'red.400' : 'primary'
+							}>
 						{(totalCollateral > 0
 								? 100*totalDebt / totalCollateral
 								: totalCollateral).toFixed(1)}{" "}
 							%
 						</Heading>
-						<Progress
-							my={2}
-							mt={4}
-							value={
-								totalCollateral > 0
+						<Box my={2}
+							mt={4} h={2} width={"300px"} rounded='full' bg="gray.800">
+							<Box h={2} rounded='full' bg={
+								totalCollateral > 0 ? 100*totalDebt / totalCollateral < 80 ? 'primary' : 100*totalDebt / totalCollateral < 90 ? 'yellow.400' : 'red.400' : 'primary'
+							} width={
+								(totalCollateral > 0
 								? 100*totalDebt / totalCollateral
-								: totalCollateral
-							}
-							size="sm"
-							width={"300px"}
-							bg="gray.800"
-							rounded="full"
-						>
-						</Progress>
-						<Flex justify={"end"} gap={1}>
+								: totalCollateral )+ '%'
+							}></Box>
+						</Box>
+						<Flex justify={"end"} align='center' gap={1}>
 							<Text fontSize={"sm"} color="gray.400">
 								Available to Issue
 							</Text>
-							<Text fontSize={"sm"} fontWeight="medium">
+							<Text fontSize={"sm"} mr={0.5} fontWeight="medium">
 								{dollarFormatter.format(adjustedCollateral - totalDebt < 0 ? 0 : adjustedCollateral - totalDebt)}
 							</Text>
+							<Tooltip label={`You can issue debt till you reach collateral's Base LTV (75-80%)`} >
+							<InfoOutlineIcon cursor={'help'} color={'gray.400'}/>
+						</Tooltip>
 						</Flex>
 					</Box>
 				</motion.div>
 			</Flex>
 
 			<Flex gap={8} pb={'100px'} mt={"80px"} zIndex={1}>
-				<Box w={"33%"} bg={"gray.800"} rounded='10'>
+				<Flex flexDir={'column'} justify='space-between' w={"33%"} bg={"gray.800"} rounded='10'>
 					<CollateralTable />
-				</Box>
+				</Flex>
 				<Box w={"67%"} bg={"gray.800"} rounded='10'>
 					<IssuanceTable />
 				</Box>

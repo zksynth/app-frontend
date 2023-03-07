@@ -4,17 +4,11 @@ import {
 	Box,
 	Flex,
 	Heading,
-	Text,
 	Skeleton,
-	AvatarGroup,
-	Avatar,
 	Input,
 	Divider,
-	Button,
 	Image,
-	IconButton,
 } from "@chakra-ui/react";
-import { MdArrowDropDown } from "react-icons/md";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { motion, Variants } from "framer-motion";
 
@@ -58,7 +52,7 @@ export default function PoolSelector() {
 										{pools[tradingPool].name}
 									</Heading>
 								) : (
-									<Skeleton height="30px" width="200px" />
+									<Skeleton height="30px" width="200px" rounded={8} />
 								)}
 								<motion.div
 									variants={{

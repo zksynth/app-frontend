@@ -34,16 +34,12 @@ import Response from "../_utils/Response";
 import InfoFooter from "../_utils/InfoFooter";
 
 const Issue = ({ asset, amount, amountNumber }: any) => {
-	const { isOpen, onOpen, onClose } = useDisclosure();
 
 	const [loading, setLoading] = useState(false);
 	const [response, setResponse] = useState<string | null>(null);
 	const [hash, setHash] = useState(null);
 	const [confirmed, setConfirmed] = useState(false);
 	const [message, setMessage] = useState("");
-
-	const [selectedAssetIndex, setSelectedAssetIndex] = useState(0);
-
 
 	const {
 		chain,
@@ -52,12 +48,12 @@ const Issue = ({ asset, amount, amountNumber }: any) => {
 		updateSynthWalletBalance,
 		pools,
 		tradingPool,
-		totalCollateral
+		totalCollateral,
+		updatePoolBalance
 	} = useContext(AppDataContext);
 
 	const max = () => {
-		const val = Big(adjustedCollateral).sub(totalDebt).mul(1e8).div(asset.priceUSD).toNumber();
-		return (val > 0 ? val : 0).toString();
+		return (Big(adjustedCollateral).sub(totalDebt).div(asset.priceUSD).gt(0) ? Big(adjustedCollateral).sub(totalDebt).div(asset.priceUSD) : 0).toString();
 	};
 
 	const mint = async () => {
@@ -69,9 +65,7 @@ const Issue = ({ asset, amount, amountNumber }: any) => {
 		setMessage("");
 
 		let synth = await getContract("ERC20X", chain, asset.token.id);
-		let value = Big(amount)
-			.times(10 ** 18)
-			.toFixed(0);
+		let value = Big(amount).times(10 ** 18).toFixed(0);
 		send(
 			synth,
 			"mint",
@@ -82,9 +76,22 @@ const Issue = ({ asset, amount, amountNumber }: any) => {
 				setLoading(false);
 				setResponse("Transaction sent! Waiting for confirmation...");
 				setHash(res.hash);
-				await res.wait(1);
 				setConfirmed(true);
-				updateSynthWalletBalance(asset.token.id, pools[tradingPool].id, value, false);
+				
+				// decode logs
+				const response = await res.wait(1);
+				const decodedLogs = response.logs.map((log: any) =>
+				{
+					try {
+						return synth.interface.parseLog(log)
+					} catch (e) {
+						console.log(e)
+					}
+				});
+
+				updateSynthWalletBalance(asset.token.id, pools[tradingPool].id, decodedLogs[3].args.value.toString(), false);
+				updatePoolBalance(pools[tradingPool].id, decodedLogs[0].args.value.toString(), false);
+
 				setResponse("Transaction Successful!");
 				setMessage(
 					`You have minted ${tokenFormatter.format(
@@ -123,14 +130,14 @@ const Issue = ({ asset, amount, amountNumber }: any) => {
 								<Text fontSize={"md"} color="gray.400">
 									Health Factor
 								</Text>
-								<Text fontSize={"md"}>{(totalDebt/totalCollateral * 100).toFixed(1)} % {"->"} {((totalDebt + (amount*asset.priceUSD/1e8)) /(totalCollateral) * 100).toFixed(1)}%</Text>
+								<Text fontSize={"md"}>{(totalDebt/totalCollateral * 100).toFixed(1)} % {"->"} {((totalDebt + (amount*asset.priceUSD)) /(totalCollateral) * 100).toFixed(1)}%</Text>
 							</Flex>
 							<Divider my={2} />
 							<Flex justify="space-between">
 								<Text fontSize={"md"} color="gray.400">
 									Available to issue
 								</Text>
-								<Text fontSize={"md"}>{dollarFormatter.format(adjustedCollateral - totalDebt)} {"->"} {dollarFormatter.format(adjustedCollateral - amount*asset.priceUSD/1e8 - totalDebt)}</Text>
+								<Text fontSize={"md"}>{dollarFormatter.format(adjustedCollateral - totalDebt)} {"->"} {dollarFormatter.format(adjustedCollateral - amount*asset.priceUSD - totalDebt)}</Text>
 							</Flex>
 						</Box>
 					</Box>
@@ -145,7 +152,7 @@ const Issue = ({ asset, amount, amountNumber }: any) => {
 								activeChain?.unsupported ||
 								!amount ||
 								amountNumber == 0 ||
-								amountNumber > parseFloat(max())
+								Big(amount).gt(max())
 							}
 							isLoading={loading}
 							loadingText="Please sign the transaction"
@@ -161,7 +168,7 @@ const Issue = ({ asset, amount, amountNumber }: any) => {
 							}}
 						>
 							{isConnected && !activeChain?.unsupported ? (
-								amountNumber > parseFloat(max()) ? (
+								Big(amount).gt(max()) ? (
 									<>Insufficient Collateral</>
 								) : !amount || amountNumber == 0 ? (
 									<>Enter amount</>

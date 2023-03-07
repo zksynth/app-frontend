@@ -5,24 +5,9 @@ import {
 	Text,
 	Flex,
 	useDisclosure,
-	Select,
-	IconButton,
-	InputGroup,
-	Modal,
-	ModalOverlay,
-	ModalContent,
-	ModalHeader,
-	ModalFooter,
-	ModalBody,
-	ModalCloseButton,
-	NumberInput,
-	NumberInputField,
-	Link,
-	Image,
 	Divider
 } from "@chakra-ui/react";
 
-import { AiOutlineInfoCircle, AiOutlinePlus } from "react-icons/ai";
 import { getContract, send } from "../../../src/contract";
 import { useContext } from "react";
 import { AppDataContext } from "../../context/AppDataProvider";
@@ -31,11 +16,8 @@ import { dollarFormatter, tokenFormatter } from "../../../src/const";
 import Big from "big.js";
 import Response from "../_utils/Response";
 import InfoFooter from "../_utils/InfoFooter";
-import { BiMinus } from 'react-icons/bi';
-import { assert } from "console";
 
 const Burn = ({ asset, amount, amountNumber }: any) => {
-	const { isOpen, onOpen, onClose } = useDisclosure();
 
 	const [loading, setLoading] = useState(false);
 	const [response, setResponse] = useState<string | null>(null);
@@ -43,24 +25,9 @@ const Burn = ({ asset, amount, amountNumber }: any) => {
 	const [confirmed, setConfirmed] = useState(false);
 	const [message, setMessage] = useState("");
 
-	const [selectedAssetIndex, setSelectedAssetIndex] = useState(0);
-
-	const _onClose = () => {
-		setLoading(false);
-		setResponse(null);
-		setHash(null);
-		setConfirmed(false);
-		setMessage("");
-		onClose();
-	};
-
 	const max = () => {
-		return Math.min(
-			Big(totalDebt).div(asset.priceUSD).mul(1e8).toNumber(),
-			Big(asset.walletBalance ?? 0)
-				.div(10 ** 18)
-				.toNumber()
-		).toString();
+		// minimum of both
+		return Big(totalDebt).div(asset.priceUSD).gt(Big(asset.walletBalance ?? 0).div(10 ** 18)) ? Big(asset.walletBalance ?? 0).div(10 ** 18).toString() : Big(totalDebt).div(asset.priceUSD).toString();
 	}
 
 	const {
@@ -71,6 +38,7 @@ const Burn = ({ asset, amount, amountNumber }: any) => {
 		adjustedCollateral,
 		pools,
 		tradingPool,
+		updatePoolBalance
 	} = useContext(AppDataContext);
 
 	const burn = async () => {
@@ -95,9 +63,21 @@ const Burn = ({ asset, amount, amountNumber }: any) => {
 				setLoading(false);
 				setResponse("Transaction sent! Waiting for confirmation...");
 				setHash(res.hash);
-				await res.wait(1);
+				// decode logs
+				const response = await res.wait(1);
+				const decodedLogs = response.logs.map((log: any) =>
+				{
+					try {
+						return synth.interface.parseLog(log)
+					} catch (e) {
+						console.log(e)
+					}
+				});
+
+				updatePoolBalance(pools[tradingPool].id, decodedLogs[0].args.value.toString(), true);
+				updateSynthWalletBalance(asset.token.id, pools[tradingPool].id, decodedLogs[3].args.value.toString(), true);
+
 				setConfirmed(true);
-				updateSynthWalletBalance(asset.token.id, pools[tradingPool].id, value, true);
 				setResponse("Transaction Successful!");
 				setMessage(
 					`You have burned ${tokenFormatter.format(
@@ -134,14 +114,14 @@ const Burn = ({ asset, amount, amountNumber }: any) => {
 								<Text fontSize={"md"} color="gray.400">
 									Health Factor
 								</Text>
-								<Text fontSize={"md"}>{(totalDebt/totalCollateral * 100).toFixed(1)} % {"->"} {((totalDebt - (amount*asset.priceUSD/1e8)) /(totalCollateral) * 100).toFixed(1)}%</Text>
+								<Text fontSize={"md"}>{(totalDebt/totalCollateral * 100).toFixed(1)} % {"->"} {((totalDebt - (amount*asset.priceUSD)) /(totalCollateral) * 100).toFixed(1)}%</Text>
 							</Flex>
 							<Divider my={2} />
 							<Flex justify="space-between">
 								<Text fontSize={"md"} color="gray.400">
 									Available to issue
 								</Text>
-								<Text fontSize={"md"}>{dollarFormatter.format(adjustedCollateral - totalDebt)} {"->"} {dollarFormatter.format(adjustedCollateral + amount*asset.priceUSD/1e8 - totalDebt)}</Text>
+								<Text fontSize={"md"}>{dollarFormatter.format(adjustedCollateral - totalDebt)} {"->"} {dollarFormatter.format(adjustedCollateral + amount*asset.priceUSD - totalDebt)}</Text>
 							</Flex>
 						</Box>
 					</Box>
@@ -155,7 +135,7 @@ const Burn = ({ asset, amount, amountNumber }: any) => {
 								activeChain?.unsupported ||
 								!amount ||
 								amountNumber == 0 ||
-								amountNumber > parseFloat(max())
+								Big(amount).gt(max())
 							}
 							isLoading={loading}
 							loadingText="Please sign the transaction"
@@ -171,7 +151,7 @@ const Burn = ({ asset, amount, amountNumber }: any) => {
 							}}
 						>
 							{isConnected && !activeChain?.unsupported ? (
-								amountNumber > parseFloat(max()) ? (
+								Big(amount).gt(max()) ? (
 									<>Insufficient Collateral</>
 								) : !amount || amountNumber == 0 ? (
 									<>Enter amount</>

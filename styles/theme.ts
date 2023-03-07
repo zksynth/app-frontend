@@ -18,14 +18,6 @@ const breakpoints = {
 export const theme = extendTheme({
 	components: {
 		Steps,
-		Progress: {
-			baseStyle: {
-			  filledTrack: {
-				bg: '#00FFD1',
-				rounded: 'full'
-			  }
-			}
-		  }
 	},
 	fonts: {
 		heading: `'Aileron', sans-serif`,
@@ -35,6 +27,8 @@ export const theme = extendTheme({
 	config,
 	breakpoints,
 	colors: {
+		warning: "#FF8A00",
+		danger: "#FF0000",
 		primary: '#3EE6C4',
 		primarySchema: {
 			50: '#F0FEFF',
