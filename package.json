@@ -39,7 +39,7 @@
     "react-icons": "^4.4.0",
     "react-spinners": "^0.13.6",
     "react-tradingview-embed": "^3.0.6",
-    "recharts": "^2.1.15",
+    "recharts": "^2.4.3",
     "tronweb": "^4.4.0",
     "wagmi": "^0.8.4",
     "web3": "^1.8.0"

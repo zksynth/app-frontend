@@ -186,7 +186,7 @@ export default function Stake() {
 				</Flex>
 
 				<Text mt={2} mb={5} fontSize="sm">
-					Stake esSYX to earn more esSYX. You can unstake at any time.
+					Stake esSYX to earn WETH. You can unstake at any time.
 				</Text>
 
 				<Flex w={"50%"} align="center" justify={"center"}>

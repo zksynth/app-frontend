@@ -63,7 +63,6 @@ export default function Debt({ synth }: any) {
 	};
 
 	const _setAmount = (e: string) => {
-        if(Number(e) && Big(e).gt(max())) return;
 		setAmount(e);
 		setAmountNumber(isNaN(Number(e)) ? 0 : Number(e));
 	};

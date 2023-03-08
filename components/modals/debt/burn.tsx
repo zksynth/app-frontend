@@ -135,7 +135,7 @@ const Burn = ({ asset, amount, amountNumber }: any) => {
 								activeChain?.unsupported ||
 								!amount ||
 								amountNumber == 0 ||
-								Big(amount).gt(max())
+								Big(amountNumber > 0 ? amount : amountNumber).gt(max()) 
 							}
 							isLoading={loading}
 							loadingText="Please sign the transaction"
@@ -151,7 +151,7 @@ const Burn = ({ asset, amount, amountNumber }: any) => {
 							}}
 						>
 							{isConnected && !activeChain?.unsupported ? (
-								Big(amount).gt(max()) ? (
+								Big(amountNumber > 0 ? amount : amountNumber).gt(max()) ? (
 									<>Insufficient Collateral</>
 								) : !amount || amountNumber == 0 ? (
 									<>Enter amount</>

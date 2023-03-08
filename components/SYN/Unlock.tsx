@@ -10,8 +10,9 @@ import {
 	IconButton,
 	Tooltip,
 } from "@chakra-ui/react";
+import { Tooltip as ReToolTip} from 'recharts';
 import React, { useState } from "react";
-import { AiOutlineCaretRight, AiOutlineEnter } from "react-icons/ai";
+import { AiOutlineCaretRight, AiOutlineEnter, AiOutlineSwap } from "react-icons/ai";
 import { useContext } from "react";
 import { TokenContext } from "../context/TokenContext";
 import { tokenFormatter } from "../../src/const";
@@ -21,6 +22,7 @@ import { ethers } from "ethers";
 import Big from "big.js";
 import { Divider } from "@chakra-ui/react";
 import moment from "moment";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 export default function Unlock() {
 	const [amount, setAmount] = useState("0");
@@ -33,6 +35,7 @@ export default function Unlock() {
 	const [loading, setLoading] = useState(false);
 	const [response, setResponse] = useState(null);
 	const [error, setError] = useState<string | null>(null);
+	const [isUnlocking, setIsUnlocking] = useState(true);
 
 	const unlock = async () => {
 		setLoading(true);
@@ -85,6 +88,12 @@ export default function Unlock() {
 			isNaN(Number(syn.sealedBalance)) ? 0 : Number(syn.sealedBalance)
 		);
 	};
+	const data = [
+		{ name: (new Date()).toDateString(), value: 0 },
+		{ name: (new Date(Date.now() + 1000*parseInt(tokenUnlocks.lockupPeriod ?? 0))).toDateString(), value: 0 },
+		{ name: (new Date(Date.now() + 1 + 1000*parseInt(tokenUnlocks.lockupPeriod ?? 0))).toDateString(), value: 100 },
+		{ name: (new Date(Date.now() + 1000*parseInt(tokenUnlocks.lockupPeriod ?? 0) + 1000*parseInt(tokenUnlocks.unlockPeriod ?? 0))).toDateString(), value: 1000 }
+	]
 
 	return (
 		<>
@@ -94,14 +103,19 @@ export default function Unlock() {
 				align={"center"}
 				textAlign={"center"}
 			>
-				<Heading size={"md"}>Redeem 1:1 esSYX for SYN</Heading>
+				<Flex align={'center'} gap={1}>
+				<Heading size={"md"}>esSYX</Heading>
+				<AiOutlineSwap/>
+				<Heading size={"md"}>SYN</Heading>
+				</Flex>
 
-				<Text mt={2} mb={5} fontSize="sm" w={"50%"}>
-					Unlocking process is irreversible and takes 6 months to
-					completely redeem
-				</Text>
+				<Flex w={"50%"} align="center" justify={"center"} bg='gray.700'>
+					<Box>
 
-				<Flex w={"50%"} align="center" justify={"center"}>
+					<Text>
+						{isUnlocking? 'esSYX' : 'SYX'}
+					</Text>
+					</Box>
 					<NumberInput
 						variant={"unstyled"}
 						py={2}
@@ -194,7 +208,7 @@ export default function Unlock() {
 
 				<Divider w={"60%"} mb={2} />
 
-				<Text decoration={"underline"}>Note</Text>
+				{/* <Text decoration={"underline"}>Note</Text>
 				<Text fontSize={"sm"}>
 					Unlocking will start in{" "}
 					{parseInt(tokenUnlocks.lockupPeriod ?? 0)/(30*24*3600)} months
@@ -215,7 +229,22 @@ export default function Unlock() {
 							parseInt(tokenUnlocks.lockupPeriod ?? 0) * 1000 +
 							parseInt(tokenUnlocks.unlockPeriod ?? 0) * 1000
 					).toLocaleDateString()}
-				</Text>
+				</Text> */}
+
+<AreaChart width={730} height={250} data={data}
+  margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+  <defs>
+    <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
+      <stop offset="95%" stopColor="#8884d8" stopOpacity={0}/>
+    </linearGradient>
+  </defs>
+  <XAxis dataKey="name" color="#000" />
+  <YAxis />
+  <CartesianGrid strokeDasharray="3 3" />
+  <ReToolTip />
+  <Area type="monotone" dataKey="value" stroke="#8884d8" fillOpacity={1} fill="url(#colorUv)" />
+</AreaChart>
 
 				{/* Pending unlocks */}
 				<Divider w={"60%"} my={5} />

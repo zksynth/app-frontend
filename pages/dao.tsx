@@ -15,7 +15,7 @@ export default function syn() {
 	return (
 		<>
 			<Head>
-				<title>esSYX | SyntheX</title>
+				<title>DAO | SyntheX</title>
 				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
 			</Head>
 			<Box maxW={'1200px'} mt='100px'>

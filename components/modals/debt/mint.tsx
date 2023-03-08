@@ -156,7 +156,7 @@ const Issue = ({ asset, amount, amountNumber }: any) => {
 								<Text fontSize={"md"} color="gray.400">
 									Health Factor
 								</Text>
-								<Text fontSize={"md"}>{(totalDebt/totalCollateral * 100).toFixed(1)} % {"->"} {((totalDebt + (amount*asset.priceUSD)) /(totalCollateral) * 100).toFixed(1)}%</Text>
+								<Text fontSize={"md"}>{(totalCollateral > 0 ? (100*totalDebt/totalCollateral) : 0).toFixed(1)} % {"->"} {((totalCollateral > 0 ? (totalDebt + (amount*asset.priceUSD)) /(totalCollateral) : 0) * 100).toFixed(1)}%</Text>
 							</Flex>
 							<Divider my={2} />
 							<Flex justify="space-between">
@@ -177,7 +177,7 @@ const Issue = ({ asset, amount, amountNumber }: any) => {
 								activeChain?.unsupported ||
 								!amount ||
 								amountNumber == 0 ||
-								Big(amount).gt(max())
+								Big(amountNumber > 0 ? amount : amountNumber).gt(max()) 
 							}
 							isLoading={loading}
 							loadingText="Please sign the transaction"
@@ -193,7 +193,8 @@ const Issue = ({ asset, amount, amountNumber }: any) => {
 							}}
 						>
 							{isConnected && !activeChain?.unsupported ? (
-								Big(amount).gt(max()) ? (
+								Big(amountNumber > 0 ? amount : amountNumber).gt(max()) 
+								? (
 									<>Insufficient Collateral</>
 								) : !amount || amountNumber == 0 ? (
 									<>Enter amount</>

@@ -81,7 +81,7 @@ export default function Claim() {
 				<Heading size={"md"}>Claim your esSYX</Heading>
 
 				<Text mt={2} mb={5} fontSize="sm">
-					Provide liquidity into debt pools to earn esSYX.
+					Provide liquidity by issuing synthetic assets to earn esSYX.
 				</Text>
 
 				<Text fontSize={'sm'}>Available</Text>

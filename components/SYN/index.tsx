@@ -12,7 +12,7 @@ import React, { useContext, useState } from "react";
 import { TokenContext } from "../context/TokenContext";
 import Claim from "./Claim";
 import Stake from "./Stake";
-import { tokenFormatter } from "../../src/const";
+import { tokenFormatter, dollarFormatter } from '../../src/const';
 import { UnlockIcon } from "@chakra-ui/icons";
 import Unlock from "./Unlock";
 import { useAccount } from 'wagmi';
@@ -35,12 +35,26 @@ export default function SYX() {
 
 	return (
 		<Flex flexDir={"column"} align={"center"} mt={10} mb={10} rounded={15}>
-			<Flex flexDir={"column"} align={"center"} textAlign={"center"}>
-				<Heading size={"lg"}>esSYX</Heading>
-				<Text maxW={"50%"} fontSize="md" mt={6} mb={10}>
-					ESsYX token rewards SyntheX protocol users, unlocking 1:1 for SYX after linear time. Exclusive benefits and rewards for committed ecosystem engagement.
-				</Text>
-			</Flex>
+			<Box textAlign={"center"}>
+				<Heading size={"lg"}>SyntheX Token (SYX)</Heading>
+				<Flex my={10} mb={20} gap={32} minW={'100%'}>
+					<Box>
+						<Text fontSize={'sm'} color='gray.400'>Price</Text>
+						<Text>{dollarFormatter.format(100)}</Text>
+					</Box>
+
+					<Box>
+						<Text fontSize={'sm'} color='gray.400'>Token Supply</Text>
+						<Text>{dollarFormatter.format(100)}</Text>
+					</Box>
+
+					<Box>
+						<Text fontSize={'sm'} color='gray.400'>Market Cap</Text>
+						<Text>{dollarFormatter.format(100)}</Text>
+					</Box>
+
+				</Flex>
+			</Box>
 
 			<Box
 				w={"70%"}
@@ -52,6 +66,10 @@ export default function SYX() {
 				pb={10}
 				roundedTop={15}
 			>
+				<Heading size={'md'} mt={1}>Escrowed SYN</Heading>
+				<Text my={5} mb={10} mx={20} fontSize="md" color={'gray.400'}>
+					esSYX token rewards SyntheX protocol users, unlocking 1:1 for SYX after linear time. Earn protocol fees and participate in governance.
+				</Text>
 				<Heading size={"md"}>Overview</Heading>
 				<Flex justify="space-evenly" mt={5}>
 					<Box w={"33%"}>
@@ -135,7 +153,7 @@ export default function SYX() {
 			>
 				<Button {...tabStyle(0)}>Claim</Button>
 				<Button {...tabStyle(1)}>Stake</Button>
-				<Button {...tabStyle(2)}>Unlock</Button>
+				<Button {...tabStyle(2)}>Redeem</Button>
 			</Flex>
 
 			<Box
