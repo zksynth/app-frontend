@@ -8,6 +8,7 @@ const { withSentryConfig } = require('@sentry/nextjs');
 const moduleExports = {
   // Your existing module.exports
   reactStrictMode: true,
+  swcMinify: false,
   images: {
     domains: ['images.unsplash.com', 'cryptologos.cc', 'raw.githubusercontent.com'],
   },
@@ -31,6 +32,8 @@ const sentryWebpackPluginOptions = {
   //   urlPrefix, include, ignore
 
   silent: true, // Suppresses all logs
+  org: 'chainscore',
+  project: 'synthex'
   // For all available options, see:
   // https://github.com/getsentry/sentry-webpack-plugin#options.
 };

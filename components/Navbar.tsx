@@ -8,20 +8,29 @@ import {
 	ListItem,
 	Drawer,
 	DrawerBody,
-	DrawerFooter,
 	DrawerHeader,
 	DrawerOverlay,
 	DrawerContent,
-	DrawerCloseButton,
 	useDisclosure,
+	IconButton,
 } from "@chakra-ui/react";
 
+import {
+	Menu,
+	MenuButton,
+	MenuList,
+	MenuItem,
+	MenuItemOption,
+	MenuGroup,
+	MenuOptionGroup,
+	MenuDivider,
+	Image
+} from "@chakra-ui/react";
 import { ConnectButton as RainbowConnect } from "@rainbow-me/rainbowkit";
 import { FaBars } from "react-icons/fa";
 import { MdSpaceDashboard, MdSwapHorizontalCircle } from "react-icons/md";
 
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import "../styles/Home.module.css";
@@ -33,6 +42,10 @@ import { useContext } from "react";
 import { AppDataContext } from "./context/AppDataProvider";
 import { ChainID } from "../src/chains";
 import { BigNumber } from "ethers";
+import { RiCopperCoinFill, RiMenu5Fill } from "react-icons/ri";
+import { FiBarChart2 } from "react-icons/fi";
+import { TokenContext } from "./context/TokenContext";
+import { motion } from 'framer-motion';
 
 function NavBar() {
 	// const [address, setAddress] = useState(null);
@@ -40,8 +53,9 @@ function NavBar() {
 	const { colorMode } = useColorMode();
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
-	const { fetchData, isDataReady, isFetchingData, setChain } =
+	const { status, message, fetchData, setChain } =
 		useContext(AppDataContext);
+	const { fetchData: fetchTokenData } = useContext(TokenContext);
 
 	const { chain, chains } = useNetwork();
 	const [init, setInit] = useState(false);
@@ -56,6 +70,7 @@ function NavBar() {
 			if ((chain as any).unsupported) return;
 			fetchData(address!, connector!.chains[0].id);
 			setChain(connector!.chains[0].id);
+			fetchTokenData(address!, connector!.chains[0].id);
 		},
 		onDisconnect() {
 			fetchData(null, ChainID.ARB_GOERLI);
@@ -68,7 +83,6 @@ function NavBar() {
 			(window as any).ethereum.on(
 				"accountsChanged",
 				function (accounts: any[]) {
-					console.log(activeConnector);
 					// Time to reload your interface with accounts[0]!
 					fetchData(accounts[0], activeConnector?.chains[0].id);
 					setChain(activeConnector?.chains[0].id);
@@ -98,120 +112,83 @@ function NavBar() {
 		}
 		if (
 			(!(isConnected && !isConnecting) || chain?.unsupported) &&
-			(!isDataReady || !isFetchingData) &&
+			(status !== "fetching") &&
 			!init
 		) {
 			setInit(true);
 			fetchData(null, ChainID.ARB_GOERLI);
 		}
-	}, [isConnected, isConnecting, activeConnector, fetchData, setChain, chain, isDataReady, isFetchingData, init, chains, address]);
+	}, [isConnected, isConnecting, activeConnector, fetchData, setChain, chain, init, chains, address, status]);
 
 	return (
 		<>
-			<Flex alignItems={"center"}>
-				<Box width={"33%"} mt={2} py={5}>
+			<Flex alignItems={"center"} justify='space-between' h={'100px'}>
+				<Flex align={'center'} gap={10} width={"33%"} mt={2}>
 					<Box cursor="pointer" maxW={"30px"}>
 						<Image
 							onClick={() => {
 								router.push("/");
 							}}
-							src={logo}
+							src={'/logo.svg'}
 							alt=""
-							width="30px"
-							height="30px"
+							width="35px"
+							height="35px"
+							minW={"28px"}
+							minH={"28px"}
 						/>
 					</Box>
-				</Box>
-
-				<Flex
-					justify={"center"}
-					width={"33%"}
-					display={{ sm: "none", md: "flex" }}
-				>
-					<Flex gap={0}>
-						<NavLink
+					<Flex gap={2}>
+						<NavLocalLink
 							path={"/"}
 							title={"Dashboard"}
 							pathname={router.pathname}
 						>
-							<MdSpaceDashboard />
-						</NavLink>
-						<NavLink
-							path={"/exchange"}
+							{/* <MdSpaceDashboard /> */}
+						</NavLocalLink>
+						<NavLocalLink
+							path={"/swap"}
 							title="Swap"
 							pathname={router.pathname}
 						>
+							{/* <MdSwapHorizontalCircle /> */}
+						</NavLocalLink>
+
+						{/* <NavLocalLink
+							path={"/syx"}
+							title="DAO"
+							pathname={router.pathname}
+						>
 							<MdSwapHorizontalCircle />
-						</NavLink>
+						</NavLocalLink> */}
+
+						{/* <NavLocalLink
+							path={"/temp"}
+							title="Analytics"
+							pathname={router.pathname}
+						>
+							<MdSwapHorizontalCircle />
+						</NavLocalLink> */}
 					</Flex>
 				</Flex>
 
-				<Flex width={"33%"} justify="flex-end" align={"center"}>
-					<Box display={{ sm: "none", md: "block" }}>
+				<Flex width={"33%"} justify="flex-end" align={"center"} gap={2}>
+				<Box display={{ sm: "none", md: "block" }}>
 						<RainbowConnect chainStatus={"icon"} />
 					</Box>
 				</Flex>
-
-				<Box display={{ sm: "block", md: "none", lg: "none" }}>
-					<FaBars size={20} onClick={onOpen} color="white" />
-				</Box>
 			</Flex>
-			<Drawer placement={"right"} onClose={onClose} isOpen={isOpen}>
-				<DrawerOverlay />
-				<DrawerContent alignItems={"center"} bgColor={"gray.800"}>
-					<DrawerHeader borderBottomWidth="1px">
-						<Flex alignItems={"center"}>
-							<Image
-								src={colorMode == "dark" ? darklogo : lightlogo}
-								alt=""
-								width="100px"
-								height="100px"
-							/>
-						</Flex>
-
-						<Box mt="1rem" minWidth={"100%"}></Box>
-					</DrawerHeader>
-					<DrawerBody>
-						<Box>
-							<UnorderedList
-								display={"flex"}
-								flexDirection="column"
-								alignItems="center"
-								justifyContent={"center"}
-								listStyleType="none"
-							>
-								<ListItem>
-									<NavLink
-										path={"/"}
-										title={"Dashboard"}
-										pathname={router.pathname}
-									>
-										<MdSpaceDashboard />
-									</NavLink>{" "}
-								</ListItem>
-
-								<ListItem>
-									<NavLink
-										path={"/exchange"}
-										title="Swap"
-										pathname={router.pathname}
-									>
-										<MdSwapHorizontalCircle />
-									</NavLink>{" "}
-								</ListItem>
-								<ListItem my="1rem">
-									<RainbowConnect />
-								</ListItem>
-							</UnorderedList>
-						</Box>
-					</DrawerBody>
-				</DrawerContent>
-			</Drawer>
 		</>
 	);
 }
 
-const NavLink = ({ path, title, pathname, children }: any) => {
+const NavLink = ({
+	path,
+	title,
+	target = "_parent",
+	newTab = false,
+	pathname,
+	children,
+}: any) => {
 	const [isPath, setIsPath] = useState(false);
 
 	useEffect(() => {
@@ -219,31 +196,71 @@ const NavLink = ({ path, title, pathname, children }: any) => {
 	}, [setIsPath, pathname, path]);
 
 	return (
-		<Link href={`${path}`} as={`${path}`}>
-			<Flex align={"center"}>
-				<Flex
-					align={"center"}
-					h={10}
-					px={4}
-					cursor="pointer"
-					rounded={100}
-					bgColor={isPath ? "gray.700" : "transparent"}
+		<Flex align={"center"}>
+			<motion.div
+				whileHover={{ scale: 1.05 }}
+				whileTap={{ scale: 0.95 }}
+			>
+			<Flex
+				align={"center"}
+				h={'38px'}
+				px={4}
+				cursor="pointer"
+				rounded={100}
+				bgColor={isPath ? "gray.700" : 'gray.800'}
+				_hover={{ bgColor:  !isPath ? "gray.700" : "gray.600" }}
+			>
+				<Box
+					color={isPath ? "primary" : "gray.100"}
+					
+					fontFamily="Roboto"
+					fontWeight={"bold"}
+					fontSize="sm"
 				>
-					<Box
-						color={isPath ? "primary" : "gray.100"}
-						my="1rem"
-						fontFamily="Roboto"
-						fontWeight={"bold"}
-						fontSize="sm"
-					>
-						<Flex align={"center"} gap={2}>
-							{children}
-							<Text>{title}</Text>
-						</Flex>
-					</Box>
-				</Flex>
+					<Flex align={"center"} gap={2}>
+						{children}
+						<Text>{title}</Text>
+					</Flex>
+				</Box>
 			</Flex>
+			</motion.div>
+		</Flex>
+	);
+};
+
+const NavLocalLink = ({ path, title, pathname, children, lighten }: any) => {
+	return (
+		<Link href={`${path}`} as={`${path}`}>
+			<Box>
+				<NavLink path={path} title={title} pathname={pathname} lighten={lighten}>
+					{" "}
+					{children}{" "}
+				</NavLink>
+			</Box>
 		</Link>
 	);
 };
+
+const NavExternalLink = ({ path, title, pathname, children, lighten }: any) => {
+	const [isPath, setIsPath] = useState(false);
+
+	useEffect(() => {
+		setIsPath(pathname == path);
+	}, [setIsPath, pathname, path]);
+
+	return (
+		<Link
+			href={`${path}`}
+			as={`${path}`}
+			target={"_blank"}
+			rel="noreferrer"
+		>
+			<NavLink path={path} title={title} pathname={pathname} lighten={lighten}>
+				{" "}
+				{children}{" "}
+			</NavLink>
+		</Link>
+	);
+};
+
 export default NavBar;

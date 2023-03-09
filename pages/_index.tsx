@@ -1,58 +1,59 @@
-import { Box, Flex, Progress, Text } from '@chakra-ui/react';
+import { Box, Flex, Progress, Text, useBreakpointValue } from '@chakra-ui/react';
 import React, { useContext } from 'react';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
-import { WalletContext } from '../components/context/WalletContextProvider';
 import { useEffect } from 'react';
-import { id } from 'ethers/lib/utils';
-import { useRouter } from 'next/router';
 import { AppDataContext } from '../components/context/AppDataProvider';
 import { useState } from 'react';
-import { ChainID, chainIndex } from '../src/chains';
-import { useAccount, useConnect } from 'wagmi';
-import { DUMMY_ADDRESS } from '../src/const';
+import { motion } from 'framer-motion';
 
 export default function _index({ children }: any) {
 
-	const {
-		isConnected,
-		isConnecting,
-		address,
-		tronWeb,
-		connect,
-		connectionError,
-	} = useContext(WalletContext);
-
-	const {
-		collaterals,
-		synths,
-		totalCollateral,
-		totalDebt,
-		isDataReady,
-		availableToBorrow,
-		fetchData,
-		isFetchingData,
-		setChain
-	} = useContext(AppDataContext);
-	const [init, setInit] = useState(false);
+	// check chakra device size
+	const isMobile = useBreakpointValue({
+		base: true,
+		lg: false,
+	});
 
 	const backgroundStyle = {
-		backgroundColor: 'gray.900'
+		// backgroundColor: '#0E1015'
+		bgGradient: 'radial(#0E1015, gray.900)',
+		// bgGradient: 'radial(gray.900, #12131B)',
 	};
+
+	const [hydrated, setHydrated] = useState(false);
+
+	useEffect(() => {
+		setHydrated(true);
+	}, []);
+
+	if(!hydrated) return <></>;
 
 	return (
 		<Box>
-			{connectionError && (
+			<Box bgColor="gray.800" color={'gray.400'}>
+			{/* {connectionError && (
+				<Text
+					textAlign={'center'}
+					width="100%"
+					fontSize={'md'}
+					fontWeight="bold"
+					p={2}>
+					{connectionError}
+				</Text>
+			)} */}
+			{isMobile && (
 				<Text
 					textAlign={'center'}
 					width="100%"
 					fontSize={'md'}
 					fontWeight="bold"
 					p={2}
-					bgColor="gray.50">
-					{connectionError}
+					>
+					SyntheX is not optimised for mobile yet
 				</Text>
 			)}
+			</Box>
 			<Box {...backgroundStyle}>
 				<Flex
 					justify={'center'}
@@ -63,7 +64,14 @@ export default function _index({ children }: any) {
 					px={{sm: '4', md: '0'}}
                     >
 						<Navbar />
+						<motion.div 
+                initial={{opacity: 0, y: 15}}
+                animate={{opacity: 1, y: 0}}
+                exit={{opacity: 0, y: 15}}
+                transition={{duration: 0.25}}
+                >
 						{children}
+						</motion.div>
 					</Box>
 				</Flex>
 				<Footer />

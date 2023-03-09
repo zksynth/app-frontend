@@ -34,6 +34,7 @@ export default function InputWithSlider({
 
 	const updateSlider = (_value: any) => {
 		setSliderValue(_value);
+		if(!softMax) return;
 		setValue(Big(_value).times(softMax).div(100).toNumber());
 		onUpdate(Big(_value).times(softMax).div(100).toNumber());
 	};
@@ -67,7 +68,7 @@ export default function InputWithSlider({
 					borderColor={'gray.600'}
 				>
 					<Image
-						src={`/icons/${asset.symbol.toUpperCase()}.png`}
+						src={`/icons/${asset.symbol}.svg`}
 						alt=""
 						width={"30"}
 						height={"30"}

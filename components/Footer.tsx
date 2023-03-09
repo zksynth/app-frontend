@@ -1,17 +1,13 @@
-import { ReactNode, useContext } from 'react';
+import { useContext } from 'react';
 import {
   Box,
   Container,
   Stack,
-  SimpleGrid,
   Text,
   Link,
-  VisuallyHidden,
-  chakra,
-  useColorModeValue,
   Flex,
 } from '@chakra-ui/react';
-import { FaTwitter, FaYoutube, FaInstagram, FaDiscord, FaGithub } from 'react-icons/fa';
+import { FaTwitter, FaDiscord, FaGithub } from 'react-icons/fa';
 import { AppDataContext } from './context/AppDataProvider';
 import { config } from '../src/contract';
 
@@ -22,7 +18,7 @@ export default function Footer() {
 
   return (
     <Box
-      bg={'gray.800'}
+      // bg={'gray.800'}
       color={'gray.200'}
       mt={10}>
       <Box

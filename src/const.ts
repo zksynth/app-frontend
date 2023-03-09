@@ -1,28 +1,40 @@
 import { ethers } from "ethers";
 import { ChainID } from "./chains";
 
-
-
-export const DUMMY_ADDRESS = {
-	[ChainID.NILE]: "TU6nPbkDzMfhtg13nUnTMbuVFFMpLSs3P3",
-	[ChainID.AURORA]: ethers.constants.AddressZero,
-};
-
+export const ADDRESS_ZERO = ethers.constants.AddressZero;
+export const ETH_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+export const ESYX_PRICE = 0.1;
 export const Endpoints: any = {
-	[ChainID.NILE]: "https://api.synthex.finance/",
 	[ChainID.AURORA]: "https://aurora.api.synthex.finance/", // 'http://localhost:3030/',
-	[ChainID.ARB_GOERLI]: process.env.NODE_ENV == 'development' ? "https://api.thegraph.com/subgraphs/name/prasad-kumkar/synthex-dev" : "https://api.thegraph.com/subgraphs/name/prasad-kumkar/synthex"
+	[ChainID.ARB_GOERLI]: process.env.GRAPH_URL ?? "https://api.thegraph.com/subgraphs/name/prasad-kumkar/synthex"
 };
 
 export const dollarFormatter = new Intl.NumberFormat("en-US", {
 	style: "currency",
 	currency: "USD",
-	maximumSignificantDigits: 6
-});
+	maximumSignificantDigits: 6,
+	maximumFractionDigits: 2,
+	maximumIntegerDigits: 6,
+	maximumDecimalDigits: 2,
+	roundingMode: "floor",
+} as any);
 
 export const tokenFormatter = new Intl.NumberFormat("en-US", {
 	maximumSignificantDigits: 8,
-});
+	roundingMode: "floor",
+} as any);
+
+export const preciseTokenFormatter = new Intl.NumberFormat("en-US", {
+	maximumSignificantDigits: 8,
+	roundingMode: "floor",
+} as any);
+
+export const compactTokenFormatter = new Intl.NumberFormat("en-US", {
+	maximumSignificantDigits: 4,
+	// compact
+	notation: "compact",
+	roundingMode: "floor",
+} as any);
 
 
 const COLORS_GREEN = [

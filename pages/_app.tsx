@@ -18,13 +18,12 @@ import {
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
 import { Box, ChakraProvider, Flex } from '@chakra-ui/react';
-import { WalletContextProvider } from '../components/context/WalletContextProvider';
 import Index from './_index';
 
 import { AppDataProvider } from '../components/context/AppDataProvider';
 import { theme } from '../styles/theme';
 import rainbowTheme from '../styles/rainbowTheme';
-
+import { TokenContextProvider } from '../components/context/TokenContext';
 
 const { chains, provider } = configureChains(
 	[{
@@ -56,13 +55,15 @@ function MyApp({ Component, pageProps }: AppProps) {
 		<ChakraProvider theme={theme}>
 			<WagmiConfig client={wagmiClient}>
 			<RainbowKitProvider chains={chains} theme={rainbowTheme}>
-				<WalletContextProvider>
 					<AppDataProvider>
+						<TokenContextProvider>
+							
 						<Index>
 							<Component {...pageProps} />
 						</Index>
+
+						</TokenContextProvider>
 					</AppDataProvider>
-				</WalletContextProvider>
 				</RainbowKitProvider>
 			</WagmiConfig>
 		</ChakraProvider>
