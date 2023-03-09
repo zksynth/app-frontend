@@ -3,8 +3,6 @@ import { Chain } from 'wagmi';
 
 export enum ChainID {
     AURORA = 1313161555,
-    BTTC = 1029,
-    NILE = -3,
 	HARMONY = 1666700000,
 	ARB_GOERLI = 421613
 }
@@ -36,47 +34,6 @@ const aurora: Chain = {
 		default: {
 			name: 'AuroraScan',
 			url: 'https://testnet.aurorascan.dev/',
-		},
-	},
-
-	/**
-	 * Chain [multicall3 contract](https://github.com/mds1/multicall)
-	 */
-	// multicall?: {
-	//     address: Address;
-	//     blockCreated: number;
-	// };
-	/** Flag for test networks */
-	// testnet: true,
-};
-
-const bttc: Chain = {
-	/** ID in number form */
-	id: ChainID.BTTC,
-	/** Human-readable name */
-	name: 'Bittorent Donau',
-	/** Internal network name */
-	network: 'Bittorent Donau',
-	/** Currency used by chain */
-	nativeCurrency: {
-		name: 'Bittorrent',
-		symbol: 'BTT',
-		decimals: 18,
-	},
-	/** Collection of RPC endpoints */
-	rpcUrls: {
-		public: 'https://pre-rpc.bt.io/',
-		default: 'https://pre-rpc.bt.io/',
-	},
-	/** Collection of block explorers */
-	blockExplorers: {
-		etherscan: {
-			name: 'BTTScan',
-			url: 'https://testnet.bttcscan.com/',
-		},
-		default: {
-			name: 'BTTScan',
-			url: 'https://testnet.bttcscan.com/',
 		},
 	},
 
@@ -175,21 +132,18 @@ const harmony: Chain = {
 
 export const chains: Chain[] = [
     aurora, 
-    bttc,
 	harmony,
 	arbitrum
 ];
 
 export const chainMapping: any = {
 	[ChainID.AURORA]: aurora,
-	[ChainID.BTTC]: bttc,
 	[ChainID.HARMONY]: harmony,
 	[ChainID.ARB_GOERLI]: arbitrum
 }
 
 export const chainIndex: any = {
 	[ChainID.AURORA]: 0,
-	[ChainID.BTTC]: 1,
-	[ChainID.HARMONY]: 2,
-	[ChainID.ARB_GOERLI]: 3
+	[ChainID.HARMONY]: 1,
+	[ChainID.ARB_GOERLI]: 2
 }

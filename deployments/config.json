@@ -1,197 +1,283 @@
 {
   "name": "synthex",
-  "version": "0.1.0",
-  "latest": "0.1.0",
-  "collaterals": [
+  "version": "0.15.0",
+  "latest": "0.15.0",
+  "l0Admin": "0x084cD22eA15E4C262408e561a5AFa8431Bd7fa5d",
+  "l1Admin": "0x2646306d3191AEE905bf9065bD1B7cC71c9036D0",
+  "l2Admin": "0x46c18c6d5526E17B34a3deB43e5E9Ba2A659c23a",
+  "rewardAlloc": "1000000000",
+  "WETH": "0x7964Bcc63335E101F23da13583CEaD61d75f863b",
+  "esSYX": {
+    "initialRewardsDuration": "30",
+    "reward": "6000",
+    "lockPeriod": "15552000",
+    "unlockPeriod": "4838400",
+    "percReleaseAtUnlock": "500",
+    "quota": "1000000"
+  },
+  "pools": [
     {
-      "name": "Ethereum",
-      "symbol": "ETH",
-      "volatilityRatio": "0.8",
-      "price": "1230.22"
-    }
-  ],
-  "tradingPools": [
-    {
-      "name": "Crypto",
-      "symbol": "CRY",
-      "volatilityRatio": "0.7",
-      "rewardSpeed": "2.5",
-      "fee": "0.0015",
-      "synths": [
+      "name": "Crypto Market",
+      "symbol": "C",
+      "rewardSpeed": "100000000000000000",
+      "issuerAlloc": "5000",
+      "collaterals": [
         {
-          "name": "Bitcoin X",
-          "symbol": "BTCx",
-          "price": "17332.10"
+          "name": "Ethereum",
+          "symbol": "ETH",
+          "decimals": 18,
+          "feed": "0x62CAe0FA2da220f43a51F86Db2EDb36DcA9A5A08",
+          "address": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+          "params": {
+            "cap": "100000000000000000000000",
+            "baseLTV": "8000",
+            "liqThreshold": "9000",
+            "liqBonus": "10500"
+          }
         },
         {
-          "name": "Ethereum X",
-          "symbol": "ETHx",
-          "price": "1230.22"
+          "name": "Wrapped Bitcoin",
+          "symbol": "WBTC",
+          "decimals": 18,
+          "feed": "0x6550bc2301936011c1334555e62A87705A81C12C",
+          "params": {
+            "cap": "100000000000000000000000",
+            "baseLTV": "8200",
+            "liqThreshold": "9000",
+            "liqBonus": "10500"
+          }
         },
         {
-          "name": "Binance Coin X",
-          "symbol": "BNBx",
-          "price": "295.22"
+          "name": "Lido wstETH",
+          "symbol": "wstETH",
+          "decimals": 18,
+          "feed": "0x62CAe0FA2da220f43a51F86Db2EDb36DcA9A5A08",
+          "params": {
+            "cap": "10000000000000000000000",
+            "baseLTV": "8000",
+            "liqThreshold": "9000",
+            "liqBonus": "10500"
+          }
         },
         {
-          "name": "US Dollar CX",
-          "symbol": "USDcx",
-          "price": "1.00"
+          "name": "AAVE",
+          "symbol": "AAVE",
+          "decimals": 18,
+          "price": "100",
+          "params": {
+            "cap": "100000000000000000000000",
+            "baseLTV": "7000",
+            "liqThreshold": "9000",
+            "liqBonus": "10500"
+          }
         },
         {
-          "name": "Cardano X",
-          "symbol": "ADAx",
-          "price": "0.32"
+          "name": "ChainLink",
+          "symbol": "LINK",
+          "decimals": 18,
+          "feed": "0xd28Ba6CA3bB72bF371b80a2a0a33cBcf9073C954",
+          "params": {
+            "cap": "100000000000000000000000",
+            "baseLTV": "7500",
+            "liqThreshold": "9000",
+            "liqBonus": "10500"
+          }
         },
         {
-          "name": "Aave X",
-          "symbol": "AAVEx",
-          "price": "66.39"
-        },
-        {
-          "name": "Chainlink X",
-          "symbol": "LINKx",
-          "price": "7.55"
-        },
-        {
-          "name": "Uniswap X",
-          "symbol": "UNIx",
-          "price": "6.38"
-        },
-        {
-          "name": "Dogecoin X",
-          "symbol": "DOGEx",
-          "price": "0.1074"
-        },
-        {
-          "name": "Polkadot X",
-          "symbol": "DOTx",
-          "price": "5.70"
+          "name": "USD Coin",
+          "symbol": "USDC",
+          "decimals": 18,
+          "feed": "0x1692Bdd32F31b831caAc1b0c9fAF68613682813b",
+          "params": {
+            "cap": "100000000000000000000000",
+            "baseLTV": "8000",
+            "liqThreshold": "9000",
+            "liqBonus": "10200"
+          }
         }
-      ]
-    },
-    {
-      "name": "Stocks",
-      "symbol": "STK",
-      "volatilityRatio": "0.9",
-      "rewardSpeed": "1.1",
-      "fee": "0.001",
+      ],
       "synths": [
         {
-          "name": "Apple X",
-          "symbol": "AAPLx",
-          "price": "130.00"
+          "name": "Bitcoin",
+          "symbol": "BTC",
+          "feed": "0x6550bc2301936011c1334555e62A87705A81C12C",
+          "mintFee": "6",
+          "burnFee": "8"
         },
         {
-          "name": "Tesla X",
-          "symbol": "TSLAx",
-          "price": "700.00"
+          "name": "Ethereum",
+          "symbol": "ETH",
+          "feed": "0x62CAe0FA2da220f43a51F86Db2EDb36DcA9A5A08",
+          "mintFee": "4",
+          "burnFee": "6"
         },
         {
-          "name": "Amazon X",
-          "symbol": "AMZNx",
-          "price": "3500.00"
+          "name": "USD Coin",
+          "symbol": "USDC",
+          "feed": "0x1692Bdd32F31b831caAc1b0c9fAF68613682813b",
+          "isFeeToken": true,
+          "mintFee": "4",
+          "burnFee": "2"
         },
         {
-          "name": "Facebook X",
-          "symbol": "FBx",
-          "price": "300.00"
+          "name": "ChainLink",
+          "symbol": "LINK",
+          "feed": "0xd28Ba6CA3bB72bF371b80a2a0a33cBcf9073C954",
+          "mintFee": "8",
+          "burnFee": "10"
         },
         {
-          "name": "Microsoft X",
-          "symbol": "MSFTx",
-          "price": "250.00"
+          "name": "Binance Coin",
+          "symbol": "BNB",
+          "price": "303.00",
+          "mintFee": "8",
+          "burnFee": "10"
         },
         {
-          "name": "S&P 500 X",
-          "symbol": "^GSPCx",
-          "price": "3934.00"
+          "name": "Solana",
+          "symbol": "SOL",
+          "price": "22.56",
+          "mintFee": "8",
+          "burnFee": "10"
         },
         {
-          "name": "Netflix X",
-          "symbol": "NFLXx",
-          "price": "500.00"
+          "name": "Ape Coin",
+          "symbol": "APE",
+          "price": "5.1",
+          "mintFee": "8",
+          "burnFee": "10"
         },
         {
-          "name": "Alphabet X",
-          "symbol": "GOOGLx",
-          "price": "2500.00"
-        },
-        {
-          "name": "Nvidia X",
-          "symbol": "NVDAx",
-          "price": "500.00"
-        },
-        {
-          "name": "AMD X",
-          "symbol": "AMDx",
-          "price": "100.00"
-        },
-        {
-          "name": "US Dollar SX",
-          "symbol": "USDsx",
-          "price": "1.00"
+          "name": "Polygon",
+          "symbol": "MATIC",
+          "price": "1.76",
+          "mintFee": "8",
+          "burnFee": "10"
         }
       ]
     },
     {
       "name": "Foreign Exchange",
-      "symbol": "FX",
-      "volatilityRatio": "0.95",
-      "rewardSpeed": "0.85",
-      "fee": "0.0005",
+      "symbol": "F",
+      "rewardSpeed": "100000000000000000",
+      "issuerAlloc": "5000",
+      "collaterals": [
+        {
+          "name": "USD Coin",
+          "symbol": "USDC",
+          "decimals": 18,
+          "feed": "0x1692Bdd32F31b831caAc1b0c9fAF68613682813b",
+          "params": {
+            "cap": "100000000000000000000000",
+            "baseLTV": "8000",
+            "liqThreshold": "9000",
+            "liqBonus": "10100"
+          }
+        },
+        {
+          "name": "Tether USD",
+          "symbol": "USDT",
+          "decimals": 18,
+          "feed": "0x0a023a3423D9b27A0BE48c768CCF2dD7877fEf5E",
+          "params": {
+            "cap": "100000000000000000000000",
+            "baseLTV": "8000",
+            "liqThreshold": "9000",
+            "liqBonus": "10100"
+          }
+        },
+        {
+          "name": "DAI Stablecoin",
+          "symbol": "DAI",
+          "decimals": 18,
+          "feed": "0x103b53E977DA6E4Fa92f76369c8b7e20E7fb7fe1",
+          "params": {
+            "cap": "100000000000000000000000",
+            "baseLTV": "8000",
+            "liqThreshold": "9000",
+            "liqBonus": "10100"
+          }
+        },
+        {
+          "name": "Euro Coin",
+          "symbol": "EUROC",
+          "decimals": 18,
+          "price": "1.06",
+          "params": {
+            "cap": "100000000000000000000000",
+            "baseLTV": "8000",
+            "liqThreshold": "9000",
+            "liqBonus": "10400"
+          }
+        },
+        {
+          "name": "Aave USDC",
+          "symbol": "aArbUSDC",
+          "decimals": 6,
+          "address": "0xd9933e10d6d9453FFaCF1236aF7ea1a61EA4D2c5",
+          "isAToken": true,
+          "poolAddressesProvider": "0x4eee0bb72c2717310318f27628b3c8a708e4951c",
+          "params": {
+            "cap": "1000000000000000000000",
+            "baseLTV": "8000",
+            "liqThreshold": "9000",
+            "liqBonus": "10100"
+          }
+        }
+      ],
       "synths": [
         {
-          "name": "US Dollar FX",
-          "symbol": "USDfx",
-          "price": "1.00"
+          "name": "US Dollar",
+          "symbol": "USD",
+          "price": "1.00",
+          "isFeeToken": true,
+          "mintFee": "2",
+          "burnFee": "4"
         },
         {
-          "name": "Euro X",
-          "symbol": "EURx",
-          "price": "0.85"
+          "name": "Euro",
+          "symbol": "EUR",
+          "price": "0.85",
+          "mintFee": "2",
+          "burnFee": "4"
         },
         {
-          "name": "Japanese Yen X",
-          "symbol": "JPYx",
-          "price": "0.0094"
+          "name": "Japanese Yen",
+          "symbol": "JPY",
+          "price": "0.0094",
+          "mintFee": "2",
+          "burnFee": "4"
         },
         {
-          "name": "British Pound X",
-          "symbol": "GBPx",
-          "price": "1.25"
+          "name": "Canadian Dollar",
+          "symbol": "CAD",
+          "price": "0.80",
+          "mintFee": "5",
+          "burnFee": "7"
         },
         {
-          "name": "Swiss Franc X",
-          "symbol": "CHFx",
-          "price": "1.10"
+          "name": "Korean Republic won",
+          "symbol": "WON",
+          "price": "0.0009",
+          "mintFee": "5",
+          "burnFee": "7"
         },
         {
-          "name": "Canadian Dollar X",
-          "symbol": "CADx",
-          "price": "0.80"
+          "name": "UAE Dirham",
+          "symbol": "AED",
+          "price": "0.27",
+          "mintFee": "5",
+          "burnFee": "7"
         },
         {
-          "name": "Australian Dollar X",
-          "symbol": "AUDx",
-          "price": "0.75"
-        },
-        {
-          "name": "Korean Republic won X",
-          "symbol": "WONx",
-          "price": "0.0009"
-        },
-        {
-          "name": "UAE Dirham X",
-          "symbol": "AEDx",
-          "price": "0.27"
-        },
-        {
-          "name": "Indian Rupee X",
-          "symbol": "INRx",
-          "price": "0.013"
+          "name": "Indian Rupee",
+          "symbol": "INR",
+          "price": "0.013",
+          "mintFee": "3",
+          "burnFee": "4"
         }
       ]
     }
-  ]
+  ],
+  "dummyTokens": []
 }

@@ -19,11 +19,13 @@ import {
 } from "@chakra-ui/react";
 
 import Image from "next/image";
+import Big from "big.js";
 
 export default function InputWithSlider({
 	onUpdate,
 	asset,
 	max,
+	softMax = max,
 	min,
 	color = "#3EE6C4",
 }: any) {
@@ -32,8 +34,9 @@ export default function InputWithSlider({
 
 	const updateSlider = (_value: any) => {
 		setSliderValue(_value);
-		setValue((_value * max) / 100);
-		onUpdate((_value * max) / 100);
+		if(!softMax) return;
+		setValue(Big(_value).times(softMax).div(100).toNumber());
+		onUpdate(Big(_value).times(softMax).div(100).toNumber());
 	};
 
 	const updateValue = (_value: any) => {
@@ -43,15 +46,15 @@ export default function InputWithSlider({
 	};
 
 	const labelStyles = {
-		mt: "-1.5",
+		mt: "-1",
 		ml: "-1.5",
 	};
 
 	const boxStyle = (_sliderValue: any) => ({
-		h: 3,
-		w: 3,
+		h: 2,
+		w: 2,
 		borderRadius: 100,
-		bg: sliderValue > _sliderValue ? color : "gray.400",
+		bg: sliderValue > _sliderValue ? color : "gray.600",
 	});
 
 	return (
@@ -65,7 +68,7 @@ export default function InputWithSlider({
 					borderColor={'gray.600'}
 				>
 					<Image
-						src={`https://raw.githubusercontent.com/synthe-x/assets/main/${asset.symbol.toUpperCase()}.png`}
+						src={`/icons/${asset.symbol}.svg`}
 						alt=""
 						width={"30"}
 						height={"30"}
@@ -131,7 +134,7 @@ export default function InputWithSlider({
 						{...boxStyle(100)}
 					></Box>
 				</SliderMark>
-				<SliderTrack bg={'gray.400'}>
+				<SliderTrack bg={'gray.600'}>
 					<SliderFilledTrack bg={color} />
 				</SliderTrack>
 				<SliderThumb />

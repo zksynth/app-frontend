@@ -1,22 +1,24 @@
-import { ReactNode } from 'react';
+import { useContext } from 'react';
 import {
   Box,
   Container,
   Stack,
-  SimpleGrid,
   Text,
   Link,
-  VisuallyHidden,
-  chakra,
-  useColorModeValue,
+  Flex,
 } from '@chakra-ui/react';
-import { FaTwitter, FaYoutube, FaInstagram, FaDiscord, FaGithub } from 'react-icons/fa';
+import { FaTwitter, FaDiscord, FaGithub } from 'react-icons/fa';
+import { AppDataContext } from './context/AppDataProvider';
+import { config } from '../src/contract';
 
 
 export default function Footer() {
+
+  const {block} = useContext(AppDataContext);
+
   return (
     <Box
-      bg={'gray.800'}
+      // bg={'gray.800'}
       color={'gray.200'}
       mt={10}>
       <Box
@@ -31,7 +33,12 @@ export default function Footer() {
           spacing={4}
           justify={{ md: 'space-between' }}
           align={{ md: 'center' }}>
-          <Text fontSize={'xs'} mb={1}>© 2022 SyntheX Finance. All rights reserved</Text>
+            <Flex align={'center'} gap={1}>
+            <Box h={2} w={2} bgColor={block == 0 ? 'red': 'primary'} rounded='100'></Box>
+          <Text fontSize={'xs'}>{block == 0 ? 'Not Connected': block}</Text>
+          <Text fontSize={'xs'}>| v{config.latest}-alpha</Text>
+
+            </Flex>
           <Stack direction={'row'} spacing={6}>
             <Link target={'_blank'} href={'https://twitter.com/synthe_x'}>
               <FaTwitter />
