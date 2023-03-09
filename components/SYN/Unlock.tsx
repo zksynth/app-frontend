@@ -9,6 +9,7 @@ import {
 	Button,
 	IconButton,
 	Tooltip,
+	Image
 } from "@chakra-ui/react";
 import { Tooltip as ReToolTip} from 'recharts';
 import React, { useState } from "react";
@@ -103,18 +104,22 @@ export default function Unlock() {
 				align={"center"}
 				textAlign={"center"}
 			>
-				<Flex align={'center'} gap={1}>
+				{/* <Flex align={'center'} gap={1}>
 				<Heading size={"md"}>esSYX</Heading>
 				<AiOutlineSwap/>
 				<Heading size={"md"}>SYN</Heading>
-				</Flex>
+				</Flex> */}
 
-				<Flex w={"50%"} align="center" justify={"center"} bg='gray.700'>
-					<Box>
-
+				<Flex w={'400px'} align="center" justify={"center"} bg='blackAlpha.100' py={6} mt={5} px={4} roundedTop={18}>
+					<Box w={'160px'}>
+					{/* <Text textAlign={'left'}>From</Text> */}
+					<Flex cursor={'pointer'} onClick={() => {setIsUnlocking(!isUnlocking)}} align={'center'} gap={2} bg='gray.600' rounded={'full'} px={3} py={3}>
+					<Image src={`/${isUnlocking? 'esSYX' : 'SYX'}.svg`} width={8} alt=''/>
 					<Text>
 						{isUnlocking? 'esSYX' : 'SYX'}
 					</Text>
+					<AiOutlineSwap/>
+					</Flex>
 					</Box>
 					<NumberInput
 						variant={"unstyled"}
@@ -127,23 +132,61 @@ export default function Unlock() {
 						onChange={_setAmount}
 					>
 						<NumberInputField
-							fontSize={"xl"}
+							fontSize={"2xl"}
 							placeholder="Enter Amount"
 							textAlign={"center"}
 							pr={0}
-							pl={8}
+							ml={-4}
 						/>
 					</NumberInput>
 
 					<Button
-						variant={"unstyled"}
-						textDecor="underline"
+						fontWeight={'bold'}
+						variant='unstyled'
 						size={"sm"}
 						onClick={_setMax}
 					>
-						Max
+						MAX
 					</Button>
 				</Flex>
+
+				<Box roundedBottom={18} pt={4} py={4} px={4} w={'400px'} bg='blackAlpha.200'>
+					<Text mb={1} fontSize='sm' textAlign={'left'} color='gray.400'>You will receive</Text>
+
+					<Flex align={'center'} >
+					<Box >
+					{/* <Text textAlign={'left'}>From</Text> */}
+					<Flex align={'center'} gap={2} bg='gray.600' rounded={'full'} px={2} py={2} pr={4}>
+					<Image src={`/${!isUnlocking? 'esSYX' : 'SYX'}.svg`} width={8} alt=''/>
+					<Text>
+						{!isUnlocking? 'esSYX' : 'SYX'}
+					</Text>
+					</Flex>
+					</Box>
+
+					<NumberInput
+						variant={"unstyled"}
+						py={2}
+						value={
+							Number(amount) > 0
+								? tokenFormatter.format(parseFloat(amount))
+								: amount
+						}
+						onChange={_setAmount}
+						isDisabled={true}
+					>
+						<NumberInputField
+							fontSize={"2xl"}
+							placeholder="Enter Amount"
+							textAlign={"center"}
+							pr={0}
+							pl={0.5}
+						/>
+					</NumberInput>
+
+					</Flex>
+				</Box>
+
 				{Big(tokenUnlocks.allowance ?? 0).lt(
 					ethers.utils.parseEther(amountNumber.toString()).toString()
 				) ? (
@@ -231,7 +274,7 @@ export default function Unlock() {
 					).toLocaleDateString()}
 				</Text> */}
 
-<AreaChart width={730} height={250} data={data}
+{(isUnlocking && Number(amount) > 0) && <AreaChart width={730} height={250} data={data}
   margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
   <defs>
     <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
@@ -244,7 +287,7 @@ export default function Unlock() {
   <CartesianGrid strokeDasharray="3 3" />
   <ReToolTip />
   <Area type="monotone" dataKey="value" stroke="#8884d8" fillOpacity={1} fill="url(#colorUv)" />
-</AreaChart>
+</AreaChart>}
 
 				{/* Pending unlocks */}
 				<Divider w={"60%"} my={5} />

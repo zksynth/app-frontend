@@ -121,7 +121,7 @@ export default function TempPage() {
 										%
 									</Heading>
 									<Flex gap={1} mt={1}>
-										<Image src="/esSYX.svg" alt={"esSYN"} />
+										<Image src="/esSYX.svg" w={5} alt={"esSYN"} />
 										<Text fontSize={"sm"} color="gray.400">
 											{(
 												(pools[tradingPool]
