@@ -6,7 +6,7 @@ export const ETH_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 export const ESYX_PRICE = 0.1;
 export const Endpoints: any = {
 	[ChainID.AURORA]: "https://aurora.api.synthex.finance/", // 'http://localhost:3030/',
-	[ChainID.ARB_GOERLI]: process.env.NODE_ENV == 'production' ? "https://api.thegraph.com/subgraphs/name/prasad-kumkar/synthex" : "https://api.thegraph.com/subgraphs/name/prasad-kumkar/synthex-dev2"
+	[ChainID.ARB_GOERLI]: process.env.GRAPH_URL ?? "https://api.thegraph.com/subgraphs/name/prasad-kumkar/synthex"
 };
 
 export const dollarFormatter = new Intl.NumberFormat("en-US", {
