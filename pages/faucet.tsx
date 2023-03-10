@@ -53,7 +53,7 @@ export default function Faucet() {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [openedCollateral, setOpenedCollateral] = React.useState<any>(null);
 
-    const {address}  = useAccount();
+    const {address, isConnected}  = useAccount();
 
 	useEffect(() => {
 		if (collaterals.length == 0) {
@@ -167,8 +167,8 @@ export default function Faucet() {
             </ModalBody>
 
             <ModalFooter justifyContent={'center'}>
-                <Button loadingText="Minting" isLoading={loading} bg='secondary' color={'white'} mb={2} rounded={16} onClick={mint} width='100%'>
-                Mint
+                <Button disabled={!isConnected} size={'md'} loadingText="Minting" isLoading={loading} bg='secondary' color={'white'} mb={0} rounded={16} onClick={mint} width='100%'>
+                {isConnected ? 'Mint' : 'Please Connect Your Wallet'}
                 </Button>
             </ModalFooter>
             </ModalContent>

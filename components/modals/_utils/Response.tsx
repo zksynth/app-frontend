@@ -25,7 +25,7 @@ export default function Response({response, message, hash, confirmed}: any) {
 					>
 						<AlertIcon />
 						<Box>
-							<Text fontSize="md" mb={0}>
+							<Text fontSize="md" mb={0.5}>
 								{response}
 							</Text>
 							<Text fontSize="xs" mt={0}>
