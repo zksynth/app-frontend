@@ -44,7 +44,7 @@ export default function Withdraw({ collateral, amount, amountNumber }: any) {
 		const v1 = collateral.priceUSD > 0 ? Big(adjustedCollateral).sub(totalDebt).div(collateral.priceUSD).mul(1e4).div(collateral.baseLTV) : Big(0);
         const v2 = Big(collateral.balance ?? 0).div(10**18);
 		// min(v1, v2)
-		return (v1.gt(v2) ? v2 : v1).toFixed(8);
+		return (v1.gt(v2) ? v2 : v1).toString();
 	};
 
 	const withdraw = async () => {
@@ -238,8 +238,7 @@ export default function Withdraw({ collateral, amount, amountNumber }: any) {
 					hash={hash}
 					confirmed={confirmed}
 				/>
-				<Box mx={-4}>
-
+				<Box mx={-4} mb={-3}>
 				<InfoFooter
 					message="
 						You can issue a new asset against your collateral. Debt is dynamic and depends on total debt of the pool.

@@ -188,6 +188,7 @@ export default function TempPage() {
 								<InfoOutlineIcon
 									cursor={"help"}
 									color={"gray.400"}
+									mb={1}
 								/>
 							</Tooltip>
 						</Flex>
