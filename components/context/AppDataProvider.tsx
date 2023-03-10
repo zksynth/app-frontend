@@ -78,6 +78,7 @@ function AppDataProvider({ children }: any) {
 						  symbol
 						  totalSupply
 						  totalDebtUSD
+						  oracle
 						  rewardTokens {
 							id
 						  }
@@ -228,8 +229,8 @@ function AppDataProvider({ children }: any) {
 					averageDailyBurn = averageDailyBurn.plus(_pools[i].dayDatas[j].dailyBurnUSD);
 					averageDailyRevenue = averageDailyRevenue.plus(_pools[i].dayDatas[j].dailyRevenueUSD);
 				}
-				_pools[i].averageDailyBurn = averageDailyBurn.div(_pools[i].dayDatas.length).toString();
-				_pools[i].averageDailyRevenue = averageDailyRevenue.div(_pools[i].dayDatas.length).toString();
+				_pools[i].averageDailyBurn = _pools[i].dayDatas.length > 0 ? averageDailyBurn.div(_pools[i].dayDatas.length).toString() : '0';
+				_pools[i].averageDailyRevenue = _pools[i].dayDatas.length > 0 ? averageDailyRevenue.div(_pools[i].dayDatas.length).toString() : '0';
 			}
 
 
@@ -256,7 +257,6 @@ function AppDataProvider({ children }: any) {
 					}
 				}
 				// setting total collateral, adjusted collateral and total debt
-				
 				if(_account){
 					for(let i = 0; i < _account.positions.length; i++){
 						let pos = _account.positions[i];
@@ -278,6 +278,7 @@ function AppDataProvider({ children }: any) {
 				}
 				_setTradingPool(tradingPool, _pools);
 				setPools(_pools);
+				// subscribeData(helper, _pools);
 			});
 		});
 	};
@@ -403,6 +404,54 @@ function AppDataProvider({ children }: any) {
 		setPools(_pools);
 		setRefresh(Math.random());
 	};
+
+	// const subscribeData = async (
+	// 	helper: ethers.Contract,
+	// 	_pools: any[] = pools
+	// ) => {
+	// 	const reqs: any[] = [];
+	// 	const pool = new ethers.Contract(_pools[0].id, getABI("Pool"), helper.provider);
+	// 	const priceOracle = new ethers.Contract(_pools[0].oracle, getABI("PriceOracle"), helper.provider);
+	// 	for(let i in pools) {
+	// 		reqs.push([
+	// 			_pools[i].oracle,
+	// 			priceOracle.interface.encodeFunctionData("getAssetsPrices", 
+	// 				[pools[i].collaterals.map((c: any) => c.token.id).concat(pools[i].synths.map((s: any) => s.token.id))]
+	// 			)
+	// 		]);
+	// 		reqs.push([
+	// 			_pools[i].id,
+	// 			pool.interface.encodeFunctionData("getTotalDebtUSD", [])
+	// 		]);
+	// 		reqs.push([
+	// 			_pools[i].id,
+	// 			pool.interface.encodeFunctionData("totalSupply", [])
+	// 		]);
+	// 	}
+	// 	helper.callStatic.aggregate(reqs).then((res: any) => {
+	// 		console.log(res.returnData);
+	// 		if(res.returnData.length > 0){
+	// 			for(let i = 0; i < _pools.length; i++) {
+	// 				const _prices = priceOracle.interface.decodeFunctionResult("getAssetsPrices", res.returnData[i*3])[0];
+	// 				for(let j in _pools[i].collaterals) {
+	// 					_pools[i].collaterals[j].priceUSD = Big(_prices[j].toString()).div(1e8).toString();
+	// 				}
+	// 				for(let j in _pools[i].synths) {
+	// 					_pools[i].synths[j].priceUSD = Big(_prices[Number(j)+_pools[i].collaterals.length].toString()).div(1e8).toString();
+	// 				}
+	// 				_pools[i].totalDebtUSD = pool.interface.decodeFunctionResult("getTotalDebtUSD", res.returnData[i*3+1]);
+	// 				_pools[i].totalSupply = pool.interface.decodeFunctionResult("totalSupply", res.returnData[i*3+2]);
+	// 			}
+	// 			console.log("updated", _pools);
+	// 			setPools(_pools);
+	// 			setRefresh(Math.random());
+	// 		}
+	// 		setTimeout(
+	// 			() => subscribeData(helper, _pools),
+	// 			10000
+	// 		)
+	// 	});
+	// }
 
 	const value: AppDataValue = {
 		status,

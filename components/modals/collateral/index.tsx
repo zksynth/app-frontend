@@ -55,7 +55,7 @@ export default function CollateralModal({ collateral, tradingPool }: any) {
 	const [amount, setAmount] = React.useState("0");
 	const [amountNumber, setAmountNumber] = useState(0);
 
-	const { adjustedCollateral, totalDebt } = useContext(AppDataContext);
+	const { adjustedCollateral, totalCollateral, totalDebt } = useContext(AppDataContext);
 
 	const borderStyle = {
 		borderColor: "#1F2632",
@@ -88,22 +88,14 @@ export default function CollateralModal({ collateral, tradingPool }: any) {
 
 	const max = () => {
 		if (tabSelected == 0) {
-			return ethers.utils.formatUnits(
-				collateral.walletBalance ?? 0,
-				collateral.token.decimals
-			);
+			return Big(
+				collateral.walletBalance ?? 0
+			).div(10**collateral.token.decimals).toString();
 		} else {
-			const val =
-				collateral.priceUSD > 0
-					? Big(adjustedCollateral)
-							.sub(totalDebt)
-							.div(collateral.priceUSD)
-							.toNumber()
-					: 0;
-			return Math.min(
-				collateral.balance ?? 0,
-				val > 0 ? val : 0
-			).toString();
+			const v1 = collateral.priceUSD > 0 ? Big(adjustedCollateral).sub(totalDebt).div(collateral.priceUSD).mul(1e4).div(collateral.baseLTV) : Big(0);
+			const v2 = Big(collateral.balance ?? 0).div(10**18);
+			// min(v1, v2)
+			return (v1.gt(v2) ? v2 : v1).toFixed(8);
 		}
 	};
 
@@ -118,7 +110,7 @@ export default function CollateralModal({ collateral, tradingPool }: any) {
 
 	return (
 		<>
-			<Tr cursor="pointer" onClick={onOpen} _hover={{borderLeft: '2px', borderColor: 'primary'}}>
+			<Tr cursor="pointer" onClick={onOpen} borderLeft='1px' borderColor='gray.800' _hover={{ borderColor: 'primary', bg: 'blackAlpha.100' }}>
 				<Td {...borderStyle}>
 						<Flex gap={2}>
 							<Image

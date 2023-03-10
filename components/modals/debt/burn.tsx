@@ -27,7 +27,9 @@ const Burn = ({ asset, amount, amountNumber }: any) => {
 
 	const max = () => {
 		// minimum of both
-		return Big(totalDebt).div(asset.priceUSD).gt(Big(asset.walletBalance ?? 0).div(10 ** 18)) ? Big(asset.walletBalance ?? 0).div(10 ** 18).toString() : Big(totalDebt).div(asset.priceUSD).toString();
+		const v1 = Big(totalDebt).div(asset.priceUSD);
+		const v2 = Big(asset.walletBalance ?? 0).div(10 ** 18);
+		return (v1.gt(v2) ? v2 : v1).toString();
 	}
 
 	const {

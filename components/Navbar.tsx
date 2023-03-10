@@ -2,59 +2,28 @@ import {
 	Flex,
 	Text,
 	Box,
-	useColorMode,
-	Button,
-	UnorderedList,
-	ListItem,
-	Drawer,
-	DrawerBody,
-	DrawerHeader,
-	DrawerOverlay,
-	DrawerContent,
-	useDisclosure,
-	IconButton,
-} from "@chakra-ui/react";
-
-import {
-	Menu,
-	MenuButton,
-	MenuList,
-	MenuItem,
-	MenuItemOption,
-	MenuGroup,
-	MenuOptionGroup,
-	MenuDivider,
 	Image
 } from "@chakra-ui/react";
-import { ConnectButton as RainbowConnect } from "@rainbow-me/rainbowkit";
-import { FaBars } from "react-icons/fa";
-import { MdSpaceDashboard, MdSwapHorizontalCircle } from "react-icons/md";
 
+import { ConnectButton as RainbowConnect } from "@rainbow-me/rainbowkit";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import "../styles/Home.module.css";
-import darklogo from "../public/dark_logo.svg";
-import lightlogo from "../public/light_logo.svg";
-import logo from "../public/logo.svg";
 import { useAccount, useNetwork } from "wagmi";
 import { useContext } from "react";
 import { AppDataContext } from "./context/AppDataProvider";
 import { ChainID } from "../src/chains";
 import { BigNumber } from "ethers";
-import { RiCopperCoinFill, RiMenu5Fill } from "react-icons/ri";
-import { FiBarChart2 } from "react-icons/fi";
 import { TokenContext } from "./context/TokenContext";
 import { motion } from 'framer-motion';
+import { GrHomeRounded } from "react-icons/gr";
+import { MdSwapHorizontalCircle } from "react-icons/md";
 
 function NavBar() {
-	// const [address, setAddress] = useState(null);
 	const router = useRouter();
-	const { colorMode } = useColorMode();
-	const { isOpen, onOpen, onClose } = useDisclosure();
 
-	const { status, message, fetchData, setChain } =
-		useContext(AppDataContext);
+	const { status, message, fetchData, setChain } = useContext(AppDataContext);
 	const { fetchData: fetchTokenData } = useContext(TokenContext);
 
 	const { chain, chains } = useNetwork();
@@ -143,31 +112,13 @@ function NavBar() {
 							title={"Dashboard"}
 							pathname={router.pathname}
 						>
-							{/* <MdSpaceDashboard /> */}
 						</NavLocalLink>
 						<NavLocalLink
 							path={"/swap"}
 							title="Swap"
 							pathname={router.pathname}
 						>
-							{/* <MdSwapHorizontalCircle /> */}
 						</NavLocalLink>
-
-						{/* <NavLocalLink
-							path={"/syx"}
-							title="DAO"
-							pathname={router.pathname}
-						>
-							<MdSwapHorizontalCircle />
-						</NavLocalLink> */}
-
-						{/* <NavLocalLink
-							path={"/temp"}
-							title="Analytics"
-							pathname={router.pathname}
-						>
-							<MdSwapHorizontalCircle />
-						</NavLocalLink> */}
 					</Flex>
 				</Flex>
 
@@ -196,7 +147,7 @@ const NavLink = ({
 	}, [setIsPath, pathname, path]);
 
 	return (
-		<Flex align={"center"}>
+		<Flex align={"center"} >
 			<motion.div
 				whileHover={{ scale: 1.05 }}
 				whileTap={{ scale: 0.95 }}
@@ -207,8 +158,9 @@ const NavLink = ({
 				px={4}
 				cursor="pointer"
 				rounded={100}
-				bgColor={isPath ? "gray.700" : 'gray.800'}
-				_hover={{ bgColor:  !isPath ? "gray.700" : "gray.600" }}
+				bgColor={isPath ? "gray.700" : 'transparent'}
+				_hover={{ bgColor:  !isPath ? "gray.800" : "gray.700", shadow: 'md' }}
+				shadow={isPath ? 'md' : 'none'} 
 			>
 				<Box
 					color={isPath ? "primary" : "gray.100"}
