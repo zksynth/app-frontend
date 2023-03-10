@@ -124,8 +124,8 @@ export default function TempPage() {
 										<Image src="/esSYX.svg" w={5} alt={"esSYN"} />
 										<Text fontSize={"sm"} color="gray.400">
 											{(
-												(pools[tradingPool]
-													?.rewardSpeeds[0] *
+												((pools[tradingPool]
+													?.rewardSpeeds[0] / 1e18) *
 													365 *
 													24 *
 													60 *

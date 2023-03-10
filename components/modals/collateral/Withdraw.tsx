@@ -37,28 +37,26 @@ export default function Withdraw({ collateral, amount, amountNumber }: any) {
         totalDebt,
 		updateCollateralWalletBalance,
 		updateCollateralAmount,
-		addCollateralAllowance,
 	} = useContext(AppDataContext);
 
+	// adjustedDebt - totalDebt = assetAmount*assetPrice*ltv
 	const max = () => {
-        const val = collateral.priceUSD > 0 ? Big(adjustedCollateral).sub(totalDebt).div(collateral.priceUSD).toNumber() : 0;
-        return Math.min(
-            collateral.balance ?? 0,
-            val > 0 ? val : 0
-        ).toString();
+		const v1 = collateral.priceUSD > 0 ? Big(adjustedCollateral).sub(totalDebt).div(collateral.priceUSD).mul(1e4).div(collateral.baseLTV) : Big(0);
+        const v2 = Big(collateral.balance ?? 0).div(10**18);
+		// min(v1, v2)
+		return (v1.gt(v2) ? v2 : v1).toFixed(8);
 	};
 
 	const withdraw = async () => {
 		const poolId = pools[tradingPool].id;
 		const pool = await getContract("Pool", chain, poolId);
+		const _amount = Big(amount).mul(10**collateral.token.decimals).toFixed(0);
 		let tx;
 		if (collateral.token.id == ETH_ADDRESS.toLowerCase()) {
 			tx = send(
 				pool,
 				"withdrawETH",
-				[ethers.utils
-					.parseUnits(amount, collateral.token.decimals)
-					.toString()],
+				[_amount],
 				chain
 			);
 		} else {
@@ -67,7 +65,7 @@ export default function Withdraw({ collateral, amount, amountNumber }: any) {
 				"withdraw",
 				[
 					collateral.token.id,
-					ethers.utils.parseUnits(amount, collateral.token.decimals),
+					_amount,
 				],
 				chain
 			);
@@ -206,7 +204,7 @@ export default function Withdraw({ collateral, amount, amountNumber }: any) {
                         activeChain?.unsupported ||
                         !amount ||
                         amountNumber == 0 ||
-                        amountNumber > parseFloat(max())
+                        Big(amountNumber > 0 ? amount : amountNumber).gt(max()) 
                     }
                     isLoading={loading}
                     loadingText="Please sign the transaction"
@@ -222,7 +220,7 @@ export default function Withdraw({ collateral, amount, amountNumber }: any) {
                     }}
                 >
                     {isConnected && !activeChain?.unsupported ? (
-                        amountNumber > parseFloat(max()) ? (
+                        Big(amountNumber > 0 ? amount : amountNumber).gt(max()) ? (
                             <>Insufficient Wallet Balance</>
                         ) : !amount || amountNumber == 0 ? (
                             <>Enter amount</>

@@ -228,8 +228,8 @@ function AppDataProvider({ children }: any) {
 					averageDailyBurn = averageDailyBurn.plus(_pools[i].dayDatas[j].dailyBurnUSD);
 					averageDailyRevenue = averageDailyRevenue.plus(_pools[i].dayDatas[j].dailyRevenueUSD);
 				}
-				_pools[i].averageDailyBurn = averageDailyBurn.div(_pools[i].dayDatas.length).toString();
-				_pools[i].averageDailyRevenue = averageDailyRevenue.div(_pools[i].dayDatas.length).toString();
+				_pools[i].averageDailyBurn = _pools[i].dayDatas.length > 0 ? averageDailyBurn.div(_pools[i].dayDatas.length).toString() : '0';
+				_pools[i].averageDailyRevenue = _pools[i].dayDatas.length > 0 ? averageDailyRevenue.div(_pools[i].dayDatas.length).toString() : '0';
 			}
 
 

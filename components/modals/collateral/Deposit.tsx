@@ -49,10 +49,9 @@ export default function Deposit({ collateral, amount, amountNumber }: any) {
 	} = useContext(AppDataContext);
 
 	const max = () => {
-		return ethers.utils.formatUnits(
-			collateral.walletBalance ?? 0,
-			collateral.token.decimals
-		);
+		return Big(
+			collateral.walletBalance ?? 0
+		).div(10**collateral.token.decimals).toString();
 	};
 
 	const deposit = async () => {
@@ -327,7 +326,7 @@ export default function Deposit({ collateral, amount, amountNumber }: any) {
 					hash={hash}
 					confirmed={confirmed}
 				/>
-				<Box mx={-4}>
+				<Box mx={-4} mb={-3}>
 
 				<InfoFooter
 					message="

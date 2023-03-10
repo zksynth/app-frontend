@@ -104,7 +104,7 @@ export default function Debt({ synth }: any) {
 			<Tr
 				cursor="pointer"
 				onClick={onOpen}
-				_hover={{ borderLeft: "2px", borderColor: "primary" }}
+				borderLeft='1px' borderColor='gray.800' _hover={{ borderColor: 'primary', bg: 'blackAlpha.100' }}
 			>
 				<Td {...borderStyle}>
 					<Flex gap={1}>
@@ -134,10 +134,10 @@ export default function Debt({ synth }: any) {
 						</Box>
 					</Flex>
 				</Td>
-				<Td {...borderStyle} fontSize="sm">
+				<Td {...borderStyle} fontSize="md" color='gray.400'>
 					{dollarFormatter.format(synth.priceUSD)}
 				</Td>
-				<Td {...borderStyle} fontSize="sm">
+				<Td {...borderStyle} fontSize="md" color='gray.400'>
 					{dollarFormatter.format(
 						Big(synth.dayDatas[0]?.dailyMinted ?? 0).add(synth.dayDatas[0]?.dailyBurned ?? 0)
 							.mul(synth.priceUSD)
@@ -145,7 +145,7 @@ export default function Debt({ synth }: any) {
 							.toNumber()
 					)}
 				</Td>
-				<Td {...borderStyle} fontSize="sm" isNumeric>
+				<Td {...borderStyle} fontSize="md" color='gray.400' isNumeric>
 					{dollarFormatter.format(
 						Big(synth.totalSupply)
 							.mul(synth.priceUSD)

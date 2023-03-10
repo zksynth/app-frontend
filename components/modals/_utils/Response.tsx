@@ -25,11 +25,12 @@ export default function Response({response, message, hash, confirmed}: any) {
 					>
 						<AlertIcon />
 						<Box>
-							<Text fontSize="md" mb={0}>
-								{response}
+							<Text fontSize="md" mb={0.5}>
+								{/* {response} */}
+								{message.slice(0, 100)}
 							</Text>
 							<Text fontSize="xs" mt={0}>
-								{message.slice(0, 100)}
+								{/* {response} */}
 							</Text>
 							{hash && (
 								<Link href={chainMapping[chain]?.blockExplorers.default.url + "tx/" + hash} target="_blank">
