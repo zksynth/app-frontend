@@ -36,6 +36,75 @@ export const compactTokenFormatter = new Intl.NumberFormat("en-US", {
 	roundingMode: "floor",
 } as any);
 
+export const query = (address: string) => (
+	`{
+		pools {
+		  id
+		  name
+		  symbol
+		  totalSupply
+		  totalDebtUSD
+		  oracle
+		  rewardTokens {
+			id
+		  }
+		  dayDatas(first:7, orderBy: dayId, orderDirection: desc){
+			dailyDebtIssuedUSD
+			dailyDebtBurnedUSD
+			dailyRevenueUSD
+			dailyBurnUSD
+		  }
+		  rewardSpeeds
+		  synths {
+			token {
+			  id
+			  name
+			  symbol
+			  decimals
+			}
+			priceUSD
+			mintFee
+			burnFee
+			totalSupply
+			dayDatas(first:1, orderBy: dayId, orderDirection: desc){
+				dailyMinted
+				dailyBurned
+			}
+		  }
+		  collaterals {
+			token {
+			  id
+			  name
+			  symbol
+			  decimals
+			}
+			priceUSD
+			cap
+			baseLTV
+			liqThreshold
+			liqBonus
+			totalDeposits
+		  }
+		}
+		accounts(where: {id: "${address}"}){
+		  id
+		  positions{
+			pool{
+			  id
+			}
+			balance
+			collateralBalances{
+			  balance
+			  collateral{
+				token{
+					id
+				}
+			  }
+			}
+		  }
+		}
+	  }`
+)
 
 const COLORS_GREEN = [
 	"#154F43",

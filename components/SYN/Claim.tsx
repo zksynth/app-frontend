@@ -8,12 +8,9 @@ import {
 	Skeleton,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
-import Head from "next/head";
 import { useAccount, useNetwork } from "wagmi";
 import { tokenFormatter } from "../../src/const";
 import { getContract } from "../../src/contract";
-import { MdGeneratingTokens } from 'react-icons/md';
 import Big from "big.js";
 import { useContext } from 'react';
 import { AppDataContext } from "../context/AppDataProvider";
@@ -38,20 +35,22 @@ export default function Claim() {
 				!(connectedChain as any).unsupported &&
                 pools.length > 0
 			) {
-				_setSynAccrued();
+				getContract("SyntheX", connectedChain!.id)
+				.then(synthex => {
+					synthex.callStatic.getRewardsAccrued(
+						[pools[0].rewardTokens[0].id],
+						address,
+						pools.map((pool: any) => pool.id)
+					).then(result => {
+						setSynAccrued(result[0].toString());
+					})
+
+				})
 			}
 		}
-	}, [connectedChain, synAccrued, isConnected, pools]);
+	}, [connectedChain, synAccrued, isConnected, pools, address]);
 
-	const _setSynAccrued = async () => {
-		const synthex = await getContract("SyntheX", connectedChain!.id);
-		const result = await synthex.callStatic.getRewardsAccrued(
-            [pools[0].rewardTokens[0].id],
-			address,
-			pools.map((pool: any) => pool.id)
-		);
-		setSynAccrued(result[0].toString());
-	};
+	
 
     const claim = async () => {
 		setClaiming(true);
