@@ -55,7 +55,7 @@ export default function CollateralTable() {
 					</TableContainer>
 			) : (
 				<Box pt={0.5}>
-					<Skeleton height="50px" m={6} mt={10} rounded={12} />
+					<Skeleton height="50px" m={6} mt={8} rounded={12} />
 					<Skeleton height="50px" rounded={12} m={6} />
 					<Skeleton height="50px" rounded={12} m={6} />
 					<Skeleton height="50px" rounded={12} m={6} />

@@ -121,7 +121,7 @@ export default function Deposit({ collateral, amount, amountNumber }: any) {
 				await res.wait(1);
 				addCollateralAllowance(
 					collateral.token.id,
-					ethers.constants.MaxUint256.toString()
+					ethers.constants.MaxInt256.toString()
 				);
 				setLoading(false);
 			})

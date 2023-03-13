@@ -42,19 +42,15 @@ export default function PoolSelector() {
 					className="menu"
 				>
 					<Flex zIndex={2}>
-						<motion.button
+					{pools[tradingPool] ? <motion.button
 							whileTap={{ scale: 0.97 }}
 							onClick={() => setIsOpen(!isOpen)}
 						>
 							<Flex align={"center"} mb={4}>
-								{pools[tradingPool] ? (
 									<Heading fontSize={"3xl"}>
 										{pools[tradingPool].name}
 									</Heading>
-								) : (
-									<Skeleton height="30px" width="200px" rounded={8} />
-								)}
-								<motion.div
+									<motion.div
 									variants={{
 										open: { rotate: 180 },
 										closed: { rotate: 0 },
@@ -66,6 +62,9 @@ export default function PoolSelector() {
 								</motion.div>
 							</Flex>
 						</motion.button>
+						: (
+							<Skeleton height="30px" width="200px" rounded={8} />
+						)}
 						{/* <Button
 							mt={'7px'}
 							size={"xs"}
