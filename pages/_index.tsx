@@ -22,6 +22,7 @@ export default function _index({ children }: any) {
 	};
 
 	const [hydrated, setHydrated] = useState(false);
+	const { status, message, fetchData, setChain, refreshData, pools } = useContext(AppDataContext);
 
 	useEffect(() => {
 		setHydrated(true);
@@ -31,17 +32,19 @@ export default function _index({ children }: any) {
 
 	return (
 		<Box>
+			{status == 'fetching' && <Progress bg={'gray.900'} colorScheme='primarySchema' size='xs' isIndeterminate />}
+
 			<Box bgColor="gray.800" color={'gray.400'}>
-			{/* {connectionError && (
+			{status == 'error' && (
 				<Text
 					textAlign={'center'}
 					width="100%"
 					fontSize={'md'}
 					fontWeight="bold"
 					p={2}>
-					{connectionError}
+					{message}
 				</Text>
-			)} */}
+			)}
 			{isMobile && (
 				<Text
 					textAlign={'center'}

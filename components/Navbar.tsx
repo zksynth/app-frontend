@@ -2,7 +2,8 @@ import {
 	Flex,
 	Text,
 	Box,
-	Image
+	Image,
+	Progress
 } from "@chakra-ui/react";
 
 import { ConnectButton as RainbowConnect } from "@rainbow-me/rainbowkit";
@@ -23,11 +24,12 @@ import { MdSwapHorizontalCircle } from "react-icons/md";
 function NavBar() {
 	const router = useRouter();
 
-	const { status, message, fetchData, setChain } = useContext(AppDataContext);
+	const { status, message, fetchData, setChain, refreshData, pools } = useContext(AppDataContext);
 	const { fetchData: fetchTokenData } = useContext(TokenContext);
 
 	const { chain, chains } = useNetwork();
 	const [init, setInit] = useState(false);
+	const [hasRefreshed, setHasRefreshed] = useState(false);
 
 	const {
 		address,
@@ -37,9 +39,10 @@ function NavBar() {
 	} = useAccount({
 		onConnect({ address, connector, isReconnected }) {
 			if ((chain as any).unsupported) return;
-			fetchData(address!, connector!.chains[0].id);
+			fetchData(address!, connector!.chains[0].id)
 			setChain(connector!.chains[0].id);
 			fetchTokenData(address!, connector!.chains[0].id);
+			setInit(true)
 		},
 		onDisconnect() {
 			fetchData(null, ChainID.ARB_GOERLI);
@@ -48,13 +51,20 @@ function NavBar() {
 	});
 
 	useEffect(() => {
+		if(!hasRefreshed && pools.length > 0){
+			setInterval(
+				refreshData,
+				5000
+				)
+				setHasRefreshed(true)
+			}
 		if (activeConnector && window.ethereum) {
 			(window as any).ethereum.on(
 				"accountsChanged",
 				function (accounts: any[]) {
 					// Time to reload your interface with accounts[0]!
-					fetchData(accounts[0], activeConnector?.chains[0].id);
 					setChain(activeConnector?.chains[0].id);
+					fetchData(accounts[0], activeConnector?.chains[0].id)
 				}
 			);
 			(window as any).ethereum.on(
@@ -64,11 +74,11 @@ function NavBar() {
 						if (
 							chains[0].id == BigNumber.from(chainId).toNumber()
 						) {
+							setChain(BigNumber.from(chainId).toNumber());
 							fetchData(
 								address as string,
 								BigNumber.from(chainId).toNumber()
-							);
-							setChain(BigNumber.from(chainId).toNumber());
+							)
 						}
 					}
 				}
@@ -85,7 +95,8 @@ function NavBar() {
 			!init
 		) {
 			setInit(true);
-			fetchData(null, ChainID.ARB_GOERLI);
+			fetchData(null, ChainID.ARB_GOERLI)
+			
 		}
 	}, [isConnected, isConnecting, activeConnector, fetchData, setChain, chain, init, chains, address, status]);
 
@@ -119,10 +130,29 @@ function NavBar() {
 							pathname={router.pathname}
 						>
 						</NavLocalLink>
+						{/* <NavLocalLink
+							path={"/claim"}
+							title="Claim"
+							pathname={router.pathname}
+						>
+						</NavLocalLink> */}
 					</Flex>
 				</Flex>
 
 				<Flex width={"33%"} justify="flex-end" align={"center"} gap={2}>
+				{/* <NavLocalLink
+							path={"/dao/syx"}
+							title="$SYX"
+							pathname={router.pathname}
+						>
+						</NavLocalLink>
+
+						<NavLocalLink
+							path={"/dao/escrow"}
+							title="Escrow"
+							pathname={router.pathname}
+						>
+						</NavLocalLink> */}
 				<Box display={{ sm: "none", md: "block" }}>
 						<RainbowConnect chainStatus={"icon"} />
 					</Box>
@@ -143,7 +173,8 @@ const NavLink = ({
 	const [isPath, setIsPath] = useState(false);
 
 	useEffect(() => {
-		setIsPath(pathname == path);
+		// search path
+		setIsPath(path == pathname)
 	}, [setIsPath, pathname, path]);
 
 	return (
@@ -158,7 +189,7 @@ const NavLink = ({
 				px={4}
 				cursor="pointer"
 				rounded={100}
-				bgColor={isPath ? "gray.700" : 'transparent'}
+				bgColor={isPath ? "gray.700" : 'gray.800'}
 				_hover={{ bgColor:  !isPath ? "gray.800" : "gray.700", shadow: 'md' }}
 				shadow={isPath ? 'md' : 'none'} 
 			>

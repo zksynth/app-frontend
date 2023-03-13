@@ -1,7 +1,7 @@
 import * as React from "react";
 import axios from "axios";
 import { getContract, call, getAddress, getABI } from "../../src/contract";
-import { ADDRESS_ZERO, dollarFormatter, Endpoints, ETH_ADDRESS, tokenFormatter } from "../../src/const";
+import { ADDRESS_ZERO, dollarFormatter, Endpoints, ETH_ADDRESS, query, tokenFormatter } from "../../src/const";
 import { ChainID, chainMapping } from "../../src/chains";
 import { BigNumber, ethers } from "ethers";
 import { useEffect } from 'react';
@@ -18,7 +18,7 @@ interface AppDataValue {
 	fetchData: (
 		_address: string | null,
 		chainId: number
-	) => Promise<unknown> | undefined;
+	) => Promise<number>;
 	tradingPool: number;
 	setTradingPool: (_: number, pools?: any[]) => void;
 	
@@ -35,6 +35,7 @@ interface AppDataValue {
 	addCollateralAllowance(collateralAddress: string, value: string): void;
 	block: number;
 	updatePoolBalance: (poolAddress: string, value: string, minus: boolean) => void;
+	refreshData: () => void;
 }
 
 const AppDataContext = React.createContext<AppDataValue>({} as AppDataValue);
@@ -65,94 +66,33 @@ function AppDataProvider({ children }: any) {
 	const [block, setBlock] = React.useState(0);
 
 
-	const fetchData = (_address: string | null, chainId: number) => {
+	const fetchData = (_address: string | null, chainId: number): Promise<number> => {
+		console.log("fetching");
 		return new Promise((resolve, reject) => {
 			setStatus("fetching");
 			axios
 				.post(Endpoints[chainId], {
-					query: `
-					{
-						pools {
-						  id
-						  name
-						  symbol
-						  totalSupply
-						  totalDebtUSD
-						  oracle
-						  rewardTokens {
-							id
-						  }
-						  dayDatas(first:7, orderBy: dayId, orderDirection: desc){
-							dailyDebtIssuedUSD
-							dailyDebtBurnedUSD
-							dailyRevenueUSD
-							dailyBurnUSD
-						  }
-						  rewardSpeeds
-						  synths {
-							token {
-							  id
-							  name
-							  symbol
-							  decimals
-							}
-							priceUSD
-							mintFee
-							burnFee
-							totalSupply
-							dayDatas(first:1, orderBy: dayId, orderDirection: desc){
-								dailyMinted
-								dailyBurned
-							}
-						  }
-						  collaterals {
-							token {
-							  id
-							  name
-							  symbol
-							  decimals
-							}
-							priceUSD
-							cap
-							baseLTV
-							liqThreshold
-							liqBonus
-							totalDeposits
-						  }
-						}
-						accounts(where: {id: "${_address?.toLowerCase() ?? ADDRESS_ZERO}"}){
-						  id
-						  positions{
-							pool{
-							  id
-							}
-							balance
-							collateralBalances{
-							  balance
-							  collateral{
-								token{
-									id
-								}
-							  }
-							}
-						  }
-						}
-					  }`,
+					query: query(_address?.toLowerCase() ?? ADDRESS_ZERO),
 					variables: {},
 				})
 				.then(async (res) => {
 					if (res.data.errors) {
 						setStatus("error");
-						setMessage("Failed to fetch data. Please refresh the page or try again later.");
+						setMessage("Network Error. Please refresh the page or try again later.");
 						reject(res.data.errors);
-						return;
-					}
-					console.log(res.data.data);
-					const pools = res.data.data.pools;
-					if (_address) {
-						_setPools(pools, res.data.data.accounts[0], _address, chainId);
 					} else {
-						setPools(pools);
+						console.log(res.data.data);
+						const pools = res.data.data.pools;
+						if (_address) {
+							_setPools(pools, res.data.data.accounts[0], _address, chainId)
+							.then((_) => {
+								resolve(0)
+							})
+						} else {
+							setPools(pools);
+							setStatus("ready");
+							resolve(0);
+						}
 					}
 				})
 				.catch((err) => {
@@ -161,7 +101,6 @@ function AppDataProvider({ children }: any) {
 						"Failed to fetch data. Please refresh the page or try again later."
 					);
 					reject(err);
-					return;
 				});
 		});
 	};
@@ -171,7 +110,7 @@ function AppDataProvider({ children }: any) {
 		_account: any,
 		_address: string,
 		_chain: number
-	) => {
+	): Promise<number> => {
 		const provider = new ethers.providers.Web3Provider(
 			(window as any).ethereum!,
 			"any"
@@ -276,10 +215,13 @@ function AppDataProvider({ children }: any) {
 						}
 					}
 				}
+				setStatus("ready");
 				_setTradingPool(tradingPool, _pools);
 				setPools(_pools);
-				// subscribeData(helper, _pools);
-			});
+			})
+			.catch(err => {
+				reject(err)
+			})
 		});
 	};
 
@@ -405,53 +347,61 @@ function AppDataProvider({ children }: any) {
 		setRefresh(Math.random());
 	};
 
-	// const subscribeData = async (
-	// 	helper: ethers.Contract,
-	// 	_pools: any[] = pools
-	// ) => {
-	// 	const reqs: any[] = [];
-	// 	const pool = new ethers.Contract(_pools[0].id, getABI("Pool"), helper.provider);
-	// 	const priceOracle = new ethers.Contract(_pools[0].oracle, getABI("PriceOracle"), helper.provider);
-	// 	for(let i in pools) {
-	// 		reqs.push([
-	// 			_pools[i].oracle,
-	// 			priceOracle.interface.encodeFunctionData("getAssetsPrices", 
-	// 				[pools[i].collaterals.map((c: any) => c.token.id).concat(pools[i].synths.map((s: any) => s.token.id))]
-	// 			)
-	// 		]);
-	// 		reqs.push([
-	// 			_pools[i].id,
-	// 			pool.interface.encodeFunctionData("getTotalDebtUSD", [])
-	// 		]);
-	// 		reqs.push([
-	// 			_pools[i].id,
-	// 			pool.interface.encodeFunctionData("totalSupply", [])
-	// 		]);
-	// 	}
-	// 	helper.callStatic.aggregate(reqs).then((res: any) => {
-	// 		console.log(res.returnData);
-	// 		if(res.returnData.length > 0){
-	// 			for(let i = 0; i < _pools.length; i++) {
-	// 				const _prices = priceOracle.interface.decodeFunctionResult("getAssetsPrices", res.returnData[i*3])[0];
-	// 				for(let j in _pools[i].collaterals) {
-	// 					_pools[i].collaterals[j].priceUSD = Big(_prices[j].toString()).div(1e8).toString();
-	// 				}
-	// 				for(let j in _pools[i].synths) {
-	// 					_pools[i].synths[j].priceUSD = Big(_prices[Number(j)+_pools[i].collaterals.length].toString()).div(1e8).toString();
-	// 				}
-	// 				_pools[i].totalDebtUSD = pool.interface.decodeFunctionResult("getTotalDebtUSD", res.returnData[i*3+1]);
-	// 				_pools[i].totalSupply = pool.interface.decodeFunctionResult("totalSupply", res.returnData[i*3+2]);
-	// 			}
-	// 			console.log("updated", _pools);
-	// 			setPools(_pools);
-	// 			setRefresh(Math.random());
-	// 		}
-	// 		setTimeout(
-	// 			() => subscribeData(helper, _pools),
-	// 			10000
-	// 		)
-	// 	});
-	// }
+	const refreshData = async () => {
+		console.log("Refreshing data...");
+		const reqs: any[] = [];
+		const _pools = pools;
+		if(_pools.length == 0) {
+			console.log("No pools found", _pools);
+			return
+		}
+		const provider = new ethers.providers.Web3Provider(
+			(window as any).ethereum!,
+			"any"
+		);
+		const helper = new ethers.Contract(
+			getAddress("Multicall2", chain),
+			getABI("Multicall2"),
+			provider.getSigner()
+		);
+		const pool = new ethers.Contract(_pools[0].id, getABI("Pool"), helper.provider);
+		const priceOracle = new ethers.Contract(_pools[0].oracle, getABI("PriceOracle"), helper.provider);
+		for(let i in pools) {
+			reqs.push([
+				_pools[i].oracle,
+				priceOracle.interface.encodeFunctionData("getAssetsPrices", 
+					[pools[i].collaterals.map((c: any) => c.token.id).concat(pools[i].synths.map((s: any) => s.token.id))]
+				)
+			]);
+			reqs.push([
+				_pools[i].id,
+				pool.interface.encodeFunctionData("getTotalDebtUSD", [])
+			]);
+			reqs.push([
+				_pools[i].id,
+				pool.interface.encodeFunctionData("totalSupply", [])
+			]);
+		}
+		helper.callStatic.aggregate(reqs).then((res: any) => {
+			if(res.returnData.length > 0){
+				for(let i = 0; i < _pools.length; i++) {
+					const _prices = priceOracle.interface.decodeFunctionResult("getAssetsPrices", res.returnData[i*3])[0];
+					for(let j in _pools[i].collaterals) {
+						_pools[i].collaterals[j].priceUSD = Big(_prices[j].toString()).div(1e8).toString();
+					}
+					for(let j in _pools[i].synths) {
+						_pools[i].synths[j].priceUSD = Big(_prices[Number(j)+_pools[i].collaterals.length].toString()).div(1e8).toString();
+					}
+					_pools[i].totalDebtUSD = Big(pool.interface.decodeFunctionResult("getTotalDebtUSD", res.returnData[i*3+1])[0].toString()).div(1e18).toString();
+					_pools[i].totalSupply = pool.interface.decodeFunctionResult("totalSupply", res.returnData[i*3+2])[0].toString();
+				}
+				setPools(_pools);
+				setRefresh(Math.random());
+			} else {
+				console.log("No return data");
+			}
+		});
+	}
 
 	const value: AppDataValue = {
 		status,
@@ -471,6 +421,7 @@ function AppDataProvider({ children }: any) {
 		addCollateralAllowance,
 		adjustedCollateral,
 		block,
+		refreshData
 	};
 
 	return (
