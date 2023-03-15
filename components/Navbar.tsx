@@ -153,7 +153,7 @@ function NavBar() {
 							>
 								<Flex zIndex={2}>
 									<motion.button
-										onClick={() => setIsOpen(!isOpen)}
+										onHoverStart={() => setIsOpen(true)}
 									>
 										<Flex
 											align={"center"}
@@ -199,7 +199,7 @@ function NavBar() {
 																		},
 																	}}
 																	transition={{
-																		duration: 0.2,
+																		duration: 0.25,
 																	}}
 																	style={{
 																		originY: 0.55,
@@ -221,6 +221,7 @@ function NavBar() {
 								</Flex>
 
 								<motion.ul
+									onHoverEnd={() => setIsOpen(false)}
 									variants={{
 										open: {
 											clipPath:
@@ -228,7 +229,7 @@ function NavBar() {
 											transition: {
 												type: "spring",
 												bounce: 0,
-												duration: 0.4,
+												duration: 0.25,
 												delayChildren: 0.2,
 												staggerChildren: 0.05,
 											},
@@ -239,7 +240,7 @@ function NavBar() {
 											transition: {
 												type: "spring",
 												bounce: 0,
-												duration: 0.3,
+												duration: 0.35,
 											},
 										},
 									}}

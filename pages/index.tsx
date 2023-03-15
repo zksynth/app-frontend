@@ -49,7 +49,7 @@ export default function TempPage() {
 						initial={{ opacity: 0, y: 0 }}
 						animate={{ opacity: 1, y: 0 }}
 						exit={{ opacity: 0, y: 15 }}
-						transition={{ duration: 0.75 }}
+						transition={{ duration: 0.25 }}
 						key={tradingPool}
 					>
 						<Flex gap={16} zIndex={1}>
@@ -173,7 +173,7 @@ export default function TempPage() {
 					initial={{ opacity: 0, y: 0 }}
 					animate={{ opacity: 1, y: 0 }}
 					exit={{ opacity: 0, y: 15 }}
-					transition={{ duration: 0.75 }}
+					transition={{ duration: 0.25 }}
 					key={tradingPool}
 				>
 					<Box textAlign={"right"} mt={3} alignSelf="end">
@@ -271,7 +271,7 @@ export default function TempPage() {
 					initial={{ opacity: 0, y: 15 }}
 					animate={{ opacity: 1, y: 0 }}
 					exit={{ opacity: 0, y: 15 }}
-					transition={{ duration: 0.5 }}
+					transition={{ duration: 0.25 }}
 					key={tradingPool}
 					style={{
 						width: "33%",
@@ -286,7 +286,7 @@ export default function TempPage() {
 					initial={{ opacity: 0, y: 15 }}
 					animate={{ opacity: 1, y: 0 }}
 					exit={{ opacity: 0, y: 15 }}
-					transition={{ duration: 0.5 }}
+					transition={{ duration: 0.25 }}
 					key={tradingPool + 2}
 					style={{
 						width: "67%",
