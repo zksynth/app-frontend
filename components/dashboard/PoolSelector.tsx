@@ -65,18 +65,6 @@ export default function PoolSelector() {
 						: (
 							<Skeleton height="30px" width="200px" rounded={8} />
 						)}
-						{/* <Button
-							mt={'7px'}
-							size={"xs"}
-							rounded="full"
-							bg={"gray.700"}
-							_hover={{ bg: "gray.800" }}
-							_active={{ bg: "gray.700" }}
-						>
-							Pool details
-						</Button> */}
-						{/* <IconButton bg={"gray.700"} mt={'7px'} ml={1} _hover={{ bg: "gray.800" }}
-							_active={{ bg: "gray.700" }} icon={<Image src='https://etherscan.io/images/brandassets/etherscan-logo-circle-light.svg' width={'16px'} />} rounded='full' size={'xs'} aria-label={""}/> */}
 					</Flex>
 
 					<motion.ul

@@ -318,7 +318,7 @@ function AppDataProvider({ children }: any) {
 			for (let j in _pools[i].collaterals) {
 				if (_pools[i].collaterals[j].token.id == collateralAddress) {
 					_pools[i].collaterals[j].allowance = Big(
-						_pools[i].collaterals[j].allowance
+						_pools[i].collaterals[j].allowance ?? 0
 					).plus(value).toString();
 				}
 			}
@@ -400,7 +400,10 @@ function AppDataProvider({ children }: any) {
 			} else {
 				console.log("No return data");
 			}
-		});
+		})
+		.catch(err => {
+			console.log(err);
+		})
 	}
 
 	const value: AppDataValue = {
