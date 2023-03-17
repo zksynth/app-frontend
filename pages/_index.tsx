@@ -16,9 +16,8 @@ export default function _index({ children }: any) {
 	});
 
 	const backgroundStyle = {
-		backgroundColor: '#0A1931'
-		// bgGradient: 'radial(#0A1931, #071325)',
-		// bgGradient: 'radial(gray.900, #12131B)',
+		backgroundColor: '#071325',
+		bgRepeat: 'no-repeat'
 	};
 
 	const [hydrated, setHydrated] = useState(false);
@@ -43,17 +42,6 @@ export default function _index({ children }: any) {
 					fontWeight="bold"
 					p={2}>
 					{message}
-				</Text>
-			)}
-			{isMobile && (
-				<Text
-					textAlign={'center'}
-					width="100%"
-					fontSize={'md'}
-					fontWeight="bold"
-					p={2}
-					>
-					SyntheX is not optimised for mobile yet
 				</Text>
 			)}
 			</Box>

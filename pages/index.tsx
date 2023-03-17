@@ -40,7 +40,7 @@ export default function TempPage() {
 				<title>Dashboard | SyntheX</title>
 				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
 			</Head>
-			<Flex pt="100px" justify={"space-between"}>
+			<Box display={{sm: 'block', md: 'flex'}} pt="100px" justifyContent={"space-between"}>
 				<Box>
 					<Box mb={4}>
 						<PoolSelector />
@@ -52,7 +52,7 @@ export default function TempPage() {
 						transition={{ duration: 0.25 }}
 						key={tradingPool}
 					>
-						<Flex gap={16} zIndex={1}>
+						<Flex flexDir={{sm: 'column', md: 'row'}} gap={{sm: 10, md: 16}} zIndex={1}>
 							<Flex mt={4} gap={3} align="start">
 								<Image
 									h={"35px"}
@@ -61,18 +61,18 @@ export default function TempPage() {
 									alt="icon1"
 								/>
 								<Box mt={-1}>
-									<Text
-										fontSize={"sm"}
-										color="gray.500"
+									<Heading
+										size={"sm"}
+										color="whiteAlpha.600"
 										mb={0.5}
 									>
 										Collateral
-									</Text>
-									<Heading fontSize={"xl"}>
+									</Heading>
+									<Text fontWeight={'semibold'} fontSize={"xl"}>
 										{dollarFormatter.format(
 											totalCollateral
 										)}
-									</Heading>
+									</Text>
 								</Box>
 							</Flex>
 
@@ -84,11 +84,11 @@ export default function TempPage() {
 									alt={"icon2"}
 								/>
 								<Box mt={-1}>
-									<Text fontSize={"sm"} color="gray.500">
+									<Heading fontSize={"sm"} color="whiteAlpha.600">
 										APY
-									</Text>
+									</Heading>
 									<Flex mb={0.5} gap={1.5} align="center">
-										<Heading fontSize={"xl"}>
+										<Text fontSize={"xl"} fontWeight={'semibold'}>
 											{pools[tradingPool]?.totalDebtUSD >
 											0
 												? tokenFormatter.format(
@@ -114,7 +114,7 @@ export default function TempPage() {
 												  )
 												: "0"}{" "}
 											%
-										</Heading>
+										</Text>
 
 										<Tooltip
 											label={`Amount of your debt burned based on 7-day average data`}
@@ -162,9 +162,9 @@ export default function TempPage() {
 								/>
 								<Box mt={-1}>
 									<Flex mb={0.5} gap={1.5} align="center">
-										<Text fontSize={"sm"} color="gray.500">
+										<Heading size={"sm"} color="whiteAlpha.600">
 											Issued Debt
-										</Text>
+										</Heading>
 										<Tooltip
 											label={`When you issue synths, you are allocated a share of pool's total debt. As the pool's total value changes, your debt changes as well`}
 										>
@@ -175,9 +175,9 @@ export default function TempPage() {
 										</Tooltip>
 									</Flex>
 
-									<Heading fontSize={"xl"}>
+									<Text fontSize={"xl"} fontWeight={'semibold'}>
 										{dollarFormatter.format(totalDebt)}
-									</Heading>
+									</Text>
 								</Box>
 							</Flex>
 						</Flex>
@@ -190,11 +190,11 @@ export default function TempPage() {
 					transition={{ duration: 0.25 }}
 					key={tradingPool}
 				>
-					<Box textAlign={"right"} mt={3} alignSelf="end">
-						<Flex justify={"end"} align="center" gap={1}>
-							<Text fontSize={"sm"} mb={1} color="gray.400">
+					<Box textAlign={{sm: "left", md: "right"}} mt={{sm: 16, md: 3}} >
+						<Flex justify={{sm: "start", md: "end"}} align="center" gap={1}>
+							<Heading size={"sm"} mb={1} color="gray.400">
 								Debt Limit
-							</Text>
+							</Heading>
 
 							<Tooltip
 								label={`Your Debt Limit depends on your LTV (Loan to Value) %. Account would be liquidated if LTV is greater than your Collateral's Liquidation Threshold`}
@@ -206,7 +206,8 @@ export default function TempPage() {
 								/>
 							</Tooltip>
 						</Flex>
-						<Heading
+						<Text
+							fontWeight={'semibold'}
 							fontSize={"3xl"}
 							mb={2}
 							color={
@@ -225,7 +226,7 @@ export default function TempPage() {
 								: totalCollateral
 							).toFixed(1)}{" "}
 							%
-						</Heading>
+						</Text>
 						<Box
 							my={2}
 							mt={4}
@@ -256,7 +257,7 @@ export default function TempPage() {
 								}
 							></Box>
 						</Box>
-						<Flex justify={"end"} align="center" gap={1}>
+						<Flex justify={{sm: "start", md: "end"}} align="center" gap={1}>
 							<Text fontSize={"sm"} color="gray.400">
 								Available to Issue
 							</Text>
@@ -268,7 +269,7 @@ export default function TempPage() {
 								)}
 							</Text>
 							<Tooltip
-								label={`You can issue debt till you reach collateral's Base LTV (75-80%)`}
+								label={`You can issue debt till you reach collateral's Base LTV`}
 							>
 								<InfoOutlineIcon
 									cursor={"help"}
@@ -278,9 +279,10 @@ export default function TempPage() {
 						</Flex>
 					</Box>
 				</motion.div>
-			</Flex>
+			</Box>
 
-			<Flex align={"stretch"} gap={8} pb={"100px"} mt={"80px"} zIndex={1}>
+			<Flex flexDir={{sm: "column", md: "row"}} align={"stretch"} gap={8} pb={"100px"} mt={"80px"} zIndex={1}>
+				<Box w={{sm: "100%", md: "33%"}} alignSelf='stretch' >
 				<motion.div
 					initial={{ opacity: 0, y: 15 }}
 					animate={{ opacity: 1, y: 0 }}
@@ -288,28 +290,27 @@ export default function TempPage() {
 					transition={{ duration: 0.25 }}
 					key={tradingPool}
 					style={{
-						width: "33%"
+						height: '100%'
 					}}
 				>
-					<Box bg={'whiteAlpha.50'} rounded={10}>
+					<Box bg={'#0A1931'} rounded={10} h={'100%'} border="2px" borderColor={"whiteAlpha.50"}>
 					<CollateralTable />
 					</Box>
 				</motion.div>
-
+				</Box>
+				<Box w={{sm: "100%", md: "67%"}}>
 				<motion.div
 					initial={{ opacity: 0, y: 15 }}
 					animate={{ opacity: 1, y: 0 }}
 					exit={{ opacity: 0, y: 15 }}
 					transition={{ duration: 0.25 }}
 					key={tradingPool + 2}
-					style={{
-						width: "67%"
-					}}
 				>
-					<Box bg={'whiteAlpha.50'} rounded={10}>
+					<Box bg={'#0A1931'} rounded={10} h={'100%'} border="2px" borderColor={"whiteAlpha.50"}>
 					<IssuanceTable />
 					</Box>
 				</motion.div>
+				</Box>
 			</Flex>
 		</>
 	);

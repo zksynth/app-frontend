@@ -1,4 +1,17 @@
-import { Flex, Text, Box, Image, Progress } from "@chakra-ui/react";
+import {
+	Flex,
+	Text,
+	Box,
+	Image,
+	Progress,
+	useDisclosure,
+	Collapse,
+	Stack,
+	IconButton,
+	Heading,
+	useColorMode,
+	Button,
+} from "@chakra-ui/react";
 
 import { ConnectButton as RainbowConnect } from "@rainbow-me/rainbowkit";
 import React, { useEffect, useState } from "react";
@@ -13,17 +26,21 @@ import { BigNumber } from "ethers";
 import { TokenContext } from "./context/TokenContext";
 import { motion } from "framer-motion";
 import { RiArrowDropDownLine } from "react-icons/ri";
+import { CloseIcon, HamburgerIcon } from "@chakra-ui/icons";
+import { tokenFormatter } from '../src/const';
 
 function NavBar() {
 	const router = useRouter();
 
-	const { status, message, fetchData, setChain, refreshData, pools } =
+	const { status, points, fetchData, setChain, refreshData, pools } =
 		useContext(AppDataContext);
 	const { fetchData: fetchTokenData } = useContext(TokenContext);
 
 	const { chain, chains } = useNetwork();
 	const [init, setInit] = useState(false);
 	const [hasRefreshed, setHasRefreshed] = useState(false);
+
+	const { isOpen: isToggleOpen, onToggle } = useDisclosure();
 
 	const {
 		address,
@@ -110,24 +127,27 @@ function NavBar() {
 		}
 	});
 
+	const { colorMode, toggleColorMode } = useColorMode()
+
 	return (
 		<>
-			<Flex alignItems={"center"} justify="space-between" h={"100px"}>
-				<Flex align={"center"} gap={10} width={"33%"} mt={2}>
-					<Box cursor="pointer" maxW={"30px"}>
+			<Flex alignItems={"center"} justify="space-between" h={"100px"} w='100%'>
+				<Flex justify="space-between" align={"center"} gap={10} mt={2} w='100%'>
+					<Flex gap={10} align='center' cursor="pointer">
 						<Image
 							onClick={() => {
 								router.push("/");
 							}}
 							src={"/logo.svg"}
 							alt=""
-							width="35px"
-							height="35px"
-							minW={"28px"}
-							minH={"28px"}
+							width="28px"
 						/>
-					</Box>
-					<Flex gap={2} align='center'>
+						<Flex
+						
+						gap={2}
+						align="center"
+						display={{ sm: "none", md: "flex" }}
+					>
 						<NavLocalLink
 							path={"/"}
 							title={"Dashboard"}
@@ -170,10 +190,15 @@ function NavBar() {
 														pr={1}
 														cursor="pointer"
 														rounded={100}
-														bg='whiteAlpha.50'
+														bg="whiteAlpha.50"
 														_hover={{
-															bgColor: "whiteAlpha.100",
+															bgColor:
+																"whiteAlpha.100",
 														}}
+														border="2px"
+														borderColor={
+															"whiteAlpha.50"
+														}
 													>
 														<Box
 															color={"gray.100"}
@@ -184,7 +209,12 @@ function NavBar() {
 															<Flex
 																align={"center"}
 															>
-																<Text mr={-1}>DAO</Text>
+																<Heading
+																	size={"xs"}
+																	mr={-1}
+																>
+																	DAO
+																</Heading>
 
 																<motion.div
 																	variants={{
@@ -271,8 +301,8 @@ function NavBar() {
 									>
 										<Flex
 											flexDir={"column"}
-											justify='left'
-											align='left'
+											justify="left"
+											align="left"
 											gap={2}
 											mt={3}
 											mx={1}
@@ -294,37 +324,101 @@ function NavBar() {
 							</motion.nav>
 						</Box>
 					</Flex>
+					</Flex>
+					
+					<Flex display={{sm: 'flex', md: 'none'}}>
+						<IconButton
+							onClick={onToggle}
+							icon={
+								isOpen ? (
+									<CloseIcon w={3} h={3} />
+								) : (
+									<HamburgerIcon w={5} h={5} />
+								)
+							}
+							variant={"ghost"}
+							aria-label={"Toggle Navigation"}
+						/>
+					</Flex>
 				</Flex>
 
-				<Flex width={"33%"} justify="flex-end" align={"center"} gap={2}>
-					{/* <Link href={'/leaderboard'}>
 				<Flex
+					display={{ sm: "none", md: "flex" }}
+					justify="flex-end"
 					align={"center"}
-					h={"38px"}
-					px={4}
-					cursor="pointer"
-					rounded={100}
+					gap={2}
+					w='100%'
 				>
-					<Box
-						color={"gray.100"}
-						fontFamily="Roboto"
-						fontWeight={"bold"}
-						fontSize="sm"
-					>
-						<Flex align={"center"} gap={2}>
-							<Text>{10} Points</Text>
+					<Link href={"/leaderboard"}>
+						<Flex
+							align={"center"}
+							h={"38px"}
+							w='100%'
+							px={4}
+							cursor="pointer"
+							rounded={100}
+						>
+							<Box
+								color={"gray.100"}
+								fontSize="sm"
+							>
+								<Flex align={"center"} gap={2}>
+									<Heading size={"xs"}>{tokenFormatter.format(points?.totalPoint ?? 0)} Points</Heading>
+								</Flex>
+							</Box>
 						</Flex>
-					</Box>
-				</Flex>
-				</Link> */}
-					<Box display={{ sm: "none", md: "block" }}>
+					</Link>
+					<Box>
 						<RainbowConnect chainStatus={"icon"} />
+						{/* <Button onClick={toggleColorMode}>
+							Toggle {colorMode === 'light' ? 'Dark' : 'Light'}
+						</Button> */}
 					</Box>
 				</Flex>
 			</Flex>
+			<Collapse in={isToggleOpen} animateOpacity>
+				<MobileNav />
+			</Collapse>
 		</>
 	);
 }
+
+const MobileNav = ({}: any) => {
+	const router = useRouter();
+	return (
+		<Flex flexDir={"column"} bg='whiteAlpha.50' p={4} gap={4}>
+			<NavLocalLink
+				path={"/"}
+				title={"Dashboard"}
+				pathname={router.pathname}
+			></NavLocalLink>
+			<NavLocalLink
+				path={"/swap"}
+				title="Swap"
+				pathname={router.pathname}
+			></NavLocalLink>
+			<NavLocalLink
+				path={"/claim"}
+				title="Claim"
+				pathname={router.pathname}
+			></NavLocalLink>
+			<NavLocalLink
+				path={"/dao/syx"}
+				title="Token"
+				pathname={router.pathname}
+			></NavLocalLink>
+
+			<NavLocalLink
+				path={"/dao/vest"}
+				title="Vest"
+				pathname={router.pathname}
+			></NavLocalLink>
+			<Box>
+				<RainbowConnect />
+			</Box>
+		</Flex>
+	);
+};
 
 const NavLink = ({
 	path,
@@ -333,7 +427,7 @@ const NavLink = ({
 	newTab = false,
 	pathname,
 	children,
-	bg = 'whiteAlpha.50'
+	bg = "whiteAlpha.50",
 }: any) => {
 	const [isPath, setIsPath] = useState(false);
 
@@ -357,6 +451,8 @@ const NavLink = ({
 						shadow: "md",
 					}}
 					shadow={isPath ? "md" : "none"}
+					border="2px"
+					borderColor={"whiteAlpha.50"}
 				>
 					<Box
 						color={isPath ? "primary" : "gray.100"}
@@ -366,7 +462,7 @@ const NavLink = ({
 					>
 						<Flex align={"center"} gap={2}>
 							{children}
-							<Text>{title}</Text>
+							<Heading size={"xs"}>{title}</Heading>
 						</Flex>
 					</Box>
 				</Flex>
@@ -375,7 +471,14 @@ const NavLink = ({
 	);
 };
 
-const NavLocalLink = ({ path, title, pathname, children, lighten, bg = 'whiteAlpha.50' }: any) => {
+const NavLocalLink = ({
+	path,
+	title,
+	pathname,
+	children,
+	lighten,
+	bg = "whiteAlpha.50",
+}: any) => {
 	return (
 		<Link href={`${path}`} as={`${path}`}>
 			<Box>

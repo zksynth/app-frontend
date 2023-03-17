@@ -3,10 +3,10 @@ import React from 'react'
 
 export default function SwapSkeleton() {
   return (
-    <Box height={"382px"}>
+    <Box height={"382px"} shadow='2xl'>
 					<Flex
 						h={"40%"}
-						bg="gray.700"
+						bg="#0A1931"
 						align={"center"}
 						px={5}
 						roundedTop="15"
@@ -45,7 +45,7 @@ export default function SwapSkeleton() {
 						justify="space-evenly"
 						px={5}
 						h={"60%"}
-						bg="gray.800"
+						bg="#071325"
 						roundedBottom="15"
 					>
 						<Flex justify="space-between" align={"center"}>

@@ -127,7 +127,7 @@ export default function Debt({ synth }: any) {
 				</Td>
 				<Td {...borderStyle} fontSize="md" color='gray.400'>
 					{dollarFormatter.format(
-						Big(synth.dayDatas[0]?.dailyMinted ?? 0).add(synth.dayDatas[0]?.dailyBurned ?? 0)
+						Big(synth.synthDayData[0]?.dailyMinted ?? 0).add(synth.synthDayData[0]?.dailyBurned ?? 0)
 							.mul(synth.priceUSD)
                             .div(10**18)
 							.toNumber()
@@ -144,8 +144,8 @@ export default function Debt({ synth }: any) {
 			</Tr>
 
 			<Modal isCentered isOpen={isOpen} onClose={_onClose}>
-				<ModalOverlay bg="blackAlpha.100" backdropFilter="blur(30px)" />
-				<ModalContent width={"30rem"} bgColor="gray.800" rounded={16}>
+				<ModalOverlay bg="blackAlpha.400" backdropFilter="blur(30px)" />
+				<ModalContent width={"30rem"} bgColor="#0A1931" rounded={16} border='2px' borderColor={'#212E44'}>
 					<ModalCloseButton rounded={"full"} mt={1} />
 					<ModalHeader>
 						<Flex

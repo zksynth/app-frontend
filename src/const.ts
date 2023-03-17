@@ -44,11 +44,12 @@ export const query = (address: string) => (
 		  rewardTokens {
 			id
 		  }
-		  dayDatas(first:7, orderBy: dayId, orderDirection: desc){
+		  poolDayData(first:7, orderBy: dayId, orderDirection: desc){
 			dailyDebtIssuedUSD
 			dailyDebtBurnedUSD
 			dailyRevenueUSD
 			dailyBurnUSD
+			totalDebtUSD
 		  }
 		  rewardSpeeds
 		  synths {
@@ -62,7 +63,7 @@ export const query = (address: string) => (
 			mintFee
 			burnFee
 			totalSupply
-			dayDatas(first:1, orderBy: dayId, orderDirection: desc){
+			synthDayData(first:1, orderBy: dayId, orderDirection: desc){
 				dailyMinted
 				dailyBurned
 			}
@@ -78,12 +79,18 @@ export const query = (address: string) => (
 			cap
 			baseLTV
 			liqThreshold
-			liqBonus
 			totalDeposits
 		  }
 		}
 		accounts(where: {id: "${address}"}){
 		  id
+		  referredBy
+		  totalPoint
+		  accountDayData(first:1, orderBy: dayId, orderDirection: desc){
+			dailyMintedUSD
+			dailyBurnedUSD
+			dailyPoint
+		  }
 		  positions{
 			pool{
 			  id
@@ -101,6 +108,18 @@ export const query = (address: string) => (
 		}
 	  }`
 )
+
+export const query_leaderboard = `
+	{accounts(orderBy: totalPoint, orderDirection: desc){
+		id
+		totalPoint
+		accountDayData(first:1, orderBy: dayId, orderDirection: desc){
+			dailyMintedUSD
+			dailyBurnedUSD
+			dailyPoint
+		}
+	}}
+`
 
 const COLORS_GREEN = [
 	"#154F43",

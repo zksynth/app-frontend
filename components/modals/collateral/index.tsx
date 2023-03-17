@@ -139,8 +139,8 @@ export default function CollateralModal({ collateral, tradingPool }: any) {
 			</Tr>
 
 			<Modal isCentered isOpen={isOpen} onClose={_onClose}>
-				<ModalOverlay bg="blackAlpha.100" backdropFilter="blur(30px)" />
-				<ModalContent width={"30rem"} bgColor="gray.800" rounded={16}>
+				<ModalOverlay bg="blackAlpha.400" backdropFilter="blur(30px)" />
+				<ModalContent width={"30rem"} bgColor="#0A1931" rounded={16} border='2px' borderColor={'#212E44'}>
 					<ModalCloseButton rounded={"full"} mt={1} />
 					<ModalHeader>
 						<Flex

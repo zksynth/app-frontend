@@ -42,10 +42,10 @@ export default function CollateralTable() {
 						<Table variant="simple">
 							<Thead>
 								<Tr>
-									<Th color={"whiteAlpha.500"}>Synthetic Asset</Th>
-									<Th color={"whiteAlpha.500"}>Price</Th>
-									<Th color={"whiteAlpha.500"}>Volume 24h</Th>
-									<Th color={"whiteAlpha.500"} isNumeric>
+									<Th color={"whiteAlpha.800"}>Synthetic Asset</Th>
+									<Th color={"whiteAlpha.800"}>Price</Th>
+									<Th color={"whiteAlpha.800"}>Volume 24h</Th>
+									<Th color={"whiteAlpha.800"} isNumeric>
 										Liquidity
 									</Th>
 								</Tr>

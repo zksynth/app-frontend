@@ -18,9 +18,14 @@ const breakpoints = {
 export const theme = extendTheme({
 	components: {
 		Steps,
+		Heading: {
+			baseStyle: {
+				fontWeight: 'semibold'
+			}
+		}
 	},
 	fonts: {
-		heading: `'Space Grotesk', sans-serif`,
+		heading: `'clash display', sans-serif`,
 		body: `'Rubik', sans-serif`,
 	},
 	// styles,

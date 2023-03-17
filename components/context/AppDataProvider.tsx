@@ -1,7 +1,7 @@
 import * as React from "react";
 import axios from "axios";
 import { getContract, call, getAddress, getABI } from "../../src/contract";
-import { ADDRESS_ZERO, dollarFormatter, Endpoints, ETH_ADDRESS, query, tokenFormatter } from "../../src/const";
+import { ADDRESS_ZERO, dollarFormatter, Endpoints, ETH_ADDRESS, query, tokenFormatter, query_leaderboard } from '../../src/const';
 import { ChainID, chainMapping } from "../../src/chains";
 import { BigNumber, ethers } from "ethers";
 import { useEffect } from 'react';
@@ -36,6 +36,8 @@ interface AppDataValue {
 	block: number;
 	updatePoolBalance: (poolAddress: string, value: string, minus: boolean) => void;
 	refreshData: () => void;
+	leaderboard: any[];
+	points: any
 }
 
 const AppDataContext = React.createContext<AppDataValue>({} as AppDataValue);
@@ -47,9 +49,11 @@ function AppDataProvider({ children }: any) {
 	const [totalCollateral, setTotalCollateral] = React.useState(0);
 	const [adjustedCollateral, setAdjustedCollateral] = React.useState(0);
 	const [totalDebt, setTotalDebt] = React.useState(0);
+	const [points, setPoints] = React.useState({});
 
 	const [pools, setPools] = React.useState<any[]>([]);
 	const [tradingPool, setTradingPool] = React.useState(0);
+	const [leaderboard, setLeaderboard] = React.useState([]);
 
 	useEffect(() => {
 		if(localStorage){
@@ -70,21 +74,27 @@ function AppDataProvider({ children }: any) {
 		console.log("fetching");
 		return new Promise((resolve, reject) => {
 			setStatus("fetching");
-			axios
+			Promise.all([axios
 				.post(Endpoints[chainId], {
 					query: query(_address?.toLowerCase() ?? ADDRESS_ZERO),
 					variables: {},
-				})
+				}), axios
+				.post(Endpoints[chainId], {
+					query: query_leaderboard,
+					variables: {},
+				})])
 				.then(async (res) => {
-					if (res.data.errors) {
+					if (res[0].data.errors || res[1].data.errors) {
 						setStatus("error");
 						setMessage("Network Error. Please refresh the page or try again later.");
-						reject(res.data.errors);
+						reject(res[0].data.errors || res[1].data.errors);
 					} else {
-						console.log(res.data.data);
-						const pools = res.data.data.pools;
+						const userPoolData = res[0].data.data;
+						const leaderboardData = res[1].data.data.accounts;
+						setLeaderboard(leaderboardData);
+						const pools = userPoolData.pools;
 						if (_address) {
-							_setPools(pools, res.data.data.accounts[0], _address, chainId)
+							_setPools(pools, userPoolData.accounts[0], _address, chainId)
 							.then((_) => {
 								resolve(0)
 							})
@@ -164,12 +174,12 @@ function AppDataProvider({ children }: any) {
 
 				let averageDailyBurn = Big(0);
 				let averageDailyRevenue = Big(0);
-				for(let j = 0; j < _pools[i].dayDatas.length; j++) {
-					averageDailyBurn = averageDailyBurn.plus(_pools[i].dayDatas[j].dailyBurnUSD);
-					averageDailyRevenue = averageDailyRevenue.plus(_pools[i].dayDatas[j].dailyRevenueUSD);
+				for(let j = 0; j < _pools[i].poolDayData.length; j++) {
+					averageDailyBurn = averageDailyBurn.plus(_pools[i].poolDayData[j].dailyBurnUSD);
+					averageDailyRevenue = averageDailyRevenue.plus(_pools[i].poolDayData[j].dailyRevenueUSD);
 				}
-				_pools[i].averageDailyBurn = _pools[i].dayDatas.length > 0 ? averageDailyBurn.div(_pools[i].dayDatas.length).toString() : '0';
-				_pools[i].averageDailyRevenue = _pools[i].dayDatas.length > 0 ? averageDailyRevenue.div(_pools[i].dayDatas.length).toString() : '0';
+				_pools[i].averageDailyBurn = _pools[i].poolDayData.length > 0 ? averageDailyBurn.div(_pools[i].poolDayData.length).toString() : '0';
+				_pools[i].averageDailyRevenue = _pools[i].poolDayData.length > 0 ? averageDailyRevenue.div(_pools[i].poolDayData.length).toString() : '0';
 			}
 
 
@@ -213,6 +223,10 @@ function AppDataProvider({ children }: any) {
 								}
 							}
 						}
+						setPoints({
+							totalPoint: _account.totalPoint,
+							accountDayData: _account.accountDayData
+						})
 					}
 				}
 				setStatus("ready");
@@ -406,6 +420,8 @@ function AppDataProvider({ children }: any) {
 	}
 
 	const value: AppDataValue = {
+		points,
+		leaderboard,
 		status,
 		message,
 		totalCollateral,

@@ -29,6 +29,7 @@ import {
 	Image,
 	IconButton,
 } from "@chakra-ui/react";
+import Head from "next/head";
 
 export default function Claim() {
 	const { address, isConnected, isConnecting } = useAccount();
@@ -86,6 +87,10 @@ export default function Claim() {
 	};
 	return (
 		<>
+    <Head>
+				<title>Claim Rewards | SyntheX</title>
+				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
+			</Head>
 			<Box textAlign={"left"} pt="100px">
 				<Heading size={"lg"}>Liquidity Incentive</Heading>
 
@@ -94,7 +99,7 @@ export default function Claim() {
 				</Text>
 
 				<Flex justify={"start"} align={"center"} gap={1}></Flex>
-				<Box bg={"whiteAlpha.100"} rounded={16} mt={5}>
+				<Box bg={"#0A1931"} border='2px' borderColor={'whiteAlpha.100'} rounded={16} mt={5}>
 					<TableContainer pt={1}>
 						<Table variant="simple">
 							<Thead>

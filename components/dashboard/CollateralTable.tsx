@@ -34,8 +34,8 @@ export default function CollateralTable() {
 						<Table variant="simple">
 							<Thead>
 								<Tr>
-									<Th color={"whiteAlpha.500"}>Collateral</Th>
-									<Th color={"whiteAlpha.500"} isNumeric>
+									<Th color={"whiteAlpha.800"}>Collateral</Th>
+									<Th color={"whiteAlpha.800"} isNumeric>
 										Balance
 									</Th>
 								</Tr>

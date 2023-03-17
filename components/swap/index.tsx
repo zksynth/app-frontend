@@ -316,7 +316,7 @@ function Swap() {
 				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
 			</Head>
 			{pools[tradingPool] ? (
-				<Box>
+				<Box shadow='2xl' border={'2px'} borderColor='whiteAlpha.100' rounded={16}>
 					<Box px="5" py={10} roundedTop={15} bg={"whiteAlpha.100"}>
 						<Flex align="center" justify={"space-between"}>
 							<InputGroup width={"70%"}>
@@ -369,8 +369,8 @@ function Swap() {
 					<Box px="5">
 						<Button
 							mt={-5}
-							bg="gray.600"
-							_hover={{ bg: "gray.500" }}
+							bg="#212E44"
+							_hover={{ bg: "gray.700" }}
 							rounded="100%"
 							onClick={switchTokens}
 							variant="unstyled"
@@ -380,7 +380,7 @@ function Swap() {
 							alignItems="center"
 							justifyContent="center"
 						>
-							<MdOutlineSwapVert size={"16px"} />
+							<MdOutlineSwapVert size={"18px"} />
 						</Button>
 					</Box>
 

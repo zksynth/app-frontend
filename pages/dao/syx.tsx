@@ -1,10 +1,16 @@
-import { Box, Flex, Heading, Text } from '@chakra-ui/react'
+import { Box, Flex, Heading, Text, Image } from '@chakra-ui/react'
+import Head from 'next/head'
 import React from 'react'
 
 export default function syx() {
   return (
     <>
-      <Box pt='100px'>
+    <Head>
+				<title>SYX | SyntheX</title>
+				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
+			</Head>
+      <Box pt='90px'>
+        <Image src='/SYX.svg' w={20} mb={4}/>
         <Heading size={"lg"}>SyntheX Token</Heading>  
         <Text mt={2} color='gray.400'>
           SYX is the protocol token for SyntheX. Earn protocol fees, participate in governance, be a part of SyntheX
@@ -27,7 +33,7 @@ export default function syx() {
           </Box>
         </Flex>
 
-        <Flex bg={'whiteAlpha.200'} mt='10' p={5} rounded='16' align={'center'} justify='space-between'>
+        <Flex bg={"#0A1931"} border='2px' borderColor={'whiteAlpha.100'}  mt='10' p={5} rounded='16' align={'center'} justify='space-between'>
           <Heading size={'md'}>Crowdsale</Heading>
           <Flex align={'center'} gap={2}>
           <Box h='2' w='2' bg={'yellow'} rounded='full'></Box>
@@ -35,7 +41,7 @@ export default function syx() {
           </Flex>
         </Flex>
 
-        <Flex bg={'whiteAlpha.200'} mt='5' p={5} rounded='16' align={'center'} justify='space-between'>
+        <Flex bg={"#0A1931"} border='2px' borderColor={'whiteAlpha.100'} mt='5' p={5} rounded='16' align={'center'} justify='space-between'>
           <Heading size={'md'}>Liquidity Bootstrap</Heading>
           <Flex align={'center'} gap={2}>
           <Box h='2' w='2' bg={'yellow'} rounded='full'></Box>
@@ -43,7 +49,7 @@ export default function syx() {
           </Flex>
         </Flex>
         
-        <Flex bg={'whiteAlpha.200'} mt='5' p={5} rounded='16' align={'center'} justify='space-between'>
+        <Flex bg={"#0A1931"} border='2px' borderColor={'whiteAlpha.100'} mt='5' p={5} rounded='16' align={'center'} justify='space-between'>
           <Heading size={'md'}>LP Rewards</Heading>
           <Flex align={'center'} gap={2}>
           <Box h='2' w='2' bg={'yellow'} rounded='full'></Box>
