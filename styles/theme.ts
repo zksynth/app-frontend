@@ -20,8 +20,8 @@ export const theme = extendTheme({
 		Steps,
 	},
 	fonts: {
-		heading: `'Aileron', sans-serif`,
-		body: `'Aileron', sans-serif`,
+		heading: `'Space Grotesk', sans-serif`,
+		body: `'Rubik', sans-serif`,
 	},
 	// styles,
 	config,

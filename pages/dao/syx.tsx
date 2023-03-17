@@ -27,7 +27,7 @@ export default function syx() {
           </Box>
         </Flex>
 
-        <Flex bg={'gray.800'} mt='10' p={5} rounded='16' align={'center'} justify='space-between'>
+        <Flex bg={'whiteAlpha.200'} mt='10' p={5} rounded='16' align={'center'} justify='space-between'>
           <Heading size={'md'}>Crowdsale</Heading>
           <Flex align={'center'} gap={2}>
           <Box h='2' w='2' bg={'yellow'} rounded='full'></Box>
@@ -35,7 +35,7 @@ export default function syx() {
           </Flex>
         </Flex>
 
-        <Flex bg={'gray.800'} mt='5' p={5} rounded='16' align={'center'} justify='space-between'>
+        <Flex bg={'whiteAlpha.200'} mt='5' p={5} rounded='16' align={'center'} justify='space-between'>
           <Heading size={'md'}>Liquidity Bootstrap</Heading>
           <Flex align={'center'} gap={2}>
           <Box h='2' w='2' bg={'yellow'} rounded='full'></Box>
@@ -43,7 +43,7 @@ export default function syx() {
           </Flex>
         </Flex>
         
-        <Flex bg={'gray.800'} mt='5' p={5} rounded='16' align={'center'} justify='space-between'>
+        <Flex bg={'whiteAlpha.200'} mt='5' p={5} rounded='16' align={'center'} justify='space-between'>
           <Heading size={'md'}>LP Rewards</Heading>
           <Flex align={'center'} gap={2}>
           <Box h='2' w='2' bg={'yellow'} rounded='full'></Box>

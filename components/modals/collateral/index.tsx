@@ -30,26 +30,16 @@ import {
 	tokenFormatter,
 } from "../../../src/const";
 import Big from "big.js";
-import InfoFooter from "../_utils/InfoFooter";
-import Response from "../_utils/Response";
-import { useAccount, useNetwork } from "wagmi";
 
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 import Deposit from "./Deposit";
 import Link from "next/link";
-import { ethers } from "ethers";
 import { useContext } from "react";
 import { AppDataContext } from "../../context/AppDataProvider";
 import Withdraw from "./Withdraw";
 
 export default function CollateralModal({ collateral, tradingPool }: any) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
-
-	const [loading, setLoading] = useState(false);
-	const [response, setResponse] = useState<string | null>(null);
-	const [hash, setHash] = useState(null);
-	const [confirmed, setConfirmed] = useState(false);
-	const [message, setMessage] = useState("");
 	const [tabSelected, setTabSelected] = useState(0);
 
 	const [amount, setAmount] = React.useState("0");
@@ -58,28 +48,19 @@ export default function CollateralModal({ collateral, tradingPool }: any) {
 	const { adjustedCollateral, totalCollateral, totalDebt } = useContext(AppDataContext);
 
 	const borderStyle = {
-		borderColor: "#1F2632",
+		borderColor: "whiteAlpha.100",
 	};
 
 	const _onClose = () => {
-		setLoading(false);
-		setResponse(null);
-		setHash(null);
-		setConfirmed(false);
-		setMessage("");
 		setAmount("0");
 		setAmountNumber(0);
 		onClose();
 	};
 
 	const _setAmount = (e: string) => {
+		if(Big(e).mul(collateral.priceUSD).lt(0.1)) return;
 		setAmount(e);
 		setAmountNumber(isNaN(Number(e)) ? 0 : Number(e));
-	};
-
-	const handleMax = () => {
-		setAmount(max());
-		setAmountNumber(isNaN(Number(max())) ? 0 : Number(max()));
 	};
 
 	const selectTab = (index: number) => {
@@ -95,7 +76,7 @@ export default function CollateralModal({ collateral, tradingPool }: any) {
 			const v1 = collateral.priceUSD > 0 ? Big(adjustedCollateral).sub(totalDebt).div(collateral.priceUSD).mul(1e4).div(collateral.baseLTV) : Big(0);
 			const v2 = Big(collateral.balance ?? 0).div(10**18);
 			// min(v1, v2)
-			return (v1.gt(v2) ? v2 : v1).toFixed(8);
+			return (v1.gt(v2) ? v2 : v1).toString();
 		}
 	};
 
@@ -110,7 +91,7 @@ export default function CollateralModal({ collateral, tradingPool }: any) {
 
 	return (
 		<>
-			<Tr cursor="pointer" onClick={onOpen} borderLeft='2px' borderColor='gray.800' _hover={{ borderColor: 'primary', bg: 'blackAlpha.100' }}>
+			<Tr cursor="pointer" onClick={onOpen} borderLeft='2px' borderColor='transparent' _hover={{ borderColor: 'primary', bg: 'blackAlpha.100' }}>
 				<Td {...borderStyle}>
 						<Flex gap={2}>
 							<Image
@@ -235,7 +216,7 @@ export default function CollateralModal({ collateral, tradingPool }: any) {
 												variant={"unstyled"}
 												fontSize="sm"
 												fontWeight={"bold"}
-												onClick={handleMax}
+												onClick={() => _setAmount(max())}
 											>
 												MAX
 											</Button>
@@ -265,6 +246,7 @@ export default function CollateralModal({ collateral, tradingPool }: any) {
 										collateral={collateral}
 										amount={amount}
 										amountNumber={amountNumber}
+										setAmount={_setAmount}
 									/>
 								</TabPanel>
 								<TabPanel m={0} p={0}>
@@ -272,6 +254,7 @@ export default function CollateralModal({ collateral, tradingPool }: any) {
 										collateral={collateral}
 										amount={amount}
 										amountNumber={amountNumber}
+										setAmount={_setAmount}
 									/>
 								</TabPanel>
 							</TabPanels>

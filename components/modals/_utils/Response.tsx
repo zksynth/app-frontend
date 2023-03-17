@@ -10,12 +10,13 @@ export default function Response({response, message, hash, confirmed}: any) {
 	return (
 		<>
 			{response && (
+				<Link href={chainMapping[chain]?.blockExplorers.default.url + "tx/" + hash} target="_blank">
 				<Box width={"100%"} mt={4} mb={0}>
 					<Alert
 						status={
-							response.includes("confirm")
+							message.includes("confirm")
 								? "info"
-								: confirmed && response.includes("Success")
+								: confirmed && message.includes("Success")
 								? "success"
 								: "error"
 						}
@@ -31,17 +32,10 @@ export default function Response({response, message, hash, confirmed}: any) {
 							<Text fontSize="xs" mt={0}>
 								{message.slice(0, 100)}
 							</Text>
-							{hash && (
-								<Link href={chainMapping[chain]?.blockExplorers.default.url + "tx/" + hash} target="_blank">
-									{" "}
-									<Text fontSize={"xs"} textDecor='underline'>
-										View on explorer
-									</Text>
-								</Link>
-							)}
 						</Box>
 					</Alert>
 				</Box>
+				</Link>
 			)}
 		</>
 	);

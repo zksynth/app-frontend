@@ -12,8 +12,6 @@ import {
 	Tr,
 	Th,
 	Td,
-	TableCaption,
-	TableContainer,
 	Flex,
 	Image,
 	Text,
@@ -30,18 +28,12 @@ import {
 import { AppDataContext } from "../../context/AppDataProvider";
 import {
 	preciseTokenFormatter,
-	tokenFormatter,
-	compactTokenFormatter,
 	dollarFormatter,
 } from "../../../src/const";
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
-
-import { motion } from "framer-motion";
 import Mint from "./mint";
 import Burn from "./burn";
-
 import Big from "big.js";
-
 
 export default function Debt({ synth }: any) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
@@ -53,7 +45,7 @@ export default function Debt({ synth }: any) {
 	const [tabSelected, setTabSelected] = useState(0);
 
 	const borderStyle = {
-		borderColor: "#1F2632",
+		borderColor: "whiteAlpha.100",
 	};
 
 	const _onClose = () => {
@@ -63,13 +55,9 @@ export default function Debt({ synth }: any) {
 	};
 
 	const _setAmount = (e: string) => {
+		if(Big(e).mul(synth.priceUSD).lt(0.1)) return;
 		setAmount(e);
 		setAmountNumber(isNaN(Number(e)) ? 0 : Number(e));
-	};
-
-	const handleMax = () => {
-		setAmount(max());
-		setAmountNumber(isNaN(Number(max())) ? 0 : Number(max()));
 	};
 
 	const selectTab = (index: number) => {
@@ -104,7 +92,7 @@ export default function Debt({ synth }: any) {
 			<Tr
 				cursor="pointer"
 				onClick={onOpen}
-				borderLeft='2px' borderColor='gray.800' _hover={{ borderColor: 'primary', bg: 'blackAlpha.100' }}
+				borderLeft='2px' borderColor='transparent' _hover={{ borderColor: 'primary', bg: 'blackAlpha.100' }}
 			>
 				<Td {...borderStyle}>
 					<Flex gap={1}>
@@ -241,7 +229,7 @@ export default function Debt({ synth }: any) {
                                         variant={"unstyled"}
                                         fontSize="sm"
                                         fontWeight={"bold"}
-                                        onClick={handleMax}
+                                        onClick={() => _setAmount(max())}
                                     >
                                         MAX
                                     </Button>
@@ -277,6 +265,7 @@ export default function Debt({ synth }: any) {
 										asset={synth}
 										amount={amount}
 										amountNumber={amountNumber}
+										setAmount={_setAmount}
 									/>
 								</TabPanel>
 								<TabPanel m={0} p={0}>
@@ -284,6 +273,7 @@ export default function Debt({ synth }: any) {
 										asset={synth}
 										amount={amount}
 										amountNumber={amountNumber}
+										setAmount={_setAmount}
 									/>
 								</TabPanel>
 							</TabPanels>

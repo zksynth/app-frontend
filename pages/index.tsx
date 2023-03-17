@@ -84,10 +84,38 @@ export default function TempPage() {
 									alt={"icon2"}
 								/>
 								<Box mt={-1}>
+									<Text fontSize={"sm"} color="gray.500">
+										APY
+									</Text>
 									<Flex mb={0.5} gap={1.5} align="center">
-										<Text fontSize={"sm"} color="gray.500">
-											Rewards
-										</Text>
+										<Heading fontSize={"xl"}>
+											{pools[tradingPool]?.totalDebtUSD >
+											0
+												? tokenFormatter.format(
+														Number(
+															Big(
+																pools[
+																	tradingPool
+																]
+																	?.averageDailyBurn ??
+																	0
+															)
+																.div(1e18)
+																.mul(365)
+																.div(
+																	pools[
+																		tradingPool
+																	]
+																		?.totalDebtUSD
+																)
+																.mul(100)
+																.toFixed(2)
+														)
+												  )
+												: "0"}{" "}
+											%
+										</Heading>
+
 										<Tooltip
 											label={`Amount of your debt burned based on 7-day average data`}
 										>
@@ -97,35 +125,15 @@ export default function TempPage() {
 											/>
 										</Tooltip>
 									</Flex>
-									<Heading fontSize={"xl"}>
-										{pools[tradingPool]?.totalDebtUSD > 0
-											? tokenFormatter.format(
-													Number(
-														Big(
-															pools[tradingPool]
-																?.averageDailyBurn ??
-																0
-														)
-															.div(1e18)
-															.mul(365)
-															.div(
-																pools[
-																	tradingPool
-																]?.totalDebtUSD
-															)
-															.mul(100)
-															.toFixed(2)
-													)
-											  )
-											: "0"}{" "}
-										%
-									</Heading>
+
 									<Flex gap={1} mt={1}>
-										<Image src="/esSYX.svg" w={5} alt={"esSYN"} />
-										<Text fontSize={"sm"} color="gray.400">
-											{(
+									<Tooltip label='Additional Annual Reward in esSYX Tokens'>
+									
+										<Text fontSize={"sm"} cursor={'help'} >
+										+ {(
 												((pools[tradingPool]
-													?.rewardSpeeds[0] / 1e18) *
+													?.rewardSpeeds[0] /
+													1e18) *
 													365 *
 													24 *
 													60 *
@@ -135,6 +143,12 @@ export default function TempPage() {
 											).toFixed(2)}{" "}
 											%
 										</Text>
+										</Tooltip>
+										<Image
+											src="/esSYX.svg"
+											w={5}
+											alt={"esSYN"}
+										/>
 									</Flex>
 								</Box>
 							</Flex>
@@ -152,7 +166,7 @@ export default function TempPage() {
 											Issued Debt
 										</Text>
 										<Tooltip
-											label={`When you issue synths, you are allocated a share of the debt pool. As the pool's total value changes, your debt changes as well`}
+											label={`When you issue synths, you are allocated a share of pool's total debt. As the pool's total value changes, your debt changes as well`}
 										>
 											<InfoOutlineIcon
 												cursor={"help"}
@@ -218,7 +232,7 @@ export default function TempPage() {
 							h={2}
 							width={"300px"}
 							rounded="full"
-							bg="gray.800"
+							bg="whiteAlpha.200"
 						>
 							<Box
 								h={2}
@@ -274,12 +288,12 @@ export default function TempPage() {
 					transition={{ duration: 0.25 }}
 					key={tradingPool}
 					style={{
-						width: "33%",
-						backgroundColor: "#1A202C",
-						borderRadius: 10,
+						width: "33%"
 					}}
 				>
+					<Box bg={'whiteAlpha.50'} rounded={10}>
 					<CollateralTable />
+					</Box>
 				</motion.div>
 
 				<motion.div
@@ -289,12 +303,12 @@ export default function TempPage() {
 					transition={{ duration: 0.25 }}
 					key={tradingPool + 2}
 					style={{
-						width: "67%",
-						backgroundColor: "#1A202C",
-						borderRadius: 10,
+						width: "67%"
 					}}
 				>
+					<Box bg={'whiteAlpha.50'} rounded={10}>
 					<IssuanceTable />
+					</Box>
 				</motion.div>
 			</Flex>
 		</>

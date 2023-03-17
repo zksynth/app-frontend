@@ -12,8 +12,6 @@ import { ChainID } from "../src/chains";
 import { BigNumber } from "ethers";
 import { TokenContext } from "./context/TokenContext";
 import { motion } from "framer-motion";
-import { GrHomeRounded } from "react-icons/gr";
-import { MdSwapHorizontalCircle } from "react-icons/md";
 import { RiArrowDropDownLine } from "react-icons/ri";
 
 function NavBar() {
@@ -172,9 +170,9 @@ function NavBar() {
 														pr={1}
 														cursor="pointer"
 														rounded={100}
-														bg='gray.800'
+														bg='whiteAlpha.50'
 														_hover={{
-															bgColor: "gray.800",
+															bgColor: "whiteAlpha.100",
 														}}
 													>
 														<Box
@@ -335,7 +333,7 @@ const NavLink = ({
 	newTab = false,
 	pathname,
 	children,
-	bg = 'gray.800'
+	bg = 'whiteAlpha.50'
 }: any) => {
 	const [isPath, setIsPath] = useState(false);
 
@@ -353,9 +351,9 @@ const NavLink = ({
 					px={4}
 					cursor="pointer"
 					rounded={100}
-					bgColor={isPath ? "gray.700" : bg}
+					bgColor={isPath ? "whiteAlpha.100" : bg}
 					_hover={{
-						bgColor: !isPath ? "gray.800" : "gray.700",
+						bgColor: !isPath ? "whiteAlpha.200" : "whiteAlpha.100",
 						shadow: "md",
 					}}
 					shadow={isPath ? "md" : "none"}
@@ -377,7 +375,7 @@ const NavLink = ({
 	);
 };
 
-const NavLocalLink = ({ path, title, pathname, children, lighten, bg = 'gray.800' }: any) => {
+const NavLocalLink = ({ path, title, pathname, children, lighten, bg = 'whiteAlpha.50' }: any) => {
 	return (
 		<Link href={`${path}`} as={`${path}`}>
 			<Box>

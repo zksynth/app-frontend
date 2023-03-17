@@ -12,10 +12,6 @@ export const Endpoints: any = {
 export const dollarFormatter = new Intl.NumberFormat("en-US", {
 	style: "currency",
 	currency: "USD",
-	maximumSignificantDigits: 6,
-	maximumFractionDigits: 2,
-	maximumIntegerDigits: 6,
-	maximumDecimalDigits: 2,
 	roundingMode: "floor",
 } as any);
 

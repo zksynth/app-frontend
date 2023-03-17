@@ -10,7 +10,7 @@ export default function escrow() {
           Escrow SYX to esSYX to earn a share of protocol revenue in WETH 
         </Text>
 
-        <Flex bg={'gray.800'} mt='10' p={5} rounded='16' align={'center'} justify='space-between'>
+        <Flex bg={'whiteAlpha.200'} mt='10' p={5} rounded='16' align={'center'} justify='space-between'>
           <Heading size={'md'}>Claim WETH</Heading>
           <Flex align={'center'} gap={2}>
           <Box h='2' w='2' bg={'yellow'} rounded='full'></Box>
@@ -19,7 +19,7 @@ export default function escrow() {
         </Flex>
 
 
-        <Flex bg={'gray.800'} mt='5' p={5} rounded='16' align={'center'} justify='space-between'>
+        <Flex bg={'whiteAlpha.200'} mt='5' p={5} rounded='16' align={'center'} justify='space-between'>
           <Heading size={'md'}>Escrow</Heading>
           <Flex align={'center'} gap={2}>
           <Box h='2' w='2' bg={'yellow'} rounded='full'></Box>

@@ -16,8 +16,8 @@ export default function _index({ children }: any) {
 	});
 
 	const backgroundStyle = {
-		// backgroundColor: '#0E1015'
-		bgGradient: 'radial(#0E1015, gray.900)',
+		backgroundColor: '#0A1931'
+		// bgGradient: 'radial(#0A1931, #071325)',
 		// bgGradient: 'radial(gray.900, #12131B)',
 	};
 

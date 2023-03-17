@@ -17,7 +17,7 @@ import Big from "big.js";
 import Response from "../_utils/Response";
 import InfoFooter from "../_utils/InfoFooter";
 
-const Burn = ({ asset, amount, amountNumber }: any) => {
+const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 
 	const [loading, setLoading] = useState(false);
 	const [response, setResponse] = useState<string | null>(null);
@@ -78,10 +78,11 @@ const Burn = ({ asset, amount, amountNumber }: any) => {
 
 				updatePoolBalance(pools[tradingPool].id, decodedLogs[1].args.value.toString(), true);
 				updateSynthWalletBalance(asset.token.id, pools[tradingPool].id, decodedLogs[3].args.value.toString(), true);
-
+				setAmount('0')
 				setConfirmed(true);
-				setResponse("Transaction Successful!");
-				setMessage(
+
+				setMessage("Transaction Successful!");
+				setResponse(
 					`You have burned ${tokenFormatter.format(
 						amountNumber
 					)} ${asset.token.symbol}`

@@ -18,13 +18,12 @@ export default function Footer() {
 
   return (
     <Box
-      // bg={'gray.800'}
       color={'gray.200'}
       mt={10}>
       <Box
         borderTopWidth={1}
         borderStyle={'solid'}
-        borderColor={'#171717'}>
+        borderColor={'whiteAlpha.200'}>
         <Container
           as={Stack}
           maxW={'1200px'}
@@ -36,7 +35,7 @@ export default function Footer() {
             <Flex align={'center'} gap={1}>
             <Box h={2} w={2} bgColor={block == 0 ? 'red': 'primary'} rounded='100'></Box>
           <Text fontSize={'xs'}>{block == 0 ? 'Not Connected': block}</Text>
-          <Text fontSize={'xs'}>| v{config.latest}-alpha</Text>
+          <Text fontSize={'xs'}>| v{config.latest}-beta</Text>
 
             </Flex>
           <Stack direction={'row'} spacing={6}>

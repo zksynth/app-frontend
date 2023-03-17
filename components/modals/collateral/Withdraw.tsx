@@ -21,7 +21,7 @@ import { useContext } from "react";
 import { AppDataContext } from "../../context/AppDataProvider";
 import { ETH_ADDRESS, compactTokenFormatter, dollarFormatter } from "../../../src/const";
 
-export default function Withdraw({ collateral, amount, amountNumber }: any) {
+export default function Withdraw({ collateral, amount, setAmount, amountNumber }: any) {
 	const [loading, setLoading] = useState(false);
 	const [response, setResponse] = useState<string | null>(null);
 	const [hash, setHash] = useState(null);
@@ -74,18 +74,26 @@ export default function Withdraw({ collateral, amount, amountNumber }: any) {
 			setLoading(false);
 			setResponse("Transaction sent! Waiting for confirmation...");
 			setHash(res.hash);
-			await res.wait(1);
+			const response = await res.wait(1);
+			// decode transfer event from response.logs
+			const decodedLogs = response.logs.map((log: any) =>
+				{
+					try {
+						return pool.interface.parseLog(log)
+					} catch (e) {
+						console.log(e)
+					}
+				});
+			const collateralId = decodedLogs[1].args[1].toLowerCase();
+			const depositedAmount = decodedLogs[1].args[2].toString();
 			setConfirmed(true);
-			const collateralId = collateral.token.id;
-			const value = Big(amount)
-				.mul(Big(10).pow(Number(collateral.token.decimals)))
-				.toFixed(0);
-			updateCollateralWalletBalance(collateralId, poolId, value, false);
-			updateCollateralAmount(collateralId, poolId, value, true);
+			updateCollateralWalletBalance(collateralId, poolId, depositedAmount, false);
+			updateCollateralAmount(collateralId, poolId, depositedAmount, true);
+			setAmount('0');
 			setMessage(
-				`You have withdrawn ${amount} ${collateral.token.symbol} from your position.`
+				"Transaction Successful!"
 			);
-			setResponse("Transaction Successful!");
+			setResponse(`You have withdrawn ${amount} ${collateral.token.symbol} from your position.`);
 		}).catch((err: any) => {
 			console.log(err);
 			setMessage(JSON.stringify(err));

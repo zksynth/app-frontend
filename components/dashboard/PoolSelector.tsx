@@ -66,7 +66,7 @@ export default function PoolSelector() {
 							<Skeleton height="30px" width="200px" rounded={8} />
 						)}
 					</Flex>
-
+							<Box bg={'#0A1931'}>
 					<motion.ul
 						variants={{
 							open: {
@@ -97,7 +97,7 @@ export default function PoolSelector() {
 							width: "400px",	
 							padding: "12px",
 							paddingBottom: "18px",	
-							backgroundColor: "#202837",
+							backgroundColor: "#212E44",
 							zIndex: 100,
 						}}
 					>
@@ -120,14 +120,14 @@ export default function PoolSelector() {
 						>
 							<Input
 								placeholder="Search Pool"
-								bg={"gray.700"}
+								bg={"whiteAlpha.200"}
 								border="0"
 								my={2}
 								mb={4}
 								h="44px"
 								_selected={{ border: "0" }}
 							/>
-							<Divider borderColor={"gray.700"} />
+							<Divider borderColor={"whiteAlpha.400"} />
 						</motion.div>
 
 						{pools.map((pool, index) => {
@@ -141,7 +141,7 @@ export default function PoolSelector() {
 									key={index}
 								>
 									<Box
-										_hover={{ bg: "gray.700" }}
+										_hover={{ bg: "whiteAlpha.100" }}
 										cursor="pointer"
 										mx={-3}
 										px={4}
@@ -213,7 +213,7 @@ export default function PoolSelector() {
 												</Flex>
 											</Box>
 										</Flex>
-										<Divider borderColor={"gray.700"} />
+										<Divider borderColor={"whiteAlpha.400"} />
 									</Box>
 								</motion.li>
 							);
@@ -223,6 +223,7 @@ export default function PoolSelector() {
 							<Text fontSize={'sm'}>Showing {pools.length} markets</Text>
 						</Box> */}
 					</motion.ul>
+					</Box>
 				</motion.nav>
 			</Box>
 		</div>

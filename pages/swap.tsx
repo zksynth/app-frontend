@@ -21,7 +21,7 @@ export default function swap() {
 						"fadeIn 0.5s ease-in-out"
 					}
 					
-					bgColor={"gray.800"}
+					bgColor={"whiteAlpha.100"}
 					rounded={15}
 				>
 					

@@ -317,7 +317,7 @@ function Swap() {
 			</Head>
 			{pools[tradingPool] ? (
 				<Box>
-					<Box px="5" py={10} roundedTop={15} bg={"gray.700"}>
+					<Box px="5" py={10} roundedTop={15} bg={"whiteAlpha.100"}>
 						<Flex align="center" justify={"space-between"}>
 							<InputGroup width={"70%"}>
 								<Input
@@ -369,10 +369,8 @@ function Swap() {
 					<Box px="5">
 						<Button
 							mt={-5}
-							bg="gray.700"
-							border={"2px"}
-							borderColor="gray.800"
-							_hover={{ bg: "gray.900" }}
+							bg="gray.600"
+							_hover={{ bg: "gray.500" }}
 							rounded="100%"
 							onClick={switchTokens}
 							variant="unstyled"
@@ -386,7 +384,7 @@ function Swap() {
 						</Button>
 					</Box>
 
-					<Box px="5" pt={7} roundedBottom={15} bg={"gray.800"}>
+					<Box px="5" pt={7} roundedBottom={15} bg={"whiteAlpha"}>
 						{/* Output */}
 						<Flex align="center" justify={"space-between"}>
 							<InputGroup width={"70%"}>
@@ -482,7 +480,7 @@ function Swap() {
 							}}
 						>
 							{isOpen && 	
-							<Box border={'1px'} borderColor='gray.700' mt={2} px={4} py={2} rounded={16} fontSize='sm' color={'gray.400'}>
+							<Box border={'1px'} borderColor='whiteAlpha.700' mt={2} px={4} py={2} rounded={16} fontSize='sm' color={'gray.400'}>
 								<Flex justify={'space-between'}>
 								<Text>Price Impact</Text>
 								<Text>{100*(Number(inputToken().burnFee) + Number(outputToken().mintFee)) / 10000} %</Text>
@@ -519,7 +517,7 @@ function Swap() {
 							}
 							loadingText="Sign the transaction in your wallet"
 							isLoading={loading}
-							_hover={{ bg: "gray.600" }}
+							_hover={{ bg: "whiteAlpha.600" }}
 							color="#171717"
 							height={"55px"}
 						>

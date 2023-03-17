@@ -58,7 +58,7 @@ function AppDataProvider({ children }: any) {
 				setTradingPool(parseInt(_tradingPool));
 			}
 		}
-	}, [])
+	}, [tradingPool])
 
 	const [chain, setChain] = React.useState(ChainID.ARB_GOERLI);
 
@@ -278,13 +278,14 @@ function AppDataProvider({ children }: any) {
 			if (_pools[i].id == poolAddress) {
 				for (let j in _pools[i].collaterals) {
 					if (_pools[i].collaterals[j].token.id == collateralAddress) {
+						console.log(_pools[i].collaterals[j].walletBalance);
 						_pools[i].collaterals[j].walletBalance = Big(_pools[i].collaterals[j].walletBalance ?? 0)[isMinus?'minus' : 'add'](value).toString();
+						console.log(_pools[i].collaterals[j].walletBalance);
 					}
 				}
 			}
 		}
 		setPools(_pools);
-		setRefresh(Math.random());
 	};
 
 	const updateCollateralAmount = (
@@ -306,7 +307,6 @@ function AppDataProvider({ children }: any) {
 			}
 		}
 		setPools(_pools);
-		setRefresh(Math.random());
 	};
 
 	const addCollateralAllowance = (
@@ -324,7 +324,6 @@ function AppDataProvider({ children }: any) {
 			}
 		}
 		setPools(_pools);
-		setRefresh(Math.random());
 	};
 
 	const updateSynthWalletBalance = (

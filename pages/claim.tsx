@@ -57,6 +57,7 @@ export default function Claim() {
 							pools.map((pool: any) => pool.id)
 						)
 						.then((result) => {
+              console.log(result);
 							setSynAccrued(result[0].toString());
 						});
 				});
@@ -93,7 +94,7 @@ export default function Claim() {
 				</Text>
 
 				<Flex justify={"start"} align={"center"} gap={1}></Flex>
-				<Box bg={"gray.800"} rounded={16} mt={5}>
+				<Box bg={"whiteAlpha.100"} rounded={16} mt={5}>
 					<TableContainer pt={1}>
 						<Table variant="simple">
 							<Thead>
@@ -112,7 +113,7 @@ export default function Claim() {
 								<Tr>
 									<Td>
 										<Flex align={"center"} gap={2}>
-											<Image src={"/esSYX.svg"} w="10" />
+											<Image src={"/esSYX.svg"} w="10" alt="esSYX" />
 											<Text>esSYX</Text>
 										</Flex>
 									</Td>

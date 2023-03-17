@@ -2,7 +2,6 @@ import React, { useState } from "react";
 
 import {
 	Flex,
-	Image,
 	Text,
 	Box,
 	useDisclosure,
@@ -10,25 +9,18 @@ import {
 	Divider,
 	Tooltip,
 } from "@chakra-ui/react";
-import { motion } from "framer-motion";
-import {
-	dollarFormatter,
-	preciseTokenFormatter,
-	tokenFormatter,
-} from "../../../src/const";
+import { dollarFormatter } from "../../../src/const";
 import Big from "big.js";
 import InfoFooter from "../_utils/InfoFooter";
 import Response from "../_utils/Response";
 import { useAccount, useBalance, useNetwork } from "wagmi";
-import Link from "next/link";
 import { ethers } from "ethers";
-import { getAddress, getContract, send } from "../../../src/contract";
+import { getContract, send } from "../../../src/contract";
 import { useContext } from "react";
 import { AppDataContext } from "../../context/AppDataProvider";
 import { ETH_ADDRESS, compactTokenFormatter } from "../../../src/const";
 
-export default function Deposit({ collateral, amount, amountNumber }: any) {
-	const { isOpen, onOpen, onClose } = useDisclosure();
+export default function Deposit({ collateral, amount, setAmount, amountNumber }: any) {
 
 	const [loading, setLoading] = useState(false);
 	const [response, setResponse] = useState<string | null>(null);
@@ -57,6 +49,7 @@ export default function Deposit({ collateral, amount, amountNumber }: any) {
 	const deposit = async () => {
 		const poolId = pools[tradingPool].id;
 		const pool = await getContract("Pool", chain, poolId);
+
 		let tx;
 		if (collateral.token.id == ETH_ADDRESS.toLowerCase()) {
 			tx = send(
@@ -83,18 +76,26 @@ export default function Deposit({ collateral, amount, amountNumber }: any) {
 			setLoading(false);
 			setResponse("Transaction sent! Waiting for confirmation...");
 			setHash(res.hash);
-			await res.wait(1);
+			const response = await res.wait(1);
+			// decode transfer event from response.logs
+			const decodedLogs = response.logs.map((log: any) =>
+				{
+					try {
+						return pool.interface.parseLog(log)
+					} catch (e) {
+						console.log(e)
+					}
+				});
+			const collateralId = decodedLogs[1].args[1].toLowerCase();
+			const depositedAmount = decodedLogs[1].args[2].toString();
 			setConfirmed(true);
-			const collateralId = collateral.token.id;
-			const value = Big(amount)
-				.mul(Big(10).pow(Number(collateral.token.decimals)))
-				.toFixed(0);
-			updateCollateralWalletBalance(collateralId, poolId, value, true);
-			updateCollateralAmount(collateralId, poolId, value, false);
+			updateCollateralWalletBalance(collateralId, poolId, depositedAmount, true);
+			updateCollateralAmount(collateralId, poolId, depositedAmount, false);
+			setAmount('0');
 			setMessage(
-				`You have deposited ${amount} ${collateral.token.symbol}`
+				"Transaction Successful!"
 			);
-			setResponse("Transaction Successful!");
+			setResponse(`You have deposited ${Big(depositedAmount).div(10**collateral.token.decimals).toString()} ${collateral.token.symbol}`);
 		}).catch((err: any) => {
 			console.log(err);
 			setMessage(JSON.stringify(err));

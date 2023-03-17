@@ -34,7 +34,7 @@ import Response from "../_utils/Response";
 import InfoFooter from "../_utils/InfoFooter";
 import { ethers } from "ethers";
 
-const Issue = ({ asset, amount, amountNumber }: any) => {
+const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 
 	const [loading, setLoading] = useState(false);
 	const [response, setResponse] = useState<string | null>(null);
@@ -92,9 +92,9 @@ const Issue = ({ asset, amount, amountNumber }: any) => {
 
 				updatePoolBalance(pools[tradingPool].id, decodedLogs[1].args.value.toString(), false);
 				updateSynthWalletBalance(asset.token.id, pools[tradingPool].id, decodedLogs[3].args.value.toString(), false);
-
-				setResponse("Transaction Successful!");
-				setMessage(
+				setAmount('0')
+				setMessage("Transaction Successful!");
+				setResponse(
 					`You have minted ${tokenFormatter.format(
 						amountNumber
 					)} ${asset.token.symbol}`

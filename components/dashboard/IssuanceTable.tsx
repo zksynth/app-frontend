@@ -42,10 +42,10 @@ export default function CollateralTable() {
 						<Table variant="simple">
 							<Thead>
 								<Tr>
-									<Th color={"gray.500"}>Synth</Th>
-									<Th color={"gray.500"}>Price</Th>
-									<Th color={"gray.500"}>Volume 24h</Th>
-									<Th color={"gray.500"} isNumeric>
+									<Th color={"whiteAlpha.500"}>Synthetic Asset</Th>
+									<Th color={"whiteAlpha.500"}>Price</Th>
+									<Th color={"whiteAlpha.500"}>Volume 24h</Th>
+									<Th color={"whiteAlpha.500"} isNumeric>
 										Liquidity
 									</Th>
 								</Tr>
@@ -89,10 +89,10 @@ export default function CollateralTable() {
 										rounded={"full"}
 										bgColor={
 											page === currentPage
-												? "gray.800"
-												: "gray.700"
+												? "whiteAlpha.200"
+												: "whiteAlpha.100"
 										}
-										_hover={{ bgColor: "gray.700" }}
+										_hover={{ bgColor: "whiteAlpha.300" }}
 									/>
 								))}
 							</PaginationPageGroup>
