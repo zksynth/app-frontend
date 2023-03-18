@@ -1,4 +1,5 @@
-import { Alert, AlertIcon, Box, Text, Link } from "@chakra-ui/react";
+import { Alert, AlertIcon, Box, Text } from "@chakra-ui/react";
+import Link from "next/link";
 import React, { useContext } from "react";
 import { chainMapping } from "../../../src/chains";
 import { AppDataContext } from "../../context/AppDataProvider";
@@ -14,7 +15,7 @@ export default function Response({response, message, hash, confirmed}: any) {
 				<Box width={"100%"} mt={4} mb={0}>
 					<Alert
 						status={
-							message.includes("confirm")
+							message.includes("Confirm")
 								? "info"
 								: confirmed && message.includes("Success")
 								? "success"

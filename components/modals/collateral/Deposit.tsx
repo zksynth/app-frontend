@@ -74,7 +74,8 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber }:
 		}
 		tx.then(async (res: any) => {
 			setLoading(false);
-			setResponse("Transaction sent! Waiting for confirmation...");
+			setMessage("Confirming...");
+			setResponse("Transaction sent! Waiting for confirmation");
 			setHash(res.hash);
 			const response = await res.wait(1);
 			// decode transfer event from response.logs
@@ -260,7 +261,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber }:
 						}
 						isLoading={loading}
 						loadingText="Please sign the transaction"
-						bg={"primary"}
+						bg={"primary.400"}
 						color='gray.800'
 						_hover={{
 							opacity: 0.8,
@@ -296,7 +297,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber }:
 						}
 						isLoading={loading}
 						loadingText="Please sign the transaction"
-						bgColor="primary"
+						bgColor="primary.400"
 						width="100%"
 						color="gray.700"
 						mt={4}

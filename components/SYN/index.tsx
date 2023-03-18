@@ -26,10 +26,10 @@ export default function SYX() {
 	const tabStyle = (index: number) => ({
 		borderRadius: 100,
 		_hover: {
-			bg: tabIndex == index ? "secondary" : "whiteAlpha.100",
+			bg: tabIndex == index ? "secondary.400" : "whiteAlpha.100",
 		},
 		color: tabIndex == index ? "white" : "gray.300",
-		bg: tabIndex == index ? "secondary" : "transparent",
+		bg: tabIndex == index ? "secondary.400" : "transparent",
 		onClick: () => setTabIndex(index),
 	});
 

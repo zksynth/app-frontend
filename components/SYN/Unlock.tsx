@@ -194,7 +194,7 @@ export default function Unlock() {
 						size="md"
 						mt={4}
 						rounded={16}
-						colorScheme="primarySchema"
+						colorScheme="primary"
 						variant="outline"
 						onClick={approve}
 						disabled={
@@ -218,7 +218,7 @@ export default function Unlock() {
 						size="md"
 						mt={4}
 						rounded={16}
-						colorScheme="primarySchema"
+						colorScheme="primary"
 						variant="outline"
 						onClick={unlock}
 						disabled={

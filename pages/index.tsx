@@ -6,6 +6,7 @@ import {
 	Heading,
 	Progress,
 	Tooltip,
+	Divider,
 } from "@chakra-ui/react";
 import React, { useContext } from "react";
 import { AppDataContext } from "../components/context/AppDataProvider";
@@ -17,6 +18,9 @@ import { motion } from "framer-motion";
 import Head from "next/head";
 import { InfoIcon, InfoOutlineIcon } from "@chakra-ui/icons";
 import Big from "big.js";
+import { BsStars } from "react-icons/bs";
+import { FaBurn } from "react-icons/fa";
+
 export default function TempPage() {
 	const {
 		pools,
@@ -34,13 +38,38 @@ export default function TempPage() {
 
 	if (!hydrated) return <></>;
 
+	const esSyxApr = () => {
+		if (!pools[tradingPool]) return "0";
+		if(Big(pools[tradingPool].totalDebtUSD).eq(0)) return "0"
+		return Big(pools[tradingPool]?.rewardSpeeds[0])
+			.div(1e18)
+			.mul(365 * 24 * 60 * 60 * ESYX_PRICE)
+			.div(pools[tradingPool]?.totalDebtUSD)
+			.toFixed(2);
+	};
+
+	const debtBurnApr = () => {
+		if (!pools[tradingPool]) return "0";
+		if(Big(pools[tradingPool].totalDebtUSD).eq(0)) return "0"
+		return Big(pools[tradingPool]?.averageDailyBurn ?? 0)
+			.div(1e18)
+			.mul(365)
+			.div(pools[tradingPool]?.totalDebtUSD)
+			.mul(100)
+			.toFixed(2);
+	};
+
 	return (
 		<>
 			<Head>
 				<title>Dashboard | SyntheX</title>
 				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
 			</Head>
-			<Box display={{sm: 'block', md: 'flex'}} pt="100px" justifyContent={"space-between"}>
+			<Box
+				display={{ sm: "block", md: "flex" }}
+				pt="100px"
+				justifyContent={"space-between"}
+			>
 				<Box>
 					<Box mb={4}>
 						<PoolSelector />
@@ -52,7 +81,11 @@ export default function TempPage() {
 						transition={{ duration: 0.25 }}
 						key={tradingPool}
 					>
-						<Flex flexDir={{sm: 'column', md: 'row'}} gap={{sm: 10, md: 16}} zIndex={1}>
+						<Flex
+							flexDir={{ sm: "column", md: "row" }}
+							gap={{ sm: 10, md: 16 }}
+							zIndex={1}
+						>
 							<Flex mt={4} gap={3} align="start">
 								<Image
 									h={"35px"}
@@ -68,7 +101,10 @@ export default function TempPage() {
 									>
 										Collateral
 									</Heading>
-									<Text fontWeight={'semibold'} fontSize={"xl"}>
+									<Text
+										fontWeight={"semibold"}
+										fontSize={"xl"}
+									>
 										{dollarFormatter.format(
 											totalCollateral
 										)}
@@ -84,72 +120,79 @@ export default function TempPage() {
 									alt={"icon2"}
 								/>
 								<Box mt={-1}>
-									<Heading fontSize={"sm"} color="whiteAlpha.600">
+									<Heading
+										fontSize={"sm"}
+										color="whiteAlpha.600"
+									>
 										APY
 									</Heading>
-									<Flex mb={0.5} gap={1.5} align="center">
-										<Text fontSize={"xl"} fontWeight={'semibold'}>
-											{pools[tradingPool]?.totalDebtUSD >
-											0
-												? tokenFormatter.format(
-														Number(
-															Big(
-																pools[
-																	tradingPool
-																]
-																	?.averageDailyBurn ??
-																	0
-															)
-																.div(1e18)
-																.mul(365)
-																.div(
-																	pools[
-																		tradingPool
-																	]
-																		?.totalDebtUSD
-																)
-																.mul(100)
-																.toFixed(2)
-														)
-												  )
-												: "0"}{" "}
-											%
-										</Text>
+									<Tooltip
+										cursor={"help"}
+										bg="secondary.900"
+										rounded={8}
+										p={0}
+										label={
+											<>
+											<Box rounded={8} bg={'blackAlpha.200'} border='2px' borderColor={'whiteAlpha.100'}>
+												<Box px={3} py={2}>
+													<Text color={'whiteAlpha.700'}>Total APR</Text>
+													<Text fontSize={'lg'} color={'white'}>{Number(debtBurnApr()) + Number(esSyxApr())} %</Text>
+												</Box>
 
-										<Tooltip
-											label={`Amount of your debt burned based on 7-day average data`}
-										>
-											<InfoOutlineIcon
-												cursor={"help"}
-												color={"gray.400"}
-											/>
-										</Tooltip>
-									</Flex>
+												<Divider/>
+												<Box px={3} py={1} bg='blackAlpha.400'>
+												<Flex
+													align={"center"}
+													gap={2}
+													mb={2}
+													mt={2}
+													color='white'
+												>
+													<FaBurn size={"20px"} />
+													<Flex gap={2}>
+														<Text>
+															{debtBurnApr()} %
+														</Text>
+														<Text color={'whiteAlpha.700'}>
+															Debt Burned
+														</Text>
+													</Flex>
+												</Flex>
+												<Flex
+													align={"center"}
+													gap={2}
+													mb={2}
+													color='white'
+												>
+													<Image
+														src="/esSYX.svg"
+														w={5}
+														alt={"esSYN"}
+													/>
+													<Box gap={2}>
+														<Text>
+															{esSyxApr()} %
+														</Text>
+														<Text color={'whiteAlpha.700'}>
+															Escrowed SYX
+														</Text>
+													</Box>
+												</Flex>
+												</Box>
+												</Box>
+											</>
+										}
+									>
+										<Flex mb={0.5} gap={1.5} align="center">
+											<Text
+												fontSize={"xl"}
+												fontWeight={"semibold"}
+											> {Number(debtBurnApr()) + Number(esSyxApr())} %
+											</Text>
 
-									<Flex gap={1} mt={1}>
-									<Tooltip label='Additional Annual Reward in esSYX Tokens'>
-									
-										<Text fontSize={"sm"} cursor={'help'} >
-										+ {(
-												((pools[tradingPool]
-													?.rewardSpeeds[0] /
-													1e18) *
-													365 *
-													24 *
-													60 *
-													60 *
-													ESYX_PRICE) /
-												pools[tradingPool]?.totalDebtUSD
-											).toFixed(2)}{" "}
-											%
-										</Text>
-										</Tooltip>
-										<Image
-											src="/esSYX.svg"
-											w={5}
-											alt={"esSYN"}
-										/>
-									</Flex>
+											<BsStars color={"gray.400"} />
+										</Flex>
+									</Tooltip>
 								</Box>
 							</Flex>
 
@@ -162,7 +205,10 @@ export default function TempPage() {
 								/>
 								<Box mt={-1}>
 									<Flex mb={0.5} gap={1.5} align="center">
-										<Heading size={"sm"} color="whiteAlpha.600">
+										<Heading
+											size={"sm"}
+											color="whiteAlpha.600"
+										>
 											Issued Debt
 										</Heading>
 										<Tooltip
@@ -175,7 +221,10 @@ export default function TempPage() {
 										</Tooltip>
 									</Flex>
 
-									<Text fontSize={"xl"} fontWeight={'semibold'}>
+									<Text
+										fontSize={"xl"}
+										fontWeight={"semibold"}
+									>
 										{dollarFormatter.format(totalDebt)}
 									</Text>
 								</Box>
@@ -190,8 +239,15 @@ export default function TempPage() {
 					transition={{ duration: 0.25 }}
 					key={tradingPool}
 				>
-					<Box textAlign={{sm: "left", md: "right"}} mt={{sm: 16, md: 3}} >
-						<Flex justify={{sm: "start", md: "end"}} align="center" gap={1}>
+					<Box
+						textAlign={{ sm: "left", md: "right" }}
+						mt={{ sm: 16, md: 3 }}
+					>
+						<Flex
+							justify={{ sm: "start", md: "end" }}
+							align="center"
+							gap={1}
+						>
 							<Heading size={"sm"} mb={1} color="gray.400">
 								Debt Limit
 							</Heading>
@@ -207,18 +263,18 @@ export default function TempPage() {
 							</Tooltip>
 						</Flex>
 						<Text
-							fontWeight={'semibold'}
+							fontWeight={"semibold"}
 							fontSize={"3xl"}
 							mb={2}
 							color={
 								totalCollateral > 0
 									? (100 * totalDebt) / totalCollateral < 80
-										? "primary"
+										? "primary.400"
 										: (100 * totalDebt) / totalCollateral <
 										  90
 										? "yellow.400"
 										: "red.400"
-									: "primary"
+									: "primary.400"
 							}
 						>
 							{(totalCollateral > 0
@@ -242,13 +298,13 @@ export default function TempPage() {
 									totalCollateral > 0
 										? (100 * totalDebt) / totalCollateral <
 										  80
-											? "primary"
+											? "primary.400"
 											: (100 * totalDebt) /
 													totalCollateral <
 											  90
 											? "yellow.400"
 											: "red.400"
-										: "primary"
+										: "primary.400"
 								}
 								width={
 									(totalCollateral > 0
@@ -257,7 +313,11 @@ export default function TempPage() {
 								}
 							></Box>
 						</Box>
-						<Flex justify={{sm: "start", md: "end"}} align="center" gap={1}>
+						<Flex
+							justify={{ sm: "start", md: "end" }}
+							align="center"
+							gap={1}
+						>
 							<Text fontSize={"sm"} color="gray.400">
 								Available to Issue
 							</Text>
@@ -281,35 +341,54 @@ export default function TempPage() {
 				</motion.div>
 			</Box>
 
-			<Flex flexDir={{sm: "column", md: "row"}} align={"stretch"} gap={8} pb={"100px"} mt={"80px"} zIndex={1}>
-				<Box w={{sm: "100%", md: "33%"}} alignSelf='stretch' >
-				<motion.div
-					initial={{ opacity: 0, y: 15 }}
-					animate={{ opacity: 1, y: 0 }}
-					exit={{ opacity: 0, y: 15 }}
-					transition={{ duration: 0.25 }}
-					key={tradingPool}
-					style={{
-						height: '100%'
-					}}
-				>
-					<Box bg={'#0A1931'} rounded={10} h={'100%'} border="2px" borderColor={"whiteAlpha.50"}>
-					<CollateralTable />
-					</Box>
-				</motion.div>
+			<Flex
+				flexDir={{ sm: "column", md: "row" }}
+				align={"stretch"}
+				gap={8}
+				pb={"100px"}
+				mt={"80px"}
+				zIndex={1}
+			>
+				<Box w={{ sm: "100%", md: "33%" }} alignSelf="stretch">
+					<motion.div
+						initial={{ opacity: 0, y: 15 }}
+						animate={{ opacity: 1, y: 0 }}
+						exit={{ opacity: 0, y: 15 }}
+						transition={{ duration: 0.25 }}
+						key={tradingPool}
+						style={{
+							height: "100%",
+						}}
+					>
+						<Box
+							bg={"#0A1931"}
+							rounded={10}
+							h={"100%"}
+							border="2px"
+							borderColor={"whiteAlpha.50"}
+						>
+							<CollateralTable />
+						</Box>
+					</motion.div>
 				</Box>
-				<Box w={{sm: "100%", md: "67%"}}>
-				<motion.div
-					initial={{ opacity: 0, y: 15 }}
-					animate={{ opacity: 1, y: 0 }}
-					exit={{ opacity: 0, y: 15 }}
-					transition={{ duration: 0.25 }}
-					key={tradingPool + 2}
-				>
-					<Box bg={'#0A1931'} rounded={10} h={'100%'} border="2px" borderColor={"whiteAlpha.50"}>
-					<IssuanceTable />
-					</Box>
-				</motion.div>
+				<Box w={{ sm: "100%", md: "67%" }}>
+					<motion.div
+						initial={{ opacity: 0, y: 15 }}
+						animate={{ opacity: 1, y: 0 }}
+						exit={{ opacity: 0, y: 15 }}
+						transition={{ duration: 0.25 }}
+						key={tradingPool + 2}
+					>
+						<Box
+							bg={"#0A1931"}
+							rounded={10}
+							h={"100%"}
+							border="2px"
+							borderColor={"whiteAlpha.50"}
+						>
+							<IssuanceTable />
+						</Box>
+					</motion.div>
 				</Box>
 			</Flex>
 		</>

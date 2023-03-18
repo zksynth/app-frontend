@@ -13,7 +13,8 @@ import {
 	Button,
 } from "@chakra-ui/react";
 
-import { ConnectButton as RainbowConnect } from "@rainbow-me/rainbowkit";
+import { ConnectButton as RainbowConnect } from '@rainbow-me/rainbowkit';
+import ConnectButton from './ConnectButton'; 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -32,7 +33,7 @@ import { tokenFormatter } from '../src/const';
 function NavBar() {
 	const router = useRouter();
 
-	const { status, points, fetchData, setChain, refreshData, pools } =
+	const { status, account, fetchData, setChain, refreshData, pools } =
 		useContext(AppDataContext);
 	const { fetchData: fetchTokenData } = useContext(TokenContext);
 
@@ -354,7 +355,7 @@ function NavBar() {
 							align={"center"}
 							h={"38px"}
 							w='100%'
-							px={4}
+							px={3}
 							cursor="pointer"
 							rounded={100}
 						>
@@ -363,13 +364,13 @@ function NavBar() {
 								fontSize="sm"
 							>
 								<Flex align={"center"} gap={2}>
-									<Heading size={"xs"}>{tokenFormatter.format(points?.totalPoint ?? 0)} Points</Heading>
+									<Heading size={"xs"}>{(Number(account?.totalPoint ?? '0')).toFixed(0)} Points</Heading>
 								</Flex>
 							</Box>
 						</Flex>
 					</Link>
 					<Box>
-						<RainbowConnect chainStatus={"icon"} />
+						<ConnectButton />
 						{/* <Button onClick={toggleColorMode}>
 							Toggle {colorMode === 'light' ? 'Dark' : 'Light'}
 						</Button> */}
@@ -455,7 +456,7 @@ const NavLink = ({
 					borderColor={"whiteAlpha.50"}
 				>
 					<Box
-						color={isPath ? "primary" : "gray.100"}
+						color={isPath ? "primary.400" : "gray.100"}
 						fontFamily="Roboto"
 						fontWeight={"bold"}
 						fontSize="sm"

@@ -20,27 +20,35 @@ import {
 	Link,
 	Image,
 	Tooltip,
-	Divider
+	Divider,
+	Switch,
+	Collapse,
+	Input
 } from "@chakra-ui/react";
 
 import { AiOutlineInfoCircle, AiOutlinePlus } from "react-icons/ai";
 import { getContract, send } from "../../../src/contract";
-import { useContext } from "react";
+import { useContext, useEffect } from 'react';
 import { AppDataContext } from "../../context/AppDataProvider";
 import { useAccount, useNetwork } from "wagmi";
 import { dollarFormatter, tokenFormatter } from "../../../src/const";
 import Big from "big.js";
 import Response from "../_utils/Response";
 import InfoFooter from "../_utils/InfoFooter";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
+import { useRouter } from "next/router";
+import { base58 } from "ethers/lib/utils.js";
 
 const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
-
+	const router = useRouter();
 	const [loading, setLoading] = useState(false);
 	const [response, setResponse] = useState<string | null>(null);
 	const [hash, setHash] = useState(null);
 	const [confirmed, setConfirmed] = useState(false);
 	const [message, setMessage] = useState("");
+
+	const [useReferral, setUseReferral] = useState(false);
+	const [referral, setReferral] = useState<string|null>(null);
 
 	const {
 		chain,
@@ -50,8 +58,21 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 		pools,
 		tradingPool,
 		totalCollateral,
-		updatePoolBalance
+		updatePoolBalance,
+		account
 	} = useContext(AppDataContext);
+
+	useEffect(() => {
+		if(referral == null){
+			const { ref: refCode } = router.query;
+			if(refCode){
+				setReferral(refCode as string);
+				setUseReferral(true);
+			} else {
+				setUseReferral(false);
+			}
+		}
+	})
 
 	const max = () => {
 		return (Big(adjustedCollateral).sub(totalDebt).div(asset.priceUSD).gt(0) ? Big(adjustedCollateral).sub(totalDebt).div(asset.priceUSD) : 0).toString();
@@ -75,7 +96,8 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 		)
 			.then(async (res: any) => {
 				setLoading(false);
-				setResponse("Transaction sent! Waiting for confirmation...");
+				setMessage("Confirming...");
+				setResponse("Transaction sent! Waiting for confirmation");
 				setHash(res.hash);
 				setConfirmed(true);
 				
@@ -89,8 +111,8 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 						console.log(e)
 					}
 				});
-
-				updatePoolBalance(pools[tradingPool].id, decodedLogs[1].args.value.toString(), false);
+				const amountUSD = Big(decodedLogs[3].args.value.toString()).mul(asset.priceUSD).div(10 ** 18).mul(1 + asset.mintFee/10000).toFixed(4);
+				updatePoolBalance(pools[tradingPool].id, decodedLogs[1].args.value.toString(), amountUSD, false);
 				updateSynthWalletBalance(asset.token.id, pools[tradingPool].id, decodedLogs[3].args.value.toString(), false);
 				setAmount('0')
 				setMessage("Transaction Successful!");
@@ -108,6 +130,33 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 				setMessage(JSON.stringify(err));
 			});
 	};
+
+	const isValid = () => {
+		if(referral == '' || referral == null) return true;
+		try{
+			const decodedString = BigNumber.from(base58.decode(referral!)).toHexString();
+			return ethers.utils.isAddress(decodedString);
+		} catch (err) {
+			return false
+		}
+	}
+
+	const _setUseReferral = () => {
+		if(useReferral){
+			setReferral('')
+			setUseReferral(false);
+		} else {
+			const { ref: refCode } = router.query;
+			if(refCode){
+				setReferral(refCode as string);
+			} else {
+				setReferral('');
+			}
+			setUseReferral(true);
+		}
+	}
+
+	console.log(isValid());
 
 	const { isConnected } = useAccount();
 	const { chain: activeChain } = useNetwork();
@@ -166,6 +215,18 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 								<Text fontSize={"md"}>{dollarFormatter.format(adjustedCollateral - totalDebt)} {"->"} {dollarFormatter.format(adjustedCollateral - amount*asset.priceUSD - totalDebt)}</Text>
 							</Flex>
 						</Box>
+
+						{(!account) && <> <Flex mt={6} gap={2} align={'center'}>
+							<Text  fontSize={"sm"} color='gray.400' fontWeight={'bold'}>
+								Use Referral Code
+							</Text>
+							<Switch colorScheme={'primary'} isChecked={useReferral} onChange={_setUseReferral} />
+						</Flex>
+						<Collapse in={useReferral} animateOpacity >
+							<Box mt={3}>
+								<Input placeholder='Referral Code' value={referral!} onChange={(e) => setReferral(e.target.value)} isInvalid={!isValid()} errorBorderColor='red.400' colorScheme={'primary'} />
+							</Box>
+						</Collapse> </>}
 					</Box>
 
 						<Flex mt={2} justify="space-between">
@@ -177,11 +238,12 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 								activeChain?.unsupported ||
 								!amount ||
 								amountNumber == 0 ||
-								Big(amountNumber > 0 ? amount : amountNumber).gt(max()) 
+								Big(amountNumber > 0 ? amount : amountNumber).gt(max()) ||
+								!isValid()
 							}
 							isLoading={loading}
 							loadingText="Please sign the transaction"
-							bgColor="primary"
+							bgColor="primary.400"
 							width="100%"
 							color="gray.700"
 							mt={4}
@@ -193,6 +255,7 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 							}}
 						>
 							{isConnected && !activeChain?.unsupported ? (
+								isValid() ? 
 								Big(amountNumber > 0 ? amount : amountNumber).gt(max()) 
 								? (
 									<>Insufficient Collateral</>
@@ -201,9 +264,10 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 								) : (
 									<>Mint</>
 								)
+								: <>Invalid Referral Code</>
 							) : (
 								<>Please connect your wallet</>
-							)}
+							) }
 						</Button>
 
 						<Response

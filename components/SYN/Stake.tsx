@@ -162,7 +162,7 @@ export default function Stake() {
 					<Heading size={"md"}>Stake and earn</Heading>
 
 					{staking.rewardRate ? (
-						<Heading size={"md"} color="primary">
+						<Heading size={"md"} color="primary.400">
 							{tokenFormatter.format(
 								(100*parseFloat(staking.rewardRate) *
 									365 *
@@ -225,7 +225,7 @@ export default function Stake() {
 						size="md"
 						mt={4}
 						rounded={16}
-						colorScheme="primarySchema"
+						colorScheme="primary"
 						variant="outline"
 						onClick={approve}
 						loadingText="Approving"
@@ -249,7 +249,7 @@ export default function Stake() {
 						size="md"
 						mt={4}
 						rounded={16}
-						colorScheme="primarySchema"
+						colorScheme="primary"
 						variant="outline"
 						onClick={stake}
 						disabled={

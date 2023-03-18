@@ -206,7 +206,7 @@ export default function Claim() {
 												0
 											)}
 											rounded={16}
-											colorScheme="primarySchema"
+											colorScheme="primary"
 											variant="outline"
 										>
 											Claim All

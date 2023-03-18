@@ -166,7 +166,8 @@ function Swap() {
 		)
 			.then(async (res: any) => {
 				setLoading(false);
-				setResponse("Transaction sent! Waiting for confirmation...");
+				setMessage("Confirming...");
+				setResponse("Transaction sent! Waiting for confirmation");
 				setHash(res.hash);
 				const response = await res.wait(1);
 				// decode response.logs
@@ -508,7 +509,7 @@ function Swap() {
 							size="lg"
 							fontSize={"xl"}
 							width={"100%"}
-							bgColor={"primary"}
+							bgColor={"primary.400"}
 							rounded={16}
 							onClick={exchange}
 							disabled={

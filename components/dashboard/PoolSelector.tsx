@@ -98,11 +98,10 @@ export default function PoolSelector() {
 							flexDirection: "column",
 							position: "fixed",
 							width: "400px",
-							
-							paddingBottom: "18px",
+							zIndex: '100',
 							backgroundColor: "#0A1931",
 							border: "2px solid #212E44",
-							borderRadius: "16px"
+							borderRadius: "10px"
 						}}
 					>
 						<motion.div
@@ -122,9 +121,9 @@ export default function PoolSelector() {
 								},
 							}}
 							style={{
-								padding: "4px 12px",
-								borderRadius: '14px 14px 0 0 ',
-								backgroundColor: "rgba(255,255,255,0.05)",
+								padding: "4px 10px",
+								borderRadius: '8px 8px 0 0',
+								// backgroundColor: "rgba(255,255,255,0.05)",
 								
 							}}
 						>
@@ -140,6 +139,8 @@ export default function PoolSelector() {
 
 							/>
 						</motion.div>
+
+						<Divider/>
 
 						{pools.map((pool, index) => {
 							return (
@@ -226,7 +227,7 @@ export default function PoolSelector() {
 											</Box>
 										</Flex>
 										{index != pools.length - 1 && <Divider
-											borderColor={"whiteAlpha.400"}
+											borderColor={"whiteAlpha.200"}
 											mx={-4}
 											w="109%"
 										/>}

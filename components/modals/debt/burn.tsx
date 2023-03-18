@@ -63,7 +63,8 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 		)
 			.then(async (res: any) => {
 				setLoading(false);
-				setResponse("Transaction sent! Waiting for confirmation...");
+				setMessage("Confirming...");
+				setResponse("Transaction sent! Waiting for confirmation");
 				setHash(res.hash);
 				// decode logs
 				const response = await res.wait(1);
@@ -75,8 +76,8 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 						console.log(e)
 					}
 				});
-
-				updatePoolBalance(pools[tradingPool].id, decodedLogs[1].args.value.toString(), true);
+				const amountUSD = Big(decodedLogs[3].args.value.toString()).mul(asset.priceUSD).div(10 ** 18).mul(1 - asset.burnFee/10000).toFixed(4);
+				updatePoolBalance(pools[tradingPool].id, decodedLogs[1].args.value.toString(), amountUSD, true);
 				updateSynthWalletBalance(asset.token.id, pools[tradingPool].id, decodedLogs[3].args.value.toString(), true);
 				setAmount('0')
 				setConfirmed(true);
@@ -142,7 +143,7 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 							}
 							isLoading={loading}
 							loadingText="Please sign the transaction"
-							bgColor="secondary"
+							bgColor="secondary.400"
 							width="100%"
 							color="white"
 							mt={4}

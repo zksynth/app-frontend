@@ -86,6 +86,8 @@ export const query = (address: string) => (
 		  id
 		  referredBy
 		  totalPoint
+		  totalMintUSD
+		  totalBurnUSD
 		  accountDayData(first:1, orderBy: dayId, orderDirection: desc){
 			dailyMintedUSD
 			dailyBurnedUSD
@@ -110,16 +112,18 @@ export const query = (address: string) => (
 )
 
 export const query_leaderboard = `
-	{accounts(orderBy: totalPoint, orderDirection: desc){
-		id
-		totalPoint
-		accountDayData(first:1, orderBy: dayId, orderDirection: desc){
-			dailyMintedUSD
-			dailyBurnedUSD
-			dailyPoint
+	{
+		accounts(orderBy: totalPoint, orderDirection: desc){
+			id
+			totalPoint
+			accountDayData(first:1, orderBy: dayId, orderDirection: desc){
+				dailyMintedUSD
+				dailyBurnedUSD
+				dailyPoint
+			}
 		}
-	}}
-`
+	}
+`;
 
 const COLORS_GREEN = [
 	"#154F43",

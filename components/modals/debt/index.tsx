@@ -92,7 +92,7 @@ export default function Debt({ synth }: any) {
 			<Tr
 				cursor="pointer"
 				onClick={onOpen}
-				borderLeft='2px' borderColor='transparent' _hover={{ borderColor: 'primary', bg: 'blackAlpha.100' }}
+				borderLeft='2px' borderColor='transparent' _hover={{ borderColor: 'primary.400', bg: 'blackAlpha.100' }}
 			>
 				<Td {...borderStyle}>
 					<Flex gap={1}>
@@ -242,8 +242,8 @@ export default function Debt({ synth }: any) {
 								<Tab
 									w={"50%"}
 									_selected={{
-										color: "primary",
-										borderColor: "primary",
+										color: "primary.400",
+										borderColor: "primary.400",
 									}}
 								>
 									Mint
@@ -251,8 +251,8 @@ export default function Debt({ synth }: any) {
 								<Tab
 									w={"50%"}
 									_selected={{
-										color: "secondary",
-										borderColor: "secondary",
+										color: "secondary.400",
+										borderColor: "secondary.400",
 									}}
 								>
 									Burn

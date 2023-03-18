@@ -91,7 +91,7 @@ export default function CollateralModal({ collateral, tradingPool }: any) {
 
 	return (
 		<>
-			<Tr cursor="pointer" onClick={onOpen} borderLeft='2px' borderColor='transparent' _hover={{ borderColor: 'primary', bg: 'blackAlpha.100' }}>
+			<Tr cursor="pointer" onClick={onOpen} borderLeft='2px' borderColor='transparent' _hover={{ borderColor: 'primary.400', bg: 'blackAlpha.100' }}>
 				<Td {...borderStyle}>
 						<Flex gap={2}>
 							<Image
@@ -236,8 +236,8 @@ export default function CollateralModal({ collateral, tradingPool }: any) {
 
 						<Tabs onChange={selectTab}>
 							<TabList>
-								<Tab w={"50%"} _selected={{color: 'primary', borderColor:'primary'}}>Deposit</Tab>
-								<Tab w={"50%"} _selected={{color: 'secondary', borderColor:'secondary'}}>Withdraw</Tab>
+								<Tab w={"50%"} _selected={{color: 'primary.400', borderColor:'primary.400'}}>Deposit</Tab>
+								<Tab w={"50%"} _selected={{color: 'secondary.400', borderColor:'secondary.400'}}>Withdraw</Tab>
 							</TabList>
 
 							<TabPanels>

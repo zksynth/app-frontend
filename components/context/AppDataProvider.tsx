@@ -34,10 +34,10 @@ interface AppDataValue {
 	setChain: (_: number) => void;
 	addCollateralAllowance(collateralAddress: string, value: string): void;
 	block: number;
-	updatePoolBalance: (poolAddress: string, value: string, minus: boolean) => void;
+	updatePoolBalance: (poolAddress: string, value: string, amountUSD: string, minus: boolean) => void;
 	refreshData: () => void;
 	leaderboard: any[];
-	points: any
+	account: any
 }
 
 const AppDataContext = React.createContext<AppDataValue>({} as AppDataValue);
@@ -49,7 +49,7 @@ function AppDataProvider({ children }: any) {
 	const [totalCollateral, setTotalCollateral] = React.useState(0);
 	const [adjustedCollateral, setAdjustedCollateral] = React.useState(0);
 	const [totalDebt, setTotalDebt] = React.useState(0);
-	const [points, setPoints] = React.useState({});
+	const [account, setAccount] = React.useState<any|null>(null);
 
 	const [pools, setPools] = React.useState<any[]>([]);
 	const [tradingPool, setTradingPool] = React.useState(0);
@@ -223,7 +223,8 @@ function AppDataProvider({ children }: any) {
 								}
 							}
 						}
-						setPoints({
+						setAccount({
+							id: _account.id,
 							totalPoint: _account.totalPoint,
 							accountDayData: _account.accountDayData
 						})
@@ -268,17 +269,22 @@ function AppDataProvider({ children }: any) {
 		setTotalDebt(_totalDebt.toNumber());
 	}
 
-	const updatePoolBalance = (poolAddress: string, value: string, isMinus: boolean = false) => {
+	const updatePoolBalance = (poolAddress: string, value: string, amountUSD: string, isMinus: boolean = false) => {
 		let _pools = pools;
 		for (let i in _pools) {
 			if (_pools[i].id == poolAddress) {
+				// update pool params
 				_pools[i].balance = Big(_pools[i].balance ?? 0)[isMinus?'minus' : 'add'](value).toString();
 				_pools[i].totalSupply = Big(_pools[i].totalSupply ?? 0)[isMinus?'minus' : 'add'](value).toString();
-				if(Big(_pools[i].totalSupply).gt(0)) setTotalDebt(Big(_pools[i].balance ?? 0).div(_pools[i].totalSupply).mul(_pools[i].totalDebtUSD));
+				_pools[i].totalDebtUSD = Big(_pools[i].totalDebtUSD ?? 0)[isMinus?'minus' : 'add'](amountUSD).toString();
+				// update total debt
+				setTotalDebt(Big(totalDebt)[isMinus?'minus' : 'add'](amountUSD).toNumber());
+
+				setPools(_pools);
+				setRefresh(Math.random());
+				return;
 			}
 		}
-		setPools(_pools);
-		setRefresh(Math.random());
 	};
 
 	const updateCollateralWalletBalance = (
@@ -292,9 +298,7 @@ function AppDataProvider({ children }: any) {
 			if (_pools[i].id == poolAddress) {
 				for (let j in _pools[i].collaterals) {
 					if (_pools[i].collaterals[j].token.id == collateralAddress) {
-						console.log(_pools[i].collaterals[j].walletBalance);
 						_pools[i].collaterals[j].walletBalance = Big(_pools[i].collaterals[j].walletBalance ?? 0)[isMinus?'minus' : 'add'](value).toString();
-						console.log(_pools[i].collaterals[j].walletBalance);
 					}
 				}
 			}
@@ -394,19 +398,24 @@ function AppDataProvider({ children }: any) {
 				_pools[i].id,
 				pool.interface.encodeFunctionData("totalSupply", [])
 			]);
+			reqs.push([
+				_pools[i].id,
+				pool.interface.encodeFunctionData("balanceOf", [account.id ?? ethers.constants.AddressZero])
+			])
 		}
 		helper.callStatic.aggregate(reqs).then((res: any) => {
 			if(res.returnData.length > 0){
 				for(let i = 0; i < _pools.length; i++) {
-					const _prices = priceOracle.interface.decodeFunctionResult("getAssetsPrices", res.returnData[i*3])[0];
+					const _prices = priceOracle.interface.decodeFunctionResult("getAssetsPrices", res.returnData[i*4])[0];
 					for(let j in _pools[i].collaterals) {
 						_pools[i].collaterals[j].priceUSD = Big(_prices[j].toString()).div(1e8).toString();
 					}
 					for(let j in _pools[i].synths) {
 						_pools[i].synths[j].priceUSD = Big(_prices[Number(j)+_pools[i].collaterals.length].toString()).div(1e8).toString();
 					}
-					_pools[i].totalDebtUSD = Big(pool.interface.decodeFunctionResult("getTotalDebtUSD", res.returnData[i*3+1])[0].toString()).div(1e18).toString();
-					_pools[i].totalSupply = pool.interface.decodeFunctionResult("totalSupply", res.returnData[i*3+2])[0].toString();
+					_pools[i].totalDebtUSD = Big(pool.interface.decodeFunctionResult("getTotalDebtUSD", res.returnData[i*4+1])[0].toString()).div(1e18).toString();
+					_pools[i].totalSupply = pool.interface.decodeFunctionResult("totalSupply", res.returnData[i*4+2])[0].toString();
+					_pools[i].balance = pool.interface.decodeFunctionResult("balanceOf", res.returnData[i*4+3])[0].toString();
 				}
 				setPools(_pools);
 				setRefresh(Math.random());
@@ -415,12 +424,12 @@ function AppDataProvider({ children }: any) {
 			}
 		})
 		.catch(err => {
-			console.log(err);
+			console.log("Failed multicall", err);
 		})
 	}
 
 	const value: AppDataValue = {
-		points,
+		account,
 		leaderboard,
 		status,
 		message,
@@ -439,7 +448,7 @@ function AppDataProvider({ children }: any) {
 		addCollateralAllowance,
 		adjustedCollateral,
 		block,
-		refreshData
+		refreshData,
 	};
 
 	return (

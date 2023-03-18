@@ -110,7 +110,7 @@ export default function Claim() {
 							loadingText="Claiming"
 							disabled={Big(synAccrued ?? 0).eq(0)}
 							rounded={16}
-                            colorScheme="primarySchema"
+                            colorScheme="primary"
                             variant="outline"
 						>
 							Claim All

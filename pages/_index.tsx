@@ -31,7 +31,7 @@ export default function _index({ children }: any) {
 
 	return (
 		<Box>
-			{status == 'fetching' && <Progress bg={'gray.900'} colorScheme='primarySchema' size='xs' isIndeterminate />}
+			{status == 'fetching' && <Progress bg={'gray.900'} colorScheme='primary' size='xs' isIndeterminate />}
 
 			<Box bgColor="gray.800" color={'gray.400'}>
 			{status == 'error' && (

@@ -72,7 +72,8 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber }
 		}
 		tx.then(async (res: any) => {
 			setLoading(false);
-			setResponse("Transaction sent! Waiting for confirmation...");
+			setMessage("Confirming...");
+			setResponse("Transaction sent! Waiting for confirmation");
 			setHash(res.hash);
 			const response = await res.wait(1);
 			// decode transfer event from response.logs
@@ -216,7 +217,7 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber }
                     }
                     isLoading={loading}
                     loadingText="Please sign the transaction"
-                    bgColor="secondary"
+                    bgColor="secondary.400"
                     width="100%"
                     color="white"
                     mt={4}

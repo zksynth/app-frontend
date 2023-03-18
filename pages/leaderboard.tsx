@@ -25,7 +25,7 @@ import { useAccount } from 'wagmi';
 
 export default function Leaderboard() {
 
-  const {leaderboard: leaderboardData, points} = useContext(AppDataContext);
+  const {leaderboard: leaderboardData, account} = useContext(AppDataContext);
   const { address } = useAccount()
 
   return (
@@ -46,7 +46,7 @@ export default function Leaderboard() {
         <Flex gap={10}>
       <Box py={5} pt={5}>
       <Heading size={'md'}>Total Earned</Heading>
-      <Text fontSize={'3xl'} my={5}>{tokenFormatter.format(points.totalPoint)}</Text>
+      <Text fontSize={'3xl'} my={5}>{tokenFormatter.format(account?.totalPoint ?? 0)}</Text>
       </Box>
 
       <Divider orientation='vertical' h='120px'/>
@@ -59,7 +59,7 @@ export default function Leaderboard() {
           <RiMagicFill size={'22px'}/>
           <Box minW={'100px'}>
             <Heading size={'sm'} color={'whiteAlpha.700'}>Points Earned</Heading>
-            <Text fontSize={'xl'}>{points.accountDayData ? tokenFormatter.format(points.accountDayData[0].dailyPoint) : '-'}</Text>
+            <Text fontSize={'xl'}>{account?.accountDayData ? tokenFormatter.format(account.accountDayData[0].dailyPoint) : '-'}</Text>
           </Box>
         </Flex>
 
@@ -67,7 +67,7 @@ export default function Leaderboard() {
           <FaMagic/>
           <Box minW={'100px'}>
             <Heading size={'sm'} color={'whiteAlpha.700'}>Mints</Heading>
-            <Text fontSize={'xl'}>{points.accountDayData ? dollarFormatter.format(points.accountDayData[0].dailyMintedUSD): '-'}</Text>
+            <Text fontSize={'xl'}>{account?.accountDayData ? dollarFormatter.format(account.accountDayData[0].dailyMintedUSD): '-'}</Text>
           </Box>
         </Flex>
 
@@ -75,14 +75,14 @@ export default function Leaderboard() {
           <FaBurn/>
           <Box minW={'100px'}>
             <Heading size={'sm'} color={'whiteAlpha.700'}>Burns</Heading>
-            <Text fontSize={'xl'}>{points.accountDayData ? dollarFormatter.format(points.accountDayData[0].dailyBurnedUSD): '-'}</Text>
+            <Text fontSize={'xl'}>{account?.accountDayData ? dollarFormatter.format(account.accountDayData[0].dailyBurnedUSD): '-'}</Text>
           </Box>
         </Flex>
       </Flex>
       </Box>
       </Flex>
     </Box>
-    <Box bg={'#0A1931'} mb={20} rounded={16} border={'2px'} py={2} borderColor='whiteAlpha.50'>
+    <Box bg={'#0A1931'} mb={20} rounded={16} border={'2px'} pt={1} borderColor='whiteAlpha.50'>
 
       <TableContainer >
   <Table variant='simple'>
@@ -103,9 +103,8 @@ export default function Leaderboard() {
         <Td borderColor={'whiteAlpha.50'}>{(address!.toLowerCase() == account.id ? `You (${account.id.slice(0,8)})` :  account.id.slice(0, 8) + '...' + account.id.slice(36))}</Td>
         <Td borderColor={'whiteAlpha.50'}>{tokenFormatter.format(account.accountDayData[0]?.dailyPoint ?? 0)}</Td>
         <Td borderColor={'whiteAlpha.50'}>{dollarFormatter.format(account.accountDayData[0]?.dailyMintedUSD ?? 0)}</Td>
-        <Td borderColor={'whiteAlpha.50'}>{dollarFormatter.format(account.accountDayData[0]?.dailyBurnUSD ?? 0)}</Td>
+        <Td borderColor={'whiteAlpha.50'}>{dollarFormatter.format(account.accountDayData[0]?.dailyBurnedUSD ?? 0)}</Td>
         <Td borderColor={'whiteAlpha.50'} isNumeric>{tokenFormatter.format(account.totalPoint)}</Td>
-
       </Tr>
       })}
 

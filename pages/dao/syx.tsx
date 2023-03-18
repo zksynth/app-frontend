@@ -9,26 +9,30 @@ export default function syx() {
 				<title>SYX | SyntheX</title>
 				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
 			</Head>
-      <Box pt='90px'>
-        <Image src='/SYX.svg' w={20} mb={4}/>
-        <Heading size={"lg"}>SyntheX Token</Heading>  
-        <Text mt={2} color='gray.400'>
-          SYX is the protocol token for SyntheX. Earn protocol fees, participate in governance, be a part of SyntheX
-        </Text>
+      <Box pt='100px'>
+        <Flex gap={4} align='center'>
+          <Image src='/SYX.svg' w={20} alt='SYX Token Logo'/>
+          <Box>
+            <Heading size={"lg"}>SyntheX Token</Heading>  
+            <Text mt={2} color='gray.400'>
+              SYX is the protocol token for SyntheX. Earn protocol fees, participate in governance, be a part of SyntheX
+            </Text>
+          </Box>
+        </Flex>
 
         <Flex my={16} justify='space-around'>
           <Box textAlign={'center'}>
-            <Heading size={'sm'} color='primary'>Circulating Supply</Heading>
+            <Heading size={'sm'} color='primary.400'>Circulating Supply</Heading>
             <Text fontSize={'3xl'} mt={2}>-</Text>
           </Box>
 
           <Box textAlign={'center'}>
-            <Heading size={'sm'} color='primary'>Price</Heading>
+            <Heading size={'sm'} color='primary.400'>Price</Heading>
             <Text fontSize={'3xl'} mt={2}>-</Text>
           </Box>
 
           <Box textAlign={'center'}>
-            <Heading size={'sm'} color='primary'>Market Cap</Heading>
+            <Heading size={'sm'} color='primary.400'>Market Cap</Heading>
             <Text fontSize={'3xl'} mt={2}>-</Text>
           </Box>
         </Flex>
