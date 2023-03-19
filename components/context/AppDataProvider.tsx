@@ -407,15 +407,21 @@ function AppDataProvider({ children }: any) {
 			if(res.returnData.length > 0){
 				for(let i = 0; i < _pools.length; i++) {
 					const _prices = priceOracle.interface.decodeFunctionResult("getAssetsPrices", res.returnData[i*4])[0];
+					let _totalCollateral = Big(0);
 					for(let j in _pools[i].collaterals) {
 						_pools[i].collaterals[j].priceUSD = Big(_prices[j].toString()).div(1e8).toString();
+						_totalCollateral = _totalCollateral.plus(Big(_pools[i].collaterals[j].balance ?? 0).div(10**_pools[i].collaterals[j].token.decimals).mul(_pools[i].collaterals[j].priceUSD));
 					}
+					setTotalCollateral(_totalCollateral.toNumber());
 					for(let j in _pools[i].synths) {
 						_pools[i].synths[j].priceUSD = Big(_prices[Number(j)+_pools[i].collaterals.length].toString()).div(1e8).toString();
 					}
 					_pools[i].totalDebtUSD = Big(pool.interface.decodeFunctionResult("getTotalDebtUSD", res.returnData[i*4+1])[0].toString()).div(1e18).toString();
 					_pools[i].totalSupply = pool.interface.decodeFunctionResult("totalSupply", res.returnData[i*4+2])[0].toString();
 					_pools[i].balance = pool.interface.decodeFunctionResult("balanceOf", res.returnData[i*4+3])[0].toString();
+
+					let _totalDebt = Big(_pools[i].balance).div(_pools[i].totalSupply).mul(_pools[i].totalDebtUSD);
+					setTotalDebt(_totalDebt.toNumber());
 				}
 				setPools(_pools);
 				setRefresh(Math.random());

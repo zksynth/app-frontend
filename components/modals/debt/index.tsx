@@ -55,7 +55,9 @@ export default function Debt({ synth }: any) {
 	};
 
 	const _setAmount = (e: string) => {
-		if(Big(e).mul(synth.priceUSD).lt(0.1)) return;
+		if(isNaN(Number(e))) return;
+		if(e == '') return;
+		if(Big(e).mul(synth.priceUSD).lt(0.1)) e = '0';
 		setAmount(e);
 		setAmountNumber(isNaN(Number(e)) ? 0 : Number(e));
 	};

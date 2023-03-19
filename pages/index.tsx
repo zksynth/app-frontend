@@ -204,13 +204,21 @@ export default function TempPage() {
 									alt={"icon3"}
 								/>
 								<Box mt={-1}>
-									<Flex mb={0.5} gap={1.5} align="center">
 										<Heading
+										mb={0.5}
 											size={"sm"}
-											color="whiteAlpha.600"
+											color="whiteAlpha.700"
 										>
 											Issued Debt
 										</Heading>
+									<Flex  gap={2} align="center">
+
+									<Text
+										fontSize={"xl"}
+										fontWeight={"semibold"}
+									>
+										{dollarFormatter.format(totalDebt)}
+									</Text>
 										<Tooltip
 											label={`When you issue synths, you are allocated a share of pool's total debt. As the pool's total value changes, your debt changes as well`}
 										>
@@ -221,12 +229,6 @@ export default function TempPage() {
 										</Tooltip>
 									</Flex>
 
-									<Text
-										fontSize={"xl"}
-										fontWeight={"semibold"}
-									>
-										{dollarFormatter.format(totalDebt)}
-									</Text>
 								</Box>
 							</Flex>
 						</Flex>
@@ -248,7 +250,7 @@ export default function TempPage() {
 							align="center"
 							gap={1}
 						>
-							<Heading size={"sm"} mb={1} color="gray.400">
+							<Heading size={"sm"} mb={1} color="whiteAlpha.700">
 								Debt Limit
 							</Heading>
 

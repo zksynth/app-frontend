@@ -79,7 +79,7 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 				const amountUSD = Big(decodedLogs[3].args.value.toString()).mul(asset.priceUSD).div(10 ** 18).mul(1 - asset.burnFee/10000).toFixed(4);
 				updatePoolBalance(pools[tradingPool].id, decodedLogs[1].args.value.toString(), amountUSD, true);
 				updateSynthWalletBalance(asset.token.id, pools[tradingPool].id, decodedLogs[3].args.value.toString(), true);
-				setAmount('0')
+				setAmount('0');
 				setConfirmed(true);
 
 				setMessage("Transaction Successful!");

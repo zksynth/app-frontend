@@ -111,8 +111,11 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 						console.log(e)
 					}
 				});
-				const amountUSD = Big(decodedLogs[3].args.value.toString()).mul(asset.priceUSD).div(10 ** 18).mul(1 + asset.mintFee/10000).toFixed(4);
-				updatePoolBalance(pools[tradingPool].id, decodedLogs[1].args.value.toString(), amountUSD, false);
+				let amountUSD = Big(decodedLogs[3].args.value.toString()).mul(asset.priceUSD).div(10 ** 18).mul(1 + asset.mintFee/10000);
+				// add fee
+				amountUSD = amountUSD.mul(1 + asset.mintFee/10000);
+
+				updatePoolBalance(pools[tradingPool].id, decodedLogs[1].args.value.toString(), amountUSD.toString(), false);
 				updateSynthWalletBalance(asset.token.id, pools[tradingPool].id, decodedLogs[3].args.value.toString(), false);
 				setAmount('0')
 				setMessage("Transaction Successful!");
@@ -155,8 +158,6 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 			setUseReferral(true);
 		}
 	}
-
-	console.log(isValid());
 
 	const { isConnected } = useAccount();
 	const { chain: activeChain } = useNetwork();
