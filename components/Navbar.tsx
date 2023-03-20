@@ -28,11 +28,11 @@ import { TokenContext } from "./context/TokenContext";
 import { motion } from "framer-motion";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { CloseIcon, HamburgerIcon } from "@chakra-ui/icons";
-import { tokenFormatter } from '../src/const';
+import { tokenFormatter, query } from '../src/const';
 
 function NavBar() {
 	const router = useRouter();
-
+	const { ref } = router.query;
 	const { status, account, fetchData, setChain, refreshData, pools, setRefresh, refresh, lastRefresh, setLastRefresh } =
 		useContext(AppDataContext);
 	const { fetchData: fetchTokenData } = useContext(TokenContext);
@@ -148,7 +148,12 @@ function NavBar() {
 					<Flex gap={10} align='center' cursor="pointer">
 						<Image
 							onClick={() => {
-								router.push("/");
+								router.push(
+									{
+										pathname: '/about',
+										query: router.query
+									}
+								);
 							}}
 							src={"/logo.svg"}
 							alt=""
@@ -163,17 +168,14 @@ function NavBar() {
 						<NavLocalLink
 							path={"/"}
 							title={"Dashboard"}
-							pathname={router.pathname}
 						></NavLocalLink>
 						<NavLocalLink
 							path={"/swap"}
 							title="Swap"
-							pathname={router.pathname}
 						></NavLocalLink>
 						<NavLocalLink
 							path={"/claim"}
 							title="Claim"
-							pathname={router.pathname}
 						></NavLocalLink>
 						<Box id="dao-nav-link">
 							<motion.nav
@@ -322,13 +324,11 @@ function NavBar() {
 											<NavLocalLink
 												path={"/dao/syx"}
 												title="Token"
-												pathname={router.pathname}
 											></NavLocalLink>
 
 											<NavLocalLink
 												path={"/dao/vest"}
 												title="Vest"
-												pathname={router.pathname}
 											></NavLocalLink>
 										</Flex>
 									</motion.div>
@@ -361,7 +361,7 @@ function NavBar() {
 					gap={2}
 					w='100%'
 				>
-					<Link href={"/leaderboard"}>
+					<Link href={{ pathname: "/leaderboard", query: router.query }}>
 						<Flex
 							align={"center"}
 							h={"38px"}
@@ -402,28 +402,23 @@ const MobileNav = ({}: any) => {
 			<NavLocalLink
 				path={"/"}
 				title={"Dashboard"}
-				pathname={router.pathname}
 			></NavLocalLink>
 			<NavLocalLink
 				path={"/swap"}
 				title="Swap"
-				pathname={router.pathname}
 			></NavLocalLink>
 			<NavLocalLink
 				path={"/claim"}
 				title="Claim"
-				pathname={router.pathname}
 			></NavLocalLink>
 			<NavLocalLink
 				path={"/dao/syx"}
 				title="Token"
-				pathname={router.pathname}
 			></NavLocalLink>
 
 			<NavLocalLink
 				path={"/dao/vest"}
 				title="Vest"
-				pathname={router.pathname}
 			></NavLocalLink>
 			<Box>
 				<RainbowConnect />
@@ -437,16 +432,16 @@ const NavLink = ({
 	title,
 	target = "_parent",
 	newTab = false,
-	pathname,
 	children,
 	bg = "whiteAlpha.50",
 }: any) => {
 	const [isPath, setIsPath] = useState(false);
+	const router = useRouter();
 
 	useEffect(() => {
 		// search path
-		setIsPath(path == pathname);
-	}, [setIsPath, pathname, path]);
+		setIsPath(path == router.pathname);
+	}, [setIsPath, router.pathname, path]);
 
 	return (
 		<Flex align={"center"}>
@@ -486,18 +481,17 @@ const NavLink = ({
 const NavLocalLink = ({
 	path,
 	title,
-	pathname,
 	children,
 	lighten,
 	bg = "whiteAlpha.50",
 }: any) => {
+	const router = useRouter();
 	return (
-		<Link href={`${path}`} as={`${path}`}>
+		<Link href={{ pathname: path, query: router.query }} >
 			<Box>
 				<NavLink
 					path={path}
 					title={title}
-					pathname={pathname}
 					lighten={lighten}
 					bg={bg}
 				>

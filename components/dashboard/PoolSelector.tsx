@@ -99,7 +99,7 @@ export default function PoolSelector() {
 							position: "fixed",
 							width: "400px",
 							zIndex: '100',
-							backgroundColor: "bg2",
+							backgroundColor: "#0A1931",
 							border: "2px solid #212E44",
 							borderRadius: "10px"
 						}}

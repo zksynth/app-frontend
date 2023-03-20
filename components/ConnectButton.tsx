@@ -49,7 +49,7 @@ const Connect = () => {
 							}
 							return (
 								<>
-									<Link href={accountPath} as={accountPath}>
+									<Link href={{pathname: accountPath, query: router.query}} >
 										<Box>
 											<Flex align={"center"}>
 												<motion.div

@@ -45,6 +45,11 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber }
 	};
 
 	const withdraw = async () => {
+		setLoading(true);
+		setMessage("")
+		setConfirmed(false);
+		setResponse(null);
+		setHash(null);
 		const poolId = pools[tradingPool].id;
 		const pool = await getContract("Pool", chain, poolId);
 		const _amount = Big(amount).mul(10**collateral.token.decimals).toFixed(0);

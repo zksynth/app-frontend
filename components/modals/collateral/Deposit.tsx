@@ -44,6 +44,11 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber }:
 	};
 
 	const deposit = async () => {
+		setLoading(true);
+		setMessage("")
+		setConfirmed(false);
+		setResponse(null);
+		setHash(null);
 		const poolId = pools[tradingPool].id;
 		const pool = await getContract("Pool", chain, poolId);
 
