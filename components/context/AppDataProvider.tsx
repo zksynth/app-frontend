@@ -1,7 +1,7 @@
 import * as React from "react";
 import axios from "axios";
 import { getContract, call, getAddress, getABI } from "../../src/contract";
-import { ADDRESS_ZERO, dollarFormatter, Endpoints, ETH_ADDRESS, query, tokenFormatter } from "../../src/const";
+import { ADDRESS_ZERO, dollarFormatter, Endpoints, ETH_ADDRESS, query, tokenFormatter, query_leaderboard, query_referrals } from '../../src/const';
 import { ChainID, chainMapping } from "../../src/chains";
 import { BigNumber, ethers } from "ethers";
 import { useEffect } from 'react';
@@ -10,10 +10,6 @@ const { Big } = require("big.js");
 interface AppDataValue {
 	status: "not-fetching" | "fetching" | "ready" | "error";
 	message: string;
-	totalCollateral: number;
-	totalDebt: number;
-	adjustedCollateral: number;
-
 	pools: any[];
 	fetchData: (
 		_address: string | null,
@@ -34,9 +30,18 @@ interface AppDataValue {
 	setChain: (_: number) => void;
 	addCollateralAllowance(collateralAddress: string, value: string): void;
 	block: number;
-	updatePoolBalance: (poolAddress: string, value: string, minus: boolean) => void;
+	updatePoolBalance: (poolAddress: string, value: string, amountUSD: string, minus: boolean) => void;
 	refreshData: () => void;
+	leaderboard: any[];
+	account: any,
+	setRefresh: (_: number[]) => void;
+	refresh: number[];
+	referrals: any[];
 }
+
+// pool.userDebt
+// pool.userCollateral
+// pool.adjustedCollateral
 
 const AppDataContext = React.createContext<AppDataValue>({} as AppDataValue);
 
@@ -44,12 +49,11 @@ function AppDataProvider({ children }: any) {
 	const [status, setStatus] = React.useState<AppDataValue['status']>("not-fetching");
 	const [message, setMessage] = React.useState<AppDataValue['message']>("");
 
-	const [totalCollateral, setTotalCollateral] = React.useState(0);
-	const [adjustedCollateral, setAdjustedCollateral] = React.useState(0);
-	const [totalDebt, setTotalDebt] = React.useState(0);
+	const [account, setAccount] = React.useState<any|null>(null);
 
 	const [pools, setPools] = React.useState<any[]>([]);
 	const [tradingPool, setTradingPool] = React.useState(0);
+	const [leaderboard, setLeaderboard] = React.useState([]);
 
 	useEffect(() => {
 		if(localStorage){
@@ -58,33 +62,57 @@ function AppDataProvider({ children }: any) {
 				setTradingPool(parseInt(_tradingPool));
 			}
 		}
-	}, [])
+	}, [tradingPool])
 
 	const [chain, setChain] = React.useState(ChainID.ARB_GOERLI);
 
-	const [refresh, setRefresh] = React.useState(0);
+	const [refresh, setRefresh] = React.useState<number[]>([]);
 	const [block, setBlock] = React.useState(0);
+	const [random, setRandom] = React.useState(0);
 
+	const [referrals, setReferrals] = React.useState<any[]>([]);
+
+	useEffect(() => {
+		if (refresh.length == 0 && pools.length > 0) {
+			// set new interval
+			const timer = setInterval(refreshData, 5000);
+			setRefresh([Number(timer.toString())]);
+			setRandom(Math.random());
+		}
+	}, [refresh, pools]);
 
 	const fetchData = (_address: string | null, chainId: number): Promise<number> => {
 		console.log("fetching");
 		return new Promise((resolve, reject) => {
 			setStatus("fetching");
-			axios
-				.post(Endpoints[chainId], {
+			Promise.all([
+				axios.post(Endpoints[chainId], {
 					query: query(_address?.toLowerCase() ?? ADDRESS_ZERO),
 					variables: {},
+				}), 
+				axios.post(Endpoints[chainId], {
+					query: query_leaderboard,
+					variables: {},
+				}),
+				axios.post(Endpoints[chainId], {
+					query: query_referrals(_address?.toLowerCase() ?? ADDRESS_ZERO),
+					variables: {},
 				})
+			])
 				.then(async (res) => {
-					if (res.data.errors) {
+					if (res[0].data.errors || res[1].data.errors || res[2].data.errors) {
 						setStatus("error");
 						setMessage("Network Error. Please refresh the page or try again later.");
-						reject(res.data.errors);
+						reject(res[0].data.errors || res[1].data.errors || res[2].data.errors);
 					} else {
-						console.log(res.data.data);
-						const pools = res.data.data.pools;
+						const userPoolData = res[0].data.data;
+						const leaderboardData = res[1].data.data.accounts;
+						const _refs = res[2].data.data.accounts;
+						setReferrals(_refs);
+						setLeaderboard(leaderboardData);
+						const pools = userPoolData.pools;
 						if (_address) {
-							_setPools(pools, res.data.data.accounts[0], _address, chainId)
+							_setPools(pools, userPoolData.accounts[0], _address, chainId)
 							.then((_) => {
 								resolve(0)
 							})
@@ -164,14 +192,13 @@ function AppDataProvider({ children }: any) {
 
 				let averageDailyBurn = Big(0);
 				let averageDailyRevenue = Big(0);
-				for(let j = 0; j < _pools[i].dayDatas.length; j++) {
-					averageDailyBurn = averageDailyBurn.plus(_pools[i].dayDatas[j].dailyBurnUSD);
-					averageDailyRevenue = averageDailyRevenue.plus(_pools[i].dayDatas[j].dailyRevenueUSD);
+				for(let j = 0; j < _pools[i].poolDayData.length; j++) {
+					averageDailyBurn = averageDailyBurn.plus(_pools[i].poolDayData[j].dailyBurnUSD);
+					averageDailyRevenue = averageDailyRevenue.plus(_pools[i].poolDayData[j].dailyRevenueUSD);
 				}
-				_pools[i].averageDailyBurn = _pools[i].dayDatas.length > 0 ? averageDailyBurn.div(_pools[i].dayDatas.length).toString() : '0';
-				_pools[i].averageDailyRevenue = _pools[i].dayDatas.length > 0 ? averageDailyRevenue.div(_pools[i].dayDatas.length).toString() : '0';
+				_pools[i].averageDailyBurn = _pools[i].poolDayData.length > 0 ? averageDailyBurn.div(_pools[i].poolDayData.length).toString() : '0';
+				_pools[i].averageDailyRevenue = _pools[i].poolDayData.length > 0 ? averageDailyRevenue.div(_pools[i].poolDayData.length).toString() : '0';
 			}
-
 
 			helper.callStatic.aggregate(calls).then(async (res: any) => {
 				setBlock(parseInt(res[0].toString()));
@@ -213,11 +240,17 @@ function AppDataProvider({ children }: any) {
 								}
 							}
 						}
+						setAccount(_account);
 					}
 				}
+
+				for(let j = 0; j < _pools.length; j++){
+					updateUserParams(_pools[j])
+				}
+
 				setStatus("ready");
-				_setTradingPool(tradingPool, _pools);
 				setPools(_pools);
+				resolve(0);
 			})
 			.catch(err => {
 				reject(err)
@@ -225,46 +258,48 @@ function AppDataProvider({ children }: any) {
 		});
 	};
 
-	const _setTradingPool = (poolIndex: number, _pools: any[] = pools) => {
-		localStorage.setItem("tradingPool", poolIndex.toString());
-		setTradingPool(poolIndex);
+	const updateUserParams = (_pool: any) => {
 		let _totalCollateral = Big(0);
 		let _adjustedCollateral = Big(0);
 		let _totalDebt = Big(0);
 
-		for (let i = 0; i < _pools[poolIndex].collaterals.length; i++) {
+		for (let i = 0; i < _pool.collaterals.length; i++) {
 			_totalCollateral = _totalCollateral.plus(
-				Big(_pools[poolIndex].collaterals[i].balance ?? 0)
-					.div(10 ** _pools[poolIndex].collaterals[i].token.decimals)
-					.mul(_pools[poolIndex].collaterals[i].priceUSD)
+				Big(_pool.collaterals[i].balance ?? 0)
+					.div(10 ** _pool.collaterals[i].token.decimals)
+					.mul(_pool.collaterals[i].priceUSD)
 			);
 			_adjustedCollateral = _adjustedCollateral.plus(
-				Big(_pools[poolIndex].collaterals[i].balance ?? 0)
-					.div(10 ** _pools[poolIndex].collaterals[i].token.decimals)
-					.mul(_pools[poolIndex].collaterals[i].priceUSD)
-					.mul(_pools[poolIndex].collaterals[i].baseLTV)
+				Big(_pool.collaterals[i].balance ?? 0)
+					.div(10 ** _pool.collaterals[i].token.decimals)
+					.mul(_pool.collaterals[i].priceUSD)
+					.mul(_pool.collaterals[i].baseLTV)
 					.div(10000)
 			);
 		}
 
-		if(Big(_pools[poolIndex].totalSupply).gt(0)) _totalDebt = Big(_pools[poolIndex].balance ?? 0).div(_pools[poolIndex].totalSupply).mul(_pools[poolIndex].totalDebtUSD);
+		if(Big(_pool.totalSupply).gt(0)) _totalDebt = Big(_pool.balance ?? 0).div(_pool.totalSupply).mul(_pool.totalDebtUSD);
 
-		setAdjustedCollateral(_adjustedCollateral.toNumber());
-		setTotalCollateral(_totalCollateral.toNumber());
-		setTotalDebt(_totalDebt.toNumber());
+		_pool.adjustedCollateral = (_adjustedCollateral.toNumber());
+		_pool.userCollateral = (_totalCollateral.toNumber());
+		_pool.userDebt = (_totalDebt.toNumber());
 	}
 
-	const updatePoolBalance = (poolAddress: string, value: string, isMinus: boolean = false) => {
+	const updatePoolBalance = (poolAddress: string, value: string, amountUSD: string, isMinus: boolean = false) => {
 		let _pools = pools;
 		for (let i in _pools) {
 			if (_pools[i].id == poolAddress) {
+				// update pool params
 				_pools[i].balance = Big(_pools[i].balance ?? 0)[isMinus?'minus' : 'add'](value).toString();
 				_pools[i].totalSupply = Big(_pools[i].totalSupply ?? 0)[isMinus?'minus' : 'add'](value).toString();
-				if(Big(_pools[i].totalSupply).gt(0)) setTotalDebt(Big(_pools[i].balance ?? 0).div(_pools[i].totalSupply).mul(_pools[i].totalDebtUSD));
+				_pools[i].totalDebtUSD = Big(_pools[i].totalDebtUSD ?? 0)[isMinus?'minus' : 'add'](amountUSD).toString();
+				// update total debt
+				_pools[i].totalDebt = Big(_pools[i].totalDebt ?? 0)[isMinus?'minus' : 'add'](amountUSD).toNumber();
+
+				setPools(_pools);
+				return;
 			}
 		}
-		setPools(_pools);
-		setRefresh(Math.random());
 	};
 
 	const updateCollateralWalletBalance = (
@@ -284,7 +319,6 @@ function AppDataProvider({ children }: any) {
 			}
 		}
 		setPools(_pools);
-		setRefresh(Math.random());
 	};
 
 	const updateCollateralAmount = (
@@ -299,14 +333,13 @@ function AppDataProvider({ children }: any) {
 				for (let j in _pools[i].collaterals) {
 					if (_pools[i].collaterals[j].token.id == collateralAddress) {
 						_pools[i].collaterals[j].balance = Big(_pools[i].collaterals[j].balance ?? 0)[isMinus?'minus':'add'](value).toString();
-						setAdjustedCollateral(Big(adjustedCollateral)[isMinus?'minus':'add'](Big(value).div(10**_pools[i].collaterals[j].token.decimals).mul(_pools[i].collaterals[j].priceUSD).mul(_pools[i].collaterals[j].baseLTV).div(10000)));
-						setTotalCollateral(Big(totalCollateral)[isMinus?'minus':'add'](Big(value).div(10**_pools[i].collaterals[j].token.decimals).mul(_pools[i].collaterals[j].priceUSD)));
+						_pools[i].userAdjustedCollateral = Big(_pools[i].userAdjustedCollateral ?? 0)[isMinus?'minus':'add'](Big(value).div(10**_pools[i].collaterals[j].token.decimals).mul(_pools[i].collaterals[j].priceUSD).mul(_pools[i].collaterals[j].baseLTV).div(10000)).toNumber();
+						_pools[i].userCollateral = Big(_pools[i].userCollateral ?? 0)[isMinus?'minus':'add'](Big(value).div(10**_pools[i].collaterals[j].token.decimals).mul(_pools[i].collaterals[j].priceUSD)).toNumber();
 					}
 				}
 			}
 		}
 		setPools(_pools);
-		setRefresh(Math.random());
 	};
 
 	const addCollateralAllowance = (
@@ -318,13 +351,13 @@ function AppDataProvider({ children }: any) {
 			for (let j in _pools[i].collaterals) {
 				if (_pools[i].collaterals[j].token.id == collateralAddress) {
 					_pools[i].collaterals[j].allowance = Big(
-						_pools[i].collaterals[j].allowance
+						_pools[i].collaterals[j].allowance ?? 0
 					).plus(value).toString();
 				}
 			}
 		}
 		setPools(_pools);
-		setRefresh(Math.random());
+		setRandom(Math.random());
 	};
 
 	const updateSynthWalletBalance = (
@@ -344,11 +377,11 @@ function AppDataProvider({ children }: any) {
 			}
 		}
 		setPools(_pools);
-		setRefresh(Math.random());
 	};
 
 	const refreshData = async () => {
-		console.log("Refreshing data...");
+		if(!account?.id) return;
+		console.log("Refreshing data", account?.id);
 		const reqs: any[] = [];
 		const _pools = pools;
 		if(_pools.length == 0) {
@@ -381,36 +414,47 @@ function AppDataProvider({ children }: any) {
 				_pools[i].id,
 				pool.interface.encodeFunctionData("totalSupply", [])
 			]);
+			reqs.push([
+				_pools[i].id,
+				pool.interface.encodeFunctionData("balanceOf", [account.id])
+			])
 		}
 		helper.callStatic.aggregate(reqs).then((res: any) => {
 			if(res.returnData.length > 0){
+				let reqCount = 3;
+				if(account?.id) reqCount = 4;
 				for(let i = 0; i < _pools.length; i++) {
-					const _prices = priceOracle.interface.decodeFunctionResult("getAssetsPrices", res.returnData[i*3])[0];
+					const _prices = priceOracle.interface.decodeFunctionResult("getAssetsPrices", res.returnData[i*reqCount])[0];
 					for(let j in _pools[i].collaterals) {
 						_pools[i].collaterals[j].priceUSD = Big(_prices[j].toString()).div(1e8).toString();
 					}
 					for(let j in _pools[i].synths) {
 						_pools[i].synths[j].priceUSD = Big(_prices[Number(j)+_pools[i].collaterals.length].toString()).div(1e8).toString();
 					}
-					_pools[i].totalDebtUSD = Big(pool.interface.decodeFunctionResult("getTotalDebtUSD", res.returnData[i*3+1])[0].toString()).div(1e18).toString();
-					_pools[i].totalSupply = pool.interface.decodeFunctionResult("totalSupply", res.returnData[i*3+2])[0].toString();
+					_pools[i].totalDebtUSD = Big(pool.interface.decodeFunctionResult("getTotalDebtUSD", res.returnData[i*reqCount+1])[0].toString()).div(1e18).toString();
+					_pools[i].totalSupply = pool.interface.decodeFunctionResult("totalSupply", res.returnData[i*reqCount+2])[0].toString();
+					_pools[i].balance = pool.interface.decodeFunctionResult("balanceOf", res.returnData[i*reqCount+3])[0].toString();
+					updateUserParams(_pools[i]);
 				}
 				setPools(_pools);
-				setRefresh(Math.random());
+				setRandom(Math.random());
 			} else {
 				console.log("No return data");
 			}
-		});
+		})
+		.catch(err => {
+			console.log("Failed multicall", err);
+		})
 	}
 
 	const value: AppDataValue = {
+		account,
+		leaderboard,
 		status,
 		message,
-		totalCollateral,
-		totalDebt,
 		pools,
 		tradingPool,
-		setTradingPool: _setTradingPool,
+		setTradingPool,
 		updatePoolBalance,
 		fetchData,
 		updateSynthWalletBalance,
@@ -419,9 +463,11 @@ function AppDataProvider({ children }: any) {
 		chain,
 		setChain,
 		addCollateralAllowance,
-		adjustedCollateral,
 		block,
-		refreshData
+		refreshData,
+		setRefresh,
+		refresh,
+		referrals,
 	};
 
 	return (

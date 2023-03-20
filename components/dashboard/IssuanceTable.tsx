@@ -5,31 +5,13 @@ import {
 	Table,
 	Thead,
 	Tbody,
-	Tfoot,
 	Tr,
 	Th,
-	Td,
-	TableCaption,
 	TableContainer,
 	Flex,
-	Image,
-	Text,
 	Box,
-	IconButton,
 } from "@chakra-ui/react";
 import { AppDataContext } from "../context/AppDataProvider";
-import {
-	preciseTokenFormatter,
-	tokenFormatter,
-	compactTokenFormatter,
-	dollarFormatter,
-} from "../../src/const";
-import { BiPlus, BiMinusCircle, BiMinus } from "react-icons/bi";
-import { motion } from "framer-motion";
-import Mint from "../modals/debt/mint";
-import Burn from "../modals/debt/burn";
-
-import Big from "big.js";
 import {
 	Pagination,
 	usePagination,
@@ -39,18 +21,22 @@ import {
 	PaginationContainer,
 	PaginationPageGroup,
 } from "@ajna/pagination";
+
 import { MdNavigateBefore, MdNavigateNext } from "react-icons/md";
 import { Skeleton } from "@chakra-ui/react";
 import Debt from "../modals/debt";
 
+const pageSize = 8;
+
 export default function CollateralTable() {
 	const { pools, tradingPool } = useContext(AppDataContext);
 
-	const { currentPage, setCurrentPage, pagesCount, pages, pageSize } =
+	const { currentPage, setCurrentPage, pagesCount, pages } =
 		usePagination({
-			pagesCount: 1,
-			initialState: { currentPage: 1 },
-		});
+			pagesCount: 2,
+			initialState: { currentPage: 1 }
+		}
+	);
 
 	return (
 		<>
@@ -59,16 +45,16 @@ export default function CollateralTable() {
 						<Table variant="simple">
 							<Thead>
 								<Tr>
-									<Th color={"gray.500"}>Synth</Th>
-									<Th color={"gray.500"}>Price</Th>
-									<Th color={"gray.500"}>Volume 24h</Th>
-									<Th color={"gray.500"} isNumeric>
+									<Th color={"whiteAlpha.800"}>Synthetic Asset</Th>
+									<Th color={"whiteAlpha.800"}>Price</Th>
+									<Th color={"whiteAlpha.800"}>Volume 24h</Th>
+									<Th color={"whiteAlpha.800"} isNumeric>
 										Liquidity
 									</Th>
 								</Tr>
 							</Thead>
 							<Tbody>
-								{pools[tradingPool]?.synths.map(
+								{[...pools[tradingPool]?.synths.slice((currentPage - 1) * pageSize, currentPage * pageSize)].map(
 									(synth: any, index: number) => (
 										<Debt synth={synth} key={index} />
 									)
@@ -106,10 +92,10 @@ export default function CollateralTable() {
 										rounded={"full"}
 										bgColor={
 											page === currentPage
-												? "gray.800"
-												: "gray.700"
+												? "whiteAlpha.100"
+												: "transparent"
 										}
-										_hover={{ bgColor: "gray.700" }}
+										_hover={{ bgColor: "whiteAlpha.200" }}
 									/>
 								))}
 							</PaginationPageGroup>

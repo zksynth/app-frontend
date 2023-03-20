@@ -2,7 +2,6 @@ import React, { useState } from "react";
 
 import {
 	Flex,
-	Image,
 	Text,
 	Box,
 	useDisclosure,
@@ -10,25 +9,18 @@ import {
 	Divider,
 	Tooltip,
 } from "@chakra-ui/react";
-import { motion } from "framer-motion";
-import {
-	dollarFormatter,
-	preciseTokenFormatter,
-	tokenFormatter,
-} from "../../../src/const";
+import { dollarFormatter } from "../../../src/const";
 import Big from "big.js";
 import InfoFooter from "../_utils/InfoFooter";
 import Response from "../_utils/Response";
 import { useAccount, useBalance, useNetwork } from "wagmi";
-import Link from "next/link";
 import { ethers } from "ethers";
-import { getAddress, getContract, send } from "../../../src/contract";
+import { getContract, send } from "../../../src/contract";
 import { useContext } from "react";
 import { AppDataContext } from "../../context/AppDataProvider";
 import { ETH_ADDRESS, compactTokenFormatter } from "../../../src/const";
 
-export default function Deposit({ collateral, amount, amountNumber }: any) {
-	const { isOpen, onOpen, onClose } = useDisclosure();
+export default function Deposit({ collateral, amount, setAmount, amountNumber }: any) {
 
 	const [loading, setLoading] = useState(false);
 	const [response, setResponse] = useState<string | null>(null);
@@ -40,9 +32,6 @@ export default function Deposit({ collateral, amount, amountNumber }: any) {
 		chain,
 		pools,
 		tradingPool,
-		totalCollateral,
-		totalDebt,
-		adjustedCollateral,
 		updateCollateralWalletBalance,
 		updateCollateralAmount,
 		addCollateralAllowance,
@@ -55,8 +44,14 @@ export default function Deposit({ collateral, amount, amountNumber }: any) {
 	};
 
 	const deposit = async () => {
+		setLoading(true);
+		setMessage("")
+		setConfirmed(false);
+		setResponse(null);
+		setHash(null);
 		const poolId = pools[tradingPool].id;
 		const pool = await getContract("Pool", chain, poolId);
+
 		let tx;
 		if (collateral.token.id == ETH_ADDRESS.toLowerCase()) {
 			tx = send(
@@ -81,20 +76,29 @@ export default function Deposit({ collateral, amount, amountNumber }: any) {
 		}
 		tx.then(async (res: any) => {
 			setLoading(false);
-			setResponse("Transaction sent! Waiting for confirmation...");
+			setMessage("Confirming...");
+			setResponse("Transaction sent! Waiting for confirmation");
 			setHash(res.hash);
-			await res.wait(1);
+			const response = await res.wait(1);
+			// decode transfer event from response.logs
+			const decodedLogs = response.logs.map((log: any) =>
+				{
+					try {
+						return pool.interface.parseLog(log)
+					} catch (e) {
+						console.log(e)
+					}
+				});
+			const collateralId = decodedLogs[decodedLogs.length - 1].args[1].toLowerCase();
+			const depositedAmount = decodedLogs[decodedLogs.length - 1].args[2].toString();
 			setConfirmed(true);
-			const collateralId = collateral.token.id;
-			const value = Big(amount)
-				.mul(Big(10).pow(Number(collateral.token.decimals)))
-				.toFixed(0);
-			updateCollateralWalletBalance(collateralId, poolId, value, true);
-			updateCollateralAmount(collateralId, poolId, value, false);
+			updateCollateralWalletBalance(collateralId, poolId, depositedAmount, true);
+			updateCollateralAmount(collateralId, poolId, depositedAmount, false);
+			setAmount('0');
 			setMessage(
-				`You have deposited ${amount} ${collateral.token.symbol}`
+				"Transaction Successful!"
 			);
-			setResponse("Transaction Successful!");
+			setResponse(`You have deposited ${Big(depositedAmount).div(10**collateral.token.decimals).toString()} ${collateral.token.symbol}`);
 		}).catch((err: any) => {
 			console.log(err);
 			setMessage(JSON.stringify(err));
@@ -234,14 +238,14 @@ export default function Deposit({ collateral, amount, amountNumber }: any) {
 								<Text fontSize={"md"} color="gray.400">
 									Health Factor
 								</Text>
-								<Text fontSize={"md"}>{(totalCollateral > 0 ? (totalDebt/totalCollateral * 100) : 0).toFixed(1)} % {"->"} {(totalDebt /(totalCollateral + (amount*collateral.priceUSD)) * 100).toFixed(1)}%</Text>
+								<Text fontSize={"md"}>{(pools[tradingPool].userCollateral > 0 ? (pools[tradingPool].userDebt/pools[tradingPool].userCollateral * 100) : 0).toFixed(1)} % {"->"} {(pools[tradingPool].userDebt /(pools[tradingPool].userCollateral + (amount*collateral.priceUSD)) * 100).toFixed(1)}%</Text>
 							</Flex>
 							<Divider my={2} />
 							<Flex justify="space-between">
 								<Text fontSize={"md"} color="gray.400">
 									Available to issue
 								</Text>
-								<Text fontSize={"md"}>{dollarFormatter.format(adjustedCollateral - totalDebt)} {"->"} {dollarFormatter.format(adjustedCollateral + amount*collateral.priceUSD*collateral.baseLTV/10000 - totalDebt)}</Text>
+								<Text fontSize={"md"}>{dollarFormatter.format(pools[tradingPool].adjustedCollateral - pools[tradingPool].userDebt)} {"->"} {dollarFormatter.format(pools[tradingPool].adjustedCollateral + amount*collateral.priceUSD*collateral.baseLTV/10000 - pools[tradingPool].userDebt)}</Text>
 							</Flex>
 						</Box>
 					</Box>
@@ -259,7 +263,7 @@ export default function Deposit({ collateral, amount, amountNumber }: any) {
 						}
 						isLoading={loading}
 						loadingText="Please sign the transaction"
-						bg={"primary"}
+						bg={"primary.400"}
 						color='gray.800'
 						_hover={{
 							opacity: 0.8,
@@ -291,11 +295,12 @@ export default function Deposit({ collateral, amount, amountNumber }: any) {
 							activeChain?.unsupported ||
 							!amount ||
 							amountNumber == 0 ||
+							Big(amountNumber > 0 ? amount : amountNumber).gt(max()) ||
 							amountNumber > parseFloat(max())
 						}
 						isLoading={loading}
 						loadingText="Please sign the transaction"
-						bgColor="primary"
+						bgColor="primary.400"
 						width="100%"
 						color="gray.700"
 						mt={4}
@@ -307,7 +312,7 @@ export default function Deposit({ collateral, amount, amountNumber }: any) {
 						}}
 					>
 						{isConnected && !activeChain?.unsupported ? (
-							amountNumber > parseFloat(max()) ? (
+							Big(amountNumber > 0 ? amount : amountNumber).gt(max()) ? (
 								<>Insufficient Wallet Balance</>
 							) : !amount || amountNumber == 0 ? (
 								<>Enter amount</>

@@ -48,9 +48,9 @@ function TokenContextProvider({ children }: any) {
 
 	const fetchData = async (address: string, chain: number) => {
 		// token unlocks
-		const unlocker = await getContract("TokenRedeemer", chain);
+		const essyx = await getContract("EscrowedSYX", chain);
 		const tokenUnlocks = BigNumber.from(
-			await unlocker.unlockRequestCount(address)
+			await essyx.unlockRequestCount(address)
 		).toNumber();
 
 		const multicall = await getContract("Multicall2", chain);
@@ -58,8 +58,8 @@ function TokenContextProvider({ children }: any) {
 
 		for (let i = 0; i < tokenUnlocks; i++) {
 			calls.push({
-				target: unlocker.address,
-				callData: unlocker.interface.encodeFunctionData(
+				target: essyx.address,
+				callData: essyx.interface.encodeFunctionData(
 					"unlockRequests",
 					[
 						ethers.utils.solidityKeccak256(
@@ -73,7 +73,7 @@ function TokenContextProvider({ children }: any) {
 
 		const result = await multicall.callStatic.aggregate(calls);
 		const decoded = result.returnData.map((data: any) =>
-			unlocker.interface.decodeFunctionResult("unlockRequests", data)
+			essyx.interface.decodeFunctionResult("unlockRequests", data)
 		);
 
 		const unlockData = decoded.map((data: any) => {
@@ -85,9 +85,8 @@ function TokenContextProvider({ children }: any) {
 		});
 
 		// sealed syn balance
-		const sealedSYN = await getContract("EscrowedSYN", chain);
 		const sealedSYNBalance = BigNumber.from(
-			await sealedSYN.balanceOf(address)
+			await essyx.balanceOf(address)
 		).toString();
 
 		const syn = await getContract("SyntheXToken", chain);
@@ -103,34 +102,34 @@ function TokenContextProvider({ children }: any) {
 		calls = [];
 		// lockPeriod
 		calls.push({
-			target: unlocker.address,
-			callData: unlocker.interface.encodeFunctionData("lockPeriod"),
+			target: essyx.address,
+			callData: essyx.interface.encodeFunctionData("lockPeriod"),
 		});
 		// unlockPeriod
 		calls.push({
-			target: unlocker.address,
-			callData: unlocker.interface.encodeFunctionData("unlockPeriod"),
+			target: essyx.address,
+			callData: essyx.interface.encodeFunctionData("unlockPeriod"),
 		});
 		// percUnlockAtRelease
 		calls.push({
-			target: unlocker.address,
-			callData: unlocker.interface.encodeFunctionData(
+			target: essyx.address,
+			callData: essyx.interface.encodeFunctionData(
 				"percUnlockAtRelease"
 			),
 		});
 		calls.push({
-			target: unlocker.address,
-			callData: unlocker.interface.encodeFunctionData(
+			target: essyx.address,
+			callData: essyx.interface.encodeFunctionData(
 				"remainingQuota"
 			),
 		});
 
 		// allowance
 		calls.push({
-			target: sealedSYN.address,
-			callData: sealedSYN.interface.encodeFunctionData("allowance", [
+			target: essyx.address,
+			callData: essyx.interface.encodeFunctionData("allowance", [
 				address,
-				unlocker.address,
+				essyx.address,
 			]),
 		});
 
@@ -149,37 +148,36 @@ function TokenContextProvider({ children }: any) {
 		});
 
 		// staking data
-		const staking = await getContract("StakingRewards", chain);
 		calls = [];
 		// rewardRate
 		calls.push({
-			target: staking.address,
-			callData: staking.interface.encodeFunctionData("rewardRate"),
+			target: essyx.address,
+			callData: essyx.interface.encodeFunctionData("rewardRate"),
 		});
 		// earned
 		calls.push({
-			target: staking.address,
-			callData: staking.interface.encodeFunctionData("earned", [address]),
+			target: essyx.address,
+			callData: essyx.interface.encodeFunctionData("earned", [address]),
 		});
 		// balanceOf
 		calls.push({
-			target: staking.address,
-			callData: staking.interface.encodeFunctionData("balanceOf", [
+			target: essyx.address,
+			callData: essyx.interface.encodeFunctionData("balanceOf", [
 				address,
 			]),
 		});
         // allowance
         calls.push({
-            target: sealedSYN.address,
-            callData: sealedSYN.interface.encodeFunctionData("allowance", [
+            target: essyx.address,
+            callData: essyx.interface.encodeFunctionData("allowance", [
                 address,
-                staking.address,
+                essyx.address,
             ]),
         });
 		// totalSupply
 		calls.push({
-			target: staking.address,
-			callData: staking.interface.encodeFunctionData("totalSupply"),
+			target: essyx.address,
+			callData: essyx.interface.encodeFunctionData("totalSupply"),
 		});
 
 		const stakingResult = await multicall.callStatic.aggregate(calls);

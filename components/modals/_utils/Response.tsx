@@ -1,4 +1,5 @@
-import { Alert, AlertIcon, Box, Text, Link } from "@chakra-ui/react";
+import { Alert, AlertIcon, Box, Text } from "@chakra-ui/react";
+import Link from "next/link";
 import React, { useContext } from "react";
 import { chainMapping } from "../../../src/chains";
 import { AppDataContext } from "../../context/AppDataProvider";
@@ -7,18 +8,21 @@ export default function Response({response, message, hash, confirmed}: any) {
 
     const { chain } = useContext(AppDataContext);
 
+	const status = () => {
+		return message.includes("Confirm")
+		? "info"
+		: confirmed && message.includes("Success")
+		? "success"
+		: "error"
+	}
+
 	return (
 		<>
 			{response && (
+				<Link href={chainMapping[chain]?.blockExplorers.default.url + "tx/" + hash} target="_blank">
 				<Box width={"100%"} mt={4} mb={0}>
 					<Alert
-						status={
-							response.includes("confirm")
-								? "info"
-								: confirmed && response.includes("Success")
-								? "success"
-								: "error"
-						}
+						status={status()}
 						variant="top-accent"
 						rounded={16}
 						
@@ -31,17 +35,10 @@ export default function Response({response, message, hash, confirmed}: any) {
 							<Text fontSize="xs" mt={0}>
 								{message.slice(0, 100)}
 							</Text>
-							{hash && (
-								<Link href={chainMapping[chain]?.blockExplorers.default.url + "tx/" + hash} target="_blank">
-									{" "}
-									<Text fontSize={"xs"} textDecor='underline'>
-										View on explorer
-									</Text>
-								</Link>
-							)}
 						</Box>
 					</Alert>
 				</Box>
+				</Link>
 			)}
 		</>
 	);

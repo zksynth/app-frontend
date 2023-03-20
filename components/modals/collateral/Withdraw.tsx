@@ -21,7 +21,7 @@ import { useContext } from "react";
 import { AppDataContext } from "../../context/AppDataProvider";
 import { ETH_ADDRESS, compactTokenFormatter, dollarFormatter } from "../../../src/const";
 
-export default function Withdraw({ collateral, amount, amountNumber }: any) {
+export default function Withdraw({ collateral, amount, setAmount, amountNumber }: any) {
 	const [loading, setLoading] = useState(false);
 	const [response, setResponse] = useState<string | null>(null);
 	const [hash, setHash] = useState(null);
@@ -32,22 +32,24 @@ export default function Withdraw({ collateral, amount, amountNumber }: any) {
 		chain,
 		pools,
 		tradingPool,
-        adjustedCollateral,
-        totalCollateral,
-        totalDebt,
 		updateCollateralWalletBalance,
 		updateCollateralAmount,
 	} = useContext(AppDataContext);
 
-	// adjustedDebt - totalDebt = assetAmount*assetPrice*ltv
+	// adjustedDebt - pools[tradingPool]?.userDebt = assetAmount*assetPrice*ltv
 	const max = () => {
-		const v1 = collateral.priceUSD > 0 ? Big(adjustedCollateral).sub(totalDebt).div(collateral.priceUSD).mul(1e4).div(collateral.baseLTV) : Big(0);
+		const v1 = collateral.priceUSD > 0 ? Big(pools[tradingPool]?.adjustedCollateral).sub(pools[tradingPool]?.userDebt).div(collateral.priceUSD).mul(1e4).div(collateral.baseLTV) : Big(0);
         const v2 = Big(collateral.balance ?? 0).div(10**18);
 		// min(v1, v2)
 		return (v1.gt(v2) ? v2 : v1).toString();
 	};
 
 	const withdraw = async () => {
+		setLoading(true);
+		setMessage("")
+		setConfirmed(false);
+		setResponse(null);
+		setHash(null);
 		const poolId = pools[tradingPool].id;
 		const pool = await getContract("Pool", chain, poolId);
 		const _amount = Big(amount).mul(10**collateral.token.decimals).toFixed(0);
@@ -72,20 +74,29 @@ export default function Withdraw({ collateral, amount, amountNumber }: any) {
 		}
 		tx.then(async (res: any) => {
 			setLoading(false);
-			setResponse("Transaction sent! Waiting for confirmation...");
+			setMessage("Confirming...");
+			setResponse("Transaction sent! Waiting for confirmation");
 			setHash(res.hash);
-			await res.wait(1);
+			const response = await res.wait(1);
+			// decode transfer event from response.logs
+			const decodedLogs = response.logs.map((log: any) =>
+				{
+					try {
+						return pool.interface.parseLog(log)
+					} catch (e) {
+						console.log(e)
+					}
+				});
+			const collateralId = decodedLogs[1].args[1].toLowerCase();
+			const depositedAmount = decodedLogs[1].args[2].toString();
 			setConfirmed(true);
-			const collateralId = collateral.token.id;
-			const value = Big(amount)
-				.mul(Big(10).pow(Number(collateral.token.decimals)))
-				.toFixed(0);
-			updateCollateralWalletBalance(collateralId, poolId, value, false);
-			updateCollateralAmount(collateralId, poolId, value, true);
+			updateCollateralWalletBalance(collateralId, poolId, depositedAmount, false);
+			updateCollateralAmount(collateralId, poolId, depositedAmount, true);
+			setAmount('0');
 			setMessage(
-				`You have withdrawn ${amount} ${collateral.token.symbol} from your position.`
+				"Transaction Successful!"
 			);
-			setResponse("Transaction Successful!");
+			setResponse(`You have withdrawn ${amount} ${collateral.token.symbol}.`);
 		}).catch((err: any) => {
 			console.log(err);
 			setMessage(JSON.stringify(err));
@@ -184,14 +195,14 @@ export default function Withdraw({ collateral, amount, amountNumber }: any) {
 								<Text fontSize={"md"} color="gray.400">
 									Health Factor
 								</Text>
-								<Text fontSize={"md"}>{(totalDebt/totalCollateral * 100).toFixed(1)} % {"->"} {(totalDebt /(totalCollateral - (amount*collateral.priceUSD)) * 100).toFixed(1)}%</Text>
+								<Text fontSize={"md"}>{(pools[tradingPool]?.userDebt/pools[tradingPool]?.userCollateral * 100).toFixed(1)} % {"->"} {(pools[tradingPool]?.userDebt /(pools[tradingPool]?.userCollateral - (amount*collateral.priceUSD)) * 100).toFixed(1)}%</Text>
 							</Flex>
 							<Divider my={2} />
 							<Flex justify="space-between">
 								<Text fontSize={"md"} color="gray.400">
 									Available to issue
 								</Text>
-								<Text fontSize={"md"}>{dollarFormatter.format(adjustedCollateral - totalDebt)} {"->"} {dollarFormatter.format(adjustedCollateral - amount*collateral.priceUSD*collateral.baseLTV/10000 - totalDebt)}</Text>
+								<Text fontSize={"md"}>{dollarFormatter.format(pools[tradingPool]?.adjustedCollateral - pools[tradingPool]?.userDebt)} {"->"} {dollarFormatter.format(pools[tradingPool]?.adjustedCollateral - amount*collateral.priceUSD*collateral.baseLTV/10000 - pools[tradingPool]?.userDebt)}</Text>
 							</Flex>
 						</Box>
 					</Box>
@@ -208,7 +219,7 @@ export default function Withdraw({ collateral, amount, amountNumber }: any) {
                     }
                     isLoading={loading}
                     loadingText="Please sign the transaction"
-                    bgColor="secondary"
+                    bgColor="secondary.400"
                     width="100%"
                     color="white"
                     mt={4}

@@ -29,9 +29,9 @@ export function call(contract: any, method: string, params: any[], chain: number
 }
 
 export function send(contract: any, method: string, params: any[], chain: number, value = '0') {
-  return contract[method](...params, {value: value, gasPrice: ethers.utils.parseUnits('10', 'gwei')});
+  return contract[method](...params, {value: value});
 }
 
 export function estimateGas(contract: any, method: string, params: any[], chain: number, value = '0') {
-  return contract.estimateGas[method](...params, {value: value, gasPrice: ethers.utils.parseUnits('10', 'gwei')});
+  return contract.estimateGas[method](...params, {value: value});
 }
