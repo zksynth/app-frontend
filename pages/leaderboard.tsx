@@ -32,7 +32,7 @@ export default function Leaderboard() {
 				<title>Rewards | SyntheX</title>
 				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
 			</Head>
-    <Box pt={'110px'}>
+    <Box pt={'100px'}>
 
       <Heading size={"lg"}>Trade-to-earn</Heading>
       <Text mt={2} pb={5} color='gray.400'>
@@ -97,7 +97,7 @@ export default function Leaderboard() {
     <Tbody>
       {leaderboardData?.map((_account, index): any => {
 
-      return <Tr key={index} bg={account?.id.toLowerCase() == _account.id ? 'whiteAlpha.200' : 'transparent'}>
+      return <Tr key={index} bg={account?.id.toLowerCase() == _account.id ? 'whiteAlpha.100' : 'transparent'}>
         <Td borderColor={'whiteAlpha.50'}>{(account?.id.toLowerCase() == _account.id ? `You (${_account.id.slice(0,8)})` :  _account.id.slice(0, 8) + '...' + _account.id.slice(36))}</Td>
         <Td borderColor={'whiteAlpha.50'}>{tokenFormatter.format(_account.accountDayData[0]?.dailyPoint ?? 0)}</Td>
         <Td borderColor={'whiteAlpha.50'}>{dollarFormatter.format(_account.accountDayData[0]?.dailyMintedUSD ?? 0)}</Td>

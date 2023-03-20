@@ -20,6 +20,9 @@ import { InfoIcon, InfoOutlineIcon } from "@chakra-ui/icons";
 import Big from "big.js";
 import { BsLightningChargeFill, BsStars } from "react-icons/bs";
 import { FaBurn } from "react-icons/fa";
+import APRInfo from "../components/infos/APRInfo";
+import Info from "../components/infos/Info"
+import { AiFillStop, AiOutlineStop } from "react-icons/ai";
 
 export default function TempPage() {
 	const {
@@ -92,7 +95,7 @@ export default function TempPage() {
 								<Box mt={-1}>
 									<Heading
 										size={"sm"}
-										color="whiteAlpha.600"
+										color="whiteAlpha.700"
 										mb={0.5}
 									>
 										Collateral
@@ -118,72 +121,21 @@ export default function TempPage() {
 								<Box mt={-1}>
 									<Heading
 										fontSize={"sm"}
-										color="whiteAlpha.600"
+										color="whiteAlpha.700"
 									>
 										APY
 									</Heading>
 									<Tooltip
-										cursor={"help"}
 										bg="bg2"
 										rounded={8}
 										p={0}
-										label={
-											<>
-											<Box rounded={8} bg={'blackAlpha.200'} border='2px' borderColor={'whiteAlpha.100'}>
-												<Box px={3} py={2}>
-													<Text color={'whiteAlpha.700'}>Total APR</Text>
-													<Text fontSize={'lg'} color={'white'}>{Number(debtBurnApr()) + Number(esSyxApr())} %</Text>
-												</Box>
-
-												<Divider/>
-												<Box px={3} py={1} bg='blackAlpha.200'>
-												<Flex
-													align={"center"}
-													gap={2}
-													mb={2}
-													mt={2}
-													color='white'
-												>
-													<FaBurn size={"20px"} />
-													<Flex gap={2}>
-														<Text>
-															{debtBurnApr()} %
-														</Text>
-														<Text color={'whiteAlpha.700'}>
-															Debt Burn
-														</Text>
-													</Flex>
-												</Flex>
-												<Flex
-													align={"center"}
-													gap={2}
-													mb={2}
-													color='white'
-												>
-													<Image
-														src="/esSYX.svg"
-														w={5}
-														alt={"esSYN"}
-													/>
-													<Flex gap={2}>
-														<Text>
-															{esSyxApr()} %
-														</Text>
-														<Text color={'whiteAlpha.700'}>
-															esSYX
-														</Text>
-													</Flex>
-												</Flex>
-												</Box>
-												</Box>
-											</>
-										}
+										label={<APRInfo debtBurnApr={debtBurnApr()} esSyxApr={esSyxApr()} />}
 									>
-										<Flex mb={0.5} gap={1.5} align="center">
+										<Flex mb={0.5} gap={1.5} align="center" cursor={"help"}>
 											<Text
 												fontSize={"xl"}
 												fontWeight={"semibold"}
-											> {Number(debtBurnApr()) + Number(esSyxApr())} %
+											> {(Number(debtBurnApr()) + Number(esSyxApr())).toFixed(2)} %
 											</Text>
 
 											<BsStars color={"gray.400"} />
@@ -200,9 +152,14 @@ export default function TempPage() {
 									alt={"icon3"}
 								/>
 								<Tooltip
-											label={`When you issue synths, you are allocated a share of pool's total debt. As the pool's total value changes, your debt changes as well`}
-										>
-								<Box mt={-1}>
+									bg="bg2"
+									p={0}
+									rounded={8}
+									label={
+										<Info message={`When you issue synths, you are allocated a share of pool's total debt. As the pool's total value changes, your debt changes as well`} title={'Debt is variable'} />
+									}
+									>
+								<Box mt={-1} cursor={"help"}>
 									
 										<Heading
 										mb={0.5}
@@ -242,25 +199,31 @@ export default function TempPage() {
 						textAlign={{ sm: "left", md: "right" }}
 						mt={{ sm: 16, md: 3 }}
 					>
+						<Tooltip
+						bg="bg2"
+						p={0}
+						rounded={8}
+								label={<Info message={`Your Debt Limit depends on your LTV %. Account would be liquidated if LTV is greater than your Collateral's Liquidation Threshold`} title={'Loan to Value (LTV) Ratio'}/>}
+							>
 						<Flex
 							justify={{ sm: "start", md: "end" }}
 							align="center"
 							gap={1}
+							cursor={"help"}
 						>
+							
 							<Heading size={"sm"} mb={1} color="whiteAlpha.700">
 								Debt Limit
 							</Heading>
 
-							<Tooltip
-								label={`Your Debt Limit depends on your LTV (Loan to Value) %. Account would be liquidated if LTV is greater than your Collateral's Liquidation Threshold`}
-							>
-								<InfoOutlineIcon
-									cursor={"help"}
+							<Box mb={1.5}>
+
+								<AiOutlineStop
 									color={"gray.400"}
-									mb={1}
-								/>
-							</Tooltip>
+									/>
+									</Box>
 						</Flex>
+							</Tooltip>
 						<Text
 							fontWeight={"semibold"}
 							fontSize={"3xl"}
@@ -312,10 +275,18 @@ export default function TempPage() {
 								}
 							></Box>
 						</Box>
+						<Tooltip
+						bg="bg2"
+						p={0}
+						rounded={8}
+								label={<Info message={`You can issue debt till you reach Collateral's Base LTV`} title={'Borrow Capacity'}/>}
+
+							>
 						<Flex
 							justify={{ sm: "start", md: "end" }}
 							align="center"
 							gap={1}
+							cursor={"help"}
 						>
 							<Text fontSize={"sm"} color="gray.400">
 								Available to Issue
@@ -327,15 +298,13 @@ export default function TempPage() {
 										: 0) 
 										}
 							</Text>
-							<Tooltip
-								label={`You can issue debt till you reach collateral's Base LTV`}
-							>
+							
 								<InfoOutlineIcon
 									cursor={"help"}
 									color={"gray.400"}
 								/>
-							</Tooltip>
 						</Flex>
+							</Tooltip>
 					</Box>
 				</motion.div>
 			</Box>

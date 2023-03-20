@@ -69,8 +69,8 @@ export default function Claim() {
 	const claim = async () => {
 		setClaiming(true);
 		const synthex = await getContract("SyntheX", connectedChain!.id);
-		synthex["claimReward(address,address,address[])"](
-			pools[0].rewardTokens[0].token.id,
+		synthex["claimReward"](
+			[pools[0].rewardTokens[0].id],
 			address,
 			pools.map((pool: any) => pool.id)
 		)

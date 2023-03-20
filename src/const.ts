@@ -89,6 +89,7 @@ export const query = (address: string) => (
 		}
 		accounts(where: {id: "${address}"}){
 		  id
+		  createdAt
 		  referredBy
 		  totalPoint
 		  totalMintUSD

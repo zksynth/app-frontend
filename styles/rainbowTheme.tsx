@@ -10,8 +10,7 @@ const myCustomTheme: Theme = {
     
     connectButtonBackground: '#2D3748',
     
-    
-    modalBackground: '#1A202C',
+    modalBackground: '#071325',
     // modalBorder: '#2D3748',
     
 
@@ -22,7 +21,7 @@ const myCustomTheme: Theme = {
     closeButtonBackground: "rgba(255, 255, 255, 0.08)",
     connectButtonBackgroundError: "#FF494A",
     connectButtonInnerBackground: "#2D3748",
-    connectButtonText: "#FFF",
+    connectButtonText: "#000000",
     connectButtonTextError: "#FFF",
     connectionIndicator: "#30E000",
     downloadBottomCardBackground: "linear-gradient(126deg, rgba(0, 0, 0, 0) 9.49%, rgba(120, 120, 120, 0.2) 71.04%), #1A1B1F",
