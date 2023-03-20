@@ -89,7 +89,6 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber }:
 						console.log(e)
 					}
 				});
-			console.log(decodedLogs);
 			const collateralId = decodedLogs[decodedLogs.length - 1].args[1].toLowerCase();
 			const depositedAmount = decodedLogs[decodedLogs.length - 1].args[2].toString();
 			setConfirmed(true);

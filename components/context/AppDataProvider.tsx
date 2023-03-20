@@ -1,7 +1,7 @@
 import * as React from "react";
 import axios from "axios";
 import { getContract, call, getAddress, getABI } from "../../src/contract";
-import { ADDRESS_ZERO, dollarFormatter, Endpoints, ETH_ADDRESS, query, tokenFormatter, query_leaderboard } from '../../src/const';
+import { ADDRESS_ZERO, dollarFormatter, Endpoints, ETH_ADDRESS, query, tokenFormatter, query_leaderboard, query_referrals } from '../../src/const';
 import { ChainID, chainMapping } from "../../src/chains";
 import { BigNumber, ethers } from "ethers";
 import { useEffect } from 'react';
@@ -72,6 +72,8 @@ function AppDataProvider({ children }: any) {
 	const [block, setBlock] = React.useState(0);
 	const [random, setRandom] = React.useState(0);
 
+	const [referrals, setReferrals] = React.useState<any[]>([]);
+
 	useEffect(() => {
 		if (refresh == 0 && pools.length > 0) {
 			// set new interval
@@ -85,23 +87,31 @@ function AppDataProvider({ children }: any) {
 		console.log("fetching");
 		return new Promise((resolve, reject) => {
 			setStatus("fetching");
-			Promise.all([axios
-				.post(Endpoints[chainId], {
+			Promise.all([
+				axios.post(Endpoints[chainId], {
 					query: query(_address?.toLowerCase() ?? ADDRESS_ZERO),
 					variables: {},
-				}), axios
-				.post(Endpoints[chainId], {
+				}), 
+				axios.post(Endpoints[chainId], {
 					query: query_leaderboard,
 					variables: {},
-				})])
+				}),
+				axios.post(Endpoints[chainId], {
+					query: query_referrals(_address?.toLowerCase() ?? ADDRESS_ZERO),
+					variables: {},
+				})
+			])
 				.then(async (res) => {
-					if (res[0].data.errors || res[1].data.errors) {
+					if (res[0].data.errors || res[1].data.errors || res[2].data.errors) {
 						setStatus("error");
 						setMessage("Network Error. Please refresh the page or try again later.");
-						reject(res[0].data.errors || res[1].data.errors);
+						reject(res[0].data.errors || res[1].data.errors || res[2].data.errors);
 					} else {
 						const userPoolData = res[0].data.data;
 						const leaderboardData = res[1].data.data.accounts;
+						const _refs = res[2].data.data.accounts;
+						console.log("referrals", _refs);
+						setReferrals(_refs);
 						setLeaderboard(leaderboardData);
 						const pools = userPoolData.pools;
 						if (_address) {
@@ -192,7 +202,6 @@ function AppDataProvider({ children }: any) {
 				_pools[i].averageDailyBurn = _pools[i].poolDayData.length > 0 ? averageDailyBurn.div(_pools[i].poolDayData.length).toString() : '0';
 				_pools[i].averageDailyRevenue = _pools[i].poolDayData.length > 0 ? averageDailyRevenue.div(_pools[i].poolDayData.length).toString() : '0';
 			}
-
 
 			helper.callStatic.aggregate(calls).then(async (res: any) => {
 				setBlock(parseInt(res[0].toString()));

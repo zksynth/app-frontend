@@ -18,7 +18,7 @@ import { motion } from "framer-motion";
 import Head from "next/head";
 import { InfoIcon, InfoOutlineIcon } from "@chakra-ui/icons";
 import Big from "big.js";
-import { BsStars } from "react-icons/bs";
+import { BsLightningChargeFill, BsStars } from "react-icons/bs";
 import { FaBurn } from "react-icons/fa";
 
 export default function TempPage() {
@@ -49,7 +49,6 @@ export default function TempPage() {
 		if (!pools[tradingPool]) return "0";
 		if(Big(pools[tradingPool]?.totalDebtUSD).eq(0)) return "0"
 		return Big(pools[tradingPool]?.averageDailyBurn ?? 0)
-			.div(1e18)
 			.mul(365)
 			.div(pools[tradingPool]?.totalDebtUSD)
 			.mul(100)
@@ -200,7 +199,11 @@ export default function TempPage() {
 									src="/icon3.svg"
 									alt={"icon3"}
 								/>
+								<Tooltip
+											label={`When you issue synths, you are allocated a share of pool's total debt. As the pool's total value changes, your debt changes as well`}
+										>
 								<Box mt={-1}>
+									
 										<Heading
 										mb={0.5}
 											size={"sm"}
@@ -216,17 +219,14 @@ export default function TempPage() {
 									>
 										{dollarFormatter.format(pools[tradingPool]?.userDebt ?? 0)}
 									</Text>
-										<Tooltip
-											label={`When you issue synths, you are allocated a share of pool's total debt. As the pool's total value changes, your debt changes as well`}
-										>
-											<InfoOutlineIcon
-												cursor={"help"}
+										
+											<BsLightningChargeFill
 												color={"gray.400"}
 											/>
-										</Tooltip>
 									</Flex>
 
 								</Box>
+										</Tooltip>
 							</Flex>
 						</Flex>
 					</motion.div>

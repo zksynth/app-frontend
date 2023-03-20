@@ -96,12 +96,8 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 		let value = Big(amount)
 			.times(10 ** 18)
 			.toFixed(0);
-		let _referral = useReferral ? BigNumber.from(
-			base58.decode(referral!)
-		).toHexString() : ethers.constants.AddressZero;
+		let _referral = useReferral ? BigNumber.from(base58.decode(referral!)).toHexString() : ethers.constants.AddressZero;
 
-		console.log(_referral);
-		
 		send(synth, "mint", [value, address, _referral], chain)
 			.then(async (res: any) => {
 				setLoading(false);

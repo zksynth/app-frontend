@@ -130,6 +130,20 @@ export const query_leaderboard = `
 	}
 `;
 
+export const query_referrals = (address: string) => (`
+	{
+		accounts(where: {referredBy: "${address}"}){
+			id
+			totalPoint
+			accountDayData(first:1, orderBy: dayId, orderDirection: desc){
+				dailyMintedUSD
+				dailyBurnedUSD
+				dailyPoint
+			}
+		}
+	}
+`);
+
 const COLORS_GREEN = [
 	"#154F43",
 	"#043D31",

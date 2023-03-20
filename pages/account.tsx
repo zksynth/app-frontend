@@ -9,6 +9,7 @@ import {
 import Big from "big.js";
 import { BigNumber } from "ethers";
 import { base58 } from "ethers/lib/utils.js";
+import Head from "next/head";
 import React from "react";
 import { FaCopy } from "react-icons/fa";
 import { useAccount, useBalance } from "wagmi";
@@ -22,16 +23,16 @@ export default function Account() {
 
 	return (
 		<>
+		<Head>
+				<title>Account | SyntheX</title>
+				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
+			</Head>
 			<Box pt="100px">
 				<Heading size={"lg"}>
 					{/* {address?.slice(0, 8) + "..." + address?.slice(38)} */}
                     Your Account
 				</Heading>
 			</Box>
-
-            <Box>
-                
-            </Box>
 
 			<Box mt={5} bg="bg2" px={6} py={6} rounded={10} border='2px' borderColor={'whiteAlpha.100'}>
 				<Flex justify={"space-between"}>

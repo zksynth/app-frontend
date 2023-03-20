@@ -354,14 +354,16 @@ function NavBar() {
 					</Flex>
 				</Flex>
 
-				<Flex
+				<Flex	
 					display={{ sm: "none", md: "flex" }}
 					justify="flex-end"
 					align={"center"}
 					gap={2}
 					w='100%'
+					
 				>
-					<Link href={{ pathname: "/leaderboard", query: router.query }}>
+				<motion.div whileHover={{scale: 1.05}} whileTap={{scale: 0.95}}>
+					<Link href={{ pathname: "/leaderboard", query: router.query }} >
 						<Flex
 							align={"center"}
 							h={"38px"}
@@ -375,11 +377,14 @@ function NavBar() {
 								fontSize="sm"
 							>
 								<Flex align={"center"} gap={2}>
-									<Heading size={"xs"}>{(Number(account?.totalPoint ?? '0')).toFixed(0)} Points</Heading>
+									
+									<Heading size={"sm"} color={router.pathname == '/leaderboard' ? 'primary.400' : 'white'}>{(Number(account?.totalPoint ?? '0')).toFixed(0)} Points</Heading>
 								</Flex>
 							</Box>
 						</Flex>
 					</Link>
+				</motion.div>
+
 					<Box>
 						<ConnectButton />
 						{/* <Button onClick={toggleColorMode}>

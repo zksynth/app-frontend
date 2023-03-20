@@ -212,7 +212,7 @@ function Swap() {
 				// estimate gas
 				contract.estimateGas
 					.swap(
-						ethers.utils.parseEther(Number(inputAmount).toString()),
+						ethers.utils.parseEther(inputAmount.toString()),
 						pools[tradingPool].synths[outputAssetIndex].token.id,
 						address,
 						ethers.constants.AddressZero
@@ -490,6 +490,7 @@ function Swap() {
 							justify="space-between"
 							align={"center"}
 							mt={12}
+							mb={!isOpen ? !account ? '-4' : '-6' : '0'}
 							bg="whiteAlpha.50"
 							color="gray.200"
 							rounded={16}
@@ -521,82 +522,81 @@ function Swap() {
 								{!isOpen ? <RiArrowDropDownLine size={30} /> : <RiArrowDropUpLine size={30} />}
 							</Flex>
 						</Flex>
-
-						<motion.div
-							{...getDisclosureProps()}
-							hidden={hidden}
-							initial={false}
-							onAnimationStart={() => setHidden(false)}
-							onAnimationComplete={() => setHidden(!isOpen)}
-							animate={{ height: isOpen ? 94 : 0 }}
-							style={{
-							height: 94,
-							width: '100%',
-							}}
-						>
-							{isOpen && 	
-							<Box border={'2px'} borderColor='whiteAlpha.200' mt={2} px={4} py={2} rounded={16} fontSize='sm' color={'gray.400'}>
-								<Flex justify={'space-between'}>
-								<Text>Price Impact</Text>
-								<Text>{100*(Number(inputToken().burnFee) + Number(outputToken().mintFee)) / 10000} %</Text>
-								</Flex>
-								<Divider my={1}/>
-								<Flex justify={'space-between'} mb={0.5}>
-								<Text>Swap Fee</Text>
-								<Text>{100*(Number(inputToken().burnFee) + Number(outputToken().mintFee))/ 10000} %</Text>
-								</Flex>
-								<Flex justify={'space-between'} mb={0.5}>
-								<Text>Slippage</Text>
-								<Text>0 %</Text>
-								</Flex>
-								<Flex justify={'space-between'}>
-								<Text>Estimated Gas</Text>
-								<Text>{dollarFormatter.format(gas)}</Text>
-								</Flex>
-							</Box>}
-						</motion.div>
-
-
-						{!account && (
-					<>
-						{" "}
-						<Flex mt={isOpen ? 8 : 4} mb={3} gap={2} align={"center"}>
-							<Text
-								fontSize={"sm"}
-								color="gray.400"
-								fontWeight={"bold"}
+						<Box mb={isOpen ? -2 : 0}>
+							<motion.div
+								{...getDisclosureProps()}
+								hidden={hidden}
+								initial={false}
+								onAnimationStart={() => setHidden(false)}
+								onAnimationComplete={() => setHidden(!isOpen)}
+								animate={{ height: isOpen ? 94 : 0 }}
+								style={{
+								height: 94,
+								width: '100%',
+								}}
 							>
-								Use Referral Code
-							</Text>
-							<Switch
-								colorScheme={"primary"}
-								isChecked={useReferral}
-								onChange={_setUseReferral}
-							/>
-						</Flex>
-						<Collapse in={useReferral} animateOpacity>
-							<Box mb={2} >
-								<Input
-									placeholder="Referral Code"
-									value={referral!}
-									onChange={(e) =>
-										setReferral(e.target.value)
-									}
-									isInvalid={!isValid()}
-									errorBorderColor="red.400"
-									colorScheme={"primary"}
-								/>
-							</Box>
-						</Collapse>{" "}
-					</>
-				)}
-						</>
-						
-						
-						}
+								{isOpen && 	
+								<Box border={'2px'} borderColor='whiteAlpha.200' mt={2} px={4} py={2} rounded={16} fontSize='sm' color={'gray.400'}>
+									<Flex justify={'space-between'}>
+									<Text>Price Impact</Text>
+									<Text>{100*(Number(inputToken().burnFee) + Number(outputToken().mintFee)) / 10000} %</Text>
+									</Flex>
+									<Divider my={1}/>
+									<Flex justify={'space-between'} mb={0.5}>
+									<Text>Swap Fee</Text>
+									<Text>{100*(Number(inputToken().burnFee) + Number(outputToken().mintFee))/ 10000} %</Text>
+									</Flex>
+									<Flex justify={'space-between'} mb={0.5}>
+									<Text>Slippage</Text>
+									<Text>0 %</Text>
+									</Flex>
+									<Flex justify={'space-between'}>
+									<Text>Estimated Gas</Text>
+									<Text>{dollarFormatter.format(gas)}</Text>
+									</Flex>
+								</Box>}
+							</motion.div>
+						</Box>
+
+						<Box py={5}>
+						{!account && (
+							<>
+								{" "}
+								<Flex mt={isOpen ? 8 : 3} mb={3} gap={2} align={"center"}>
+									<Text
+										fontSize={"sm"}
+										color="gray.400"
+										fontWeight={"bold"}
+									>
+										Use Referral Code
+									</Text>
+									<Switch
+										colorScheme={"primary"}
+										isChecked={useReferral}
+										onChange={_setUseReferral}
+									/>
+								</Flex>
+								<Collapse in={useReferral} animateOpacity>
+									<Box mb={2} >
+										<Input
+											placeholder="Referral Code"
+											value={referral!}
+											onChange={(e) =>
+												setReferral(e.target.value)
+											}
+											isInvalid={!isValid()}
+											errorBorderColor="red.400"
+											colorScheme={"primary"}
+										/>
+									</Box>
+								</Collapse>{" "}
+							</>
+						)}
+						</Box>
+						</>}
 
 						<Button
-							mt={gas == 0 ? 12 : 3}
+							mt={!gas ? 14 : 0}
 							mb={5}
 							size="lg"
 							fontSize={"xl"}

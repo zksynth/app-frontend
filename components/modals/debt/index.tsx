@@ -55,7 +55,7 @@ export default function Debt({ synth }: any) {
 	};
 
 	const _setAmount = (e: string) => {
-		setAmount(Number(e) ? Number(e).toString(): e);
+		setAmount(e);
 		setAmountNumber(isNaN(Number(e)) ? 0 : Number(e));
 	};
 
