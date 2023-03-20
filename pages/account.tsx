@@ -13,6 +13,22 @@ import Head from "next/head";
 import React from "react";
 import { FaCopy } from "react-icons/fa";
 import { useAccount, useBalance } from "wagmi";
+import { useContext } from 'react';
+import { AppDataContext } from "../components/context/AppDataProvider";
+import { dollarFormatter } from '../src/const';
+
+import {
+	Table,
+	Thead,
+	Tbody,
+	Tfoot,
+	Tr,
+	Th,
+	Td,
+	TableCaption,
+	TableContainer,
+  } from '@chakra-ui/react'
+
 
 export default function Account() {
 	const { address } = useAccount();
@@ -20,6 +36,8 @@ export default function Account() {
 	const { onCopy: onLinkCopy, hasCopied: hasCopiedLink } = useClipboard(
 		`${process.env.NEXT_PUBLIC_VERCEL_URL}/?ref=${base58.encode(address!)}`
 	);
+
+	const { referrals } = useContext(AppDataContext)
 
 	return (
 		<>
@@ -85,7 +103,31 @@ export default function Account() {
 						</Flex>
 					</Box>
 				</Flex>
+				{referrals.length > 0 && <Box mt={10}>
+					{/* <Heading size={'sm'}>My Referrals</Heading> */}
+					<TableContainer >
+					<Table variant='simple'>
+						<Thead>
+						<Tr>
+							<Th>My Referrals</Th>
+							<Th>Volume (USD)</Th>
+							<Th isNumeric>Referral Fees</Th>
+						</Tr>
+						</Thead>
+						<Tbody>
+						{referrals.map((account: any, index: number) => (
+							<Tr key={index}>
+								<Td>{account.id.slice(0, 8) + '...' + account.id.slice(36)}</Td>
+								<Td>{dollarFormatter.format(Number(account.totalMintUSD) + Number(account.totalBurnUSD))}</Td>
+								<Td isNumeric>{'-'}</Td>
+							</Tr>
+						))}
+						</Tbody>
+					</Table>
+					</TableContainer>
+				</Box>}
 			</Box>
+
 		</>
 	);
 }

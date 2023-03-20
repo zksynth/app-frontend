@@ -60,6 +60,7 @@ export default function CollateralModal({ collateral }: any) {
 	};
 
 	const _setAmount = (e: string) => {
+		if(Number(e) > 0 && Number(e) < 0.000001) e = '0';
 		setAmount(Number(e) ? Number(e).toString(): e);
 		setAmountNumber(isNaN(Number(e)) ? 0 : Number(e));
 	};

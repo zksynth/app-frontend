@@ -134,7 +134,8 @@ export const query_referrals = (address: string) => (`
 	{
 		accounts(where: {referredBy: "${address}"}){
 			id
-			totalPoint
+			totalMintUSD
+			totalBurnUSD
 			accountDayData(first:1, orderBy: dayId, orderDirection: desc){
 				dailyMintedUSD
 				dailyBurnedUSD

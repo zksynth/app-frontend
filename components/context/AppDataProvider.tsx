@@ -38,6 +38,7 @@ interface AppDataValue {
 	refresh: number;
 	lastRefresh: number;
 	setLastRefresh: (_: number) => void;
+	referrals: any[];
 }
 
 // pool.userDebt
@@ -472,6 +473,7 @@ function AppDataProvider({ children }: any) {
 		refresh,
 		lastRefresh,
 		setLastRefresh,
+		referrals,
 	};
 
 	return (
