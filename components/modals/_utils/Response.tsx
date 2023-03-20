@@ -8,19 +8,21 @@ export default function Response({response, message, hash, confirmed}: any) {
 
     const { chain } = useContext(AppDataContext);
 
+	const status = () => {
+		return message.includes("Confirm")
+		? "info"
+		: confirmed && message.includes("Success")
+		? "success"
+		: "error"
+	}
+
 	return (
 		<>
 			{response && (
 				<Link href={chainMapping[chain]?.blockExplorers.default.url + "tx/" + hash} target="_blank">
 				<Box width={"100%"} mt={4} mb={0}>
 					<Alert
-						status={
-							message.includes("Confirm")
-								? "info"
-								: confirmed && message.includes("Success")
-								? "success"
-								: "error"
-						}
+						status={status()}
 						variant="top-accent"
 						rounded={16}
 						

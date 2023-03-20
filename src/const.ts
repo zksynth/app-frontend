@@ -32,6 +32,11 @@ export const compactTokenFormatter = new Intl.NumberFormat("en-US", {
 	roundingMode: "floor",
 } as any);
 
+export const numberFormatter = new Intl.NumberFormat("en-US", {
+	maximumSignificantDigits: 8,
+	roundingMode: "floor",
+} as any);
+
 export const query = (address: string) => (
 	`{
 		pools {

@@ -52,12 +52,9 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 
 	const {
 		chain,
-		adjustedCollateral,
-		totalDebt,
 		updateSynthWalletBalance,
 		pools,
 		tradingPool,
-		totalCollateral,
 		updatePoolBalance,
 		account
 	} = useContext(AppDataContext);
@@ -75,7 +72,7 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 	})
 
 	const max = () => {
-		return (Big(adjustedCollateral).sub(totalDebt).div(asset.priceUSD).gt(0) ? Big(adjustedCollateral).sub(totalDebt).div(asset.priceUSD) : 0).toString();
+		return (Big(pools[tradingPool].adjustedCollateral).sub(pools[tradingPool].userDebt).div(asset.priceUSD).gt(0) ? Big(pools[tradingPool].adjustedCollateral).sub(pools[tradingPool].userDebt).div(asset.priceUSD) : 0).toString();
 	};
 
 	const mint = async () => {
@@ -206,14 +203,14 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 								<Text fontSize={"md"} color="gray.400">
 									Health Factor
 								</Text>
-								<Text fontSize={"md"}>{(totalCollateral > 0 ? (100*totalDebt/totalCollateral) : 0).toFixed(1)} % {"->"} {((totalCollateral > 0 ? (totalDebt + (amount*asset.priceUSD)) /(totalCollateral) : 0) * 100).toFixed(1)}%</Text>
+								<Text fontSize={"md"}>{(pools[tradingPool].userCollateral > 0 ? (100*pools[tradingPool].userDebt/pools[tradingPool].userCollateral) : 0).toFixed(1)} % {"->"} {((pools[tradingPool].userCollateral > 0 ? (pools[tradingPool].userDebt + (amount*asset.priceUSD)) /(pools[tradingPool].userCollateral) : 0) * 100).toFixed(1)}%</Text>
 							</Flex>
 							<Divider my={2} />
 							<Flex justify="space-between">
 								<Text fontSize={"md"} color="gray.400">
 									Available to issue
 								</Text>
-								<Text fontSize={"md"}>{dollarFormatter.format(adjustedCollateral - totalDebt)} {"->"} {dollarFormatter.format(adjustedCollateral - amount*asset.priceUSD - totalDebt)}</Text>
+								<Text fontSize={"md"}>{dollarFormatter.format(pools[tradingPool].adjustedCollateral - pools[tradingPool].userDebt)} {"->"} {dollarFormatter.format(pools[tradingPool].adjustedCollateral - amount*asset.priceUSD - pools[tradingPool].userDebt)}</Text>
 							</Flex>
 						</Box>
 

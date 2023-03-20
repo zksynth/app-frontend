@@ -99,7 +99,7 @@ export default function Claim() {
 				</Text>
 
 				<Flex justify={"start"} align={"center"} gap={1}></Flex>
-				<Box bg={"#0A1931"} border='2px' borderColor={'whiteAlpha.100'} rounded={16} mt={5}>
+				<Box bg={"bg2"} border='2px' borderColor={'whiteAlpha.100'} rounded={16} mt={5}>
 					<TableContainer pt={1}>
 						<Table variant="simple">
 							<Thead>

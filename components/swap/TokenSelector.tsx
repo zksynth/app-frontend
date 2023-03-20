@@ -90,11 +90,14 @@ function TokenSelector({
 				
 			>
 				<ModalOverlay bg="blackAlpha.600" backdropFilter="blur(30px)" />
-				<ModalContent maxH={"600px"} bgColor="#0A1931" rounded={16} border='2px' borderColor={'#212E44'}>
+				<ModalContent maxH={"600px"} bgColor="bg2" rounded={16} border='2px' borderColor={'#212E44'}>
 					<ModalHeader>Select a token</ModalHeader>
 					<Box mx={5} mb={5}>
 					<Select rounded={'full'} placeholder="Select debt pool" value={tradingPool} onChange={(e) => {
-						if(e.target.value !== '') setTradingPool(parseInt(e.target.value))}} bg='whiteAlpha.200' variant={'filled'}  _focus={{bg: 'whiteAlpha.300'}} focusBorderColor='transparent'>
+						if(e.target.value !== ''){
+							setTradingPool(Number(e.target.value))
+							localStorage.setItem("tradingPool", e.target.value);
+						}}} bg='whiteAlpha.200' variant={'filled'}  _focus={{bg: 'whiteAlpha.300'}} focusBorderColor='transparent'>
 							{pools.map((pool: any, index: number) => (
 								<option value={index} key={pool.id}>
 									{pool.name}
@@ -143,7 +146,7 @@ function TokenSelector({
 													_synth.token.symbol +
 													".svg"
 												}
-												height={'46px'}
+												height={'40px'}
 												alt={_synth.token.symbol}
 											/>
 

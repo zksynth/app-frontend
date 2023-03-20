@@ -32,9 +32,6 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber }:
 		chain,
 		pools,
 		tradingPool,
-		totalCollateral,
-		totalDebt,
-		adjustedCollateral,
 		updateCollateralWalletBalance,
 		updateCollateralAmount,
 		addCollateralAllowance,
@@ -87,8 +84,9 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber }:
 						console.log(e)
 					}
 				});
-			const collateralId = decodedLogs[1].args[1].toLowerCase();
-			const depositedAmount = decodedLogs[1].args[2].toString();
+			console.log(decodedLogs);
+			const collateralId = decodedLogs[decodedLogs.length - 1].args[1].toLowerCase();
+			const depositedAmount = decodedLogs[decodedLogs.length - 1].args[2].toString();
 			setConfirmed(true);
 			updateCollateralWalletBalance(collateralId, poolId, depositedAmount, true);
 			updateCollateralAmount(collateralId, poolId, depositedAmount, false);
@@ -236,14 +234,14 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber }:
 								<Text fontSize={"md"} color="gray.400">
 									Health Factor
 								</Text>
-								<Text fontSize={"md"}>{(totalCollateral > 0 ? (totalDebt/totalCollateral * 100) : 0).toFixed(1)} % {"->"} {(totalDebt /(totalCollateral + (amount*collateral.priceUSD)) * 100).toFixed(1)}%</Text>
+								<Text fontSize={"md"}>{(pools[tradingPool].userCollateral > 0 ? (pools[tradingPool].userDebt/pools[tradingPool].userCollateral * 100) : 0).toFixed(1)} % {"->"} {(pools[tradingPool].userDebt /(pools[tradingPool].userCollateral + (amount*collateral.priceUSD)) * 100).toFixed(1)}%</Text>
 							</Flex>
 							<Divider my={2} />
 							<Flex justify="space-between">
 								<Text fontSize={"md"} color="gray.400">
 									Available to issue
 								</Text>
-								<Text fontSize={"md"}>{dollarFormatter.format(adjustedCollateral - totalDebt)} {"->"} {dollarFormatter.format(adjustedCollateral + amount*collateral.priceUSD*collateral.baseLTV/10000 - totalDebt)}</Text>
+								<Text fontSize={"md"}>{dollarFormatter.format(pools[tradingPool].adjustedCollateral - pools[tradingPool].userDebt)} {"->"} {dollarFormatter.format(pools[tradingPool].adjustedCollateral + amount*collateral.priceUSD*collateral.baseLTV/10000 - pools[tradingPool].userDebt)}</Text>
 							</Flex>
 						</Box>
 					</Box>
@@ -293,6 +291,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber }:
 							activeChain?.unsupported ||
 							!amount ||
 							amountNumber == 0 ||
+							Big(amountNumber > 0 ? amount : amountNumber).gt(max()) ||
 							amountNumber > parseFloat(max())
 						}
 						isLoading={loading}
@@ -309,7 +308,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber }:
 						}}
 					>
 						{isConnected && !activeChain?.unsupported ? (
-							amountNumber > parseFloat(max()) ? (
+							Big(amountNumber > 0 ? amount : amountNumber).gt(max()) ? (
 								<>Insufficient Wallet Balance</>
 							) : !amount || amountNumber == 0 ? (
 								<>Enter amount</>

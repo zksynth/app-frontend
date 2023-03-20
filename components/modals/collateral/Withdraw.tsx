@@ -32,16 +32,13 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber }
 		chain,
 		pools,
 		tradingPool,
-        adjustedCollateral,
-        totalCollateral,
-        totalDebt,
 		updateCollateralWalletBalance,
 		updateCollateralAmount,
 	} = useContext(AppDataContext);
 
-	// adjustedDebt - totalDebt = assetAmount*assetPrice*ltv
+	// adjustedDebt - pools[tradingPool]?.userDebt = assetAmount*assetPrice*ltv
 	const max = () => {
-		const v1 = collateral.priceUSD > 0 ? Big(adjustedCollateral).sub(totalDebt).div(collateral.priceUSD).mul(1e4).div(collateral.baseLTV) : Big(0);
+		const v1 = collateral.priceUSD > 0 ? Big(pools[tradingPool]?.adjustedCollateral).sub(pools[tradingPool]?.userDebt).div(collateral.priceUSD).mul(1e4).div(collateral.baseLTV) : Big(0);
         const v2 = Big(collateral.balance ?? 0).div(10**18);
 		// min(v1, v2)
 		return (v1.gt(v2) ? v2 : v1).toString();
@@ -94,7 +91,7 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber }
 			setMessage(
 				"Transaction Successful!"
 			);
-			setResponse(`You have withdrawn ${amount} ${collateral.token.symbol} from your position.`);
+			setResponse(`You have withdrawn ${amount} ${collateral.token.symbol}.`);
 		}).catch((err: any) => {
 			console.log(err);
 			setMessage(JSON.stringify(err));
@@ -193,14 +190,14 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber }
 								<Text fontSize={"md"} color="gray.400">
 									Health Factor
 								</Text>
-								<Text fontSize={"md"}>{(totalDebt/totalCollateral * 100).toFixed(1)} % {"->"} {(totalDebt /(totalCollateral - (amount*collateral.priceUSD)) * 100).toFixed(1)}%</Text>
+								<Text fontSize={"md"}>{(pools[tradingPool]?.userDebt/pools[tradingPool]?.userCollateral * 100).toFixed(1)} % {"->"} {(pools[tradingPool]?.userDebt /(pools[tradingPool]?.userCollateral - (amount*collateral.priceUSD)) * 100).toFixed(1)}%</Text>
 							</Flex>
 							<Divider my={2} />
 							<Flex justify="space-between">
 								<Text fontSize={"md"} color="gray.400">
 									Available to issue
 								</Text>
-								<Text fontSize={"md"}>{dollarFormatter.format(adjustedCollateral - totalDebt)} {"->"} {dollarFormatter.format(adjustedCollateral - amount*collateral.priceUSD*collateral.baseLTV/10000 - totalDebt)}</Text>
+								<Text fontSize={"md"}>{dollarFormatter.format(pools[tradingPool]?.adjustedCollateral - pools[tradingPool]?.userDebt)} {"->"} {dollarFormatter.format(pools[tradingPool]?.adjustedCollateral - amount*collateral.priceUSD*collateral.baseLTV/10000 - pools[tradingPool]?.userDebt)}</Text>
 							</Flex>
 						</Box>
 					</Box>

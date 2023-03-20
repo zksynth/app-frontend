@@ -20,7 +20,7 @@ export default function escrow() {
           </Box>
         </Flex>
 
-        <Flex bg={"#0A1931"} border='2px' borderColor={'whiteAlpha.100'} mt='10' p={5} rounded='16' align={'center'} justify='space-between'>
+        <Flex bg={"bg2"} border='2px' borderColor={'whiteAlpha.100'} mt='10' p={5} rounded='16' align={'center'} justify='space-between'>
           <Heading size={'md'}>Claim WETH</Heading>
           <Flex align={'center'} gap={2}>
           <Box h='2' w='2' bg={'yellow'} rounded='full'></Box>
@@ -29,7 +29,7 @@ export default function escrow() {
         </Flex>
 
 
-        <Flex bg={"#0A1931"} border='2px' borderColor={'whiteAlpha.100'} mt='5' p={5} rounded='16' align={'center'} justify='space-between'>
+        <Flex bg={"bg2"} border='2px' borderColor={'whiteAlpha.100'} mt='5' p={5} rounded='16' align={'center'} justify='space-between'>
           <Heading size={'md'}>Escrow</Heading>
           <Flex align={'center'} gap={2}>
           <Box h='2' w='2' bg={'yellow'} rounded='full'></Box>

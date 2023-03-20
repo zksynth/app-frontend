@@ -17,6 +17,8 @@ import Big from "big.js";
 import Response from "../_utils/Response";
 import InfoFooter from "../_utils/InfoFooter";
 
+
+
 const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 
 	const [loading, setLoading] = useState(false);
@@ -27,17 +29,14 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 
 	const max = () => {
 		// minimum of both
-		const v1 = Big(totalDebt).div(asset.priceUSD);
+		const v1 = Big(pools[tradingPool].userDebt).div(asset.priceUSD);
 		const v2 = Big(asset.walletBalance ?? 0).div(10 ** 18);
 		return (v1.gt(v2) ? v2 : v1).toString();
 	}
 
 	const {
 		chain,
-		totalDebt,
 		updateSynthWalletBalance,
-		totalCollateral,
-		adjustedCollateral,
 		pools,
 		tradingPool,
 		updatePoolBalance
@@ -118,14 +117,14 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 								<Text fontSize={"md"} color="gray.400">
 									Health Factor
 								</Text>
-								<Text fontSize={"md"}>{(totalDebt/totalCollateral * 100).toFixed(1)} % {"->"} {((totalDebt - (amount*asset.priceUSD)) /(totalCollateral) * 100).toFixed(1)}%</Text>
+								<Text fontSize={"md"}>{(pools[tradingPool].userDebt/pools[tradingPool].userCollateral * 100).toFixed(1)} % {"->"} {((pools[tradingPool].userDebt - (amount*asset.priceUSD)) /(pools[tradingPool].userCollateral) * 100).toFixed(1)}%</Text>
 							</Flex>
 							<Divider my={2} />
 							<Flex justify="space-between">
 								<Text fontSize={"md"} color="gray.400">
 									Available to issue
 								</Text>
-								<Text fontSize={"md"}>{dollarFormatter.format(adjustedCollateral - totalDebt)} {"->"} {dollarFormatter.format(adjustedCollateral + amount*asset.priceUSD - totalDebt)}</Text>
+								<Text fontSize={"md"}>{dollarFormatter.format(pools[tradingPool].adjustedCollateral - pools[tradingPool].userDebt)} {"->"} {dollarFormatter.format(pools[tradingPool].adjustedCollateral + amount*asset.priceUSD - pools[tradingPool].userDebt)}</Text>
 							</Flex>
 						</Box>
 					</Box>

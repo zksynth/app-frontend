@@ -21,12 +21,10 @@ import { FaBurn } from 'react-icons/fa';
 import { FaMagic } from 'react-icons/fa';
 import { RiMagicFill } from 'react-icons/ri';
 import Head from 'next/head';
-import { useAccount } from 'wagmi';
 
 export default function Leaderboard() {
 
   const {leaderboard: leaderboardData, account} = useContext(AppDataContext);
-  const { address } = useAccount()
 
   return (
     <>
@@ -59,7 +57,7 @@ export default function Leaderboard() {
           <RiMagicFill size={'22px'}/>
           <Box minW={'100px'}>
             <Heading size={'sm'} color={'whiteAlpha.700'}>Points Earned</Heading>
-            <Text fontSize={'xl'}>{account?.accountDayData ? tokenFormatter.format(account.accountDayData[0].dailyPoint) : '-'}</Text>
+            <Text fontSize={'xl'}>{account?.accountDayData ? tokenFormatter.format(account.accountDayData[0]?.dailyPoint ?? 0) : '-'}</Text>
           </Box>
         </Flex>
 
@@ -67,7 +65,7 @@ export default function Leaderboard() {
           <FaMagic/>
           <Box minW={'100px'}>
             <Heading size={'sm'} color={'whiteAlpha.700'}>Mints</Heading>
-            <Text fontSize={'xl'}>{account?.accountDayData ? dollarFormatter.format(account.accountDayData[0].dailyMintedUSD): '-'}</Text>
+            <Text fontSize={'xl'}>{account?.accountDayData ? dollarFormatter.format(account.accountDayData[0]?.dailyMintedUSD ?? 0): '-'}</Text>
           </Box>
         </Flex>
 
@@ -75,14 +73,14 @@ export default function Leaderboard() {
           <FaBurn/>
           <Box minW={'100px'}>
             <Heading size={'sm'} color={'whiteAlpha.700'}>Burns</Heading>
-            <Text fontSize={'xl'}>{account?.accountDayData ? dollarFormatter.format(account.accountDayData[0].dailyBurnedUSD): '-'}</Text>
+            <Text fontSize={'xl'}>{account?.accountDayData ? dollarFormatter.format(account.accountDayData[0]?.dailyBurnedUSD ?? 0): '-'}</Text>
           </Box>
         </Flex>
       </Flex>
       </Box>
       </Flex>
     </Box>
-    <Box bg={'#0A1931'} mb={20} rounded={16} border={'2px'} pt={1} borderColor='whiteAlpha.50'>
+    <Box bg={'bg2'} mb={20} rounded={16} border={'2px'} pt={1} borderColor='whiteAlpha.50'>
 
       <TableContainer >
   <Table variant='simple'>
@@ -97,14 +95,14 @@ export default function Leaderboard() {
       </Tr>
     </Thead>
     <Tbody>
-      {leaderboardData?.map((account, index): any => {
+      {leaderboardData?.map((_account, index): any => {
 
-      return <Tr key={index} bg={address!.toLowerCase() == account.id ? 'whiteAlpha.200' : 'transparent'}>
-        <Td borderColor={'whiteAlpha.50'}>{(address!.toLowerCase() == account.id ? `You (${account.id.slice(0,8)})` :  account.id.slice(0, 8) + '...' + account.id.slice(36))}</Td>
-        <Td borderColor={'whiteAlpha.50'}>{tokenFormatter.format(account.accountDayData[0]?.dailyPoint ?? 0)}</Td>
-        <Td borderColor={'whiteAlpha.50'}>{dollarFormatter.format(account.accountDayData[0]?.dailyMintedUSD ?? 0)}</Td>
-        <Td borderColor={'whiteAlpha.50'}>{dollarFormatter.format(account.accountDayData[0]?.dailyBurnedUSD ?? 0)}</Td>
-        <Td borderColor={'whiteAlpha.50'} isNumeric>{tokenFormatter.format(account.totalPoint)}</Td>
+      return <Tr key={index} bg={account?.id.toLowerCase() == _account.id ? 'whiteAlpha.200' : 'transparent'}>
+        <Td borderColor={'whiteAlpha.50'}>{(account?.id.toLowerCase() == _account.id ? `You (${_account.id.slice(0,8)})` :  _account.id.slice(0, 8) + '...' + _account.id.slice(36))}</Td>
+        <Td borderColor={'whiteAlpha.50'}>{tokenFormatter.format(_account.accountDayData[0]?.dailyPoint ?? 0)}</Td>
+        <Td borderColor={'whiteAlpha.50'}>{dollarFormatter.format(_account.accountDayData[0]?.dailyMintedUSD ?? 0)}</Td>
+        <Td borderColor={'whiteAlpha.50'}>{dollarFormatter.format(_account.accountDayData[0]?.dailyBurnedUSD ?? 0)}</Td>
+        <Td borderColor={'whiteAlpha.50'} isNumeric>{tokenFormatter.format(_account.totalPoint)}</Td>
       </Tr>
       })}
 

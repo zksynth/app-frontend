@@ -38,7 +38,7 @@ import Big from "big.js";
 export default function Debt({ synth }: any) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
-	const { adjustedCollateral, totalDebt } = useContext(AppDataContext);
+	const { pools, tradingPool } = useContext(AppDataContext);
 
 	const [amount, setAmount] = React.useState("0");
 	const [amountNumber, setAmountNumber] = useState(0);
@@ -55,10 +55,7 @@ export default function Debt({ synth }: any) {
 	};
 
 	const _setAmount = (e: string) => {
-		if(isNaN(Number(e))) return;
-		if(e == '') return;
-		if(Big(e).mul(synth.priceUSD).lt(0.1)) e = '0';
-		setAmount(e);
+		setAmount(Number(e) ? Number(e).toString(): e);
 		setAmountNumber(isNaN(Number(e)) ? 0 : Number(e));
 	};
 
@@ -68,9 +65,9 @@ export default function Debt({ synth }: any) {
 
 	const max = () => {
 		if (tabSelected == 0) {
-			return (Big(adjustedCollateral).sub(totalDebt).div(synth.priceUSD).gt(0) ? Big(adjustedCollateral).sub(totalDebt).div(synth.priceUSD) : 0).toString();
+			return (Big(pools[tradingPool].adjustedCollateral).sub(pools[tradingPool].userDebt).div(synth.priceUSD).gt(0) ? Big(pools[tradingPool].adjustedCollateral).sub(pools[tradingPool].userDebt).div(synth.priceUSD) : 0).toString();
 		} else {
-			return (Big(totalDebt).div(synth.priceUSD).gt(Big(synth.walletBalance ?? 0).div(10 ** 18)) ? Big(synth.walletBalance ?? 0).div(10 ** 18) : Big(totalDebt).div(synth.priceUSD)).toString()
+			return (Big(pools[tradingPool].userDebt).div(synth.priceUSD).gt(Big(synth.walletBalance ?? 0).div(10 ** 18)) ? Big(synth.walletBalance ?? 0).div(10 ** 18) : Big(pools[tradingPool].userDebt).div(synth.priceUSD)).toString()
 		}
 	};
 
@@ -97,10 +94,10 @@ export default function Debt({ synth }: any) {
 				borderLeft='2px' borderColor='transparent' _hover={{ borderColor: 'primary.400', bg: 'blackAlpha.100' }}
 			>
 				<Td {...borderStyle}>
-					<Flex gap={1}>
+					<Flex gap={3}>
 						<Image
 							src={`/icons/${synth.token.symbol}.svg`}
-							width="45px"
+							width="38px"
 							alt=""
 						/>
 						<Box>
@@ -147,19 +144,19 @@ export default function Debt({ synth }: any) {
 
 			<Modal isCentered isOpen={isOpen} onClose={_onClose}>
 				<ModalOverlay bg="blackAlpha.400" backdropFilter="blur(30px)" />
-				<ModalContent width={"30rem"} bgColor="#0A1931" rounded={16} border='2px' borderColor={'#212E44'}>
+				<ModalContent width={"30rem"} bgColor="bg2" rounded={16} border='2px' borderColor={'#212E44'}>
 					<ModalCloseButton rounded={"full"} mt={1} />
 					<ModalHeader>
 						<Flex
 							justify={"center"}
-							gap={1.5}
+							gap={2}
 							pt={1}
 							align={"center"}
 						>
 							<Image
 								src={`/icons/${synth.token.symbol}.svg`}
 								alt=""
-								width={"44px"}
+								width={"38px"}
 							/>
 
 							<Text>{synth.token.name.split(" ").slice(1, -2).join(" ")}</Text>

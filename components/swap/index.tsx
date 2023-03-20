@@ -566,13 +566,14 @@ export function SelectBody({ asset, onOpen }: any) {
 				px={1}
 				py={1}
 				pr={2}
-				gap={0.5}
+				gap={1}
 				mr={-1}
 			>
 				<Image
 					src={"/icons/" + asset?.token.symbol + ".svg"}
-					height={40}
-					width={40}
+					height={34}
+					style={{margin: "4px"}}
+					width={34}
 					alt={asset?.symbol}
 				/>
 

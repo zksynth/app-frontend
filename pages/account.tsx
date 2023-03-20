@@ -33,7 +33,7 @@ export default function Account() {
                 
             </Box>
 
-			<Box mt={5} bg="whiteAlpha.50" px={6} py={6} rounded={10} border='2px' borderColor={'whiteAlpha.100'}>
+			<Box mt={5} bg="bg2" px={6} py={6} rounded={10} border='2px' borderColor={'whiteAlpha.100'}>
 				<Flex justify={"space-between"}>
 					<Box>
 						<Heading size={"md"} mb={10}>

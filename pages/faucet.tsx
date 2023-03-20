@@ -26,7 +26,7 @@ const mintAmounts: any = {
 	"EUROC": "10000",
 	"WETH": "10",
     "AAVE": "100",
-    "WBTC": "0.01",
+    "WBTC": "0.5",
     "LINK": "100",
     "wstETH": "10",
 };

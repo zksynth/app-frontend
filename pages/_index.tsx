@@ -21,7 +21,7 @@ export default function _index({ children }: any) {
 	};
 
 	const [hydrated, setHydrated] = useState(false);
-	const { status, message, fetchData, setChain, refreshData, pools } = useContext(AppDataContext);
+	const { status, message } = useContext(AppDataContext);
 
 	useEffect(() => {
 		setHydrated(true);

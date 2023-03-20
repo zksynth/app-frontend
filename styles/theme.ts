@@ -58,8 +58,7 @@ export const theme = extendTheme({
 			800: '#223285',
 			900: '#1A2665',
 		},
-		background: {
-			
-		}
+		bg1: "#071325",
+		bg2: "#0A1931"
 	},
 });

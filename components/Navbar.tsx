@@ -33,7 +33,7 @@ import { tokenFormatter } from '../src/const';
 function NavBar() {
 	const router = useRouter();
 
-	const { status, account, fetchData, setChain, refreshData, pools } =
+	const { status, account, fetchData, setChain, refreshData, pools, setRefresh, refresh, lastRefresh, setLastRefresh } =
 		useContext(AppDataContext);
 	const { fetchData: fetchTokenData } = useContext(TokenContext);
 
@@ -50,30 +50,40 @@ function NavBar() {
 		connector: activeConnector,
 	} = useAccount({
 		onConnect({ address, connector, isReconnected }) {
+			console.log("onConnect", address, connector, isReconnected);
 			if ((chain as any).unsupported) return;
-			fetchData(address!, connector!.chains[0].id);
 			setChain(connector!.chains[0].id);
+			fetchData(address!, connector!.chains[0].id)
+			.then((_) => {
+				clearInterval(refresh);
+				setRefresh(0);
+			})
 			fetchTokenData(address!, connector!.chains[0].id);
 			setInit(true);
 		},
 		onDisconnect() {
-			fetchData(null, ChainID.ARB_GOERLI);
+			console.log("onDisconnect");
+			fetchData(null, ChainID.ARB_GOERLI)
+			.then((_) => {
+				clearInterval(refresh);
+				setRefresh(0);
+			})
 			setChain(ChainID.ARB_GOERLI);
 		},
 	});
 
 	useEffect(() => {
-		if (!hasRefreshed && pools.length > 0) {
-			setInterval(refreshData, 5000);
-			setHasRefreshed(true);
-		}
 		if (activeConnector && window.ethereum) {
 			(window as any).ethereum.on(
 				"accountsChanged",
 				function (accounts: any[]) {
 					// Time to reload your interface with accounts[0]!
 					setChain(activeConnector?.chains[0].id);
-					fetchData(accounts[0], activeConnector?.chains[0].id);
+					fetchData(accounts[0], activeConnector?.chains[0].id)
+					.then((_) => {
+						clearInterval(refresh);
+						setRefresh(0);
+					})
 				}
 			);
 			(window as any).ethereum.on(
@@ -87,7 +97,10 @@ function NavBar() {
 							fetchData(
 								address as string,
 								BigNumber.from(chainId).toNumber()
-							);
+							).then((_) => {
+								clearInterval(refresh);
+								setRefresh(0);
+							})
 						}
 					}
 				}
@@ -127,8 +140,6 @@ function NavBar() {
 			setIsOpen(false);
 		}
 	});
-
-	const { colorMode, toggleColorMode } = useColorMode()
 
 	return (
 		<>

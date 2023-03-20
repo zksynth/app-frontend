@@ -24,10 +24,7 @@ import { FaBurn } from "react-icons/fa";
 export default function TempPage() {
 	const {
 		pools,
-		tradingPool,
-		totalCollateral,
-		totalDebt,
-		adjustedCollateral,
+		tradingPool
 	} = useContext(AppDataContext);
 
 	const [hydrated, setHydrated] = React.useState(false);
@@ -40,7 +37,7 @@ export default function TempPage() {
 
 	const esSyxApr = () => {
 		if (!pools[tradingPool]) return "0";
-		if(Big(pools[tradingPool].totalDebtUSD).eq(0)) return "0"
+		if(Big(pools[tradingPool]?.totalDebtUSD).eq(0)) return "0"
 		return Big(pools[tradingPool]?.rewardSpeeds[0])
 			.div(1e18)
 			.mul(365 * 24 * 60 * 60 * ESYX_PRICE)
@@ -50,7 +47,7 @@ export default function TempPage() {
 
 	const debtBurnApr = () => {
 		if (!pools[tradingPool]) return "0";
-		if(Big(pools[tradingPool].totalDebtUSD).eq(0)) return "0"
+		if(Big(pools[tradingPool]?.totalDebtUSD).eq(0)) return "0"
 		return Big(pools[tradingPool]?.averageDailyBurn ?? 0)
 			.div(1e18)
 			.mul(365)
@@ -106,7 +103,7 @@ export default function TempPage() {
 										fontSize={"xl"}
 									>
 										{dollarFormatter.format(
-											totalCollateral
+											pools[tradingPool]?.userCollateral ?? 0
 										)}
 									</Text>
 								</Box>
@@ -128,7 +125,7 @@ export default function TempPage() {
 									</Heading>
 									<Tooltip
 										cursor={"help"}
-										bg="secondary.900"
+										bg="bg2"
 										rounded={8}
 										p={0}
 										label={
@@ -140,7 +137,7 @@ export default function TempPage() {
 												</Box>
 
 												<Divider/>
-												<Box px={3} py={1} bg='blackAlpha.400'>
+												<Box px={3} py={1} bg='blackAlpha.200'>
 												<Flex
 													align={"center"}
 													gap={2}
@@ -154,7 +151,7 @@ export default function TempPage() {
 															{debtBurnApr()} %
 														</Text>
 														<Text color={'whiteAlpha.700'}>
-															Debt Burned
+															Debt Burn
 														</Text>
 													</Flex>
 												</Flex>
@@ -169,14 +166,14 @@ export default function TempPage() {
 														w={5}
 														alt={"esSYN"}
 													/>
-													<Box gap={2}>
+													<Flex gap={2}>
 														<Text>
 															{esSyxApr()} %
 														</Text>
 														<Text color={'whiteAlpha.700'}>
-															Escrowed SYX
+															esSYX
 														</Text>
-													</Box>
+													</Flex>
 												</Flex>
 												</Box>
 												</Box>
@@ -217,7 +214,7 @@ export default function TempPage() {
 										fontSize={"xl"}
 										fontWeight={"semibold"}
 									>
-										{dollarFormatter.format(totalDebt)}
+										{dollarFormatter.format(pools[tradingPool]?.userDebt ?? 0)}
 									</Text>
 										<Tooltip
 											label={`When you issue synths, you are allocated a share of pool's total debt. As the pool's total value changes, your debt changes as well`}
@@ -269,19 +266,19 @@ export default function TempPage() {
 							fontSize={"3xl"}
 							mb={2}
 							color={
-								totalCollateral > 0
-									? (100 * totalDebt) / totalCollateral < 80
+								pools[tradingPool]?.userCollateral > 0
+									? (100 * pools[tradingPool]?.userDebt) / pools[tradingPool]?.userCollateral < 80
 										? "primary.400"
-										: (100 * totalDebt) / totalCollateral <
+										: (100 * pools[tradingPool]?.userDebt) / pools[tradingPool]?.userCollateral <
 										  90
 										? "yellow.400"
 										: "red.400"
 									: "primary.400"
 							}
 						>
-							{(totalCollateral > 0
-								? (100 * totalDebt) / totalCollateral
-								: totalCollateral
+							{(pools[tradingPool]?.userCollateral > 0
+								? (100 * pools[tradingPool]?.userDebt ?? 0) / pools[tradingPool]?.userCollateral
+								: pools[tradingPool]?.userCollateral ?? 0
 							).toFixed(1)}{" "}
 							%
 						</Text>
@@ -297,21 +294,21 @@ export default function TempPage() {
 								h={2}
 								rounded="full"
 								bg={
-									totalCollateral > 0
-										? (100 * totalDebt) / totalCollateral <
+									pools[tradingPool]?.userCollateral > 0
+										? (100 * pools[tradingPool]?.userDebt) / pools[tradingPool]?.userCollateral <
 										  80
 											? "primary.400"
-											: (100 * totalDebt) /
-													totalCollateral <
+											: (100 * pools[tradingPool]?.userDebt) /
+													pools[tradingPool]?.userCollateral <
 											  90
 											? "yellow.400"
 											: "red.400"
 										: "primary.400"
 								}
 								width={
-									(totalCollateral > 0
-										? (100 * totalDebt) / totalCollateral
-										: totalCollateral) + "%"
+									(pools[tradingPool]?.userCollateral > 0
+										? (100 * pools[tradingPool]?.userDebt) / pools[tradingPool]?.userCollateral
+										: pools[tradingPool]?.userCollateral) + "%"
 								}
 							></Box>
 						</Box>
@@ -324,11 +321,11 @@ export default function TempPage() {
 								Available to Issue
 							</Text>
 							<Text fontSize={"sm"} mr={0.5} fontWeight="medium">
-								{dollarFormatter.format(
-									adjustedCollateral - totalDebt < 0
-										? 0
-										: adjustedCollateral - totalDebt
-								)}
+								{ dollarFormatter.format(
+									pools[tradingPool]?.adjustedCollateral ? 
+									(pools[tradingPool]?.adjustedCollateral - pools[tradingPool]?.userDebt < 0 ? 0 : pools[tradingPool]?.adjustedCollateral - pools[tradingPool]?.userDebt)
+										: 0) 
+										}
 							</Text>
 							<Tooltip
 								label={`You can issue debt till you reach collateral's Base LTV`}
@@ -363,7 +360,7 @@ export default function TempPage() {
 						}}
 					>
 						<Box
-							bg={"#0A1931"}
+							bg={"bg2"}
 							rounded={10}
 							h={"100%"}
 							border="2px"
@@ -382,7 +379,7 @@ export default function TempPage() {
 						key={tradingPool + 2}
 					>
 						<Box
-							bg={"#0A1931"}
+							bg={"bg2"}
 							rounded={10}
 							h={"100%"}
 							border="2px"

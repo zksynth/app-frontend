@@ -99,7 +99,7 @@ export default function PoolSelector() {
 							position: "fixed",
 							width: "400px",
 							zIndex: '100',
-							backgroundColor: "#0A1931",
+							backgroundColor: "bg2",
 							border: "2px solid #212E44",
 							borderRadius: "10px"
 						}}
@@ -122,9 +122,7 @@ export default function PoolSelector() {
 							}}
 							style={{
 								padding: "4px 10px",
-								borderRadius: '8px 8px 0 0',
-								// backgroundColor: "rgba(255,255,255,0.05)",
-								
+								borderRadius: '8px 8px 0 0'
 							}}
 						>
 							<Input
@@ -147,6 +145,7 @@ export default function PoolSelector() {
 								<motion.li
 									variants={itemVariants}
 									onClick={() => {
+										localStorage.setItem("tradingPool", index.toString());
 										setTradingPool(index);
 										setIsOpen(false);
 									}}
@@ -173,15 +172,12 @@ export default function PoolSelector() {
 															index: number
 														) => (
 															<Box
-																mr={-6}
+																mr={-4}
 																key={index}
 															>
 																<Image
 																	width={
-																		"44px"
-																	}
-																	height={
-																		"44px"
+																		"40px"
 																	}
 																	src={`/icons/${synth.token.symbol}.svg`}
 																	alt={""}
