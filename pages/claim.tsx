@@ -31,6 +31,7 @@ import {
 } from "@chakra-ui/react";
 import Head from "next/head";
 
+
 export default function Claim() {
 	const { address, isConnected, isConnecting } = useAccount();
 	const { chain: connectedChain } = useNetwork();
@@ -58,7 +59,6 @@ export default function Claim() {
 							pools.map((pool: any) => pool.id)
 						)
 						.then((result) => {
-              console.log(result);
 							setSynAccrued(result[0].toString());
 						});
 				});

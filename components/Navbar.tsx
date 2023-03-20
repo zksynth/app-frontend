@@ -13,6 +13,7 @@ import {
 	Button,
 } from "@chakra-ui/react";
 
+
 import { ConnectButton as RainbowConnect } from '@rainbow-me/rainbowkit';
 import ConnectButton from './ConnectButton'; 
 import React, { useEffect, useState } from "react";
@@ -34,6 +35,7 @@ function NavBar() {
 	const router = useRouter();
 	const { ref } = router.query;
 	const { status, account, fetchData, setChain, refreshData, pools, setRefresh, refresh } =
+
 		useContext(AppDataContext);
 	const { fetchData: fetchTokenData } = useContext(TokenContext);
 
@@ -119,6 +121,7 @@ function NavBar() {
 		) {
 			setIsOpen(false);
 		}
+
 	});
 
 	return (
@@ -370,6 +373,7 @@ function NavBar() {
 						{/* <Button onClick={toggleColorMode}>
 							Toggle {colorMode === 'light' ? 'Dark' : 'Light'}
 						</Button> */}
+
 					</Box>
 				</Flex>
 			</Flex>
@@ -419,6 +423,7 @@ const NavLink = ({
 	newTab = false,
 	children,
 	bg = "whiteAlpha.50",
+
 }: any) => {
 	const [isPath, setIsPath] = useState(false);
 	const router = useRouter();
