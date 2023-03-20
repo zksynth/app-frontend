@@ -133,7 +133,7 @@ function NavBar() {
 							onClick={() => {
 								router.push(
 									{
-										pathname: '/about',
+										pathname: '/',
 										query: router.query
 									}
 								);
