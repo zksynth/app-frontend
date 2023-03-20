@@ -64,18 +64,11 @@ export default function Leaderboard() {
         <Flex rounded={'10'} my={5} align={'center'} gap={5}>
           <FaMagic/>
           <Box minW={'100px'}>
-            <Heading size={'sm'} color={'whiteAlpha.700'}>Mints</Heading>
+            <Heading size={'sm'} color={'whiteAlpha.700'}>Volume (USD)</Heading>
             <Text fontSize={'xl'}>{account?.accountDayData ? dollarFormatter.format(account.accountDayData[0]?.dailyMintedUSD ?? 0): '-'}</Text>
           </Box>
         </Flex>
 
-        <Flex rounded={'10'} my={5} align={'center'} gap={5}>
-          <FaBurn/>
-          <Box minW={'100px'}>
-            <Heading size={'sm'} color={'whiteAlpha.700'}>Burns</Heading>
-            <Text fontSize={'xl'}>{account?.accountDayData ? dollarFormatter.format(account.accountDayData[0]?.dailyBurnedUSD ?? 0): '-'}</Text>
-          </Box>
-        </Flex>
       </Flex>
       </Box>
       </Flex>
@@ -88,8 +81,7 @@ export default function Leaderboard() {
       <Tr>
         <Th>Account</Th>
         <Th>24hr Points</Th>
-        <Th>24hr Minted</Th>
-        <Th>24hr Burned</Th>
+        <Th>24hr Volume (USD)</Th>
 
         <Th isNumeric>Total Points</Th>
       </Tr>
@@ -101,7 +93,6 @@ export default function Leaderboard() {
         <Td borderColor={'whiteAlpha.50'}>{(account?.id.toLowerCase() == _account.id ? `You (${_account.id.slice(0,8)})` :  _account.id.slice(0, 8) + '...' + _account.id.slice(36))}</Td>
         <Td borderColor={'whiteAlpha.50'}>{tokenFormatter.format(_account.accountDayData[0]?.dailyPoint ?? 0)}</Td>
         <Td borderColor={'whiteAlpha.50'}>{dollarFormatter.format(_account.accountDayData[0]?.dailyMintedUSD ?? 0)}</Td>
-        <Td borderColor={'whiteAlpha.50'}>{dollarFormatter.format(_account.accountDayData[0]?.dailyBurnedUSD ?? 0)}</Td>
         <Td borderColor={'whiteAlpha.50'} isNumeric>{tokenFormatter.format(_account.totalPoint)}</Td>
       </Tr>
       })}

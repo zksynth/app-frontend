@@ -34,10 +34,8 @@ interface AppDataValue {
 	refreshData: () => void;
 	leaderboard: any[];
 	account: any,
-	setRefresh: (_: number) => void;
-	refresh: number;
-	lastRefresh: number;
-	setLastRefresh: (_: number) => void;
+	setRefresh: (_: number[]) => void;
+	refresh: number[];
 	referrals: any[];
 }
 
@@ -68,18 +66,17 @@ function AppDataProvider({ children }: any) {
 
 	const [chain, setChain] = React.useState(ChainID.ARB_GOERLI);
 
-	const [lastRefresh, setLastRefresh] = React.useState<number>(0);
-	const [refresh, setRefresh] = React.useState<number>(0);
+	const [refresh, setRefresh] = React.useState<number[]>([]);
 	const [block, setBlock] = React.useState(0);
 	const [random, setRandom] = React.useState(0);
 
 	const [referrals, setReferrals] = React.useState<any[]>([]);
 
 	useEffect(() => {
-		if (refresh == 0 && pools.length > 0) {
+		if (refresh.length == 0 && pools.length > 0) {
 			// set new interval
 			const timer = setInterval(refreshData, 5000);
-			setRefresh(Number(timer.toString()));
+			setRefresh([Number(timer.toString())]);
 			setRandom(Math.random());
 		}
 	}, [refresh, pools]);
@@ -111,7 +108,6 @@ function AppDataProvider({ children }: any) {
 						const userPoolData = res[0].data.data;
 						const leaderboardData = res[1].data.data.accounts;
 						const _refs = res[2].data.data.accounts;
-						console.log("referrals", _refs);
 						setReferrals(_refs);
 						setLeaderboard(leaderboardData);
 						const pools = userPoolData.pools;
@@ -471,8 +467,6 @@ function AppDataProvider({ children }: any) {
 		refreshData,
 		setRefresh,
 		refresh,
-		lastRefresh,
-		setLastRefresh,
 		referrals,
 	};
 

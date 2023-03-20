@@ -33,7 +33,7 @@ import { tokenFormatter, query } from '../src/const';
 function NavBar() {
 	const router = useRouter();
 	const { ref } = router.query;
-	const { status, account, fetchData, setChain, refreshData, pools, setRefresh, refresh, lastRefresh, setLastRefresh } =
+	const { status, account, fetchData, setChain, refreshData, pools, setRefresh, refresh } =
 		useContext(AppDataContext);
 	const { fetchData: fetchTokenData } = useContext(TokenContext);
 
@@ -42,6 +42,7 @@ function NavBar() {
 	const [hasRefreshed, setHasRefreshed] = useState(false);
 
 	const { isOpen: isToggleOpen, onToggle } = useDisclosure();
+	const [isSubscribed, setIsSubscribed] = useState(false);
 
 	const {
 		address,
@@ -50,13 +51,15 @@ function NavBar() {
 		connector: activeConnector,
 	} = useAccount({
 		onConnect({ address, connector, isReconnected }) {
-			console.log("onConnect", address, connector, isReconnected);
+			console.log("onConnect");
 			if ((chain as any).unsupported) return;
 			setChain(connector!.chains[0].id);
 			fetchData(address!, connector!.chains[0].id)
 			.then((_) => {
-				clearInterval(refresh);
-				setRefresh(0);
+				for(let i in refresh){
+					clearInterval(refresh[i]);
+				}
+				setRefresh([]);
 			})
 			fetchTokenData(address!, connector!.chains[0].id);
 			setInit(true);
@@ -65,46 +68,32 @@ function NavBar() {
 			console.log("onDisconnect");
 			fetchData(null, ChainID.ARB_GOERLI)
 			.then((_) => {
-				clearInterval(refresh);
-				setRefresh(0);
+				for(let i in refresh){
+					clearInterval(refresh[i]);
+				}
+				setRefresh([]);
 			})
 			setChain(ChainID.ARB_GOERLI);
 		},
 	});
 
 	useEffect(() => {
-		if (activeConnector && window.ethereum) {
+		if (activeConnector && window.ethereum && !isSubscribed) {
 			(window as any).ethereum.on(
 				"accountsChanged",
 				function (accounts: any[]) {
-					// Time to reload your interface with accounts[0]!
-					setChain(activeConnector?.chains[0].id);
-					fetchData(accounts[0], activeConnector?.chains[0].id)
-					.then((_) => {
-						clearInterval(refresh);
-						setRefresh(0);
-					})
+					// refresh page
+					window.location.reload();
 				}
 			);
 			(window as any).ethereum.on(
 				"chainChanged",
 				function (chainId: any[]) {
-					if (chains[0]) {
-						if (
-							chains[0].id == BigNumber.from(chainId).toNumber()
-						) {
-							setChain(BigNumber.from(chainId).toNumber());
-							fetchData(
-								address as string,
-								BigNumber.from(chainId).toNumber()
-							).then((_) => {
-								clearInterval(refresh);
-								setRefresh(0);
-							})
-						}
-					}
+					// refresh page
+					window.location.reload();
 				}
 			);
+			setIsSubscribed(true);
 		}
 		if (localStorage.getItem("chakra-ui-color-mode") === "light") {
 			localStorage.setItem("chakra-ui-color-mode", "dark");
@@ -119,18 +108,9 @@ function NavBar() {
 			setInit(true);
 			fetchData(null, ChainID.ARB_GOERLI);
 		}
-	}, [
-		isConnected,
-		isConnecting,
-		activeConnector,
-		fetchData,
-		setChain,
-		chain,
-		init,
-		chains,
-		address,
-		status,
-	]);
+	}, [activeConnector, address, chain?.unsupported, chains, fetchData, init, isConnected, isConnecting, isSubscribed, refresh, setChain, setRefresh, status]);
+
+
 	const [isOpen, setIsOpen] = React.useState(false);
 
 	window.addEventListener("click", function (e) {
