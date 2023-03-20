@@ -7,6 +7,8 @@ import {
 	InputGroup,
 	useDisclosure,
 	Divider,
+	Collapse,
+	Switch,
 } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import { getContract, send, estimateGas } from "../../src/contract";
@@ -15,7 +17,7 @@ import { MdOutlineSwapVert } from "react-icons/md";
 import { AppDataContext } from "../context/AppDataProvider";
 import Head from "next/head";
 import Image from "next/image";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import TokenSelector from "./TokenSelector";
 import { RiArrowDropDownLine, RiArrowDropUpLine, RiArrowUpFill } from "react-icons/ri";
 import { dollarFormatter, tokenFormatter } from "../../src/const";
@@ -24,6 +26,8 @@ import { InfoOutlineIcon } from "@chakra-ui/icons";
 import Response from "../modals/_utils/Response";
 import { motion } from "framer-motion";
 import { ERRORS, ERROR_MSG } from '../../src/errors';
+import { useRouter } from "next/router";
+import { base58 } from "ethers/lib/utils.js";
 const Big = require("big.js");
 
 function Swap() {
@@ -53,7 +57,7 @@ function Swap() {
 	const [confirmed, setConfirmed] = useState(false);
 	const [message, setMessage] = useState("");
 
-	const { chain } = useContext(AppDataContext);
+	const { chain, account } = useContext(AppDataContext);
 
 	const updateInputAmount = (e: any) => {
 		setInputAmount(e.target.value);
@@ -155,18 +159,25 @@ function Swap() {
 		const _outputAsset =
 			pools[tradingPool].synths[outputAssetIndex].token.symbol;
 		const _outputAmount = outputAmount;
+
+		let _referral = useReferral ? BigNumber.from(base58.decode(referral!)).toHexString() : ethers.constants.AddressZero;
+
+		console.log("referral", _referral);
 		send(
 			contract,
 			"swap",
 			[
 				ethers.utils.parseEther(inputAmount.toString()),
 				pools[tradingPool].synths[outputAssetIndex].token.id,
+				address,
+				_referral
 			],
 			chain
 		)
 			.then(async (res: any) => {
 				setLoading(false);
-				setResponse("Transaction sent! Waiting for confirmation...");
+				setMessage("Confirming...");
+				setResponse("Transaction sent! Waiting for confirmation");
 				setHash(res.hash);
 				const response = await res.wait(1);
 				// decode response.logs
@@ -179,12 +190,12 @@ function Swap() {
 					inputToken().token.id,
 					outputToken().token.id,
 					decodedLogs[2].args.value.toString(),
-					decodedLogs[0].args.value.toString()
+					decodedLogs[0].args.value.toString(),
 				);
 				setMessage(
-					`Swapped ${_inputAmount} ${_inputAsset} for ${_outputAmount} ${_outputAsset}`
+					"Transaction Successful!"
 				);
-				setResponse("Transaction Successful!");
+				setResponse(`Swapped ${_inputAmount} ${_inputAsset} for ${_outputAmount} ${_outputAsset}`);
 			})
 			.catch((err: any) => {
 				console.log(err);
@@ -201,8 +212,10 @@ function Swap() {
 				// estimate gas
 				contract.estimateGas
 					.swap(
-						ethers.utils.parseEther(Number(inputAmount).toString()),
+						ethers.utils.parseEther(inputAmount.toString()),
 						pools[tradingPool].synths[outputAssetIndex].token.id,
+						address,
+						ethers.constants.AddressZero
 					)
 					.then((gas: any) => {
 						setGas(
@@ -215,7 +228,7 @@ function Swap() {
 			});
 	});
 
-	const { isConnected } = useAccount();
+	const { isConnected, address } = useAccount();
 	const { chain: activeChain } = useNetwork();
 
 	const { pools, tradingPool, updateSynthWalletBalance } =
@@ -231,6 +244,23 @@ function Swap() {
 		updateSynthWalletBalance(src, pools[tradingPool].id, srcValue, true);
 		setNullValue(!nullValue);
 	};
+
+	const [useReferral, setUseReferral] = useState(false);
+	const [referral, setReferral] = useState<string | null>(null);
+
+	const router = useRouter();
+
+	useEffect(() => {
+		if (referral == null) {
+			const { ref: refCode } = router.query;
+			if (refCode) {
+				setReferral(refCode as string);
+				setUseReferral(true);
+			} else {
+				setUseReferral(false);
+			}
+		}
+	});
 
 	useEffect(() => {
 		if (
@@ -301,7 +331,32 @@ function Swap() {
 		else return 0
 	}
 
-	// if (pools.length == 0) return <></>;
+	const _setUseReferral = () => {
+		if (useReferral) {
+			setReferral("");
+			setUseReferral(false);
+		} else {
+			const { ref: refCode } = router.query;
+			if (refCode) {
+				setReferral(refCode as string);
+			} else {
+				setReferral("");
+			}
+			setUseReferral(true);
+		}
+	};
+
+	const isValid = () => {
+		if (referral == "" || referral == null) return true;
+		try {
+			const decodedString = BigNumber.from(
+				base58.decode(referral!)
+			).toHexString();
+			return ethers.utils.isAddress(decodedString);
+		} catch (err) {
+			return false;
+		}
+	};
 
 	return (
 		<>
@@ -316,8 +371,8 @@ function Swap() {
 				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
 			</Head>
 			{pools[tradingPool] ? (
-				<Box>
-					<Box px="5" py={10} roundedTop={15} bg={"gray.700"}>
+				<Box shadow='2xl' border={'2px'} borderColor='whiteAlpha.100' rounded={16}>
+					<Box px="5" py={10} roundedTop={15} bg={"whiteAlpha.100"}>
 						<Flex align="center" justify={"space-between"}>
 							<InputGroup width={"70%"}>
 								<Input
@@ -369,10 +424,8 @@ function Swap() {
 					<Box px="5">
 						<Button
 							mt={-5}
-							bg="gray.700"
-							border={"2px"}
-							borderColor="gray.800"
-							_hover={{ bg: "gray.900" }}
+							bg="#212E44"
+							_hover={{ bg: "gray.700" }}
 							rounded="100%"
 							onClick={switchTokens}
 							variant="unstyled"
@@ -382,11 +435,11 @@ function Swap() {
 							alignItems="center"
 							justifyContent="center"
 						>
-							<MdOutlineSwapVert size={"16px"} />
+							<MdOutlineSwapVert size={"18px"} />
 						</Button>
 					</Box>
 
-					<Box px="5" pt={7} roundedBottom={15} bg={"gray.800"}>
+					<Box px="5" pt={7} roundedBottom={15} bg={"whiteAlpha"}>
 						{/* Output */}
 						<Flex align="center" justify={"space-between"}>
 							<InputGroup width={"70%"}>
@@ -437,6 +490,7 @@ function Swap() {
 							justify="space-between"
 							align={"center"}
 							mt={12}
+							mb={!isOpen ? !account ? '-4' : '-6' : '0'}
 							bg="whiteAlpha.50"
 							color="gray.200"
 							rounded={16}
@@ -468,62 +522,100 @@ function Swap() {
 								{!isOpen ? <RiArrowDropDownLine size={30} /> : <RiArrowDropUpLine size={30} />}
 							</Flex>
 						</Flex>
+						<Box mb={isOpen ? -2 : 0}>
+							<motion.div
+								{...getDisclosureProps()}
+								hidden={hidden}
+								initial={false}
+								onAnimationStart={() => setHidden(false)}
+								onAnimationComplete={() => setHidden(!isOpen)}
+								animate={{ height: isOpen ? 94 : 0 }}
+								style={{
+								height: 94,
+								width: '100%',
+								}}
+							>
+								{isOpen && 	
+								<Box border={'2px'} borderColor='whiteAlpha.200' mt={2} px={4} py={2} rounded={16} fontSize='sm' color={'gray.400'}>
+									<Flex justify={'space-between'}>
+									<Text>Price Impact</Text>
+									<Text>{100*(Number(inputToken().burnFee) + Number(outputToken().mintFee)) / 10000} %</Text>
+									</Flex>
+									<Divider my={1}/>
+									<Flex justify={'space-between'} mb={0.5}>
+									<Text>Swap Fee</Text>
+									<Text>{100*(Number(inputToken().burnFee) + Number(outputToken().mintFee))/ 10000} %</Text>
+									</Flex>
+									<Flex justify={'space-between'} mb={0.5}>
+									<Text>Slippage</Text>
+									<Text>0 %</Text>
+									</Flex>
+									<Flex justify={'space-between'}>
+									<Text>Estimated Gas</Text>
+									<Text>{dollarFormatter.format(gas)}</Text>
+									</Flex>
+								</Box>}
+							</motion.div>
+						</Box>
 
-						<motion.div
-							{...getDisclosureProps()}
-							hidden={hidden}
-							initial={false}
-							onAnimationStart={() => setHidden(false)}
-							onAnimationComplete={() => setHidden(!isOpen)}
-							animate={{ height: isOpen ? 94 : 0 }}
-							style={{
-							height: 94,
-							width: '100%',
-							}}
-						>
-							{isOpen && 	
-							<Box border={'1px'} borderColor='gray.700' mt={2} px={4} py={2} rounded={16} fontSize='sm' color={'gray.400'}>
-								<Flex justify={'space-between'}>
-								<Text>Price Impact</Text>
-								<Text>{100*(Number(inputToken().burnFee) + Number(outputToken().mintFee)) / 10000} %</Text>
+						<Box py={5}>
+						{!account && (
+							<>
+								{" "}
+								<Flex mt={isOpen ? 8 : 3} mb={3} gap={2} align={"center"}>
+									<Text
+										fontSize={"sm"}
+										color="gray.400"
+										fontWeight={"bold"}
+									>
+										Use Referral Code
+									</Text>
+									<Switch
+										colorScheme={"primary"}
+										isChecked={useReferral}
+										onChange={_setUseReferral}
+									/>
 								</Flex>
-								<Divider my={1}/>
-								<Flex justify={'space-between'} mb={0.5}>
-								<Text>Swap Fee</Text>
-								<Text>{100*(Number(inputToken().burnFee) + Number(outputToken().mintFee))/ 10000} %</Text>
-								</Flex>
-								<Flex justify={'space-between'} mb={0.5}>
-								<Text>Slippage</Text>
-								<Text>0 %</Text>
-								</Flex>
-								<Flex justify={'space-between'}>
-								<Text>Estimated Gas</Text>
-								<Text>{dollarFormatter.format(gas)}</Text>
-								</Flex>
-							</Box>}
-						</motion.div>
+								<Collapse in={useReferral} animateOpacity>
+									<Box mb={2} >
+										<Input
+											placeholder="Referral Code"
+											value={referral!}
+											onChange={(e) =>
+												setReferral(e.target.value)
+											}
+											isInvalid={!isValid()}
+											errorBorderColor="red.400"
+											colorScheme={"primary"}
+										/>
+									</Box>
+								</Collapse>{" "}
+							</>
+						)}
+						</Box>
 						</>}
 
 						<Button
-							mt={gas == 0 ? 12 : isOpen ? 8 : 3}
+							mt={!gas ? 14 : 0}
 							mb={5}
 							size="lg"
 							fontSize={"xl"}
 							width={"100%"}
-							bgColor={"primary"}
+							bgColor={"primary.400"}
 							rounded={16}
 							onClick={exchange}
 							disabled={
 								loading ||
-								validateInput() > 0
+								validateInput() > 0 ||
+								!isValid()
 							}
 							loadingText="Sign the transaction in your wallet"
 							isLoading={loading}
-							_hover={{ bg: "gray.600" }}
+							_hover={{ bg: "whiteAlpha.600" }}
 							color="#171717"
 							height={"55px"}
 						>
-							{validateInput() > 0 ? ERROR_MSG[validateInput()] : "Swap"}
+							{!isValid() ? 'Invalid Referral' : validateInput() > 0 ? ERROR_MSG[validateInput()] : "Swap"}
 						</Button>
 						{hash && <Box my={5} mt={-5} pb={4}>
 						<Response
@@ -567,13 +659,14 @@ export function SelectBody({ asset, onOpen }: any) {
 				px={1}
 				py={1}
 				pr={2}
-				gap={0.5}
+				gap={1}
 				mr={-1}
 			>
 				<Image
 					src={"/icons/" + asset?.token.symbol + ".svg"}
-					height={40}
-					width={40}
+					height={34}
+					style={{margin: "4px"}}
+					width={34}
 					alt={asset?.symbol}
 				/>
 

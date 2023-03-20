@@ -6,6 +6,7 @@ import {
 	Heading,
 	Progress,
 	Tooltip,
+	Divider,
 } from "@chakra-ui/react";
 import React, { useContext } from "react";
 import { AppDataContext } from "../components/context/AppDataProvider";
@@ -17,13 +18,16 @@ import { motion } from "framer-motion";
 import Head from "next/head";
 import { InfoIcon, InfoOutlineIcon } from "@chakra-ui/icons";
 import Big from "big.js";
+import { BsLightningChargeFill, BsStars } from "react-icons/bs";
+import { FaBurn } from "react-icons/fa";
+import APRInfo from "../components/infos/APRInfo";
+import Info from "../components/infos/Info"
+import { AiFillStop, AiOutlineStop } from "react-icons/ai";
+
 export default function TempPage() {
 	const {
 		pools,
-		tradingPool,
-		totalCollateral,
-		totalDebt,
-		adjustedCollateral,
+		tradingPool
 	} = useContext(AppDataContext);
 
 	const [hydrated, setHydrated] = React.useState(false);
@@ -34,13 +38,37 @@ export default function TempPage() {
 
 	if (!hydrated) return <></>;
 
+	const esSyxApr = () => {
+		if (!pools[tradingPool]) return "0";
+		if(Big(pools[tradingPool]?.totalDebtUSD).eq(0)) return "0"
+		return Big(pools[tradingPool]?.rewardSpeeds[0])
+			.div(1e18)
+			.mul(365 * 24 * 60 * 60 * ESYX_PRICE)
+			.div(pools[tradingPool]?.totalDebtUSD)
+			.toFixed(2);
+	};
+
+	const debtBurnApr = () => {
+		if (!pools[tradingPool]) return "0";
+		if(Big(pools[tradingPool]?.totalDebtUSD).eq(0)) return "0"
+		return Big(pools[tradingPool]?.averageDailyBurn ?? 0)
+			.mul(365)
+			.div(pools[tradingPool]?.totalDebtUSD)
+			.mul(100)
+			.toFixed(2);
+	};
+
 	return (
 		<>
 			<Head>
 				<title>Dashboard | SyntheX</title>
 				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
 			</Head>
-			<Flex pt="100px" justify={"space-between"}>
+			<Box
+				display={{ sm: "block", md: "flex" }}
+				pt="100px"
+				justifyContent={"space-between"}
+			>
 				<Box>
 					<Box mb={4}>
 						<PoolSelector />
@@ -52,7 +80,11 @@ export default function TempPage() {
 						transition={{ duration: 0.25 }}
 						key={tradingPool}
 					>
-						<Flex gap={16} zIndex={1}>
+						<Flex
+							flexDir={{ sm: "column", md: "row" }}
+							gap={{ sm: 10, md: 16 }}
+							zIndex={1}
+						>
 							<Flex mt={4} gap={3} align="start">
 								<Image
 									h={"35px"}
@@ -61,18 +93,21 @@ export default function TempPage() {
 									alt="icon1"
 								/>
 								<Box mt={-1}>
-									<Text
-										fontSize={"sm"}
-										color="gray.500"
+									<Heading
+										size={"sm"}
+										color="whiteAlpha.700"
 										mb={0.5}
 									>
 										Collateral
-									</Text>
-									<Heading fontSize={"xl"}>
-										{dollarFormatter.format(
-											totalCollateral
-										)}
 									</Heading>
+									<Text
+										fontWeight={"semibold"}
+										fontSize={"xl"}
+									>
+										{dollarFormatter.format(
+											pools[tradingPool]?.userCollateral ?? 0
+										)}
+									</Text>
 								</Box>
 							</Flex>
 
@@ -84,58 +119,28 @@ export default function TempPage() {
 									alt={"icon2"}
 								/>
 								<Box mt={-1}>
-									<Flex mb={0.5} gap={1.5} align="center">
-										<Text fontSize={"sm"} color="gray.500">
-											Rewards
-										</Text>
-										<Tooltip
-											label={`Amount of your debt burned based on 7-day average data`}
-										>
-											<InfoOutlineIcon
-												cursor={"help"}
-												color={"gray.400"}
-											/>
-										</Tooltip>
-									</Flex>
-									<Heading fontSize={"xl"}>
-										{pools[tradingPool]?.totalDebtUSD > 0
-											? tokenFormatter.format(
-													Number(
-														Big(
-															pools[tradingPool]
-																?.averageDailyBurn ??
-																0
-														)
-															.div(1e18)
-															.mul(365)
-															.div(
-																pools[
-																	tradingPool
-																]?.totalDebtUSD
-															)
-															.mul(100)
-															.toFixed(2)
-													)
-											  )
-											: "0"}{" "}
-										%
+									<Heading
+										fontSize={"sm"}
+										color="whiteAlpha.700"
+									>
+										APY
 									</Heading>
-									<Flex gap={1} mt={1}>
-										<Image src="/esSYX.svg" w={5} alt={"esSYN"} />
-										<Text fontSize={"sm"} color="gray.400">
-											{(
-												((pools[tradingPool]
-													?.rewardSpeeds[0] / 1e18) *
-													365 *
-													24 *
-													60 *
-													60 *
-													ESYX_PRICE) /
-												pools[tradingPool]?.totalDebtUSD
-											).toFixed(2)}{" "}
-											%
-										</Text>
-									</Flex>
+									<Tooltip
+										bg="bg2"
+										rounded={8}
+										p={0}
+										label={<APRInfo debtBurnApr={debtBurnApr()} esSyxApr={esSyxApr()} />}
+									>
+										<Flex mb={0.5} gap={1.5} align="center" cursor={"help"}>
+											<Text
+												fontSize={"xl"}
+												fontWeight={"semibold"}
+											> {(Number(debtBurnApr()) + Number(esSyxApr())).toFixed(2)} %
+											</Text>
+
+											<BsStars color={"gray.400"} />
+										</Flex>
+									</Tooltip>
 								</Box>
 							</Flex>
 
@@ -146,25 +151,39 @@ export default function TempPage() {
 									src="/icon3.svg"
 									alt={"icon3"}
 								/>
-								<Box mt={-1}>
-									<Flex mb={0.5} gap={1.5} align="center">
-										<Text fontSize={"sm"} color="gray.500">
-											Issued Debt
-										</Text>
-										<Tooltip
-											label={`When you issue synths, you are allocated a share of the debt pool. As the pool's total value changes, your debt changes as well`}
+								<Tooltip
+									bg="bg2"
+									p={0}
+									rounded={8}
+									label={
+										<Info message={`When you issue synths, you are allocated a share of pool's total debt. As the pool's total value changes, your debt changes as well`} title={'Debt is variable'} />
+									}
+									>
+								<Box mt={-1} cursor={"help"}>
+									
+										<Heading
+										mb={0.5}
+											size={"sm"}
+											color="whiteAlpha.700"
 										>
-											<InfoOutlineIcon
-												cursor={"help"}
+											Issued Debt
+										</Heading>
+									<Flex  gap={2} align="center">
+
+									<Text
+										fontSize={"xl"}
+										fontWeight={"semibold"}
+									>
+										{dollarFormatter.format(pools[tradingPool]?.userDebt ?? 0)}
+									</Text>
+										
+											<BsLightningChargeFill
 												color={"gray.400"}
 											/>
-										</Tooltip>
 									</Flex>
 
-									<Heading fontSize={"xl"}>
-										{dollarFormatter.format(totalDebt)}
-									</Heading>
 								</Box>
+										</Tooltip>
 							</Flex>
 						</Flex>
 					</motion.div>
@@ -176,126 +195,169 @@ export default function TempPage() {
 					transition={{ duration: 0.25 }}
 					key={tradingPool}
 				>
-					<Box textAlign={"right"} mt={3} alignSelf="end">
-						<Flex justify={"end"} align="center" gap={1}>
-							<Text fontSize={"sm"} mb={1} color="gray.400">
-								Debt Limit
-							</Text>
-
-							<Tooltip
-								label={`Your Debt Limit depends on your LTV (Loan to Value) %. Account would be liquidated if LTV is greater than your Collateral's Liquidation Threshold`}
+					<Box
+						textAlign={{ sm: "left", md: "right" }}
+						mt={{ sm: 16, md: 3 }}
+					>
+						<Tooltip
+						bg="bg2"
+						p={0}
+						rounded={8}
+								label={<Info message={`Your Debt Limit depends on your LTV %. Account would be liquidated if LTV is greater than your Collateral's Liquidation Threshold`} title={'Loan to Value (LTV) Ratio'}/>}
 							>
-								<InfoOutlineIcon
-									cursor={"help"}
+						<Flex
+							justify={{ sm: "start", md: "end" }}
+							align="center"
+							gap={1}
+							cursor={"help"}
+						>
+							
+							<Heading size={"sm"} mb={1} color="whiteAlpha.700">
+								Debt Limit
+							</Heading>
+
+							<Box mb={1.5}>
+
+								<AiOutlineStop
 									color={"gray.400"}
-									mb={1}
-								/>
-							</Tooltip>
+									/>
+									</Box>
 						</Flex>
-						<Heading
+							</Tooltip>
+						<Text
+							fontWeight={"semibold"}
 							fontSize={"3xl"}
 							mb={2}
 							color={
-								totalCollateral > 0
-									? (100 * totalDebt) / totalCollateral < 80
-										? "primary"
-										: (100 * totalDebt) / totalCollateral <
+								pools[tradingPool]?.userCollateral > 0
+									? (100 * pools[tradingPool]?.userDebt) / pools[tradingPool]?.userCollateral < 80
+										? "primary.400"
+										: (100 * pools[tradingPool]?.userDebt) / pools[tradingPool]?.userCollateral <
 										  90
 										? "yellow.400"
 										: "red.400"
-									: "primary"
+									: "primary.400"
 							}
 						>
-							{(totalCollateral > 0
-								? (100 * totalDebt) / totalCollateral
-								: totalCollateral
+							{(pools[tradingPool]?.userCollateral > 0
+								? (100 * pools[tradingPool]?.userDebt ?? 0) / pools[tradingPool]?.userCollateral
+								: pools[tradingPool]?.userCollateral ?? 0
 							).toFixed(1)}{" "}
 							%
-						</Heading>
+						</Text>
 						<Box
 							my={2}
 							mt={4}
 							h={2}
 							width={"300px"}
 							rounded="full"
-							bg="gray.800"
+							bg="whiteAlpha.200"
 						>
 							<Box
 								h={2}
 								rounded="full"
 								bg={
-									totalCollateral > 0
-										? (100 * totalDebt) / totalCollateral <
+									pools[tradingPool]?.userCollateral > 0
+										? (100 * pools[tradingPool]?.userDebt) / pools[tradingPool]?.userCollateral <
 										  80
-											? "primary"
-											: (100 * totalDebt) /
-													totalCollateral <
+											? "primary.400"
+											: (100 * pools[tradingPool]?.userDebt) /
+													pools[tradingPool]?.userCollateral <
 											  90
 											? "yellow.400"
 											: "red.400"
-										: "primary"
+										: "primary.400"
 								}
 								width={
-									(totalCollateral > 0
-										? (100 * totalDebt) / totalCollateral
-										: totalCollateral) + "%"
+									(pools[tradingPool]?.userCollateral > 0
+										? (100 * pools[tradingPool]?.userDebt) / pools[tradingPool]?.userCollateral
+										: pools[tradingPool]?.userCollateral) + "%"
 								}
 							></Box>
 						</Box>
-						<Flex justify={"end"} align="center" gap={1}>
+						<Tooltip
+						bg="bg2"
+						p={0}
+						rounded={8}
+								label={<Info message={`You can issue debt till you reach Collateral's Base LTV`} title={'Borrow Capacity'}/>}
+
+							>
+						<Flex
+							justify={{ sm: "start", md: "end" }}
+							align="center"
+							gap={1}
+							cursor={"help"}
+						>
 							<Text fontSize={"sm"} color="gray.400">
 								Available to Issue
 							</Text>
 							<Text fontSize={"sm"} mr={0.5} fontWeight="medium">
-								{dollarFormatter.format(
-									adjustedCollateral - totalDebt < 0
-										? 0
-										: adjustedCollateral - totalDebt
-								)}
+								{ dollarFormatter.format(
+									pools[tradingPool]?.adjustedCollateral ? 
+									(pools[tradingPool]?.adjustedCollateral - pools[tradingPool]?.userDebt < 0 ? 0 : pools[tradingPool]?.adjustedCollateral - pools[tradingPool]?.userDebt)
+										: 0) 
+										}
 							</Text>
-							<Tooltip
-								label={`You can issue debt till you reach collateral's Base LTV (75-80%)`}
-							>
+							
 								<InfoOutlineIcon
 									cursor={"help"}
 									color={"gray.400"}
 								/>
-							</Tooltip>
 						</Flex>
+							</Tooltip>
 					</Box>
 				</motion.div>
-			</Flex>
+			</Box>
 
-			<Flex align={"stretch"} gap={8} pb={"100px"} mt={"80px"} zIndex={1}>
-				<motion.div
-					initial={{ opacity: 0, y: 15 }}
-					animate={{ opacity: 1, y: 0 }}
-					exit={{ opacity: 0, y: 15 }}
-					transition={{ duration: 0.25 }}
-					key={tradingPool}
-					style={{
-						width: "33%",
-						backgroundColor: "#1A202C",
-						borderRadius: 10,
-					}}
-				>
-					<CollateralTable />
-				</motion.div>
-
-				<motion.div
-					initial={{ opacity: 0, y: 15 }}
-					animate={{ opacity: 1, y: 0 }}
-					exit={{ opacity: 0, y: 15 }}
-					transition={{ duration: 0.25 }}
-					key={tradingPool + 2}
-					style={{
-						width: "67%",
-						backgroundColor: "#1A202C",
-						borderRadius: 10,
-					}}
-				>
-					<IssuanceTable />
-				</motion.div>
+			<Flex
+				flexDir={{ sm: "column", md: "row" }}
+				align={"stretch"}
+				gap={8}
+				pb={"100px"}
+				mt={"80px"}
+				zIndex={1}
+			>
+				<Box w={{ sm: "100%", md: "33%" }} alignSelf="stretch">
+					<motion.div
+						initial={{ opacity: 0, y: 15 }}
+						animate={{ opacity: 1, y: 0 }}
+						exit={{ opacity: 0, y: 15 }}
+						transition={{ duration: 0.25 }}
+						key={tradingPool}
+						style={{
+							height: "100%",
+						}}
+					>
+						<Box
+							bg={"bg2"}
+							rounded={10}
+							h={"100%"}
+							border="2px"
+							borderColor={"whiteAlpha.50"}
+						>
+							<CollateralTable />
+						</Box>
+					</motion.div>
+				</Box>
+				<Box w={{ sm: "100%", md: "67%" }}>
+					<motion.div
+						initial={{ opacity: 0, y: 15 }}
+						animate={{ opacity: 1, y: 0 }}
+						exit={{ opacity: 0, y: 15 }}
+						transition={{ duration: 0.25 }}
+						key={tradingPool + 2}
+					>
+						<Box
+							bg={"bg2"}
+							rounded={10}
+							h={"100%"}
+							border="2px"
+							borderColor={"whiteAlpha.50"}
+						>
+							<IssuanceTable />
+						</Box>
+					</motion.div>
+				</Box>
 			</Flex>
 		</>
 	);

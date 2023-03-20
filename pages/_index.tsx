@@ -16,13 +16,12 @@ export default function _index({ children }: any) {
 	});
 
 	const backgroundStyle = {
-		// backgroundColor: '#0E1015'
-		bgGradient: 'radial(#0E1015, gray.900)',
-		// bgGradient: 'radial(gray.900, #12131B)',
+		backgroundColor: '#071325',
+		bgRepeat: 'no-repeat'
 	};
 
 	const [hydrated, setHydrated] = useState(false);
-	const { status, message, fetchData, setChain, refreshData, pools } = useContext(AppDataContext);
+	const { status, message } = useContext(AppDataContext);
 
 	useEffect(() => {
 		setHydrated(true);
@@ -32,7 +31,7 @@ export default function _index({ children }: any) {
 
 	return (
 		<Box>
-			{status == 'fetching' && <Progress bg={'gray.900'} colorScheme='primarySchema' size='xs' isIndeterminate />}
+			{status == 'fetching' && <Progress bg={'gray.900'} colorScheme='primary' size='xs' isIndeterminate />}
 
 			<Box bgColor="gray.800" color={'gray.400'}>
 			{status == 'error' && (
@@ -43,17 +42,6 @@ export default function _index({ children }: any) {
 					fontWeight="bold"
 					p={2}>
 					{message}
-				</Text>
-			)}
-			{isMobile && (
-				<Text
-					textAlign={'center'}
-					width="100%"
-					fontSize={'md'}
-					fontWeight="bold"
-					p={2}
-					>
-					SyntheX is not optimised for mobile yet
 				</Text>
 			)}
 			</Box>

@@ -8,6 +8,7 @@ import {
 	Input,
 	Divider,
 	Image,
+	Text,
 } from "@chakra-ui/react";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { motion, Variants } from "framer-motion";
@@ -22,7 +23,7 @@ const itemVariants: Variants = {
 };
 
 export default function PoolSelector() {
-	const { pools, tradingPool, setTradingPool, totalCollateral, adjustedCollateral } = useContext(AppDataContext);
+	const { pools, tradingPool, setTradingPool } = useContext(AppDataContext);
 	const [isOpen, setIsOpen] = React.useState(false);
 
 	window.addEventListener("click", function (e) {
@@ -42,31 +43,33 @@ export default function PoolSelector() {
 					className="menu"
 				>
 					<Flex zIndex={2}>
-					{pools[tradingPool] ? <motion.button
-							whileTap={{ scale: 0.97 }}
-							onClick={() => setIsOpen(!isOpen)}
-						>
-							<Flex align={"center"} mb={4}>
-									<Heading fontSize={"3xl"}>
-										{pools[tradingPool].name}
-									</Heading>
+						{pools[tradingPool] ? (
+							<motion.button
+								whileTap={{ scale: 0.97 }}
+								onClick={() => setIsOpen(!isOpen)}
+							>
+								<Flex align={"center"} mb={4}>
+									<Flex align={"center"}>
+										<Heading fontSize={"3xl"}>
+											{pools[tradingPool].name}
+										</Heading>
+									</Flex>
 									<motion.div
-									variants={{
-										open: { rotate: 180 },
-										closed: { rotate: 0 },
-									}}
-									transition={{ duration: 0.2 }}
-									style={{ originY: 0.55 }}
-								>
-									<RiArrowDropDownLine size={36} />
-								</motion.div>
-							</Flex>
-						</motion.button>
-						: (
+										variants={{
+											open: { rotate: 180 },
+											closed: { rotate: 0 },
+										}}
+										transition={{ duration: 0.2 }}
+										style={{ originY: 0.55 }}
+									>
+										<RiArrowDropDownLine size={36} />
+									</motion.div>
+								</Flex>
+							</motion.button>
+						) : (
 							<Skeleton height="30px" width="200px" rounded={8} />
 						)}
 					</Flex>
-
 					<motion.ul
 						variants={{
 							open: {
@@ -94,11 +97,11 @@ export default function PoolSelector() {
 							display: "flex",
 							flexDirection: "column",
 							position: "fixed",
-							width: "400px",	
-							padding: "12px",
-							paddingBottom: "18px",	
-							backgroundColor: "#202837",
-							zIndex: 100,
+							width: "400px",
+							zIndex: '100',
+							backgroundColor: "#0A1931",
+							border: "2px solid #212E44",
+							borderRadius: "10px"
 						}}
 					>
 						<motion.div
@@ -117,39 +120,48 @@ export default function PoolSelector() {
 									transition: { duration: 0.1 },
 								},
 							}}
+							style={{
+								padding: "4px 10px",
+								borderRadius: '8px 8px 0 0'
+							}}
 						>
 							<Input
 								placeholder="Search Pool"
-								bg={"gray.700"}
-								border="0"
-								my={2}
-								mb={4}
-								h="44px"
-								_selected={{ border: "0" }}
+								bg={'transparent'}
+								rounded={0}
+								my={3}
+								pl={1}
+								variant='unstyled'
+
+								_active={{ borderColor: "transparent" }}
+
 							/>
-							<Divider borderColor={"gray.700"} />
 						</motion.div>
+
+						<Divider/>
 
 						{pools.map((pool, index) => {
 							return (
 								<motion.li
 									variants={itemVariants}
 									onClick={() => {
+										localStorage.setItem("tradingPool", index.toString());
 										setTradingPool(index);
 										setIsOpen(false);
 									}}
 									key={index}
+									
 								>
 									<Box
-										_hover={{ bg: "gray.700" }}
+										_hover={{ bg: "whiteAlpha.50" }}
 										cursor="pointer"
-										mx={-3}
 										px={4}
+										// p={'12px'}
 									>
 										<Flex
 											justify={"space-between"}
 											align="center"
-											py="3"
+											py="20px"
 										>
 											<Flex mr={6}>
 												{pool.synths
@@ -160,15 +172,12 @@ export default function PoolSelector() {
 															index: number
 														) => (
 															<Box
-																mr={-6}
+																mr={-4}
 																key={index}
 															>
 																<Image
 																	width={
-																		"44px"
-																	}
-																	height={
-																		"44px"
+																		"40px"
 																	}
 																	src={`/icons/${synth.token.symbol}.svg`}
 																	alt={""}
@@ -213,15 +222,15 @@ export default function PoolSelector() {
 												</Flex>
 											</Box>
 										</Flex>
-										<Divider borderColor={"gray.700"} />
+										{index != pools.length - 1 && <Divider
+											borderColor={"whiteAlpha.200"}
+											mx={-4}
+											w="109%"
+										/>}
 									</Box>
 								</motion.li>
 							);
 						})}
-
-						{/* <Box py={1} mb={-6} mx={-3} px={3} bg='gray.700'>
-							<Text fontSize={'sm'}>Showing {pools.length} markets</Text>
-						</Box> */}
 					</motion.ul>
 				</motion.nav>
 			</Box>

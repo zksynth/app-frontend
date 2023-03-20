@@ -26,7 +26,7 @@ const mintAmounts: any = {
 	"EUROC": "10000",
 	"WETH": "10",
     "AAVE": "100",
-    "WBTC": "0.01",
+    "WBTC": "0.5",
     "LINK": "100",
     "wstETH": "10",
 };
@@ -109,7 +109,7 @@ export default function Faucet() {
                 Note: This is a testnet faucet. These tokens are not real and have no value.
             </Text>
 
-			<TableContainer bg={'gray.800'} rounded={8} pt={1}>
+			<TableContainer bg={'whiteAlpha.50'} border='2px' borderColor={'whiteAlpha.100'} rounded={8} pt={1}>
 				<Table variant="simple">
 					<Thead>
 						<Tr>
@@ -167,7 +167,7 @@ export default function Faucet() {
             </ModalBody>
 
             <ModalFooter justifyContent={'center'}>
-                <Button disabled={!isConnected} size={'md'} loadingText="Minting" isLoading={loading} bg='secondary' color={'white'} mb={0} rounded={16} onClick={mint} width='100%'>
+                <Button disabled={!isConnected} size={'md'} loadingText="Minting" isLoading={loading} bg='secondary.400' color={'white'} mb={0} rounded={16} onClick={mint} width='100%'>
                 {isConnected ? 'Mint' : 'Please Connect Your Wallet'}
                 </Button>
             </ModalFooter>

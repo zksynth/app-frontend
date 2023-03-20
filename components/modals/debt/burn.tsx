@@ -17,7 +17,9 @@ import Big from "big.js";
 import Response from "../_utils/Response";
 import InfoFooter from "../_utils/InfoFooter";
 
-const Burn = ({ asset, amount, amountNumber }: any) => {
+
+
+const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 
 	const [loading, setLoading] = useState(false);
 	const [response, setResponse] = useState<string | null>(null);
@@ -27,17 +29,14 @@ const Burn = ({ asset, amount, amountNumber }: any) => {
 
 	const max = () => {
 		// minimum of both
-		const v1 = Big(totalDebt).div(asset.priceUSD);
+		const v1 = Big(pools[tradingPool].userDebt).div(asset.priceUSD);
 		const v2 = Big(asset.walletBalance ?? 0).div(10 ** 18);
 		return (v1.gt(v2) ? v2 : v1).toString();
 	}
 
 	const {
 		chain,
-		totalDebt,
 		updateSynthWalletBalance,
-		totalCollateral,
-		adjustedCollateral,
 		pools,
 		tradingPool,
 		updatePoolBalance
@@ -63,7 +62,8 @@ const Burn = ({ asset, amount, amountNumber }: any) => {
 		)
 			.then(async (res: any) => {
 				setLoading(false);
-				setResponse("Transaction sent! Waiting for confirmation...");
+				setMessage("Confirming...");
+				setResponse("Transaction sent! Waiting for confirmation");
 				setHash(res.hash);
 				// decode logs
 				const response = await res.wait(1);
@@ -75,13 +75,14 @@ const Burn = ({ asset, amount, amountNumber }: any) => {
 						console.log(e)
 					}
 				});
-
-				updatePoolBalance(pools[tradingPool].id, decodedLogs[1].args.value.toString(), true);
+				const amountUSD = Big(decodedLogs[3].args.value.toString()).mul(asset.priceUSD).div(10 ** 18).mul(1 - asset.burnFee/10000).toFixed(4);
+				updatePoolBalance(pools[tradingPool].id, decodedLogs[1].args.value.toString(), amountUSD, true);
 				updateSynthWalletBalance(asset.token.id, pools[tradingPool].id, decodedLogs[3].args.value.toString(), true);
-
+				setAmount('0');
 				setConfirmed(true);
-				setResponse("Transaction Successful!");
-				setMessage(
+
+				setMessage("Transaction Successful!");
+				setResponse(
 					`You have burned ${tokenFormatter.format(
 						amountNumber
 					)} ${asset.token.symbol}`
@@ -116,14 +117,14 @@ const Burn = ({ asset, amount, amountNumber }: any) => {
 								<Text fontSize={"md"} color="gray.400">
 									Health Factor
 								</Text>
-								<Text fontSize={"md"}>{(totalDebt/totalCollateral * 100).toFixed(1)} % {"->"} {((totalDebt - (amount*asset.priceUSD)) /(totalCollateral) * 100).toFixed(1)}%</Text>
+								<Text fontSize={"md"}>{(pools[tradingPool].userDebt/pools[tradingPool].userCollateral * 100).toFixed(1)} % {"->"} {((pools[tradingPool].userDebt - (amount*asset.priceUSD)) /(pools[tradingPool].userCollateral) * 100).toFixed(1)}%</Text>
 							</Flex>
 							<Divider my={2} />
 							<Flex justify="space-between">
 								<Text fontSize={"md"} color="gray.400">
 									Available to issue
 								</Text>
-								<Text fontSize={"md"}>{dollarFormatter.format(adjustedCollateral - totalDebt)} {"->"} {dollarFormatter.format(adjustedCollateral + amount*asset.priceUSD - totalDebt)}</Text>
+								<Text fontSize={"md"}>{dollarFormatter.format(pools[tradingPool].adjustedCollateral - pools[tradingPool].userDebt)} {"->"} {dollarFormatter.format(pools[tradingPool].adjustedCollateral + amount*asset.priceUSD - pools[tradingPool].userDebt)}</Text>
 							</Flex>
 						</Box>
 					</Box>
@@ -141,7 +142,7 @@ const Burn = ({ asset, amount, amountNumber }: any) => {
 							}
 							isLoading={loading}
 							loadingText="Please sign the transaction"
-							bgColor="secondary"
+							bgColor="secondary.400"
 							width="100%"
 							color="white"
 							mt={4}

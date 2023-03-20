@@ -54,9 +54,10 @@ export default function Claim() {
 
     const claim = async () => {
 		setClaiming(true);
+		console.log(pools);
 		const synthex = await getContract("SyntheX", connectedChain!.id);
 		synthex["claimReward(address,address,address[])"](
-            pools[0].rewardTokens[0].token.id,
+            [pools[0].rewardTokens[0].token.id],
 			address,
 			pools.map((pool: any) => pool.id)
 		)
@@ -110,7 +111,7 @@ export default function Claim() {
 							loadingText="Claiming"
 							disabled={Big(synAccrued ?? 0).eq(0)}
 							rounded={16}
-                            colorScheme="primarySchema"
+                            colorScheme="primary"
                             variant="outline"
 						>
 							Claim All

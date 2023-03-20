@@ -1,6 +1,21 @@
-import { Flex, Text, Box, Image, Progress } from "@chakra-ui/react";
+import {
+	Flex,
+	Text,
+	Box,
+	Image,
+	Progress,
+	useDisclosure,
+	Collapse,
+	Stack,
+	IconButton,
+	Heading,
+	useColorMode,
+	Button,
+} from "@chakra-ui/react";
 
-import { ConnectButton as RainbowConnect } from "@rainbow-me/rainbowkit";
+
+import { ConnectButton as RainbowConnect } from '@rainbow-me/rainbowkit';
+import ConnectButton from './ConnectButton'; 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -12,20 +27,24 @@ import { ChainID } from "../src/chains";
 import { BigNumber } from "ethers";
 import { TokenContext } from "./context/TokenContext";
 import { motion } from "framer-motion";
-import { GrHomeRounded } from "react-icons/gr";
-import { MdSwapHorizontalCircle } from "react-icons/md";
 import { RiArrowDropDownLine } from "react-icons/ri";
+import { CloseIcon, HamburgerIcon } from "@chakra-ui/icons";
+import { tokenFormatter, query } from '../src/const';
 
 function NavBar() {
 	const router = useRouter();
+	const { ref } = router.query;
+	const { status, account, fetchData, setChain, refreshData, pools, setRefresh, refresh } =
 
-	const { status, message, fetchData, setChain, refreshData, pools } =
 		useContext(AppDataContext);
 	const { fetchData: fetchTokenData } = useContext(TokenContext);
 
 	const { chain, chains } = useNetwork();
 	const [init, setInit] = useState(false);
 	const [hasRefreshed, setHasRefreshed] = useState(false);
+
+	const { isOpen: isToggleOpen, onToggle } = useDisclosure();
+	const [isSubscribed, setIsSubscribed] = useState(false);
 
 	const {
 		address,
@@ -34,48 +53,49 @@ function NavBar() {
 		connector: activeConnector,
 	} = useAccount({
 		onConnect({ address, connector, isReconnected }) {
+			console.log("onConnect");
 			if ((chain as any).unsupported) return;
-			fetchData(address!, connector!.chains[0].id);
 			setChain(connector!.chains[0].id);
+			fetchData(address!, connector!.chains[0].id)
+			.then((_) => {
+				for(let i in refresh){
+					clearInterval(refresh[i]);
+				}
+				setRefresh([]);
+			})
 			fetchTokenData(address!, connector!.chains[0].id);
 			setInit(true);
 		},
 		onDisconnect() {
-			fetchData(null, ChainID.ARB_GOERLI);
+			console.log("onDisconnect");
+			fetchData(null, ChainID.ARB_GOERLI)
+			.then((_) => {
+				for(let i in refresh){
+					clearInterval(refresh[i]);
+				}
+				setRefresh([]);
+			})
 			setChain(ChainID.ARB_GOERLI);
 		},
 	});
 
 	useEffect(() => {
-		if (!hasRefreshed && pools.length > 0) {
-			setInterval(refreshData, 5000);
-			setHasRefreshed(true);
-		}
-		if (activeConnector && window.ethereum) {
+		if (activeConnector && window.ethereum && !isSubscribed) {
 			(window as any).ethereum.on(
 				"accountsChanged",
 				function (accounts: any[]) {
-					// Time to reload your interface with accounts[0]!
-					setChain(activeConnector?.chains[0].id);
-					fetchData(accounts[0], activeConnector?.chains[0].id);
+					// refresh page
+					window.location.reload();
 				}
 			);
 			(window as any).ethereum.on(
 				"chainChanged",
 				function (chainId: any[]) {
-					if (chains[0]) {
-						if (
-							chains[0].id == BigNumber.from(chainId).toNumber()
-						) {
-							setChain(BigNumber.from(chainId).toNumber());
-							fetchData(
-								address as string,
-								BigNumber.from(chainId).toNumber()
-							);
-						}
-					}
+					// refresh page
+					window.location.reload();
 				}
 			);
+			setIsSubscribed(true);
 		}
 		if (localStorage.getItem("chakra-ui-color-mode") === "light") {
 			localStorage.setItem("chakra-ui-color-mode", "dark");
@@ -90,18 +110,9 @@ function NavBar() {
 			setInit(true);
 			fetchData(null, ChainID.ARB_GOERLI);
 		}
-	}, [
-		isConnected,
-		isConnecting,
-		activeConnector,
-		fetchData,
-		setChain,
-		chain,
-		init,
-		chains,
-		address,
-		status,
-	]);
+	}, [activeConnector, address, chain?.unsupported, chains, fetchData, init, isConnected, isConnecting, isSubscribed, refresh, setChain, setRefresh, status]);
+
+
 	const [isOpen, setIsOpen] = React.useState(false);
 
 	window.addEventListener("click", function (e) {
@@ -110,40 +121,44 @@ function NavBar() {
 		) {
 			setIsOpen(false);
 		}
+
 	});
 
 	return (
 		<>
-			<Flex alignItems={"center"} justify="space-between" h={"100px"}>
-				<Flex align={"center"} gap={10} width={"33%"} mt={2}>
-					<Box cursor="pointer" maxW={"30px"}>
+			<Flex alignItems={"center"} justify="space-between" h={"100px"} w='100%'>
+				<Flex justify="space-between" align={"center"} gap={10} mt={2} w='100%'>
+					<Flex gap={10} align='center' cursor="pointer">
 						<Image
 							onClick={() => {
-								router.push("/");
+								router.push(
+									{
+										pathname: '/about',
+										query: router.query
+									}
+								);
 							}}
 							src={"/logo.svg"}
 							alt=""
-							width="35px"
-							height="35px"
-							minW={"28px"}
-							minH={"28px"}
+							width="28px"
 						/>
-					</Box>
-					<Flex gap={2} align='center'>
+						<Flex
+						
+						gap={2}
+						align="center"
+						display={{ sm: "none", md: "flex" }}
+					>
 						<NavLocalLink
 							path={"/"}
 							title={"Dashboard"}
-							pathname={router.pathname}
 						></NavLocalLink>
 						<NavLocalLink
 							path={"/swap"}
 							title="Swap"
-							pathname={router.pathname}
 						></NavLocalLink>
 						<NavLocalLink
 							path={"/claim"}
 							title="Claim"
-							pathname={router.pathname}
 						></NavLocalLink>
 						<Box id="dao-nav-link">
 							<motion.nav
@@ -172,10 +187,15 @@ function NavBar() {
 														pr={1}
 														cursor="pointer"
 														rounded={100}
-														bg='gray.800'
+														bg="whiteAlpha.50"
 														_hover={{
-															bgColor: "gray.800",
+															bgColor:
+																"whiteAlpha.100",
 														}}
+														border="2px"
+														borderColor={
+															"whiteAlpha.50"
+														}
 													>
 														<Box
 															color={"gray.100"}
@@ -186,7 +206,12 @@ function NavBar() {
 															<Flex
 																align={"center"}
 															>
-																<Text mr={-1}>DAO</Text>
+																<Heading
+																	size={"xs"}
+																	mr={-1}
+																>
+																	DAO
+																</Heading>
 
 																<motion.div
 																	variants={{
@@ -273,8 +298,8 @@ function NavBar() {
 									>
 										<Flex
 											flexDir={"column"}
-											justify='left'
-											align='left'
+											justify="left"
+											align="left"
 											gap={2}
 											mt={3}
 											mx={1}
@@ -282,13 +307,11 @@ function NavBar() {
 											<NavLocalLink
 												path={"/dao/syx"}
 												title="Token"
-												pathname={router.pathname}
 											></NavLocalLink>
 
 											<NavLocalLink
 												path={"/dao/vest"}
 												title="Vest"
-												pathname={router.pathname}
 											></NavLocalLink>
 										</Flex>
 									</motion.div>
@@ -296,53 +319,119 @@ function NavBar() {
 							</motion.nav>
 						</Box>
 					</Flex>
+					</Flex>
+					
+					<Flex display={{sm: 'flex', md: 'none'}}>
+						<IconButton
+							onClick={onToggle}
+							icon={
+								isOpen ? (
+									<CloseIcon w={3} h={3} />
+								) : (
+									<HamburgerIcon w={5} h={5} />
+								)
+							}
+							variant={"ghost"}
+							aria-label={"Toggle Navigation"}
+						/>
+					</Flex>
 				</Flex>
 
-				<Flex width={"33%"} justify="flex-end" align={"center"} gap={2}>
-					{/* <Link href={'/leaderboard'}>
-				<Flex
+				<Flex	
+					display={{ sm: "none", md: "flex" }}
+					justify="flex-end"
 					align={"center"}
-					h={"38px"}
-					px={4}
-					cursor="pointer"
-					rounded={100}
+					gap={2}
+					w='100%'
+					
 				>
-					<Box
-						color={"gray.100"}
-						fontFamily="Roboto"
-						fontWeight={"bold"}
-						fontSize="sm"
-					>
-						<Flex align={"center"} gap={2}>
-							<Text>{10} Points</Text>
+				<motion.div whileHover={{scale: 1.05}} whileTap={{scale: 0.95}}>
+					<Link href={{ pathname: "/leaderboard", query: router.query }} >
+						<Flex
+							align={"center"}
+							h={"38px"}
+							w='100%'
+							px={3}
+							cursor="pointer"
+							rounded={100}
+						>
+							<Box
+								color={"gray.100"}
+								fontSize="sm"
+							>
+								<Flex align={"center"} gap={2}>
+									
+									<Heading size={"sm"} color={router.pathname == '/leaderboard' ? 'primary.400' : 'white'}>{(Number(account?.totalPoint ?? '0')).toFixed(0)} Points</Heading>
+								</Flex>
+							</Box>
 						</Flex>
-					</Box>
-				</Flex>
-				</Link> */}
-					<Box display={{ sm: "none", md: "block" }}>
-						<RainbowConnect chainStatus={"icon"} />
+					</Link>
+				</motion.div>
+
+					<Box>
+						<ConnectButton />
+						{/* <Button onClick={toggleColorMode}>
+							Toggle {colorMode === 'light' ? 'Dark' : 'Light'}
+						</Button> */}
+
 					</Box>
 				</Flex>
 			</Flex>
+			<Collapse in={isToggleOpen} animateOpacity>
+				<MobileNav />
+			</Collapse>
 		</>
 	);
 }
+
+const MobileNav = ({}: any) => {
+	const router = useRouter();
+	return (
+		<Flex flexDir={"column"} bg='whiteAlpha.50' p={4} gap={4}>
+			<NavLocalLink
+				path={"/"}
+				title={"Dashboard"}
+			></NavLocalLink>
+			<NavLocalLink
+				path={"/swap"}
+				title="Swap"
+			></NavLocalLink>
+			<NavLocalLink
+				path={"/claim"}
+				title="Claim"
+			></NavLocalLink>
+			<NavLocalLink
+				path={"/dao/syx"}
+				title="Token"
+			></NavLocalLink>
+
+			<NavLocalLink
+				path={"/dao/vest"}
+				title="Vest"
+			></NavLocalLink>
+			<Box>
+				<RainbowConnect />
+			</Box>
+		</Flex>
+	);
+};
 
 const NavLink = ({
 	path,
 	title,
 	target = "_parent",
 	newTab = false,
-	pathname,
 	children,
-	bg = 'gray.800'
+	bg = "whiteAlpha.50",
+
 }: any) => {
 	const [isPath, setIsPath] = useState(false);
+	const router = useRouter();
 
 	useEffect(() => {
 		// search path
-		setIsPath(path == pathname);
-	}, [setIsPath, pathname, path]);
+		setIsPath(path == router.pathname);
+	}, [setIsPath, router.pathname, path]);
 
 	return (
 		<Flex align={"center"}>
@@ -353,22 +442,24 @@ const NavLink = ({
 					px={4}
 					cursor="pointer"
 					rounded={100}
-					bgColor={isPath ? "gray.700" : bg}
+					bgColor={isPath ? "whiteAlpha.100" : bg}
 					_hover={{
-						bgColor: !isPath ? "gray.800" : "gray.700",
+						bgColor: !isPath ? "whiteAlpha.200" : "whiteAlpha.100",
 						shadow: "md",
 					}}
 					shadow={isPath ? "md" : "none"}
+					border="2px"
+					borderColor={"whiteAlpha.50"}
 				>
 					<Box
-						color={isPath ? "primary" : "gray.100"}
+						color={isPath ? "primary.400" : "gray.100"}
 						fontFamily="Roboto"
 						fontWeight={"bold"}
 						fontSize="sm"
 					>
 						<Flex align={"center"} gap={2}>
 							{children}
-							<Text>{title}</Text>
+							<Heading size={"xs"}>{title}</Heading>
 						</Flex>
 					</Box>
 				</Flex>
@@ -377,14 +468,20 @@ const NavLink = ({
 	);
 };
 
-const NavLocalLink = ({ path, title, pathname, children, lighten, bg = 'gray.800' }: any) => {
+const NavLocalLink = ({
+	path,
+	title,
+	children,
+	lighten,
+	bg = "whiteAlpha.50",
+}: any) => {
+	const router = useRouter();
 	return (
-		<Link href={`${path}`} as={`${path}`}>
+		<Link href={{ pathname: path, query: router.query }} >
 			<Box>
 				<NavLink
 					path={path}
 					title={title}
-					pathname={pathname}
 					lighten={lighten}
 					bg={bg}
 				>

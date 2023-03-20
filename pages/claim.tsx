@@ -29,6 +29,8 @@ import {
 	Image,
 	IconButton,
 } from "@chakra-ui/react";
+import Head from "next/head";
+
 
 export default function Claim() {
 	const { address, isConnected, isConnecting } = useAccount();
@@ -67,8 +69,8 @@ export default function Claim() {
 	const claim = async () => {
 		setClaiming(true);
 		const synthex = await getContract("SyntheX", connectedChain!.id);
-		synthex["claimReward(address,address,address[])"](
-			pools[0].rewardTokens[0].token.id,
+		synthex["claimReward"](
+			[pools[0].rewardTokens[0].id],
 			address,
 			pools.map((pool: any) => pool.id)
 		)
@@ -85,6 +87,10 @@ export default function Claim() {
 	};
 	return (
 		<>
+    <Head>
+				<title>Claim Rewards | SyntheX</title>
+				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
+			</Head>
 			<Box textAlign={"left"} pt="100px">
 				<Heading size={"lg"}>Liquidity Incentive</Heading>
 
@@ -93,7 +99,7 @@ export default function Claim() {
 				</Text>
 
 				<Flex justify={"start"} align={"center"} gap={1}></Flex>
-				<Box bg={"gray.800"} rounded={16} mt={5}>
+				<Box bg={"bg2"} border='2px' borderColor={'whiteAlpha.100'} rounded={16} mt={5}>
 					<TableContainer pt={1}>
 						<Table variant="simple">
 							<Thead>
@@ -112,7 +118,7 @@ export default function Claim() {
 								<Tr>
 									<Td>
 										<Flex align={"center"} gap={2}>
-											<Image src={"/esSYX.svg"} w="10" />
+											<Image src={"/esSYX.svg"} w="10" alt="esSYX" />
 											<Text>esSYX</Text>
 										</Flex>
 									</Td>
@@ -200,7 +206,7 @@ export default function Claim() {
 												0
 											)}
 											rounded={16}
-											colorScheme="primarySchema"
+											colorScheme="primary"
 											variant="outline"
 										>
 											Claim All

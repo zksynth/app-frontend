@@ -6,16 +6,12 @@ export const ETH_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 export const ESYX_PRICE = 0.1;
 export const Endpoints: any = {
 	[ChainID.AURORA]: "https://aurora.api.synthex.finance/", // 'http://localhost:3030/',
-	[ChainID.ARB_GOERLI]: process.env.NEXT_PUBLIC_GRAPH_URL ?? "https://api.thegraph.com/subgraphs/name/prasad-kumkar/synthex"
+	[ChainID.ARB_GOERLI]: "https://api.thegraph.com/subgraphs/name/prasad-kumkar/synthex-dev2" // process.env.NEXT_PUBLIC_GRAPH_URL ?? "https://api.thegraph.com/subgraphs/name/prasad-kumkar/synthex"
 };
 
 export const dollarFormatter = new Intl.NumberFormat("en-US", {
 	style: "currency",
 	currency: "USD",
-	maximumSignificantDigits: 6,
-	maximumFractionDigits: 2,
-	maximumIntegerDigits: 6,
-	maximumDecimalDigits: 2,
 	roundingMode: "floor",
 } as any);
 
@@ -36,6 +32,11 @@ export const compactTokenFormatter = new Intl.NumberFormat("en-US", {
 	roundingMode: "floor",
 } as any);
 
+export const numberFormatter = new Intl.NumberFormat("en-US", {
+	maximumSignificantDigits: 8,
+	roundingMode: "floor",
+} as any);
+
 export const query = (address: string) => (
 	`{
 		pools {
@@ -48,11 +49,12 @@ export const query = (address: string) => (
 		  rewardTokens {
 			id
 		  }
-		  dayDatas(first:7, orderBy: dayId, orderDirection: desc){
+		  poolDayData(first:7, orderBy: dayId, orderDirection: desc){
 			dailyDebtIssuedUSD
 			dailyDebtBurnedUSD
 			dailyRevenueUSD
 			dailyBurnUSD
+			totalDebtUSD
 		  }
 		  rewardSpeeds
 		  synths {
@@ -66,7 +68,7 @@ export const query = (address: string) => (
 			mintFee
 			burnFee
 			totalSupply
-			dayDatas(first:1, orderBy: dayId, orderDirection: desc){
+			synthDayData(first:1, orderBy: dayId, orderDirection: desc){
 				dailyMinted
 				dailyBurned
 			}
@@ -82,12 +84,21 @@ export const query = (address: string) => (
 			cap
 			baseLTV
 			liqThreshold
-			liqBonus
 			totalDeposits
 		  }
 		}
 		accounts(where: {id: "${address}"}){
 		  id
+		  createdAt
+		  referredBy
+		  totalPoint
+		  totalMintUSD
+		  totalBurnUSD
+		  accountDayData(first:1, orderBy: dayId, orderDirection: desc){
+			dailyMintedUSD
+			dailyBurnedUSD
+			dailyPoint
+		  }
 		  positions{
 			pool{
 			  id
@@ -105,6 +116,35 @@ export const query = (address: string) => (
 		}
 	  }`
 )
+
+export const query_leaderboard = `
+	{
+		accounts(orderBy: totalPoint, orderDirection: desc){
+			id
+			totalPoint
+			accountDayData(first:1, orderBy: dayId, orderDirection: desc){
+				dailyMintedUSD
+				dailyBurnedUSD
+				dailyPoint
+			}
+		}
+	}
+`;
+
+export const query_referrals = (address: string) => (`
+	{
+		accounts(where: {referredBy: "${address}"}){
+			id
+			totalMintUSD
+			totalBurnUSD
+			accountDayData(first:1, orderBy: dayId, orderDirection: desc){
+				dailyMintedUSD
+				dailyBurnedUSD
+				dailyPoint
+			}
+		}
+	}
+`);
 
 const COLORS_GREEN = [
 	"#154F43",
