@@ -208,7 +208,7 @@ export default function TempPage() {
 						<Flex
 							justify={{ sm: "start", md: "end" }}
 							align="center"
-							gap={1}
+							gap={2}
 							cursor={"help"}
 						>
 							
@@ -218,7 +218,7 @@ export default function TempPage() {
 
 							<Box mb={1.5}>
 
-								<AiOutlineStop
+								<InfoIcon
 									color={"gray.400"}
 									/>
 									</Box>
@@ -299,7 +299,7 @@ export default function TempPage() {
 										}
 							</Text>
 							
-								<InfoOutlineIcon
+								<InfoIcon
 									cursor={"help"}
 									color={"gray.400"}
 								/>

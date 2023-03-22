@@ -4,29 +4,11 @@ import {
 	Box,
 	Text,
 	Flex,
-	useDisclosure,
-	Select,
-	IconButton,
-	InputGroup,
-	Modal,
-	ModalOverlay,
-	ModalContent,
-	ModalHeader,
-	ModalFooter,
-	ModalBody,
-	ModalCloseButton,
-	NumberInput,
-	NumberInputField,
-	Link,
-	Image,
-	Tooltip,
 	Divider,
 	Switch,
 	Collapse,
 	Input,
 } from "@chakra-ui/react";
-
-import { AiOutlineInfoCircle, AiOutlinePlus } from "react-icons/ai";
 import { getContract, send } from "../../../src/contract";
 import { useContext, useEffect } from "react";
 import { AppDataContext } from "../../context/AppDataProvider";

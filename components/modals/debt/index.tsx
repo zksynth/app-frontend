@@ -24,6 +24,7 @@ import {
 	Button,
 	Link,
 	Divider,
+	Tooltip,
 } from "@chakra-ui/react";
 import { AppDataContext } from "../../context/AppDataProvider";
 import {
@@ -161,7 +162,7 @@ export default function Debt({ synth }: any) {
 							/>
 
 							<Text>{synth.token.name.split(" ").slice(1, -2).join(" ")}</Text>
-
+							<Tooltip label='Add to Metamask'>
 							<IconButton
 								icon={
 									<Image
@@ -175,6 +176,7 @@ export default function Debt({ synth }: any) {
 								rounded="full"
 								aria-label={""}
 							/>
+							</Tooltip>
 						</Flex>
 					</ModalHeader>
 					<ModalBody m={0} p={0}>
@@ -224,7 +226,16 @@ export default function Debt({ synth }: any) {
                                             )}
                                         </Text>
                                     </Box>
-
+									<Box>
+									<Button
+                                        variant={"unstyled"}
+                                        fontSize="sm"
+                                        fontWeight={"bold"}
+                                        onClick={() => _setAmount(Big(max()).div(2).toString())}
+										py={-2}
+                                    >
+                                        50%
+                                    </Button>
                                     <Button
                                         variant={"unstyled"}
                                         fontSize="sm"
@@ -233,6 +244,8 @@ export default function Debt({ synth }: any) {
                                     >
                                         MAX
                                     </Button>
+									</Box>
+
                                 </NumberInput>
                             </InputGroup>
 						</Box>

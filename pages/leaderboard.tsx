@@ -17,9 +17,10 @@ import {
 import { AppDataContext } from '../components/context/AppDataProvider';
 import { tokenFormatter, dollarFormatter } from '../src/const';
 import { AddIcon } from '@chakra-ui/icons';
-import { FaBurn } from 'react-icons/fa';
+import { FaBurn, FaMedal } from 'react-icons/fa';
 import { FaMagic } from 'react-icons/fa';
 import { RiMagicFill } from 'react-icons/ri';
+import { GiMedal } from 'react-icons/gi';
 import Head from 'next/head';
 
 export default function Leaderboard() {
@@ -79,6 +80,11 @@ export default function Leaderboard() {
   <Table variant='simple'>
     <Thead>
       <Tr>
+        <Th>
+          <Flex>
+          Rank
+          </Flex>
+          </Th>
         <Th>Account</Th>
         <Th>24hr Points</Th>
         <Th>24hr Volume (USD)</Th>
@@ -90,6 +96,19 @@ export default function Leaderboard() {
       {leaderboardData?.map((_account, index): any => {
 
       return <Tr key={index} bg={account?.id.toLowerCase() == _account.id ? 'whiteAlpha.100' : 'transparent'}>
+        <Td borderColor={'whiteAlpha.50'}>
+          <Flex gap={2} align='center'>
+            <Text>
+          {index + 1}
+            </Text>
+
+          { index < 10 && <FaMedal color='orange'/> } 
+          { index >= 10 && index < 25 && <FaMedal color='gray'/> } 
+
+
+          </Flex>
+          
+          </Td>
         <Td borderColor={'whiteAlpha.50'}>{(account?.id.toLowerCase() == _account.id ? `You (${_account.id.slice(0,8)})` :  _account.id.slice(0, 8) + '...' + _account.id.slice(36))}</Td>
         <Td borderColor={'whiteAlpha.50'}>{tokenFormatter.format(_account.accountDayData[0]?.dailyPoint ?? 0)}</Td>
         <Td borderColor={'whiteAlpha.50'}>{dollarFormatter.format(_account.accountDayData[0]?.dailyMintedUSD ?? 0)}</Td>

@@ -214,6 +214,16 @@ export default function CollateralModal({ collateral }: any) {
 												</Text>
 											</Box>
 
+											<Box>
+											<Button
+                                        variant={"unstyled"}
+                                        fontSize="sm"
+                                        fontWeight={"bold"}
+                                        onClick={() => _setAmount(Big(max()).div(2).toString())}
+										py={-2}
+                                    >
+                                        50%
+                                    </Button>
 											<Button
 												variant={"unstyled"}
 												fontSize="sm"
@@ -222,6 +232,7 @@ export default function CollateralModal({ collateral }: any) {
 											>
 												MAX
 											</Button>
+											</Box>
 										</NumberInput>
 									</InputGroup>
 								</>

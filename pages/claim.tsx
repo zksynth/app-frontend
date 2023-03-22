@@ -6,6 +6,7 @@ import {
 	Flex,
 	Button,
 	Skeleton,
+	Tooltip,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useAccount, useNetwork } from "wagmi";
@@ -85,13 +86,30 @@ export default function Claim() {
 				setClaiming(false);
 			});
 	};
+
+	const addToMetamask = async () => {
+        (window as any).ethereum.request({
+            method: 'wallet_watchAsset',
+            params: {
+              type: 'ERC20', // Initially only supports ERC20, but eventually more!
+              options: {
+                address: pools[0].rewardTokens[0].id, // The address that the token is at.
+                symbol: 'esSYX', // A ticker symbol or shorthand, up to 5 chars.
+                decimals: 18, // The number of decimals in the token
+                image: 'https://app.synthex.finance/esSYX.svg', // A string url of the token logo
+              },
+            }
+        });
+    }
+
+
 	return (
 		<>
     <Head>
 				<title>Claim Rewards | SyntheX</title>
 				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
 			</Head>
-			<Box textAlign={"left"} pt="100px">
+			<Box textAlign={"left"} pt="100px" maxW={'1200px'}>
 				<Heading size={"lg"}>Liquidity Incentive</Heading>
 
 				<Text mb={5} mt={2} color='gray.400'>
@@ -119,7 +137,25 @@ export default function Claim() {
 									<Td>
 										<Flex align={"center"} gap={2}>
 											<Image src={"/esSYX.svg"} w="10" alt="esSYX" />
-											<Text>esSYX</Text>
+											<Box>
+												{/* <Text>Escrowed SYX</Text> */}
+												<Text fontSize={'md'}>esSYX</Text>
+											</Box>
+											<Tooltip label='Add to Metamask'>
+											<IconButton
+												icon={
+													<Image
+														src="https://cdn.consensys.net/uploads/metamask-1.svg"
+														w={"20px"}
+														alt=""
+													/>
+												}
+												onClick={addToMetamask}
+												size={"xs"}
+												rounded="full"
+												aria-label={""}
+											/>
+											</Tooltip>
 										</Flex>
 									</Td>
 									<Td isNumeric>
@@ -217,6 +253,17 @@ export default function Claim() {
 						</Table>
 					</TableContainer>
 				</Box>
+
+				<Text mt={12} mb={1} color='whiteAlpha.700'>Disclaimer</Text>
+				<Text fontSize={'xs'} color='whiteAlpha.500'>
+				Please note that the information provided in this message is intended solely for informational purposes and is not an offer, solicitation, or recommendation to buy or sell any security, investment product, or other financial instrument. The esSYX tokens mentioned in this message are being offered solely as a liquidity incentive in our DeFi protocol, and users may earn these tokens by holding debt on Synthex. It is important to note that the SYX token, which the esSYX tokens can be converted to at a later date on a 1:1 basis, is not yet launched, and will be announced at a later date.
+
+				Furthermore, please be aware that the esSYX tokens are priced at the public sale price, and this price may fluctuate based on market conditions. Therefore, it is important to conduct your own research and due diligence before deciding to participate in this offering.
+
+				Please also be advised that the purchase and use of any tokens, including the esSYX tokens, may involve significant risks and uncertainties, including the potential for loss of investment. As such, we strongly recommend that you consult with a qualified financial advisor or attorney before making any investment decisions.
+
+				By accepting these tokens, you acknowledge that you have read, understood, and accepted the above disclaimer, as well as any other terms and conditions associated with this offering.
+				</Text>
 			</Box>
 		</>
 	);

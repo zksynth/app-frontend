@@ -9,7 +9,7 @@ export default function syx() {
 				<title>SYX | SyntheX</title>
 				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
 			</Head>
-      <Box pt='100px'>
+      <Box pt='90px'>
         <Flex gap={4} align='center'>
           <Image src='/SYX.svg' w={20} alt='SYX Token Logo'/>
           <Box>

@@ -162,7 +162,6 @@ function Swap() {
 
 		let _referral = useReferral ? BigNumber.from(base58.decode(referral!)).toHexString() : ethers.constants.AddressZero;
 
-		console.log("referral", _referral);
 		send(
 			contract,
 			"swap",
@@ -195,6 +194,13 @@ function Swap() {
 				setMessage(
 					"Transaction Successful!"
 				);
+				setInputAmount(0);
+				setOutputAmount(0);
+				setTimeout(() => {
+					setMessage("");
+					setResponse("");
+					setHash(null);
+				}, 10000)
 				setResponse(`Swapped ${_inputAmount} ${_inputAsset} for ${_outputAmount} ${_outputAsset}`);
 			})
 			.catch((err: any) => {
@@ -611,13 +617,13 @@ function Swap() {
 							}
 							loadingText="Sign the transaction in your wallet"
 							isLoading={loading}
-							_hover={{ bg: "whiteAlpha.600" }}
+							_hover={{ opacity: 0.6 }}
 							color="#171717"
 							height={"55px"}
 						>
 							{!isValid() ? 'Invalid Referral' : validateInput() > 0 ? ERROR_MSG[validateInput()] : "Swap"}
 						</Button>
-						{hash && <Box my={5} mt={-5} pb={4}>
+						{hash && <Box mt={-5} pb={4}>
 						<Response
 							response={response}
 							message={message}
