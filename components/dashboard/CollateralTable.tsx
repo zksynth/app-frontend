@@ -9,18 +9,11 @@ import {
 	Tr,
 	Th,
 	Td,
-	TableCaption,
 	TableContainer,
-	Flex,
-	Image,
-	Text,
 	Box,
 	Skeleton,
 } from "@chakra-ui/react";
 import { AppDataContext } from "../context/AppDataProvider";
-import { preciseTokenFormatter, tokenFormatter } from "../../src/const";
-import Big from "big.js";
-import { motion } from "framer-motion";
 
 import CollateralModal from "../modals/collateral";
 

@@ -91,7 +91,6 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber }:
 				});
 			const collateralId = decodedLogs[decodedLogs.length - 1].args[1].toLowerCase();
 			const depositedAmount = decodedLogs[decodedLogs.length - 1].args[2].toString();
-			console.log("deposited", depositedAmount);
 			setConfirmed(true);
 			updateCollateralWalletBalance(collateralId, poolId, depositedAmount, true);
 			updateCollateralAmount(collateralId, poolId, depositedAmount, false);
