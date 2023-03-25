@@ -28,8 +28,8 @@ import {
 } from "@chakra-ui/react";
 import { AppDataContext } from "../../context/AppDataProvider";
 import {
-	preciseTokenFormatter,
 	dollarFormatter,
+	tokenFormatter
 } from "../../../src/const";
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 import Mint from "./mint";
@@ -57,7 +57,7 @@ export default function Debt({ synth }: any) {
 
 	const _setAmount = (e: string) => {
 		if(Number(e) > 0 && Number(e) < 0.000001) e = '0';
-		setAmount(e);
+		setAmount(Number(e) ? Big(e).toString() : e);
 		setAmountNumber(isNaN(Number(e)) ? 0 : Number(e));
 	};
 
@@ -112,7 +112,7 @@ export default function Debt({ synth }: any) {
 							<Flex color="gray.500" fontSize={"sm"} gap={1}>
 								<Text>
 									{synth.token.symbol} -{" "}
-									{preciseTokenFormatter.format(
+									{tokenFormatter.format(
 										Big(synth.walletBalance ?? 0)
 											.div(10 ** synth.token.decimals)
 											.toNumber()

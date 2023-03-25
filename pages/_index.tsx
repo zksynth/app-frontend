@@ -15,11 +15,6 @@ export default function _index({ children }: any) {
 		lg: false,
 	});
 
-	const backgroundStyle = {
-		backgroundColor: '#071325',
-		bgRepeat: 'no-repeat'
-	};
-
 	const [hydrated, setHydrated] = useState(false);
 	const { status, message } = useContext(AppDataContext);
 
@@ -45,7 +40,8 @@ export default function _index({ children }: any) {
 				</Text>
 			)}
 			</Box>
-			<Box {...backgroundStyle}>
+			<Box w='100%' h={'100%'} bgGradient={'radial(bg2, bg2)'}>
+			<Box w='100%' h={'100%'} bgGradient={'radial(blackAlpha.400, rgba(10,25,49,1) 100%)'}>
 				<Flex
 					justify={'center'}
 					flexDirection={{ sm: 'column', md: 'row' }}
@@ -66,6 +62,7 @@ export default function _index({ children }: any) {
 					</Box>
 				</Flex>
 				<Footer />
+			</Box>
 			</Box>
 		</Box>
 	);

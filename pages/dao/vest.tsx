@@ -15,13 +15,13 @@ export default function escrow() {
           <Image src='/esSYX.svg' w={20} alt='SYX Token Logo'/>
           <Box>
             <Heading size={"lg"}>Vest</Heading>  
-            <Text mt={2} color='gray.400'>
+            <Text mt={2} color='whiteAlpha.700'>
               Escrow SYX to esSYX to earn a share of protocol revenue in WETH 
             </Text>
           </Box>
         </Flex>
 
-        <Flex bg={"bg2"} border='2px' borderColor={'whiteAlpha.100'} mt='10' p={5} rounded='16' align={'center'} justify='space-between'>
+        <Flex shadow='xl' bg={"bg2"} border='2px' borderColor={'whiteAlpha.100'} mt='10' p={5} rounded='16' align={'center'} justify='space-between'>
           <Heading size={'md'}>Claim WETH</Heading>
           <Flex align={'center'} gap={2}>
           <Box h='2' w='2' bg={'yellow'} rounded='full'></Box>
@@ -30,7 +30,7 @@ export default function escrow() {
         </Flex>
 
 
-        <Flex bg={"bg2"} border='2px' borderColor={'whiteAlpha.100'} mt='5' p={5} rounded='16' align={'center'} justify='space-between'>
+        <Flex shadow='xl' bg={"bg2"} border='2px' borderColor={'whiteAlpha.100'} mt='5' p={5} rounded='16' align={'center'} justify='space-between'>
           <Flex align={'center'} gap={2}>
           <Heading size={'md'}>SYX</Heading>
           <AiOutlineSwap/>

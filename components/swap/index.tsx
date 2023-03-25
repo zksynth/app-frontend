@@ -294,7 +294,7 @@ function Swap() {
 				Big(1)
 					.minus(Big(inputToken().burnFee ?? 0).add(outputToken().mintFee ?? 0).div(10000))
 					.times(_outputAmount)
-					.toFixed(10)
+					.toString()
 			)
 		);
 	};
@@ -311,7 +311,7 @@ function Swap() {
 
 	const swapInputExceedsBalance = () => {
 		if (inputAmount) {
-			return inputAmount > (inputToken().walletBalance ?? 0) / 1e18;
+			return Big(inputAmount).gt(Big(inputToken().walletBalance ?? 0).div(1e18));
 		}
 		return false;
 	};
@@ -385,6 +385,7 @@ function Swap() {
 									{...inputStyle}
 									value={inputAmount}
 									onChange={updateInputAmount}
+									min={0}
 								/>
 							</InputGroup>
 
@@ -413,6 +414,7 @@ function Swap() {
 									onClick={handleMax}
 									_hover={{ textDecor: "underline" }}
 									cursor="pointer"
+									textDecor={'underline'} style={{textUnderlineOffset: '2px'}}
 								>
 									{" "}
 									{tokenFormatter.format(
@@ -453,6 +455,7 @@ function Swap() {
 									{...inputStyle}
 									value={outputAmount}
 									onChange={updateOutputAmount}
+									min={0}
 								/>
 							</InputGroup>
 
@@ -613,7 +616,8 @@ function Swap() {
 							disabled={
 								loading ||
 								validateInput() > 0 ||
-								!isValid()
+								!isValid() || 
+								pools[tradingPool].paused
 							}
 							loadingText="Sign the transaction in your wallet"
 							isLoading={loading}
@@ -621,7 +625,7 @@ function Swap() {
 							color="#171717"
 							height={"55px"}
 						>
-							{!isValid() ? 'Invalid Referral' : validateInput() > 0 ? ERROR_MSG[validateInput()] : "Swap"}
+							{pools[tradingPool].paused ? 'Market Paused Till 5PM EDT' : !isValid() ? 'Invalid Referral' : validateInput() > 0 ? ERROR_MSG[validateInput()] : "Swap"}
 						</Button>
 						{hash && <Box mt={-5} pb={4}>
 						<Response

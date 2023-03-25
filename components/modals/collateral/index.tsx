@@ -26,7 +26,6 @@ import {
 import { motion } from "framer-motion";
 import {
 	dollarFormatter,
-	preciseTokenFormatter,
 	tokenFormatter,
 } from "../../../src/const";
 import Big from "big.js";
@@ -60,8 +59,8 @@ export default function CollateralModal({ collateral }: any) {
 	};
 
 	const _setAmount = (e: string) => {
-		if(Number(e) > 0 && Number(e) < 0.000001) e = '0';
-		setAmount(Number(e) ? Number(e).toString(): e);
+		if(Number(e) !== 0 && Number(e) < 0.000001) e = '0';
+		setAmount(Number(e) ? Big(e).toString(): e);
 		setAmountNumber(isNaN(Number(e)) ? 0 : Number(e));
 	};
 
@@ -106,7 +105,7 @@ export default function CollateralModal({ collateral }: any) {
 								<Flex color="gray.500" fontSize={"sm"} gap={1}>
 									<Text>
 										{collateral.token.symbol} -{" "}
-										{preciseTokenFormatter.format(
+										{tokenFormatter.format(
 											Big(collateral.walletBalance ?? 0)
 												.div(
 													10 **
@@ -131,7 +130,7 @@ export default function CollateralModal({ collateral }: any) {
 					isNumeric
                     fontSize={'md'}
 				>
-					{preciseTokenFormatter.format(
+					{tokenFormatter.format(
 						Big(collateral.balance ?? 0)
 							.div(10 ** (collateral.token.decimals ?? 18))
 							.toNumber()

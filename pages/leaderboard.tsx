@@ -16,7 +16,6 @@ import {
 } from '@chakra-ui/react'
 import { AppDataContext } from '../components/context/AppDataProvider';
 import { tokenFormatter, dollarFormatter } from '../src/const';
-import { AddIcon } from '@chakra-ui/icons';
 import { FaBurn, FaMedal } from 'react-icons/fa';
 import { FaMagic } from 'react-icons/fa';
 import { RiMagicFill } from 'react-icons/ri';
@@ -35,9 +34,9 @@ export default function Leaderboard() {
 			</Head>
     <Box pt={'100px'}>
 
-      <Heading size={"lg"}>Trade-to-earn</Heading>
-      <Text mt={2} pb={5} color='gray.400'>
-					Earn rewards by trading on SyntheX
+      <Heading size={"lg"}>Trade-To-Earn</Heading>
+      <Text mt={2} pb={5} color='whiteAlpha.700'>
+					SYX rewards are passed timely through airdrops. The more you trade, the more you earn.
 				</Text>
 
         <Divider my={5}/>
