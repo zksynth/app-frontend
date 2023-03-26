@@ -36,7 +36,7 @@ export default function PoolSelector() {
 
 	return (
 		<div>
-			<Box width={"500px"} id="menu-list-123">
+			<Box id="menu-list-123">
 				<motion.nav
 					initial={false}
 					animate={isOpen ? "open" : "closed"}

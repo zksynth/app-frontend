@@ -1,10 +1,34 @@
-import React from 'react'
-import { Box, Divider, Flex, Text, Image } from "@chakra-ui/react";
+import React from "react";
+import { Box, Divider, Flex, Text, Image, Tooltip } from "@chakra-ui/react";
+import {useState} from 'react';
 
-export default function Info({title, message}: {title: string, message: string}) {
-  return (
-    <>
-    <Box
+export default function Info({ title, message, children }: any) {
+		const [isLabelOpen, setIsLabelOpen] = useState(false);
+
+	return (
+		<>
+			<Tooltip
+				bg="bg2"
+				p={0}
+				rounded={8}
+				label={<InfoBox title={title} message={message} />}
+				isOpen={isLabelOpen}
+			>
+				<Box onMouseEnter={() => setIsLabelOpen(true)}
+					onMouseLeave={() => setIsLabelOpen(false)}
+					onClick={() => setIsLabelOpen(true)}>
+
+				{children}
+				</Box>
+			</Tooltip>
+		</>
+	);
+}
+
+function InfoBox({ title, message }: any) {
+	return (
+		<>
+			<Box
 				rounded={8}
 				bg={"whiteAlpha.50"}
 				border="2px"
@@ -25,6 +49,6 @@ export default function Info({title, message}: {title: string, message: string})
 					</Flex>
 				</Box>
 			</Box>
-    </>
-  )
+		</>
+	);
 }

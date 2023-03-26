@@ -139,9 +139,9 @@ export default function CollateralModal({ collateral }: any) {
 				</Td>
 			</Tr>
 
-			<Modal isCentered isOpen={isOpen} onClose={_onClose}>
+			<Modal isCentered isOpen={isOpen} onClose={_onClose} >
 				<ModalOverlay bg="blackAlpha.400" backdropFilter="blur(30px)" />
-				<ModalContent width={"30rem"} bgColor="bg2" rounded={16} border='2px' borderColor={'#212E44'}>
+				<ModalContent width={"30rem"} bgColor="bg2" rounded={16} border='2px' borderColor={'#212E44'} mx={2}>
 					<ModalCloseButton rounded={"full"} mt={1} />
 					<ModalHeader>
 						<Flex

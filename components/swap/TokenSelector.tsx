@@ -90,7 +90,7 @@ function TokenSelector({
 				
 			>
 				<ModalOverlay bg="blackAlpha.600" backdropFilter="blur(30px)" />
-				<ModalContent maxH={"600px"} bgColor="bg2" rounded={16} border='2px' borderColor={'#212E44'}>
+				<ModalContent maxH={"600px"} bgColor="bg2" rounded={16} border='2px' mx={2} borderColor={'#212E44'}>
 					<ModalHeader>Select a token</ModalHeader>
 					<Box mx={5} mb={5}>
 					<Select rounded={'full'} placeholder="Select debt pool" value={tradingPool} onChange={(e) => {
