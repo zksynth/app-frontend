@@ -111,6 +111,19 @@ function AppDataProvider({ children }: any) {
 						setReferrals(_refs);
 						setLeaderboard(leaderboardData);
 						const pools = userPoolData.pools;
+						// sort pool.synths by liquidity in USD (totalsupply*price)
+						for (let i = 0; i < pools.length; i++) {
+							const pool = pools[i];
+							pool.synths.sort((a: any, b: any) => {
+								return (
+									parseFloat(b.totalSupply) *
+									parseFloat(b.priceUSD)
+								) -
+									(parseFloat(a.totalSupply) *
+										parseFloat(a.priceUSD));
+							});
+							pools[i] = pool;
+						}
 						if (_address) {
 							_setPools(pools, userPoolData.accounts[0], _address, chainId)
 							.then((_) => {
@@ -128,7 +141,6 @@ function AppDataProvider({ children }: any) {
 					setMessage(
 						"Failed to fetch data. Please refresh the page or try again later."
 					);
-					reject(err);
 				});
 		});
 	};
@@ -296,7 +308,9 @@ function AppDataProvider({ children }: any) {
 				// update total debt
 				_pools[i].totalDebt = Big(_pools[i].totalDebt ?? 0)[isMinus?'minus' : 'add'](amountUSD).toNumber();
 
+				updateUserParams(_pools[i]);
 				setPools(_pools);
+				setRandom(Math.random());
 				return;
 			}
 		}

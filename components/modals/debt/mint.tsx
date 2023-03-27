@@ -98,6 +98,7 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 						console.log(e);
 					}
 				});
+
 				let amountUSD = Big(decodedLogs[3].args.value.toString())
 					.mul(asset.priceUSD)
 					.div(10 ** 18)
