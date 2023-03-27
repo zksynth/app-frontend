@@ -122,8 +122,19 @@ function AppDataProvider({ children }: any) {
 									(parseFloat(a.totalSupply) *
 										parseFloat(a.priceUSD));
 							});
+
+							// average burn and revenue
+							let averageDailyBurn = Big(0);
+							let averageDailyRevenue = Big(0);
+							for(let j = 0; j < pool.poolDayData.length; j++) {
+								averageDailyBurn = averageDailyBurn.plus(pool.poolDayData[j].dailyBurnUSD);
+								averageDailyRevenue = averageDailyRevenue.plus(pool.poolDayData[j].dailyRevenueUSD);
+							}
+							pool.averageDailyBurn = pool.poolDayData.length > 0 ? averageDailyBurn.div(pool.poolDayData.length).toString() : '0';
+							pool.averageDailyRevenue = pool.poolDayData.length > 0 ? averageDailyRevenue.div(pool.poolDayData.length).toString() : '0';
 							pools[i] = pool;
 						}
+						
 						if (_address) {
 							_setPools(pools, userPoolData.accounts[0], _address, chainId)
 							.then((_) => {
@@ -201,15 +212,6 @@ function AppDataProvider({ children }: any) {
 						itf.encodeFunctionData("balanceOf", [_address]),
 					]);
 				}
-
-				let averageDailyBurn = Big(0);
-				let averageDailyRevenue = Big(0);
-				for(let j = 0; j < _pools[i].poolDayData.length; j++) {
-					averageDailyBurn = averageDailyBurn.plus(_pools[i].poolDayData[j].dailyBurnUSD);
-					averageDailyRevenue = averageDailyRevenue.plus(_pools[i].poolDayData[j].dailyRevenueUSD);
-				}
-				_pools[i].averageDailyBurn = _pools[i].poolDayData.length > 0 ? averageDailyBurn.div(_pools[i].poolDayData.length).toString() : '0';
-				_pools[i].averageDailyRevenue = _pools[i].poolDayData.length > 0 ? averageDailyRevenue.div(_pools[i].poolDayData.length).toString() : '0';
 			}
 
 			helper.callStatic.aggregate(calls).then(async (res: any) => {

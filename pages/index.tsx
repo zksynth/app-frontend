@@ -85,6 +85,8 @@ export default function TempPage() {
 		};
 	}
 
+	const debtLimit = () => (100 * pools[tradingPool]?.userDebt) / pools[tradingPool]?.userCollateral;
+
 	return (
 		<>
 			<Head>
@@ -242,17 +244,16 @@ export default function TempPage() {
 							mb={2}
 							color={
 								pools[tradingPool]?.userCollateral > 0
-									? (100 * pools[tradingPool]?.userDebt) / pools[tradingPool]?.userCollateral < 80
+									? debtLimit() < 80
 										? "primary.400"
-										: (100 * pools[tradingPool]?.userDebt) / pools[tradingPool]?.userCollateral <
-										  90
+										: debtLimit() < 90
 										? "yellow.400"
 										: "red.400"
 									: "primary.400"
 							}
 						>
 							{(pools[tradingPool]?.userCollateral > 0
-								? (100 * pools[tradingPool]?.userDebt ?? 0) / pools[tradingPool]?.userCollateral
+								? debtLimit()
 								: pools[tradingPool]?.userCollateral ?? 0
 							).toFixed(1)}{" "}
 							%
@@ -270,11 +271,10 @@ export default function TempPage() {
 								rounded="full"
 								bg={
 									pools[tradingPool]?.userCollateral > 0
-										? (100 * pools[tradingPool]?.userDebt) / pools[tradingPool]?.userCollateral <
+										? debtLimit() <
 										  80
 											? "primary.400"
-											: (100 * pools[tradingPool]?.userDebt) /
-													pools[tradingPool]?.userCollateral <
+											: debtLimit() <
 											  90
 											? "yellow.400"
 											: "red.400"
@@ -282,8 +282,8 @@ export default function TempPage() {
 								}
 								width={
 									(pools[tradingPool]?.userCollateral > 0
-										? (100 * pools[tradingPool]?.userDebt) / pools[tradingPool]?.userCollateral
-										: pools[tradingPool]?.userCollateral) + "%"
+										? debtLimit()
+										: '0') + "%"
 								}
 							></Box>
 						</Box>
