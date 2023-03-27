@@ -26,6 +26,7 @@ import {
 import { motion } from "framer-motion";
 import {
 	dollarFormatter,
+	ETH_ADDRESS,
 	tokenFormatter,
 } from "../../../src/const";
 import Big from "big.js";
@@ -83,6 +84,7 @@ export default function CollateralModal({ collateral }: any) {
 
 	const tryApprove = () => {
 		if (!collateral) return true;
+		if(collateral.token.id == ETH_ADDRESS.toLowerCase()) return false;
 		if (!collateral.allowance) return true;
 		if (Big(collateral.allowance).eq(0)) return true;
 		return Big(collateral.allowance).lt(

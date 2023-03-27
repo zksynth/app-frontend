@@ -38,7 +38,7 @@ function APRInfoBox({ debtBurnApr, esSyxApr }: any) {
 				borderColor={"whiteAlpha.100"}
 			>
 				<Box px={3} py={2}>
-					<Text color={"whiteAlpha.700"}>Total APR</Text>
+					<Text color={"whiteAlpha.700"}>Total APY</Text>
 					<Text fontSize={"lg"} color={"white"}>
 						{(Number(debtBurnApr) + Number(esSyxApr)).toFixed(2)} %
 					</Text>
@@ -50,7 +50,7 @@ function APRInfoBox({ debtBurnApr, esSyxApr }: any) {
 						<FaBurn size={"20px"} />
 						<Flex gap={2}>
 							<Text>{debtBurnApr} %</Text>
-							<Text color={"whiteAlpha.700"}>Debt Burn</Text>
+							<Text color={"whiteAlpha.700"}>Debt Burned</Text>
 						</Flex>
 					</Flex>
 					<Flex align={"center"} gap={2} mb={2} color="white">

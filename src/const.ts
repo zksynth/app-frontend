@@ -32,6 +32,11 @@ export const numberFormatter = new Intl.NumberFormat("en-US", {
 	roundingMode: "floor",
 } as any);
 
+export const numOrZero = (num: number) => {
+	if (num === undefined || num === null || isNaN(num)) return 0;
+	return num;
+};
+
 export const query = (address: string) => (
 	`{
 		pools {

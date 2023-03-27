@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Flex, Heading } from '@chakra-ui/react'
+import { Box, Button, Divider, Flex, Heading, IconButton } from '@chakra-ui/react'
 import React from 'react'
 import { useContext } from 'react';
 
@@ -21,10 +21,27 @@ import { FaMagic } from 'react-icons/fa';
 import { RiMagicFill } from 'react-icons/ri';
 import { GiMedal } from 'react-icons/gi';
 import Head from 'next/head';
+import { MdRefresh } from 'react-icons/md';
+import { useAccount } from 'wagmi';
 
 export default function Leaderboard() {
+  const [refreshing, setRefreshing] = React.useState(false);
 
-  const {leaderboard: leaderboardData, account} = useContext(AppDataContext);
+  const {leaderboard: leaderboardData, account, fetchData, chain } = useContext(AppDataContext);
+
+  const {address} = useAccount();
+
+  const refresh = async () => {
+    setRefreshing(true);
+    fetchData(address || null, chain)
+    .then(res => {
+      setRefreshing(false);
+    })
+    .catch(err => {
+      console.log(err);
+      setRefreshing(false);
+    })
+  }
 
   return (
     <>
@@ -50,7 +67,10 @@ export default function Leaderboard() {
       <Divider orientation='vertical' h='120px'/>
 
       <Box pb={10} pt={5}>
+        <Flex>
       <Heading size={'md'}>24h Volume</Heading>
+      <IconButton icon={<MdRefresh />} onClick={refresh} aria-label={''} variant='unstyled' p={0} mt={-2} ml={2} isLoading={refreshing}/>
+        </Flex>
 
       <Flex gap={20}>
         <Flex rounded={'10'} my={5} align={'center'} gap={5}>
