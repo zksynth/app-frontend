@@ -87,8 +87,9 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber }
 						console.log(e)
 					}
 				});
-			const collateralId = decodedLogs[1].args[1].toLowerCase();
-			const depositedAmount = decodedLogs[1].args[2].toString();
+
+			const collateralId = decodedLogs[0].args[1].toLowerCase();
+			const depositedAmount = decodedLogs[0].args[2].toString();
 			setConfirmed(true);
 			updateCollateralWalletBalance(collateralId, poolId, depositedAmount, false);
 			updateCollateralAmount(collateralId, poolId, depositedAmount, true);
@@ -195,7 +196,7 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber }
 								<Text fontSize={"md"} color="gray.400">
 									Health Factor
 								</Text>
-								<Text fontSize={"md"}>{(pools[tradingPool]?.userDebt/pools[tradingPool]?.userCollateral * 100).toFixed(1)} % {"->"} {(pools[tradingPool]?.userDebt /(pools[tradingPool]?.userCollateral - (amount*collateral.priceUSD)) * 100).toFixed(1)}%</Text>
+								<Text fontSize={"md"}>{(pools[tradingPool]?.userDebt/pools[tradingPool]?.userCollateral * 100).toFixed(1)} % {"->"} {pools[tradingPool]?.userCollateral - amount*collateral.priceUSD > 0 ? (pools[tradingPool]?.userDebt /(pools[tradingPool]?.userCollateral - (amount*collateral.priceUSD)) * 100).toFixed(1) : '0'}%</Text>
 							</Flex>
 							<Divider my={2} />
 							<Flex justify="space-between">

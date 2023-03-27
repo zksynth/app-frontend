@@ -1,14 +1,34 @@
-import { Box, Divider, Flex, Text, Image } from "@chakra-ui/react";
-import React from "react";
+import { Box, Divider, Flex, Text, Image, Tooltip } from "@chakra-ui/react";
+import React, { useState } from "react";
 import { FaBurn } from "react-icons/fa";
 
-export default function APRInfo({
-	debtBurnApr,
-	esSyxApr,
-}: {
-	debtBurnApr: string;
-	esSyxApr: string;
-}) {
+export default function APRInfo({ debtBurnApr, esSyxApr, children }: any) {
+	const [isLabelOpen, setIsLabelOpen] = useState(false);
+
+	return (
+		<>
+			<Tooltip
+				bg={"bg2"}
+				p={0}
+				rounded={8}
+				label={
+					<APRInfoBox debtBurnApr={debtBurnApr} esSyxApr={esSyxApr} />
+				}
+				isOpen={isLabelOpen}
+			>
+				<Box
+					onMouseEnter={() => setIsLabelOpen(true)}
+					onMouseLeave={() => setIsLabelOpen(false)}
+					onClick={() => setIsLabelOpen(true)}
+				>
+					{children}
+				</Box>
+			</Tooltip>
+		</>
+	);
+}
+
+function APRInfoBox({ debtBurnApr, esSyxApr }: any) {
 	return (
 		<>
 			<Box

@@ -24,11 +24,12 @@ import {
 	Button,
 	Link,
 	Divider,
+	Tooltip,
 } from "@chakra-ui/react";
 import { AppDataContext } from "../../context/AppDataProvider";
 import {
-	preciseTokenFormatter,
 	dollarFormatter,
+	tokenFormatter
 } from "../../../src/const";
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 import Mint from "./mint";
@@ -56,7 +57,7 @@ export default function Debt({ synth }: any) {
 
 	const _setAmount = (e: string) => {
 		if(Number(e) > 0 && Number(e) < 0.000001) e = '0';
-		setAmount(e);
+		setAmount(Number(e) ? Big(e).toString() : e);
 		setAmountNumber(isNaN(Number(e)) ? 0 : Number(e));
 	};
 
@@ -111,7 +112,7 @@ export default function Debt({ synth }: any) {
 							<Flex color="gray.500" fontSize={"sm"} gap={1}>
 								<Text>
 									{synth.token.symbol} -{" "}
-									{preciseTokenFormatter.format(
+									{tokenFormatter.format(
 										Big(synth.walletBalance ?? 0)
 											.div(10 ** synth.token.decimals)
 											.toNumber()
@@ -145,7 +146,7 @@ export default function Debt({ synth }: any) {
 
 			<Modal isCentered isOpen={isOpen} onClose={_onClose}>
 				<ModalOverlay bg="blackAlpha.400" backdropFilter="blur(30px)" />
-				<ModalContent width={"30rem"} bgColor="bg2" rounded={16} border='2px' borderColor={'#212E44'}>
+				<ModalContent width={"30rem"} bgColor="bg2" rounded={16} border='2px' mx={2} borderColor={'#212E44'}>
 					<ModalCloseButton rounded={"full"} mt={1} />
 					<ModalHeader>
 						<Flex
@@ -161,7 +162,7 @@ export default function Debt({ synth }: any) {
 							/>
 
 							<Text>{synth.token.name.split(" ").slice(1, -2).join(" ")}</Text>
-
+							<Tooltip label='Add to Metamask'>
 							<IconButton
 								icon={
 									<Image
@@ -175,6 +176,7 @@ export default function Debt({ synth }: any) {
 								rounded="full"
 								aria-label={""}
 							/>
+							</Tooltip>
 						</Flex>
 					</ModalHeader>
 					<ModalBody m={0} p={0}>
@@ -224,7 +226,16 @@ export default function Debt({ synth }: any) {
                                             )}
                                         </Text>
                                     </Box>
-
+									<Box>
+									<Button
+                                        variant={"unstyled"}
+                                        fontSize="sm"
+                                        fontWeight={"bold"}
+                                        onClick={() => _setAmount(Big(max()).div(2).toString())}
+										py={-2}
+                                    >
+                                        50%
+                                    </Button>
                                     <Button
                                         variant={"unstyled"}
                                         fontSize="sm"
@@ -233,6 +244,8 @@ export default function Debt({ synth }: any) {
                                     >
                                         MAX
                                     </Button>
+									</Box>
+
                                 </NumberInput>
                             </InputGroup>
 						</Box>

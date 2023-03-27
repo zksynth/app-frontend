@@ -319,6 +319,7 @@ function AppDataProvider({ children }: any) {
 			}
 		}
 		setPools(_pools);
+		setRandom(Math.random());
 	};
 
 	const updateCollateralAmount = (
@@ -331,15 +332,20 @@ function AppDataProvider({ children }: any) {
 		for (let i in _pools) {
 			if (_pools[i].id == poolAddress) {
 				for (let j in _pools[i].collaterals) {
+					console.log(_pools[i].collaterals[j].token.id, collateralAddress);
 					if (_pools[i].collaterals[j].token.id == collateralAddress) {
+						console.log(_pools[i].collaterals[j].balance, _pools[i].userAdjustedCollateral, _pools[i].userCollateral);
 						_pools[i].collaterals[j].balance = Big(_pools[i].collaterals[j].balance ?? 0)[isMinus?'minus':'add'](value).toString();
 						_pools[i].userAdjustedCollateral = Big(_pools[i].userAdjustedCollateral ?? 0)[isMinus?'minus':'add'](Big(value).div(10**_pools[i].collaterals[j].token.decimals).mul(_pools[i].collaterals[j].priceUSD).mul(_pools[i].collaterals[j].baseLTV).div(10000)).toNumber();
 						_pools[i].userCollateral = Big(_pools[i].userCollateral ?? 0)[isMinus?'minus':'add'](Big(value).div(10**_pools[i].collaterals[j].token.decimals).mul(_pools[i].collaterals[j].priceUSD)).toNumber();
+						console.log(_pools[i].collaterals[j].balance, _pools[i].userAdjustedCollateral, _pools[i].userCollateral);
+						updateUserParams(_pools[i]);
 					}
 				}
 			}
 		}
 		setPools(_pools);
+		setRandom(Math.random());
 	};
 
 	const addCollateralAllowance = (

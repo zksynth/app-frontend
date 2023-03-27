@@ -26,7 +26,6 @@ import {
 import { motion } from "framer-motion";
 import {
 	dollarFormatter,
-	preciseTokenFormatter,
 	tokenFormatter,
 } from "../../../src/const";
 import Big from "big.js";
@@ -60,8 +59,8 @@ export default function CollateralModal({ collateral }: any) {
 	};
 
 	const _setAmount = (e: string) => {
-		if(Number(e) > 0 && Number(e) < 0.000001) e = '0';
-		setAmount(Number(e) ? Number(e).toString(): e);
+		if(Number(e) !== 0 && Number(e) < 0.000001) e = '0';
+		setAmount(Number(e) ? Big(e).toString(): e);
 		setAmountNumber(isNaN(Number(e)) ? 0 : Number(e));
 	};
 
@@ -106,7 +105,7 @@ export default function CollateralModal({ collateral }: any) {
 								<Flex color="gray.500" fontSize={"sm"} gap={1}>
 									<Text>
 										{collateral.token.symbol} -{" "}
-										{preciseTokenFormatter.format(
+										{tokenFormatter.format(
 											Big(collateral.walletBalance ?? 0)
 												.div(
 													10 **
@@ -131,7 +130,7 @@ export default function CollateralModal({ collateral }: any) {
 					isNumeric
                     fontSize={'md'}
 				>
-					{preciseTokenFormatter.format(
+					{tokenFormatter.format(
 						Big(collateral.balance ?? 0)
 							.div(10 ** (collateral.token.decimals ?? 18))
 							.toNumber()
@@ -140,9 +139,9 @@ export default function CollateralModal({ collateral }: any) {
 				</Td>
 			</Tr>
 
-			<Modal isCentered isOpen={isOpen} onClose={_onClose}>
+			<Modal isCentered isOpen={isOpen} onClose={_onClose} >
 				<ModalOverlay bg="blackAlpha.400" backdropFilter="blur(30px)" />
-				<ModalContent width={"30rem"} bgColor="bg2" rounded={16} border='2px' borderColor={'#212E44'}>
+				<ModalContent width={"30rem"} bgColor="bg2" rounded={16} border='2px' borderColor={'#212E44'} mx={2}>
 					<ModalCloseButton rounded={"full"} mt={1} />
 					<ModalHeader>
 						<Flex
@@ -214,6 +213,16 @@ export default function CollateralModal({ collateral }: any) {
 												</Text>
 											</Box>
 
+											<Box>
+											<Button
+                                        variant={"unstyled"}
+                                        fontSize="sm"
+                                        fontWeight={"bold"}
+                                        onClick={() => _setAmount(Big(max()).div(2).toString())}
+										py={-2}
+                                    >
+                                        50%
+                                    </Button>
 											<Button
 												variant={"unstyled"}
 												fontSize="sm"
@@ -222,6 +231,7 @@ export default function CollateralModal({ collateral }: any) {
 											>
 												MAX
 											</Button>
+											</Box>
 										</NumberInput>
 									</InputGroup>
 								</>
