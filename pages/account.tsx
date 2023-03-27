@@ -46,13 +46,13 @@ export default function Account() {
 				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
 			</Head>
 
-			{account ? <>
+			{address ? <>
 				<Box pt="100px">
 				<Heading size={"lg"}>
 					{/* {address?.slice(0, 8) + "..." + address?.slice(38)} */}
 					Your Account
 				</Heading>
-				<Text mt={1}>{address}</Text>
+				<Text mt={1} color='whiteAlpha.700'>{address}</Text>
 
 				<Flex my={10} gap={20}>
 					<Box>
@@ -60,9 +60,9 @@ export default function Account() {
 							Active Since
 						</Heading>
 						<Text mt={0.5} fontSize={"2xl"}>
-							{new Date(account.createdAt * 1000)
+						{account ? new Date(account.createdAt * 1000)
 								.toDateString()
-								.slice(4)}
+								.slice(4) : '-' }
 						</Text>
 					</Box>
 
@@ -71,13 +71,13 @@ export default function Account() {
 							Total Volume
 						</Heading>
 						<Text mt={0.5} fontSize={"2xl"}>
-							{dollarFormatter.format(account.totalMintUSD)}
+							{account ? dollarFormatter.format(account?.totalMintUSD ?? 0) : '-'}
 						</Text>
 					</Box>
 				</Flex>
 			</Box>
 
-			<Box
+			{account && <Box
 				mt={5}
 				bg="bg2"
 				px={6}
@@ -180,10 +180,10 @@ export default function Account() {
 						</TableContainer>
 					</Box>
 				)}
-			</Box>
+			</Box>}
 			</>: <>
 				<Flex flexDir="column"  justify={'center'} align='center' h='80vh'>
-				<Heading mb={5}>Connect Your Wallet</Heading>
+				<Heading mb={5}>{address ? 'Your Account' : 'Connect Your Wallet'}</Heading>
 				<Box>
 					<ConnectButton/>
 				</Box>

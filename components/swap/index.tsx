@@ -162,7 +162,6 @@ function Swap() {
 
 		let _referral = useReferral ? BigNumber.from(base58.decode(referral!)).toHexString() : ethers.constants.AddressZero;
 
-		console.log("referral", _referral);
 		send(
 			contract,
 			"swap",
@@ -195,6 +194,13 @@ function Swap() {
 				setMessage(
 					"Transaction Successful!"
 				);
+				setInputAmount(0);
+				setOutputAmount(0);
+				setTimeout(() => {
+					setMessage("");
+					setResponse("");
+					setHash(null);
+				}, 10000)
 				setResponse(`Swapped ${_inputAmount} ${_inputAsset} for ${_outputAmount} ${_outputAsset}`);
 			})
 			.catch((err: any) => {
@@ -288,7 +294,7 @@ function Swap() {
 				Big(1)
 					.minus(Big(inputToken().burnFee ?? 0).add(outputToken().mintFee ?? 0).div(10000))
 					.times(_outputAmount)
-					.toFixed(10)
+					.toString()
 			)
 		);
 	};
@@ -305,7 +311,7 @@ function Swap() {
 
 	const swapInputExceedsBalance = () => {
 		if (inputAmount) {
-			return inputAmount > (inputToken().walletBalance ?? 0) / 1e18;
+			return Big(inputAmount).gt(Big(inputToken().walletBalance ?? 0).div(1e18));
 		}
 		return false;
 	};
@@ -379,6 +385,7 @@ function Swap() {
 									{...inputStyle}
 									value={inputAmount}
 									onChange={updateInputAmount}
+									min={0}
 								/>
 							</InputGroup>
 
@@ -407,6 +414,7 @@ function Swap() {
 									onClick={handleMax}
 									_hover={{ textDecor: "underline" }}
 									cursor="pointer"
+									textDecor={'underline'} style={{textUnderlineOffset: '2px'}}
 								>
 									{" "}
 									{tokenFormatter.format(
@@ -447,6 +455,7 @@ function Swap() {
 									{...inputStyle}
 									value={outputAmount}
 									onChange={updateOutputAmount}
+									min={0}
 								/>
 							</InputGroup>
 
@@ -607,17 +616,18 @@ function Swap() {
 							disabled={
 								loading ||
 								validateInput() > 0 ||
-								!isValid()
+								!isValid() || 
+								pools[tradingPool].paused
 							}
 							loadingText="Sign the transaction in your wallet"
 							isLoading={loading}
-							_hover={{ bg: "whiteAlpha.600" }}
+							_hover={{ opacity: 0.6 }}
 							color="#171717"
 							height={"55px"}
 						>
-							{!isValid() ? 'Invalid Referral' : validateInput() > 0 ? ERROR_MSG[validateInput()] : "Swap"}
+							{pools[tradingPool].paused ? 'Market Paused Till 5PM EDT' : !isValid() ? 'Invalid Referral' : validateInput() > 0 ? ERROR_MSG[validateInput()] : "Swap"}
 						</Button>
-						{hash && <Box my={5} mt={-5} pb={4}>
+						{hash && <Box mt={-5} pb={4}>
 						<Response
 							response={response}
 							message={message}

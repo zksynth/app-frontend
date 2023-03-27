@@ -3,10 +3,10 @@ import { ChainID } from "./chains";
 
 export const ADDRESS_ZERO = ethers.constants.AddressZero;
 export const ETH_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
-export const ESYX_PRICE = 0.1;
+export const ESYX_PRICE = 0.05;
 export const Endpoints: any = {
 	[ChainID.AURORA]: "https://aurora.api.synthex.finance/", // 'http://localhost:3030/',
-	[ChainID.ARB_GOERLI]: "https://api.thegraph.com/subgraphs/name/prasad-kumkar/synthex-dev2" // process.env.NEXT_PUBLIC_GRAPH_URL ?? "https://api.thegraph.com/subgraphs/name/prasad-kumkar/synthex"
+	[ChainID.ARB_GOERLI]: process.env.NEXT_PUBLIC_GRAPH_URL ?? "https://api.thegraph.com/subgraphs/name/prasad-kumkar/synthex"
 };
 
 export const dollarFormatter = new Intl.NumberFormat("en-US", {
@@ -16,12 +16,7 @@ export const dollarFormatter = new Intl.NumberFormat("en-US", {
 } as any);
 
 export const tokenFormatter = new Intl.NumberFormat("en-US", {
-	maximumSignificantDigits: 8,
-	roundingMode: "floor",
-} as any);
-
-export const preciseTokenFormatter = new Intl.NumberFormat("en-US", {
-	maximumSignificantDigits: 8,
+	maximumSignificantDigits: 6,
 	roundingMode: "floor",
 } as any);
 
@@ -46,6 +41,7 @@ export const query = (address: string) => (
 		  totalSupply
 		  totalDebtUSD
 		  oracle
+		  paused
 		  rewardTokens {
 			id
 		  }

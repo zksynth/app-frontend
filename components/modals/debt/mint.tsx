@@ -4,29 +4,12 @@ import {
 	Box,
 	Text,
 	Flex,
-	useDisclosure,
-	Select,
-	IconButton,
-	InputGroup,
-	Modal,
-	ModalOverlay,
-	ModalContent,
-	ModalHeader,
-	ModalFooter,
-	ModalBody,
-	ModalCloseButton,
-	NumberInput,
-	NumberInputField,
-	Link,
-	Image,
-	Tooltip,
 	Divider,
 	Switch,
 	Collapse,
 	Input,
+	Tooltip,
 } from "@chakra-ui/react";
-
-import { AiOutlineInfoCircle, AiOutlinePlus } from "react-icons/ai";
 import { getContract, send } from "../../../src/contract";
 import { useContext, useEffect } from "react";
 import { AppDataContext } from "../../context/AppDataProvider";
@@ -186,12 +169,14 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 			<Box
 				// border="1px"
 				// borderColor={"gray.700"}
-				mt={8}
+				mt={6}
+				mb={2}
 				rounded={8}
 				// p={2}
 			>
-				{/* <Flex justify="space-between">
-						<Text fontSize={"md"} color="gray.400">
+				<Tooltip label={`% Fee for Minting and Burning ${asset.token.symbol}`}>
+				<Flex justify="space-between">
+						<Text fontSize={"md"} color="gray.400" textDecor={'underline'} cursor={'help'} style={{textUnderlineOffset: '2px', textDecorationStyle: 'dotted'}}>
 							Mint / Burn Fee
 						</Text>
 
@@ -206,7 +191,8 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 								) 
 							)} {'%'}
 						</Text>
-					</Flex> */}
+					</Flex>
+					</Tooltip>
 			</Box>
 
 			<Box>

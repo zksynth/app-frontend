@@ -13,6 +13,7 @@ import {
 	Button,
 } from "@chakra-ui/react";
 
+
 import { ConnectButton as RainbowConnect } from '@rainbow-me/rainbowkit';
 import ConnectButton from './ConnectButton'; 
 import React, { useEffect, useState } from "react";
@@ -33,8 +34,7 @@ import { tokenFormatter, query } from '../src/const';
 function NavBar() {
 	const router = useRouter();
 	const { ref } = router.query;
-	const { status, account, fetchData, setChain, refreshData, pools, setRefresh, refresh } =
-		useContext(AppDataContext);
+	const { status, account, fetchData, setChain, refreshData, pools, setRefresh, refresh } = useContext(AppDataContext);
 	const { fetchData: fetchTokenData } = useContext(TokenContext);
 
 	const { chain, chains } = useNetwork();
@@ -119,6 +119,7 @@ function NavBar() {
 		) {
 			setIsOpen(false);
 		}
+
 	});
 
 	return (
@@ -130,7 +131,7 @@ function NavBar() {
 							onClick={() => {
 								router.push(
 									{
-										pathname: '/about',
+										pathname: '/',
 										query: router.query
 									}
 								);
@@ -370,6 +371,7 @@ function NavBar() {
 						{/* <Button onClick={toggleColorMode}>
 							Toggle {colorMode === 'light' ? 'Dark' : 'Light'}
 						</Button> */}
+
 					</Box>
 				</Flex>
 			</Flex>
@@ -382,8 +384,10 @@ function NavBar() {
 
 const MobileNav = ({}: any) => {
 	const router = useRouter();
+	const { account } = useContext(AppDataContext);
+
 	return (
-		<Flex flexDir={"column"} bg='whiteAlpha.50' p={4} gap={4}>
+		<Flex flexDir={"column"}  p={4} gap={4}>
 			<NavLocalLink
 				path={"/"}
 				title={"Dashboard"}
@@ -405,8 +409,31 @@ const MobileNav = ({}: any) => {
 				path={"/dao/vest"}
 				title="Vest"
 			></NavLocalLink>
+
+<motion.div whileHover={{scale: 1.05}} whileTap={{scale: 0.95}}>
+					<Link href={{ pathname: "/leaderboard", query: router.query }} >
+						<Flex
+							align={"center"}
+							h={"38px"}
+							w='100%'
+							px={3}
+							cursor="pointer"
+							rounded={100}
+						>
+							<Box
+								color={"gray.100"}
+								fontSize="sm"
+							>
+								<Flex align={"center"} gap={2}>
+									
+									<Heading size={"sm"} color={router.pathname == '/leaderboard' ? 'primary.400' : 'white'}>{(Number(account?.totalPoint ?? '0')).toFixed(0)} Points</Heading>
+								</Flex>
+							</Box>
+						</Flex>
+					</Link>
+				</motion.div>
 			<Box>
-				<RainbowConnect />
+				<ConnectButton />
 			</Box>
 		</Flex>
 	);
@@ -419,6 +446,7 @@ const NavLink = ({
 	newTab = false,
 	children,
 	bg = "whiteAlpha.50",
+
 }: any) => {
 	const [isPath, setIsPath] = useState(false);
 	const router = useRouter();

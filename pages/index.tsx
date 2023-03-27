@@ -58,6 +58,33 @@ export default function TempPage() {
 			.toFixed(2);
 	};
 
+	const getTimeUntilNextSunday5PM = () => {
+		const now: any = new Date();
+		const dayOfWeek = now.getUTCDay();
+		const targetDayOfWeek = 0; // Sunday
+		let daysUntilNextSunday = targetDayOfWeek - dayOfWeek;
+		if (daysUntilNextSunday <= 0) {
+			daysUntilNextSunday += 7;
+		}
+		const nextSunday: any = new Date(now.getTime() + daysUntilNextSunday * 24 * 60 * 60 * 1000);
+		nextSunday.setUTCHours(21); // 5 PM EDT in UTC
+		nextSunday.setUTCMinutes(0);
+		nextSunday.setUTCSeconds(0);
+		nextSunday.setUTCMilliseconds(0);
+		let duration = nextSunday - now;
+		let seconds = Math.floor((duration / 1000) % 60),
+        minutes = Math.floor((duration / (1000 * 60)) % 60),
+        hours = Math.floor((duration / (1000 * 60 * 60)) % 24),
+        days = Math.floor(duration / (1000 * 60 * 60 * 24));
+
+		return {
+			days: days,
+			hours: hours,
+			minutes: minutes,
+			seconds: seconds
+		};
+	}
+
 	return (
 		<>
 			<Head>
@@ -68,6 +95,7 @@ export default function TempPage() {
 				display={{ sm: "block", md: "flex" }}
 				pt="100px"
 				justifyContent={"space-between"}
+				// maxW='100px'
 			>
 				<Box>
 					<Box mb={4}>
@@ -125,12 +153,7 @@ export default function TempPage() {
 									>
 										APY
 									</Heading>
-									<Tooltip
-										bg="bg2"
-										rounded={8}
-										p={0}
-										label={<APRInfo debtBurnApr={debtBurnApr()} esSyxApr={esSyxApr()} />}
-									>
+									<APRInfo debtBurnApr={debtBurnApr()} esSyxApr={esSyxApr()}>
 										<Flex mb={0.5} gap={1.5} align="center" cursor={"help"}>
 											<Text
 												fontSize={"xl"}
@@ -140,7 +163,7 @@ export default function TempPage() {
 
 											<BsStars color={"gray.400"} />
 										</Flex>
-									</Tooltip>
+										</APRInfo>
 								</Box>
 							</Flex>
 
@@ -151,14 +174,8 @@ export default function TempPage() {
 									src="/icon3.svg"
 									alt={"icon3"}
 								/>
-								<Tooltip
-									bg="bg2"
-									p={0}
-									rounded={8}
-									label={
-										<Info message={`When you issue synths, you are allocated a share of pool's total debt. As the pool's total value changes, your debt changes as well`} title={'Debt is variable'} />
-									}
-									>
+								
+										<Info message={`When you issue synths, you are allocated a share of pool's total debt. As the pool's total value changes, your debt changes as well`} title={'Debt is variable'}>
 								<Box mt={-1} cursor={"help"}>
 									
 										<Heading
@@ -183,7 +200,7 @@ export default function TempPage() {
 									</Flex>
 
 								</Box>
-										</Tooltip>
+								</Info>
 							</Flex>
 						</Flex>
 					</motion.div>
@@ -199,16 +216,11 @@ export default function TempPage() {
 						textAlign={{ sm: "left", md: "right" }}
 						mt={{ sm: 16, md: 3 }}
 					>
-						<Tooltip
-						bg="bg2"
-						p={0}
-						rounded={8}
-								label={<Info message={`Your Debt Limit depends on your LTV %. Account would be liquidated if LTV is greater than your Collateral's Liquidation Threshold`} title={'Loan to Value (LTV) Ratio'}/>}
-							>
+						<Info message={`Your Debt Limit depends on your LTV %. Account would be liquidated if LTV is greater than your Collateral's Liquidation Threshold`} title={'Loan to Value (LTV) Ratio'}>
 						<Flex
 							justify={{ sm: "start", md: "end" }}
 							align="center"
-							gap={1}
+							gap={2}
 							cursor={"help"}
 						>
 							
@@ -218,12 +230,12 @@ export default function TempPage() {
 
 							<Box mb={1.5}>
 
-								<AiOutlineStop
+								<InfoIcon
 									color={"gray.400"}
 									/>
 									</Box>
 						</Flex>
-							</Tooltip>
+						</Info>
 						<Text
 							fontWeight={"semibold"}
 							fontSize={"3xl"}
@@ -275,13 +287,7 @@ export default function TempPage() {
 								}
 							></Box>
 						</Box>
-						<Tooltip
-						bg="bg2"
-						p={0}
-						rounded={8}
-								label={<Info message={`You can issue debt till you reach Collateral's Base LTV`} title={'Borrow Capacity'}/>}
-
-							>
+						<Info message={`You can issue debt till you reach Collateral's Base LTV`} title={'Borrow Capacity'}>
 						<Flex
 							justify={{ sm: "start", md: "end" }}
 							align="center"
@@ -299,22 +305,23 @@ export default function TempPage() {
 										}
 							</Text>
 							
-								<InfoOutlineIcon
+								<InfoIcon
 									cursor={"help"}
 									color={"gray.400"}
 								/>
 						</Flex>
-							</Tooltip>
+						</Info>
 					</Box>
 				</motion.div>
 			</Box>
 
-			<Flex
+			<Box pb={"100px"}
+				mt={"80px"}>
+
+			{!pools[tradingPool]?.paused ? <Flex
 				flexDir={{ sm: "column", md: "row" }}
 				align={"stretch"}
 				gap={8}
-				pb={"100px"}
-				mt={"80px"}
 				zIndex={1}
 			>
 				<Box w={{ sm: "100%", md: "33%" }} alignSelf="stretch">
@@ -334,6 +341,7 @@ export default function TempPage() {
 							h={"100%"}
 							border="2px"
 							borderColor={"whiteAlpha.50"}
+							shadow='xl'
 						>
 							<CollateralTable />
 						</Box>
@@ -353,12 +361,39 @@ export default function TempPage() {
 							h={"100%"}
 							border="2px"
 							borderColor={"whiteAlpha.50"}
+							shadow='xl'
 						>
 							<IssuanceTable />
 						</Box>
 					</motion.div>
 				</Box>
-			</Flex>
+			</Flex> : 
+			
+			<Flex gap={3} bg={'bg2'} rounded='16' flexDir={'column'} h='360px' w={'100%'} align='center' justify={'center'} border='2px' borderColor={'whiteAlpha.200'}>
+				<Heading size={'lg'}>Market Paused</Heading>
+				<Text textAlign={'center'} color='whiteAlpha.700' maxW={'400px'}>Forex (Foreign Exchange) markets are traded only from 5PM EDT on Sunday through 4PM EDT on Friday</Text>
+				<Text mt={5}>
+					Opening back in
+				</Text>
+				<Flex justify={'center'} gap={4}>
+					<Box textAlign={'center'}>
+						<Heading>{getTimeUntilNextSunday5PM().days}</Heading>
+						<Text>Day</Text>
+					</Box>
+					<Heading>:</Heading>
+					<Box textAlign={'center'}>
+						<Heading>{getTimeUntilNextSunday5PM().hours}</Heading>
+						<Text>Hour</Text>
+					</Box>
+					<Heading>:</Heading>
+					<Box textAlign={'center'}>
+						<Heading>{getTimeUntilNextSunday5PM().minutes}</Heading>
+						<Text>Minute</Text>
+					</Box>
+				</Flex>
+			</Flex>}
+
+			</Box>
 		</>
 	);
 }
