@@ -20,7 +20,6 @@ import Head from "next/head";
 import { ArrowRightIcon, InfoIcon, InfoOutlineIcon } from "@chakra-ui/icons";
 import Big from "big.js";
 import { BsLightningChargeFill, BsStars } from "react-icons/bs";
-import { FaBurn } from "react-icons/fa";
 import APRInfo from "../components/infos/APRInfo";
 import Info from "../components/infos/Info"
 
