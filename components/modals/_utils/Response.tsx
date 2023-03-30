@@ -4,6 +4,16 @@ import React, { useContext } from "react";
 import { chainMapping } from "../../../src/chains";
 import { AppDataContext } from "../../context/AppDataProvider";
 
+const FAILED_MESSAGES: any = {
+	"max fee per gas less than block base fee": "Insufficient gas fee. Please try again with a higher gas fee.",
+
+}
+
+const parseMessage = (message: string) => {
+	const failedMessage = Object.keys(FAILED_MESSAGES).find((key) => message.includes(key))
+	return failedMessage ? FAILED_MESSAGES[failedMessage] : message.slice(0, 100)
+}
+
 export default function Response({response, message, hash, confirmed}: any) {
 
     const { chain } = useContext(AppDataContext);
@@ -33,7 +43,7 @@ export default function Response({response, message, hash, confirmed}: any) {
 								{response}
 							</Text>
 							<Text fontSize="xs" mt={0}>
-								{message.slice(0, 100)}
+								{parseMessage(message)}
 							</Text>
 						</Box>
 					</Alert>

@@ -14,7 +14,7 @@ import { getContract, send } from "../../../src/contract";
 import { useContext, useEffect } from "react";
 import { AppDataContext } from "../../context/AppDataProvider";
 import { useAccount, useNetwork } from "wagmi";
-import { dollarFormatter, tokenFormatter } from "../../../src/const";
+import { dollarFormatter, numOrZero, tokenFormatter } from "../../../src/const";
 import Big from "big.js";
 import Response from "../_utils/Response";
 import InfoFooter from "../_utils/InfoFooter";
@@ -33,6 +33,9 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 	const [useReferral, setUseReferral] = useState(false);
 	const [referral, setReferral] = useState<string | null>(null);
 
+	const { isConnected, address } = useAccount();
+	const { chain: activeChain } = useNetwork();
+	
 	const {
 		chain,
 		updateSynthWalletBalance,
@@ -55,6 +58,7 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 	});
 
 	const max = () => {
+		if(!address) return '0';
 		return (
 			Big(pools[tradingPool].adjustedCollateral)
 				.sub(pools[tradingPool].userDebt)
@@ -162,9 +166,6 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 		}
 	};
 
-	const { isConnected, address } = useAccount();
-	const { chain: activeChain } = useNetwork();
-
 	return (
 		<Box roundedBottom={16} px={5} pb={0.5} pt={0.5} bg="blackAlpha.200">
 			<Box
@@ -175,7 +176,7 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 				rounded={8}
 				// p={2}
 			>
-				<Tooltip label={`% Fee for Minting and Burning ${asset.token.symbol}`}>
+				{/* <Tooltip label={`% Fee for Minting and Burning ${asset.token.symbol}`}>
 				<Flex justify="space-between">
 						<Text fontSize={"md"} color="gray.400" textDecor={'underline'} cursor={'help'} style={{textUnderlineOffset: '2px', textDecorationStyle: 'dotted'}}>
 							Mint / Burn Fee
@@ -192,8 +193,8 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 								) 
 							)} {'%'}
 						</Text>
-					</Flex>
-					</Tooltip>
+					</Flex> 
+					</Tooltip> */}
 			</Box>
 
 			<Box>
@@ -217,13 +218,13 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 							Health Factor
 						</Text>
 						<Text fontSize={"md"}>
-							{(pools[tradingPool].userCollateral > 0
+							{numOrZero(pools[tradingPool].userCollateral > 0
 								? (100 * pools[tradingPool].userDebt) /
 								  pools[tradingPool].userCollateral
 								: 0
 							).toFixed(1)}{" "}
 							% {"->"}{" "}
-							{(
+							{numOrZero(
 								(pools[tradingPool].userCollateral > 0
 									? (pools[tradingPool].userDebt +
 											amount * asset.priceUSD) /
@@ -240,14 +241,14 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 						</Text>
 						<Text fontSize={"md"}>
 							{dollarFormatter.format(
-								pools[tradingPool].adjustedCollateral -
-									pools[tradingPool].userDebt
+								numOrZero(pools[tradingPool].adjustedCollateral -
+									pools[tradingPool].userDebt)
 							)}{" "}
 							{"->"}{" "}
 							{dollarFormatter.format(
-								pools[tradingPool].adjustedCollateral -
+								numOrZero(pools[tradingPool].adjustedCollateral -
 									amount * asset.priceUSD -
-									pools[tradingPool].userDebt
+									pools[tradingPool].userDebt)
 							)}
 						</Text>
 					</Flex>

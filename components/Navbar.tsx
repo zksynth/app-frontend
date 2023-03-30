@@ -30,6 +30,7 @@ import { motion } from "framer-motion";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { CloseIcon, HamburgerIcon } from "@chakra-ui/icons";
 import { tokenFormatter, query } from '../src/const';
+import { GiHelp } from "react-icons/gi";
 
 function NavBar() {
 	const router = useRouter();
@@ -368,11 +369,21 @@ function NavBar() {
 
 					<Box>
 						<ConnectButton />
+
 						{/* <Button onClick={toggleColorMode}>
 							Toggle {colorMode === 'light' ? 'Dark' : 'Light'}
 						</Button> */}
 
 					</Box>
+
+					<Link href={'/info'}>
+						<IconButton
+							aria-label="Open Info"
+							icon={<GiHelp />}
+							variant="unstyled"
+							ml={2}
+						/>
+					</Link>
 				</Flex>
 			</Flex>
 			<Collapse in={isToggleOpen} animateOpacity>

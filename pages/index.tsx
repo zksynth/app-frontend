@@ -7,6 +7,7 @@ import {
 	Progress,
 	Tooltip,
 	Divider,
+	Link,
 } from "@chakra-ui/react";
 import React, { useContext } from "react";
 import { AppDataContext } from "../components/context/AppDataProvider";
@@ -16,18 +17,18 @@ import { dollarFormatter, ESYX_PRICE, tokenFormatter } from "../src/const";
 import IssuanceTable from "../components/dashboard/IssuanceTable";
 import { motion } from "framer-motion";
 import Head from "next/head";
-import { InfoIcon, InfoOutlineIcon } from "@chakra-ui/icons";
+import { ArrowRightIcon, InfoIcon, InfoOutlineIcon } from "@chakra-ui/icons";
 import Big from "big.js";
 import { BsLightningChargeFill, BsStars } from "react-icons/bs";
 import { FaBurn } from "react-icons/fa";
 import APRInfo from "../components/infos/APRInfo";
 import Info from "../components/infos/Info"
-import { AiFillStop, AiOutlineStop } from "react-icons/ai";
 
 export default function TempPage() {
 	const {
 		pools,
-		tradingPool
+		tradingPool,
+		account
 	} = useContext(AppDataContext);
 
 	const [hydrated, setHydrated] = React.useState(false);
@@ -392,6 +393,24 @@ export default function TempPage() {
 					</Box>
 				</Flex>
 			</Flex>}
+
+
+			{!account && (
+				<Link href='/info'>
+				<Box bgGradient={'linear(whiteAlpha.100, whiteAlpha.300)'} mt={10} p={4} border='2px' borderColor={'whiteAlpha.100'} rounded={10}>
+					<Heading size={'md'}>
+					New here?	
+					</Heading>
+
+					<Flex align={'center'}>
+					<Text mt={1}>Read our guide to get started</Text>
+					<ArrowRightIcon ml={1} mt={1} />
+					</Flex>
+
+					
+				</Box>
+				</Link>
+			)}
 
 			</Box>
 		</>
