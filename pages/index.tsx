@@ -20,6 +20,7 @@ import Head from "next/head";
 import { ArrowRightIcon, InfoIcon, InfoOutlineIcon } from "@chakra-ui/icons";
 import Big from "big.js";
 import { BsLightningChargeFill, BsStars } from "react-icons/bs";
+import { MdOutlineTrackChanges } from "react-icons/md";
 import APRInfo from "../components/infos/APRInfo";
 import Info from "../components/infos/Info"
 
@@ -196,7 +197,7 @@ export default function TempPage() {
 										{dollarFormatter.format(pools[tradingPool]?.userDebt ?? 0)}
 									</Text>
 										
-											<BsLightningChargeFill
+											<MdOutlineTrackChanges
 												color={"gray.400"}
 											/>
 									</Flex>
@@ -394,7 +395,7 @@ export default function TempPage() {
 			</Flex>}
 
 
-			{!account && (
+			{/* {!account && (
 				<Link href='/info'>
 				<Box bgGradient={'linear(whiteAlpha.100, whiteAlpha.300)'} mt={10} p={4} border='2px' borderColor={'whiteAlpha.100'} rounded={10}>
 					<Heading size={'md'}>
@@ -409,7 +410,7 @@ export default function TempPage() {
 					
 				</Box>
 				</Link>
-			)}
+			)} */}
 
 			</Box>
 		</>

@@ -29,7 +29,7 @@ export default function Info() {
                     } 
                     text2={'For example, if you want fEURO select Forex Pool, if you want cETH select Crypto Pool'}
                     />
-                <TaskList index={'2.'} title={'Mint Synthetics'} description={'Deposit collateral of your choice that is supported in that pool (USDC or ETH or USDT) and then you"ll be able to mint synthetic assets'} />
+                <TaskList index={'2.'} title={'Deposit Collateral & Mint Synthetics'} description={'Deposit collateral of your choice that is supported in that pool (USDC or ETH or USDT) and then you"ll be able to mint synthetic assets from that pool'} />
                 <TaskList index={'3.'} title={'Be a Degen'} description={'Make your own strategies to generate as much profit with your Synthetic Assets'} text2={'LONG/SHORT them (or) Supply in LP pools to earn fees (or) Lend to others to earn APY'} />
             </Flex>
           </FAQ>
