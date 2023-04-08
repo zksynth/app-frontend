@@ -13,23 +13,26 @@ import {
 	Button,
 } from "@chakra-ui/react";
 
-
 import { ConnectButton as RainbowConnect } from '@rainbow-me/rainbowkit';
-import ConnectButton from './ConnectButton'; 
+import ConnectButton from '../ConnectButton'; 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import "../styles/Home.module.css";
+import "../../styles/Home.module.css";
 import { useAccount, useNetwork } from "wagmi";
 import { useContext } from "react";
-import { AppDataContext } from "./context/AppDataProvider";
-import { ChainID } from "../src/chains";
+import { AppDataContext } from "../context/AppDataProvider";
+import { ChainID } from "../../src/chains";
 import { BigNumber } from "ethers";
-import { TokenContext } from "./context/TokenContext";
+import { TokenContext } from "../context/TokenContext";
 import { motion } from "framer-motion";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { CloseIcon, HamburgerIcon } from "@chakra-ui/icons";
-import { tokenFormatter, query } from '../src/const';
+import { tokenFormatter, query } from '../../src/const';
+import { GiHelp } from "react-icons/gi";
+import NavLocalLink from "./NavLocalLink";
+import DAOMenu from "./DAOMenu";
+import NavExternalLink from "./NavExternalLink";
 
 function NavBar() {
 	const router = useRouter();
@@ -138,7 +141,7 @@ function NavBar() {
 							}}
 							src={"/logo.svg"}
 							alt=""
-							width="28px"
+							width="27px"
 						/>
 						<Flex
 						
@@ -158,164 +161,10 @@ function NavBar() {
 							path={"/claim"}
 							title="Claim"
 						></NavLocalLink>
-						<Box id="dao-nav-link">
-							<motion.nav
-								initial={false}
-								animate={isOpen ? "open" : "closed"}
-								className="menu"
-							>
-								<Flex zIndex={2}>
-									<motion.button
-										onHoverStart={() => setIsOpen(true)}
-									>
-										<Flex
-											align={"center"}
-											id="dao-nav-link"
-											h={"38px"}
-										>
-											<Flex align={"center"}>
-												<motion.div
-													whileHover={{ scale: 1.05 }}
-													whileTap={{ scale: 0.95 }}
-												>
-													<Flex
-														align={"center"}
-														h={"38px"}
-														pl={4}
-														pr={1}
-														cursor="pointer"
-														rounded={100}
-														bg="whiteAlpha.50"
-														_hover={{
-															bgColor:
-																"whiteAlpha.100",
-														}}
-														border="2px"
-														borderColor={
-															"whiteAlpha.50"
-														}
-													>
-														<Box
-															color={"gray.100"}
-															fontFamily="Roboto"
-															fontWeight={"bold"}
-															fontSize="sm"
-														>
-															<Flex
-																align={"center"}
-															>
-																<Heading
-																	size={"xs"}
-																	mr={-1}
-																>
-																	DAO
-																</Heading>
-
-																<motion.div
-																	variants={{
-																		open: {
-																			rotate: 180,
-																			y: -2,
-																		},
-																		closed: {
-																			rotate: 0,
-																		},
-																	}}
-																	transition={{
-																		duration: 0.25,
-																	}}
-																	style={{
-																		originY: 0.55,
-																	}}
-																>
-																	<RiArrowDropDownLine
-																		size={
-																			28
-																		}
-																	/>
-																</motion.div>
-															</Flex>
-														</Box>
-													</Flex>
-												</motion.div>
-											</Flex>
-										</Flex>
-									</motion.button>
-								</Flex>
-
-								<motion.ul
-									onHoverEnd={() => setIsOpen(false)}
-									variants={{
-										open: {
-											clipPath:
-												"inset(0% 0% 0% 0% round 0px)",
-											transition: {
-												type: "spring",
-												bounce: 0,
-												duration: 0.25,
-												delayChildren: 0.2,
-												staggerChildren: 0.05,
-											},
-										},
-										closed: {
-											clipPath:
-												"inset(10% 50% 90% 50% round 0px)",
-											transition: {
-												type: "spring",
-												bounce: 0,
-												duration: 0.35,
-											},
-										},
-									}}
-									style={{
-										pointerEvents: isOpen ? "auto" : "none",
-										listStyle: "none",
-										display: "flex",
-										flexDirection: "column",
-										position: "fixed",
-										paddingBottom: "18px",
-										zIndex: 100,
-									}}
-								>
-									<motion.div
-										variants={{
-											open: {
-												opacity: 1,
-												y: 0,
-												transition: {
-													ease: "easeOut",
-													duration: 0.1,
-												},
-											},
-											closed: {
-												opacity: 0,
-												y: 20,
-												transition: { duration: 0.1 },
-											},
-										}}
-									>
-										<Flex
-											flexDir={"column"}
-											justify="left"
-											align="left"
-											gap={2}
-											mt={3}
-											mx={1}
-										>
-											<NavLocalLink
-												path={"/dao/syx"}
-												title="Token"
-											></NavLocalLink>
-
-											<NavLocalLink
-												path={"/dao/vest"}
-												title="Vest"
-											></NavLocalLink>
-										</Flex>
-									</motion.div>
-								</motion.ul>
-							</motion.nav>
-						</Box>
+						<NavLocalLink
+							path={"/earn"}
+							title="Earn"
+						></NavLocalLink>
 					</Flex>
 					</Flex>
 					
@@ -366,12 +215,13 @@ function NavBar() {
 					</Link>
 				</motion.div>
 
+				<NavExternalLink path={'https://docs.synthex.finance'} title={'Docs'}></NavExternalLink>
+
+				<DAOMenu />
+
+
 					<Box>
 						<ConnectButton />
-						{/* <Button onClick={toggleColorMode}>
-							Toggle {colorMode === 'light' ? 'Dark' : 'Light'}
-						</Button> */}
-
 					</Box>
 				</Flex>
 			</Flex>
@@ -436,110 +286,6 @@ const MobileNav = ({}: any) => {
 				<ConnectButton />
 			</Box>
 		</Flex>
-	);
-};
-
-const NavLink = ({
-	path,
-	title,
-	target = "_parent",
-	newTab = false,
-	children,
-	bg = "whiteAlpha.50",
-
-}: any) => {
-	const [isPath, setIsPath] = useState(false);
-	const router = useRouter();
-
-	useEffect(() => {
-		// search path
-		setIsPath(path == router.pathname);
-	}, [setIsPath, router.pathname, path]);
-
-	return (
-		<Flex align={"center"}>
-			<motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-				<Flex
-					align={"center"}
-					h={"38px"}
-					px={4}
-					cursor="pointer"
-					rounded={100}
-					bgColor={isPath ? "whiteAlpha.100" : bg}
-					_hover={{
-						bgColor: !isPath ? "whiteAlpha.200" : "whiteAlpha.100",
-						shadow: "md",
-					}}
-					shadow={isPath ? "md" : "none"}
-					border="2px"
-					borderColor={"whiteAlpha.50"}
-				>
-					<Box
-						color={isPath ? "primary.400" : "gray.100"}
-						fontFamily="Roboto"
-						fontWeight={"bold"}
-						fontSize="sm"
-					>
-						<Flex align={"center"} gap={2}>
-							{children}
-							<Heading size={"xs"}>{title}</Heading>
-						</Flex>
-					</Box>
-				</Flex>
-			</motion.div>
-		</Flex>
-	);
-};
-
-const NavLocalLink = ({
-	path,
-	title,
-	children,
-	lighten,
-	bg = "whiteAlpha.50",
-}: any) => {
-	const router = useRouter();
-	return (
-		<Link href={{ pathname: path, query: router.query }} >
-			<Box>
-				<NavLink
-					path={path}
-					title={title}
-					lighten={lighten}
-					bg={bg}
-				>
-					{" "}
-					{children}{" "}
-				</NavLink>
-			</Box>
-		</Link>
-	);
-};
-
-const NavExternalLink = ({ path, title, pathname, children, lighten }: any) => {
-	const [isPath, setIsPath] = useState(false);
-
-	useEffect(() => {
-		setIsPath(pathname == path);
-	}, [setIsPath, pathname, path]);
-
-	return (
-		<Link
-			href={`${path}`}
-			as={`${path}`}
-			target={"_blank"}
-			rel="noreferrer"
-		>
-			<NavLink
-				path={path}
-				title={title}
-				pathname={pathname}
-				lighten={lighten}
-			>
-				{" "}
-				{children}{" "}
-			</NavLink>
-		</Link>
 	);
 };
 

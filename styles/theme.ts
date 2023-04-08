@@ -1,7 +1,5 @@
 import { extendTheme, ThemeConfig } from "@chakra-ui/react";
 
-import { StepsTheme as Steps } from 'chakra-ui-steps';
-
 const config: ThemeConfig = {
 	initialColorMode: 'dark',
 	useSystemColorMode: false,
@@ -17,7 +15,6 @@ const breakpoints = {
 
 export const theme = extendTheme({
 	components: {
-		Steps,
 		Heading: {
 			baseStyle: {
 				fontWeight: 'semibold'

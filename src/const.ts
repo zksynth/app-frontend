@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import { ChainID } from "./chains";
 
 export const ADDRESS_ZERO = ethers.constants.AddressZero;
-export const ETH_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+export const WETH_ADDRESS = "0x7964Bcc63335E101F23da13583CEaD61d75f863b";
 export const ESYX_PRICE = 0.05;
 export const Endpoints: any = {
 	[ChainID.AURORA]: "https://aurora.api.synthex.finance/", // 'http://localhost:3030/',
@@ -31,6 +31,11 @@ export const numberFormatter = new Intl.NumberFormat("en-US", {
 	maximumSignificantDigits: 8,
 	roundingMode: "floor",
 } as any);
+
+export const numOrZero = (num: number) => {
+	if (num === undefined || num === null || isNaN(num)) return 0;
+	return num;
+};
 
 export const query = (address: string) => (
 	`{

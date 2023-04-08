@@ -35,15 +35,18 @@ import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 import Mint from "./mint";
 import Burn from "./burn";
 import Big from "big.js";
+import { useAccount } from "wagmi";
 
 export default function Debt({ synth }: any) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
-	const { pools, tradingPool } = useContext(AppDataContext);
+	const { pools, tradingPool, account } = useContext(AppDataContext);
 
 	const [amount, setAmount] = React.useState("0");
 	const [amountNumber, setAmountNumber] = useState(0);
 	const [tabSelected, setTabSelected] = useState(0);
+
+	const { address } = useAccount();
 
 	const borderStyle = {
 		borderColor: "whiteAlpha.100",
@@ -66,6 +69,7 @@ export default function Debt({ synth }: any) {
 	};
 
 	const max = () => {
+		if(!address) return '0';
 		if (tabSelected == 0) {
 			return (Big(pools[tradingPool].adjustedCollateral).sub(pools[tradingPool].userDebt).div(synth.priceUSD).gt(0) ? Big(pools[tradingPool].adjustedCollateral).sub(pools[tradingPool].userDebt).div(synth.priceUSD) : 0).toString();
 		} else {
@@ -250,7 +254,7 @@ export default function Debt({ synth }: any) {
                             </InputGroup>
 						</Box>
 
-						<Tabs onChange={selectTab}>
+						<Tabs onChange={selectTab} index={tabSelected}>
 							<TabList>
 								<Tab
 									w={"50%"}

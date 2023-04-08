@@ -7,6 +7,7 @@ import {
 	Progress,
 	Tooltip,
 	Divider,
+	Link,
 } from "@chakra-ui/react";
 import React, { useContext } from "react";
 import { AppDataContext } from "../components/context/AppDataProvider";
@@ -16,18 +17,18 @@ import { dollarFormatter, ESYX_PRICE, tokenFormatter } from "../src/const";
 import IssuanceTable from "../components/dashboard/IssuanceTable";
 import { motion } from "framer-motion";
 import Head from "next/head";
-import { InfoIcon, InfoOutlineIcon } from "@chakra-ui/icons";
+import { ArrowRightIcon, InfoIcon, InfoOutlineIcon } from "@chakra-ui/icons";
 import Big from "big.js";
 import { BsLightningChargeFill, BsStars } from "react-icons/bs";
-import { FaBurn } from "react-icons/fa";
+import { MdOutlineTrackChanges } from "react-icons/md";
 import APRInfo from "../components/infos/APRInfo";
 import Info from "../components/infos/Info"
-import { AiFillStop, AiOutlineStop } from "react-icons/ai";
 
 export default function TempPage() {
 	const {
 		pools,
-		tradingPool
+		tradingPool,
+		account
 	} = useContext(AppDataContext);
 
 	const [hydrated, setHydrated] = React.useState(false);
@@ -84,6 +85,8 @@ export default function TempPage() {
 			seconds: seconds
 		};
 	}
+
+	const debtLimit = () => (100 * pools[tradingPool]?.userDebt) / pools[tradingPool]?.userCollateral;
 
 	return (
 		<>
@@ -194,7 +197,7 @@ export default function TempPage() {
 										{dollarFormatter.format(pools[tradingPool]?.userDebt ?? 0)}
 									</Text>
 										
-											<BsLightningChargeFill
+											<MdOutlineTrackChanges
 												color={"gray.400"}
 											/>
 									</Flex>
@@ -242,17 +245,16 @@ export default function TempPage() {
 							mb={2}
 							color={
 								pools[tradingPool]?.userCollateral > 0
-									? (100 * pools[tradingPool]?.userDebt) / pools[tradingPool]?.userCollateral < 80
+									? debtLimit() < 80
 										? "primary.400"
-										: (100 * pools[tradingPool]?.userDebt) / pools[tradingPool]?.userCollateral <
-										  90
+										: debtLimit() < 90
 										? "yellow.400"
 										: "red.400"
 									: "primary.400"
 							}
 						>
 							{(pools[tradingPool]?.userCollateral > 0
-								? (100 * pools[tradingPool]?.userDebt ?? 0) / pools[tradingPool]?.userCollateral
+								? debtLimit()
 								: pools[tradingPool]?.userCollateral ?? 0
 							).toFixed(1)}{" "}
 							%
@@ -270,11 +272,10 @@ export default function TempPage() {
 								rounded="full"
 								bg={
 									pools[tradingPool]?.userCollateral > 0
-										? (100 * pools[tradingPool]?.userDebt) / pools[tradingPool]?.userCollateral <
+										? debtLimit() <
 										  80
 											? "primary.400"
-											: (100 * pools[tradingPool]?.userDebt) /
-													pools[tradingPool]?.userCollateral <
+											: debtLimit() <
 											  90
 											? "yellow.400"
 											: "red.400"
@@ -282,8 +283,8 @@ export default function TempPage() {
 								}
 								width={
 									(pools[tradingPool]?.userCollateral > 0
-										? (100 * pools[tradingPool]?.userDebt) / pools[tradingPool]?.userCollateral
-										: pools[tradingPool]?.userCollateral) + "%"
+										? debtLimit()
+										: '0') + "%"
 								}
 							></Box>
 						</Box>
@@ -392,6 +393,24 @@ export default function TempPage() {
 					</Box>
 				</Flex>
 			</Flex>}
+
+
+			{/* {!account && (
+				<Link href='/info'>
+				<Box bgGradient={'linear(whiteAlpha.100, whiteAlpha.300)'} mt={10} p={4} border='2px' borderColor={'whiteAlpha.100'} rounded={10}>
+					<Heading size={'md'}>
+					New here?	
+					</Heading>
+
+					<Flex align={'center'}>
+					<Text mt={1}>Read our guide to get started</Text>
+					<ArrowRightIcon ml={1} mt={1} />
+					</Flex>
+
+					
+				</Box>
+				</Link>
+			)} */}
 
 			</Box>
 		</>

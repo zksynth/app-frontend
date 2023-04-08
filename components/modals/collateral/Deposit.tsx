@@ -9,7 +9,7 @@ import {
 	Divider,
 	Tooltip,
 } from "@chakra-ui/react";
-import { dollarFormatter } from "../../../src/const";
+import { dollarFormatter, numOrZero } from '../../../src/const';
 import Big from "big.js";
 import InfoFooter from "../_utils/InfoFooter";
 import Response from "../_utils/Response";
@@ -18,9 +18,9 @@ import { ethers } from "ethers";
 import { getContract, send } from "../../../src/contract";
 import { useContext } from "react";
 import { AppDataContext } from "../../context/AppDataProvider";
-import { ETH_ADDRESS, compactTokenFormatter } from "../../../src/const";
+import { WETH_ADDRESS, compactTokenFormatter } from "../../../src/const";
 
-export default function Deposit({ collateral, amount, setAmount, amountNumber }: any) {
+export default function Deposit({ collateral, amount, setAmount, amountNumber, isNative }: any) {
 
 	const [loading, setLoading] = useState(false);
 	const [response, setResponse] = useState<string | null>(null);
@@ -39,7 +39,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber }:
 
 	const max = () => {
 		return Big(
-			collateral.walletBalance ?? 0
+			(isNative ?  collateral.nativeBalance : collateral.walletBalance) ?? 0
 		).div(10**collateral.token.decimals).toString();
 	};
 
@@ -53,7 +53,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber }:
 		const pool = await getContract("Pool", chain, poolId);
 
 		let tx;
-		if (collateral.token.id == ETH_ADDRESS.toLowerCase()) {
+		if (isNative) {
 			tx = send(
 				pool,
 				"depositETH",
@@ -137,6 +137,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber }:
 
 	const tryApprove = () => {
 		if (!collateral) return true;
+		if(isNative) return false;
 		if (!collateral.allowance) return true;
 		if (Big(collateral.allowance).eq(0)) return true;
 		return Big(collateral.allowance).lt(
@@ -238,7 +239,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber }:
 								<Text fontSize={"md"} color="gray.400">
 									Health Factor
 								</Text>
-								<Text fontSize={"md"}>{(pools[tradingPool].userCollateral > 0 ? (pools[tradingPool].userDebt/pools[tradingPool].userCollateral * 100) : 0).toFixed(1)} % {"->"} {(pools[tradingPool].userDebt /(pools[tradingPool].userCollateral + (amount*collateral.priceUSD)) * 100).toFixed(1)}%</Text>
+								<Text fontSize={"md"}>{numOrZero(pools[tradingPool].userDebt/pools[tradingPool].userCollateral * 100).toFixed(1)} % {"->"} {numOrZero(pools[tradingPool].userDebt /(pools[tradingPool].userCollateral + (amount*collateral.priceUSD)) * 100).toFixed(1)}%</Text>
 							</Flex>
 							<Divider my={2} />
 							<Flex justify="space-between">

@@ -21,21 +21,18 @@ import {
 	NumberInputField,
 	Select,
 	Divider,
-    IconButton,
+	IconButton,
 } from "@chakra-ui/react";
-import { motion } from "framer-motion";
-import {
-	dollarFormatter,
-	tokenFormatter,
-} from "../../../src/const";
+import { dollarFormatter, tokenFormatter } from "../../../src/const";
 import Big from "big.js";
 
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 import Deposit from "./Deposit";
 import Link from "next/link";
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect } from "react";
 import { AppDataContext } from "../../context/AppDataProvider";
 import Withdraw from "./Withdraw";
+import { WETH_ADDRESS } from "../../../src/const";
 
 export default function CollateralModal({ collateral }: any) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
@@ -43,6 +40,7 @@ export default function CollateralModal({ collateral }: any) {
 
 	const [amount, setAmount] = React.useState("0");
 	const [amountNumber, setAmountNumber] = useState(0);
+	const [isNative, setIsNative] = useState(false);
 
 	const { pools, tradingPool } = useContext(AppDataContext);
 
@@ -56,11 +54,12 @@ export default function CollateralModal({ collateral }: any) {
 		setAmount("0");
 		setAmountNumber(0);
 		onClose();
+		setIsNative(false);
 	};
 
 	const _setAmount = (e: string) => {
-		if(Number(e) !== 0 && Number(e) < 0.000001) e = '0';
-		setAmount(Number(e) ? Big(e).toString(): e);
+		if (Number(e) !== 0 && Number(e) < 0.000001) e = "0";
+		setAmount(Number(e) ? Big(e).toString() : e);
 		setAmountNumber(isNaN(Number(e)) ? 0 : Number(e));
 	};
 
@@ -70,12 +69,19 @@ export default function CollateralModal({ collateral }: any) {
 
 	const max = () => {
 		if (tabSelected == 0) {
-			return Big(
-				collateral.walletBalance ?? 0
-			).div(10**collateral.token.decimals).toString();
+			return Big((isNative ?  collateral.nativeBalance : collateral.walletBalance) ?? 0)
+				.div(10 ** collateral.token.decimals)
+				.toString();
 		} else {
-			const v1 = collateral.priceUSD > 0 ? Big(pools[tradingPool].adjustedCollateral).sub(pools[tradingPool].userDebt).div(collateral.priceUSD).mul(1e4).div(collateral.baseLTV) : Big(0);
-			const v2 = Big(collateral.balance ?? 0).div(10**18);
+			const v1 =
+				collateral.priceUSD > 0
+					? Big(pools[tradingPool].adjustedCollateral)
+							.sub(pools[tradingPool].userDebt)
+							.div(collateral.priceUSD)
+							.mul(1e4)
+							.div(collateral.baseLTV)
+					: Big(0);
+			const v2 = Big(collateral.balance ?? 0).div(10 ** 18);
 			// min(v1, v2)
 			return (v1.gt(v2) ? v2 : v1).toString();
 		}
@@ -83,6 +89,7 @@ export default function CollateralModal({ collateral }: any) {
 
 	const tryApprove = () => {
 		if (!collateral) return true;
+		if (isNative) return false;
 		if (!collateral.allowance) return true;
 		if (Big(collateral.allowance).eq(0)) return true;
 		return Big(collateral.allowance).lt(
@@ -90,35 +97,46 @@ export default function CollateralModal({ collateral }: any) {
 		);
 	};
 
+	const _onOpen = () => {
+		if(collateral.token.id == WETH_ADDRESS.toLowerCase()) setIsNative(true);
+		onOpen();
+	}
+
 	return (
 		<>
-			<Tr cursor="pointer" onClick={onOpen} borderLeft='2px' borderColor='transparent' _hover={{ borderColor: 'primary.400', bg: 'blackAlpha.100' }}>
+			<Tr
+				cursor="pointer"
+				onClick={_onOpen}
+				borderLeft="2px"
+				borderColor="transparent"
+				_hover={{ borderColor: "primary.400", bg: "blackAlpha.100" }}
+			>
 				<Td {...borderStyle}>
-						<Flex gap={3}>
-							<Image
-								src={`/icons/${collateral.token.symbol}.svg`}
-								width="38px"
-								alt=""
-							/>
-							<Box>
-								<Text>{collateral.token.name}</Text>
-								<Flex color="gray.500" fontSize={"sm"} gap={1}>
-									<Text>
-										{collateral.token.symbol} -{" "}
-										{tokenFormatter.format(
-											Big(collateral.walletBalance ?? 0)
-												.div(
-													10 **
-														(collateral.token
-															.decimals ?? 18)
-												)
-												.toNumber()
-										)}{" "}
-										in wallet
-									</Text>
-								</Flex>
-							</Box>
-						</Flex>
+					<Flex gap={3}>
+						<Image
+							src={`/icons/${collateral.token.symbol}.svg`}
+							width="38px"
+							alt=""
+						/>
+						<Box>
+							<Text>{collateral.token.name}</Text>
+							<Flex color="gray.500" fontSize={"sm"} gap={1}>
+								<Text>
+									{collateral.token.symbol} -{" "}
+									{tokenFormatter.format(
+										Big(collateral.walletBalance ?? 0)
+											.div(
+												10 **
+													(collateral.token
+														.decimals ?? 18)
+											)
+											.toNumber()
+									)}{" "}
+									in wallet
+								</Text>
+							</Flex>
+						</Box>
+					</Flex>
 				</Td>
 				<Td
 					{...borderStyle}
@@ -128,7 +146,7 @@ export default function CollateralModal({ collateral }: any) {
 							: "gray.500"
 					}
 					isNumeric
-                    fontSize={'md'}
+					fontSize={"md"}
 				>
 					{tokenFormatter.format(
 						Big(collateral.balance ?? 0)
@@ -139,9 +157,16 @@ export default function CollateralModal({ collateral }: any) {
 				</Td>
 			</Tr>
 
-			<Modal isCentered isOpen={isOpen} onClose={_onClose} >
+			<Modal isCentered isOpen={isOpen} onClose={_onClose}>
 				<ModalOverlay bg="blackAlpha.400" backdropFilter="blur(30px)" />
-				<ModalContent width={"30rem"} bgColor="bg2" rounded={16} border='2px' borderColor={'#212E44'} mx={2}>
+				<ModalContent
+					width={"30rem"}
+					bgColor="bg2"
+					rounded={16}
+					border="2px"
+					borderColor={"#212E44"}
+					mx={2}
+				>
 					<ModalCloseButton rounded={"full"} mt={1} />
 					<ModalHeader>
 						<Flex
@@ -166,7 +191,8 @@ export default function CollateralModal({ collateral }: any) {
 					<ModalBody m={0} p={0}>
 						<Divider />
 						<Box mb={6} mt={4} px={8}>
-							{!tryApprove() || tabSelected == 1 ? (
+							{collateral.token.id ==
+								WETH_ADDRESS.toLowerCase() && (
 								<>
 									<Flex justify={"center"} mb={2}>
 										<Flex
@@ -175,8 +201,25 @@ export default function CollateralModal({ collateral }: any) {
 											gap={0.5}
 											bg="gray.700"
 											rounded="full"
-										></Flex>
+										>
+											<Tabs
+												variant="soft-rounded"
+												colorScheme="primary"
+												onChange={(index) => index == 1 ? setIsNative(false) : setIsNative(true)}
+												index={isNative ? 0 : 1}
+												size='sm'
+											>
+												<TabList>
+													<Tab _selected={{bg: 'white'}}>ETH</Tab>
+													<Tab _selected={{bg: 'white'}}>WETH</Tab>
+												</TabList>
+											</Tabs>
+										</Flex>
 									</Flex>
+								</>
+							)}
+							{!tryApprove() || tabSelected == 1 ? (
+								<>
 									<InputGroup
 										mt={5}
 										variant={"unstyled"}
@@ -207,30 +250,38 @@ export default function CollateralModal({ collateral }: any) {
 													color={"gray.400"}
 												>
 													{dollarFormatter.format(
-														(collateral.priceUSD *
-															amountNumber)
+														collateral.priceUSD *
+															amountNumber
 													)}
 												</Text>
 											</Box>
 
 											<Box>
-											<Button
-                                        variant={"unstyled"}
-                                        fontSize="sm"
-                                        fontWeight={"bold"}
-                                        onClick={() => _setAmount(Big(max()).div(2).toString())}
-										py={-2}
-                                    >
-                                        50%
-                                    </Button>
-											<Button
-												variant={"unstyled"}
-												fontSize="sm"
-												fontWeight={"bold"}
-												onClick={() => _setAmount(max())}
-											>
-												MAX
-											</Button>
+												<Button
+													variant={"unstyled"}
+													fontSize="sm"
+													fontWeight={"bold"}
+													onClick={() =>
+														_setAmount(
+															Big(max())
+																.div(2)
+																.toString()
+														)
+													}
+													py={-2}
+												>
+													50%
+												</Button>
+												<Button
+													variant={"unstyled"}
+													fontSize="sm"
+													fontWeight={"bold"}
+													onClick={() =>
+														_setAmount(max())
+													}
+												>
+													MAX
+												</Button>
 											</Box>
 										</NumberInput>
 									</InputGroup>
@@ -248,8 +299,24 @@ export default function CollateralModal({ collateral }: any) {
 
 						<Tabs onChange={selectTab}>
 							<TabList>
-								<Tab w={"50%"} _selected={{color: 'primary.400', borderColor:'primary.400'}}>Deposit</Tab>
-								<Tab w={"50%"} _selected={{color: 'secondary.400', borderColor:'secondary.400'}}>Withdraw</Tab>
+								<Tab
+									w={"50%"}
+									_selected={{
+										color: "primary.400",
+										borderColor: "primary.400",
+									}}
+								>
+									Deposit
+								</Tab>
+								<Tab
+									w={"50%"}
+									_selected={{
+										color: "secondary.400",
+										borderColor: "secondary.400",
+									}}
+								>
+									Withdraw
+								</Tab>
 							</TabList>
 
 							<TabPanels>
@@ -259,6 +326,7 @@ export default function CollateralModal({ collateral }: any) {
 										amount={amount}
 										amountNumber={amountNumber}
 										setAmount={_setAmount}
+										isNative={isNative}
 									/>
 								</TabPanel>
 								<TabPanel m={0} p={0}>

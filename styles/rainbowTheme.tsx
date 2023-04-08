@@ -6,7 +6,7 @@ const myCustomTheme: Theme = {
   },
   colors: {
     accentColor: '#00FFCB',
-    accentColorForeground: '...',
+    accentColorForeground: '#0A1931',
     
     connectButtonBackground: '#2D3748',
     
@@ -21,8 +21,8 @@ const myCustomTheme: Theme = {
     closeButtonBackground: "rgba(255, 255, 255, 0.08)",
     connectButtonBackgroundError: "#FF494A",
     connectButtonInnerBackground: "#2D3748",
-    connectButtonText: "#000000",
-    connectButtonTextError: "#FFF",
+    connectButtonText: "#000",
+    connectButtonTextError: "#000",
     connectionIndicator: "#30E000",
     downloadBottomCardBackground: "linear-gradient(126deg, rgba(0, 0, 0, 0) 9.49%, rgba(120, 120, 120, 0.2) 71.04%), #1A1B1F",
     downloadTopCardBackground: "linear-gradient(126deg, rgba(120, 120, 120, 0.2) 9.49%, rgba(0, 0, 0, 0) 71.04%), #1A1B1F",
