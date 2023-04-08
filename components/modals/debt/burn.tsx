@@ -26,8 +26,10 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 	const [hash, setHash] = useState(null);
 	const [confirmed, setConfirmed] = useState(false);
 	const [message, setMessage] = useState("");
+	const { address } = useAccount();
 
 	const max = () => {
+		if(!address) return '0';
 		// minimum of both
 		const v1 = Big(pools[tradingPool].userDebt).div(asset.priceUSD);
 		const v2 = Big(asset.walletBalance ?? 0).div(10 ** 18);

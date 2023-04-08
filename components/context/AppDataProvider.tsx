@@ -1,7 +1,7 @@
 import * as React from "react";
 import axios from "axios";
 import { getContract, call, getAddress, getABI } from "../../src/contract";
-import { ADDRESS_ZERO, dollarFormatter, Endpoints, ETH_ADDRESS, query, tokenFormatter, query_leaderboard, query_referrals } from '../../src/const';
+import { ADDRESS_ZERO, dollarFormatter, Endpoints, WETH_ADDRESS, query, tokenFormatter, query_leaderboard, query_referrals } from '../../src/const';
 import { ChainID, chainMapping } from "../../src/chains";
 import { BigNumber, ethers } from "ethers";
 import { useEffect } from 'react';
@@ -52,7 +52,7 @@ function AppDataProvider({ children }: any) {
 	const [account, setAccount] = React.useState<any|null>(null);
 
 	const [pools, setPools] = React.useState<any[]>([]);
-	const [tradingPool, setTradingPool] = React.useState(0);
+	const [tradingPool, setTradingPool] = React.useState(1);
 	const [leaderboard, setLeaderboard] = React.useState([]);
 
 	useEffect(() => {
@@ -178,32 +178,25 @@ function AppDataProvider({ children }: any) {
 			for (let i = 0; i < _pools.length; i++) {
 				for(let j = 0; j < _pools[i].collaterals.length; j++) {
 					const collateral = _pools[i].collaterals[j];
-					if(collateral.token.id == ETH_ADDRESS.toLowerCase()) {
+					if(collateral.token.id == WETH_ADDRESS.toLowerCase()) {
 						calls.push([
 							helper.address,
 							helper.interface.encodeFunctionData("getEthBalance", [
 								_address,
 							]),
 						]);
-						calls.push([
-							helper.address,
-							helper.interface.encodeFunctionData("getEthBalance", [
-								_address,
-							]),
-						]);
-					} else {
-						calls.push([
-							collateral.token.id,
-							itf.encodeFunctionData("balanceOf", [_address]),
-						]);
-						calls.push([
-							collateral.token.id,
-							itf.encodeFunctionData("allowance", [
-								_address,
-								_pools[i].id,
-							]),
-						]);
-					}
+					} 
+					calls.push([
+						collateral.token.id,
+						itf.encodeFunctionData("balanceOf", [_address]),
+					]);
+					calls.push([
+						collateral.token.id,
+						itf.encodeFunctionData("allowance", [
+							_address,
+							_pools[i].id,
+						]),
+					]);
 				}
 				for(let j = 0; j < _pools[i].synths.length; j++) {
 					const synth = _pools[i].synths[j];
@@ -220,6 +213,12 @@ function AppDataProvider({ children }: any) {
 				// setting wallet balance and allowance
 				for (let i = 0; i < _pools.length; i++) {
 					for(let j = 0; j < _pools[i].collaterals.length; j++) {
+						if(_pools[i].collaterals[j].token.id == WETH_ADDRESS.toLowerCase()) {
+							_pools[i].collaterals[j].nativeBalance = BigNumber.from(
+								res.returnData[index]
+							).toString();
+							index++;
+						}
 						_pools[i].collaterals[j].walletBalance = BigNumber.from(
 							res.returnData[index]
 						).toString();

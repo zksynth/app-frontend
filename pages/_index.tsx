@@ -1,13 +1,39 @@
 import { Box, Flex, Progress, Text, useBreakpointValue } from '@chakra-ui/react';
 import React, { useContext } from 'react';
 import Footer from '../components/Footer';
-import Navbar from '../components/Navbar';
+import Navbar from '../components/NavBar/Navbar';
 import { useEffect } from 'react';
 import { AppDataContext } from '../components/context/AppDataProvider';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/router';
 
 export default function _index({ children }: any) {
+	const router = useRouter();
+	const [loading, setLoading] = useState(false);
+	const [refresh, setRefresh] = useState(0);
+
+    useEffect(() => {
+        const handleStart = (url: any) => {
+			setLoading(true);
+			setRefresh(Math.random());
+		}
+        const handleComplete = (url: any) => {
+			setLoading(false);
+			setRefresh(Math.random());
+		}
+
+        router.events.on('routeChangeStart', handleStart)
+        router.events.on('routeChangeComplete', handleComplete)
+        router.events.on('routeChangeError', handleComplete)
+
+        return () => {
+            router.events.off('routeChangeStart', handleStart)
+            router.events.off('routeChangeComplete', handleComplete)
+            router.events.off('routeChangeError', handleComplete)
+        }
+    }, [loading, refresh])
+
 
 	// check chakra device size
 	const isMobile = useBreakpointValue({
@@ -26,7 +52,7 @@ export default function _index({ children }: any) {
 
 	return (
 		<Box>
-			{status == 'fetching' && <Progress bg={'gray.900'} colorScheme='primary' size='xs' isIndeterminate />}
+			{(status == 'fetching' || loading) && <Progress bg={'gray.900'} colorScheme='primary' size='xs' isIndeterminate />}
 
 			<Box bgColor="gray.800" color={'gray.400'}>
 			{status == 'error' && (

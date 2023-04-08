@@ -19,9 +19,9 @@ import { ethers } from "ethers";
 import { getAddress, getContract, send } from "../../../src/contract";
 import { useContext } from "react";
 import { AppDataContext } from "../../context/AppDataProvider";
-import { ETH_ADDRESS, compactTokenFormatter, dollarFormatter } from "../../../src/const";
+import { WETH_ADDRESS, compactTokenFormatter, dollarFormatter } from "../../../src/const";
 
-export default function Withdraw({ collateral, amount, setAmount, amountNumber }: any) {
+export default function Withdraw({ collateral, amount, setAmount, amountNumber, isNative }: any) {
 	const [loading, setLoading] = useState(false);
 	const [response, setResponse] = useState<string | null>(null);
 	const [hash, setHash] = useState(null);
@@ -53,26 +53,16 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber }
 		const poolId = pools[tradingPool].id;
 		const pool = await getContract("Pool", chain, poolId);
 		const _amount = Big(amount).mul(10**collateral.token.decimals).toFixed(0);
-		let tx;
-		if (collateral.token.id == ETH_ADDRESS.toLowerCase()) {
-			tx = send(
-				pool,
-				"withdrawETH",
-				[_amount],
-				chain
-			);
-		} else {
-			tx = send(
+		send(
 				pool,
 				"withdraw",
 				[
 					collateral.token.id,
 					_amount,
+					isNative
 				],
 				chain
-			);
-		}
-		tx.then(async (res: any) => {
+			).then(async (res: any) => {
 			setLoading(false);
 			setMessage("Confirming...");
 			setResponse("Transaction sent! Waiting for confirmation");

@@ -36,19 +36,19 @@ export default function PoolSelector() {
 
 	return (
 		<div>
-			<Box id="menu-list-123">
+			<Box id="menu-list-123" h='50px'>
 				<motion.nav
 					initial={false}
 					animate={isOpen ? "open" : "closed"}
 					className="menu"
 				>
-					<Flex zIndex={2}>
+					<Flex zIndex={2} >
 						{pools[tradingPool] ? (
 							<motion.button
 								whileTap={{ scale: 0.97 }}
 								onClick={() => setIsOpen(!isOpen)}
 							>
-								<Flex align={"center"} mb={4}>
+								<Flex align={"center"} mb={4} >
 									<Flex align={"center"}>
 										<Heading fontSize={"3xl"}>
 											{pools[tradingPool].name}
@@ -96,7 +96,7 @@ export default function PoolSelector() {
 							listStyle: "none",
 							display: "flex",
 							flexDirection: "column",
-							position: "fixed",
+							position: "relative",
 							width: "400px",
 							zIndex: '100',
 							backgroundColor: "#0A1931",

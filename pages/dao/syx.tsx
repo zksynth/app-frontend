@@ -1,4 +1,4 @@
-import { Box, Flex, Heading, Text, Image } from '@chakra-ui/react'
+import { Box, Flex, Heading, Text, Image, Tag } from '@chakra-ui/react'
 import Head from 'next/head'
 import React from 'react'
 
@@ -39,26 +39,17 @@ export default function syx() {
 
         <Flex shadow='xl' bg={"bg2"} border='2px' borderColor={'whiteAlpha.100'}  mt='10' p={5} rounded='16' align={'center'} justify='space-between'>
           <Heading size={'md'}>Crowdsale</Heading>
-          <Flex align={'center'} gap={2}>
-          <Box h='2' w='2' bg={'yellow'} rounded='full'></Box>
-          <Text>Coming soon</Text>
-          </Flex>
+          <Tag>Coming soon</Tag>
         </Flex>
 
         <Flex shadow='xl' bg={"bg2"} border='2px' borderColor={'whiteAlpha.100'} mt='5' p={5} rounded='16' align={'center'} justify='space-between'>
           <Heading size={'md'}>Liquidity Bootstrap</Heading>
-          <Flex align={'center'} gap={2}>
-          <Box h='2' w='2' bg={'yellow'} rounded='full'></Box>
-          <Text>Coming soon</Text>
-          </Flex>
+          <Tag>Coming soon</Tag>
         </Flex>
         
         <Flex shadow='xl' bg={"bg2"} border='2px' borderColor={'whiteAlpha.100'} mt='5' p={5} rounded='16' align={'center'} justify='space-between'>
           <Heading size={'md'}>LP Rewards</Heading>
-          <Flex align={'center'} gap={2}>
-          <Box h='2' w='2' bg={'yellow'} rounded='full'></Box>
-          <Text>Coming soon</Text>
-          </Flex>
+          <Tag>Coming soon</Tag>
         </Flex>
       </Box>
     </>
