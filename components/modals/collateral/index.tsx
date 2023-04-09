@@ -121,10 +121,11 @@ export default function CollateralModal({ collateral }: any) {
 						<Box>
 							<Text>{collateral.token.name}</Text>
 							<Flex color="gray.500" fontSize={"sm"} gap={1}>
+							<Text>{collateral.token.symbol} - </Text>
 								<Text>
-									{collateral.token.symbol} -{" "}
 									{tokenFormatter.format(
 										Big(collateral.walletBalance ?? 0)
+										.add(collateral.nativeBalance ?? 0)
 											.div(
 												10 **
 													(collateral.token
@@ -132,7 +133,9 @@ export default function CollateralModal({ collateral }: any) {
 											)
 											.toNumber()
 									)}{" "}
-									in wallet
+								</Text>
+								<Text>
+								in wallet
 								</Text>
 							</Flex>
 						</Box>
@@ -194,7 +197,7 @@ export default function CollateralModal({ collateral }: any) {
 							{collateral.token.id ==
 								WETH_ADDRESS.toLowerCase() && (
 								<>
-									<Flex justify={"center"} mb={2}>
+									<Flex justify={"center"} mb={4}>
 										<Flex
 											justify={"center"}
 											align="center"
