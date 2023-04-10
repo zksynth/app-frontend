@@ -1,10 +1,11 @@
 import * as React from "react";
 import axios from "axios";
-import { getContract, call, getAddress, getABI } from "../../src/contract";
+import { getAddress, getABI } from "../../src/contract";
 import { ADDRESS_ZERO, dollarFormatter, Endpoints, WETH_ADDRESS, query, tokenFormatter, query_leaderboard, query_referrals } from '../../src/const';
 import { ChainID, chainMapping } from "../../src/chains";
 import { BigNumber, ethers } from "ethers";
 import { useEffect } from 'react';
+import { useAccount, useNetwork } from "wagmi";
 const { Big } = require("big.js");
 
 interface AppDataValue {
@@ -12,8 +13,7 @@ interface AppDataValue {
 	message: string;
 	pools: any[];
 	fetchData: (
-		_address: string | null,
-		chainId: number
+		_address: string | null
 	) => Promise<number>;
 	tradingPool: number;
 	setTradingPool: (_: number, pools?: any[]) => void;
@@ -26,9 +26,7 @@ interface AppDataValue {
 	) => void;
 	updateCollateralAmount: (collateralAddress: string, poolAddress: string, amount: string, minus: boolean) => void;
 	updateSynthWalletBalance: (synthAddress: string, poolAddress: string, amount: string, minus: boolean) => void;
-	chain: number;
-	setChain: (_: number) => void;
-	addCollateralAllowance(collateralAddress: string, value: string): void;
+	addCollateralAllowance(collateralAddress: string, poolAddress: string, value: string): void;
 	block: number;
 	updatePoolBalance: (poolAddress: string, value: string, amountUSD: string, minus: boolean) => void;
 	refreshData: () => void;
@@ -48,6 +46,8 @@ const AppDataContext = React.createContext<AppDataValue>({} as AppDataValue);
 function AppDataProvider({ children }: any) {
 	const [status, setStatus] = React.useState<AppDataValue['status']>("not-fetching");
 	const [message, setMessage] = React.useState<AppDataValue['message']>("");
+	const { chain } = useNetwork();
+	const { isConnected, address } = useAccount();
 
 	const [account, setAccount] = React.useState<any|null>(null);
 
@@ -64,8 +64,6 @@ function AppDataProvider({ children }: any) {
 		}
 	}, [tradingPool])
 
-	const [chain, setChain] = React.useState(ChainID.ARB_GOERLI);
-
 	const [refresh, setRefresh] = React.useState<number[]>([]);
 	const [block, setBlock] = React.useState(0);
 	const [random, setRandom] = React.useState(0);
@@ -79,22 +77,22 @@ function AppDataProvider({ children }: any) {
 			setRefresh([Number(timer.toString())]);
 			setRandom(Math.random());
 		}
-	}, [refresh, pools]);
+	}, [refresh, pools, random]);
 
-	const fetchData = (_address: string | null, chainId: number): Promise<number> => {
-		console.log("fetching");
+	const fetchData = (_address: string | null): Promise<number> => {
+		console.log("fetching for chain", chain?.id!);
 		return new Promise((resolve, reject) => {
 			setStatus("fetching");
 			Promise.all([
-				axios.post(Endpoints[chainId], {
+				axios.post(Endpoints[chain?.id!], {
 					query: query(_address?.toLowerCase() ?? ADDRESS_ZERO),
 					variables: {},
 				}), 
-				axios.post(Endpoints[chainId], {
+				axios.post(Endpoints[chain?.id!], {
 					query: query_leaderboard,
 					variables: {},
 				}),
-				axios.post(Endpoints[chainId], {
+				axios.post(Endpoints[chain?.id!], {
 					query: query_referrals(_address?.toLowerCase() ?? ADDRESS_ZERO),
 					variables: {},
 				})
@@ -136,7 +134,7 @@ function AppDataProvider({ children }: any) {
 						}
 						
 						if (_address) {
-							_setPools(pools, userPoolData.accounts[0], _address, chainId)
+							_setPools(pools, userPoolData.accounts[0], _address)
 							.then((_) => {
 								resolve(0)
 							})
@@ -159,26 +157,25 @@ function AppDataProvider({ children }: any) {
 	const _setPools = (
 		_pools: any[],
 		_account: any,
-		_address: string,
-		_chain: number
+		_address: string
 	): Promise<number> => {
 		const provider = new ethers.providers.Web3Provider(
 			(window as any).ethereum!,
 			"any"
 		);
 		const helper = new ethers.Contract(
-			getAddress("Multicall2", _chain),
-			getABI("Multicall2"),
+			getAddress("Multicall2", chain?.id!),
+			getABI("Multicall2", chain?.id!),
 			provider.getSigner()
 		);
 		return new Promise((resolve, reject) => {
 			let calls: any[] = [];
-			const itf = new ethers.utils.Interface(getABI("MockToken"));
+			const itf = new ethers.utils.Interface(getABI("MockToken", chain?.id!));
 
 			for (let i = 0; i < _pools.length; i++) {
 				for(let j = 0; j < _pools[i].collaterals.length; j++) {
 					const collateral = _pools[i].collaterals[j];
-					if(collateral.token.id == WETH_ADDRESS.toLowerCase()) {
+					if(collateral.token.id == WETH_ADDRESS[chain?.id!].toLowerCase()) {
 						calls.push([
 							helper.address,
 							helper.interface.encodeFunctionData("getEthBalance", [
@@ -197,6 +194,11 @@ function AppDataProvider({ children }: any) {
 							_pools[i].id,
 						]),
 					]);
+					// nonces
+					calls.push([
+						collateral.token.id,
+						itf.encodeFunctionData("nonces", [_address]),
+					]);
 				}
 				for(let j = 0; j < _pools[i].synths.length; j++) {
 					const synth = _pools[i].synths[j];
@@ -213,7 +215,7 @@ function AppDataProvider({ children }: any) {
 				// setting wallet balance and allowance
 				for (let i = 0; i < _pools.length; i++) {
 					for(let j = 0; j < _pools[i].collaterals.length; j++) {
-						if(_pools[i].collaterals[j].token.id == WETH_ADDRESS.toLowerCase()) {
+						if(_pools[i].collaterals[j].token.id == WETH_ADDRESS[chain?.id!].toLowerCase()) {
 							_pools[i].collaterals[j].nativeBalance = BigNumber.from(
 								res.returnData[index]
 							).toString();
@@ -225,6 +227,10 @@ function AppDataProvider({ children }: any) {
 						index++;
 						_pools[i].collaterals[j].allowance = BigNumber.from(
 							res.returnData[index]
+						).toString();
+						index++;
+						_pools[i].collaterals[j].nonce = BigNumber.from(
+							res.returnData[index] == '0x' ? '0' : res.returnData[index]
 						).toString();
 						index++;
 					}
@@ -266,6 +272,11 @@ function AppDataProvider({ children }: any) {
 				resolve(0);
 			})
 			.catch(err => {
+				console.log("Failed to get balances and allowances", err);
+				setStatus("error");
+				setMessage(
+					"Failed to fetch data. Please refresh the page or try again later."
+				);
 				reject(err)
 			})
 		});
@@ -365,15 +376,18 @@ function AppDataProvider({ children }: any) {
 
 	const addCollateralAllowance = (
 		collateralAddress: string,
+		poolAddress: string,
 		value: string
 	) => {
 		let _pools = pools;
 		for (let i in _pools) {
-			for (let j in _pools[i].collaterals) {
-				if (_pools[i].collaterals[j].token.id == collateralAddress) {
-					_pools[i].collaterals[j].allowance = Big(
-						_pools[i].collaterals[j].allowance ?? 0
-					).plus(value).toString();
+			if (_pools[i].id == poolAddress){
+				for (let j in _pools[i].collaterals) {
+					if (_pools[i].collaterals[j].token.id == collateralAddress) {
+						_pools[i].collaterals[j].allowance = Big(
+							_pools[i].collaterals[j].allowance ?? 0
+						).plus(value).toString();
+					}
 				}
 			}
 		}
@@ -401,8 +415,8 @@ function AppDataProvider({ children }: any) {
 	};
 
 	const refreshData = async () => {
-		if(!account?.id) return;
-		console.log("Refreshing data", account?.id);
+		if(!isConnected) return;
+		console.log("Refreshing data", address);
 		const reqs: any[] = [];
 		const _pools = pools;
 		if(_pools.length == 0) {
@@ -414,17 +428,17 @@ function AppDataProvider({ children }: any) {
 			"any"
 		);
 		const helper = new ethers.Contract(
-			getAddress("Multicall2", chain),
-			getABI("Multicall2"),
+			getAddress("Multicall2", chain?.id!),
+			getABI("Multicall2", chain?.id!),
 			provider.getSigner()
 		);
-		const pool = new ethers.Contract(_pools[0].id, getABI("Pool"), helper.provider);
-		const priceOracle = new ethers.Contract(_pools[0].oracle, getABI("PriceOracle"), helper.provider);
-		for(let i in pools) {
+		const pool = new ethers.Contract(_pools[0].id, getABI("Pool", chain?.id!), helper.provider);
+		const priceOracle = new ethers.Contract(_pools[0].oracle, getABI("PriceOracle", chain?.id!), helper.provider);
+		for(let i in _pools) {
 			reqs.push([
 				_pools[i].oracle,
 				priceOracle.interface.encodeFunctionData("getAssetsPrices", 
-					[pools[i].collaterals.map((c: any) => c.token.id).concat(pools[i].synths.map((s: any) => s.token.id))]
+					[_pools[i].collaterals.map((c: any) => c.token.id).concat(_pools[i].synths.map((s: any) => s.token.id))]
 				)
 			]);
 			reqs.push([
@@ -437,13 +451,13 @@ function AppDataProvider({ children }: any) {
 			]);
 			reqs.push([
 				_pools[i].id,
-				pool.interface.encodeFunctionData("balanceOf", [account.id])
+				pool.interface.encodeFunctionData("balanceOf", [address])
 			])
 		}
 		helper.callStatic.aggregate(reqs).then((res: any) => {
 			if(res.returnData.length > 0){
-				let reqCount = 3;
-				if(account?.id) reqCount = 4;
+				let reqCount = 4;
+				// if(account?.id) reqCount = 4;
 				for(let i = 0; i < _pools.length; i++) {
 					const _prices = priceOracle.interface.decodeFunctionResult("getAssetsPrices", res.returnData[i*reqCount])[0];
 					for(let j in _pools[i].collaterals) {
@@ -481,8 +495,6 @@ function AppDataProvider({ children }: any) {
 		updateSynthWalletBalance,
 		updateCollateralWalletBalance,
 		updateCollateralAmount,
-		chain,
-		setChain,
 		addCollateralAllowance,
 		block,
 		refreshData,

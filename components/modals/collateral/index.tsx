@@ -33,6 +33,7 @@ import { useContext, useEffect } from "react";
 import { AppDataContext } from "../../context/AppDataProvider";
 import Withdraw from "./Withdraw";
 import { WETH_ADDRESS } from "../../../src/const";
+import { useNetwork, useAccount, useSignTypedData } from 'wagmi';
 
 export default function CollateralModal({ collateral }: any) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
@@ -41,6 +42,8 @@ export default function CollateralModal({ collateral }: any) {
 	const [amount, setAmount] = React.useState("0");
 	const [amountNumber, setAmountNumber] = useState(0);
 	const [isNative, setIsNative] = useState(false);
+	const { chain } = useNetwork();
+	const { address } = useAccount();
 
 	const { pools, tradingPool } = useContext(AppDataContext);
 
@@ -98,7 +101,7 @@ export default function CollateralModal({ collateral }: any) {
 	};
 
 	const _onOpen = () => {
-		if(collateral.token.id == WETH_ADDRESS.toLowerCase()) setIsNative(true);
+		if(collateral.token.id == WETH_ADDRESS[chain?.id!].toLowerCase()) setIsNative(true);
 		onOpen();
 	}
 
@@ -184,18 +187,18 @@ export default function CollateralModal({ collateral }: any) {
 								width={"38px"}
 							/>
 							<Text>{collateral.token.name}</Text>
-							<Link href="/faucet">
+							{chain?.testnet && <Link href="/faucet">
 								<Button size={"xs"} rounded="full">
 									Use Faucet
 								</Button>
-							</Link>
+							</Link>}
 						</Flex>
 					</ModalHeader>
 					<ModalBody m={0} p={0}>
 						<Divider />
 						<Box mb={6} mt={4} px={8}>
 							{collateral.token.id ==
-								WETH_ADDRESS.toLowerCase() && (
+								WETH_ADDRESS[chain?.id!].toLowerCase() && (
 								<>
 									<Flex justify={"center"} mb={4}>
 										<Flex

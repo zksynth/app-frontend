@@ -7,13 +7,12 @@ import {
 	darkTheme,
 } from '@rainbow-me/rainbowkit';
 import {
-	chain,
 	configureChains,
 	createClient,
 	WagmiConfig,
-	defaultChains,
 	Chain,
 } from 'wagmi';
+import { arbitrumGoerli, arbitrum } from 'wagmi/chains';
 // import { chains } from '../src/chains';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
@@ -27,9 +26,10 @@ import { TokenContextProvider } from '../components/context/TokenContext';
 
 const { chains, provider } = configureChains(
 	[{
-	  ...chain.arbitrumGoerli,
+	  ...arbitrumGoerli,
 	  iconUrl: 'https://arbitrum.io/wp-content/uploads/2021/01/Arbitrum_Symbol-Full-color-White-background.png'
 	} as Chain,
+	arbitrum
 	// chain.goerli
   ],
 	[

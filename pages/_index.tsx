@@ -7,6 +7,7 @@ import { AppDataContext } from '../components/context/AppDataProvider';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
+import { useNetwork } from 'wagmi';
 
 export default function _index({ children }: any) {
 	const router = useRouter();
@@ -34,15 +35,10 @@ export default function _index({ children }: any) {
         }
     }, [loading, refresh])
 
-
-	// check chakra device size
-	const isMobile = useBreakpointValue({
-		base: true,
-		lg: false,
-	});
-
 	const [hydrated, setHydrated] = useState(false);
 	const { status, message } = useContext(AppDataContext);
+
+	const {chain} = useNetwork();
 
 	useEffect(() => {
 		setHydrated(true);
@@ -53,6 +49,16 @@ export default function _index({ children }: any) {
 	return (
 		<Box>
 			{(status == 'fetching' || loading) && <Progress bg={'gray.900'} colorScheme='primary' size='xs' isIndeterminate />}
+			{(chain?.testnet) && <Box bgColor="gray.700" color={'gray.400'}>
+				<Text
+					textAlign={'center'}
+					width="100%"
+					fontSize={'md'}
+					fontWeight="medium"
+					p={2}>
+					This is a testnet. Please do not send real assets to these addresses.
+				</Text>
+			</Box>}
 
 			<Box bgColor="gray.800" color={'gray.400'}>
 			{status == 'error' && (

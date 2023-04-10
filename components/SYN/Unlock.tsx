@@ -197,7 +197,7 @@ export default function Unlock() {
 						colorScheme="primary"
 						variant="outline"
 						onClick={approve}
-						disabled={
+						isDisabled={
 							loading ||
 							Big(amountNumber).lte(0) ||
 							Big(amountNumber).gt(Number(syn.sealedBalance ?? 0))
@@ -221,7 +221,7 @@ export default function Unlock() {
 						colorScheme="primary"
 						variant="outline"
 						onClick={unlock}
-						disabled={
+						isDisabled={
 							Big(tokenUnlocks.remainingQuota ?? 0).lt(amountNumber) ||
 							loading ||
 							Big(amountNumber).lte(0) ||

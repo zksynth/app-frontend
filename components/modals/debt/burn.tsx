@@ -27,6 +27,7 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 	const [confirmed, setConfirmed] = useState(false);
 	const [message, setMessage] = useState("");
 	const { address } = useAccount();
+	const { chain } = useNetwork();
 
 	const max = () => {
 		if(!address) return '0';
@@ -37,7 +38,6 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 	}
 
 	const {
-		chain,
 		updateSynthWalletBalance,
 		pools,
 		tradingPool,
@@ -52,15 +52,14 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 		setResponse("");
 		setMessage("");
 
-		let synth = await getContract("ERC20X", chain, asset.token.id);
+		let synth = await getContract("ERC20X", chain?.id!, asset.token.id);
 		let value = Big(amount)
 			.times(10 ** 18)
 			.toFixed(0);
 		send(
 			synth,
 			"burn",
-			[value],
-			chain
+			[value]
 		)
 			.then(async (res: any) => {
 				setLoading(false);
@@ -100,7 +99,6 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 	};
 
 	const { isConnected } = useAccount();
-	const { chain: activeChain } = useNetwork();
 
 	return (
 		<Box roundedBottom={16} px={5} pb={0.5} pt={0.5} bg='blackAlpha.200'>
@@ -134,10 +132,10 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 						<Flex mt={2} justify="space-between">
 						</Flex>
 						<Button
-							disabled={
+							isDisabled={
 								loading ||
 								!isConnected ||
-								activeChain?.unsupported ||
+								chain?.unsupported ||
 								!amount ||
 								amountNumber == 0 ||
 								Big(amountNumber > 0 ? amount : amountNumber).gt(max()) 
@@ -155,7 +153,7 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 								opacity: "0.5",
 							}}
 						>
-							{isConnected && !activeChain?.unsupported ? (
+							{isConnected && !chain?.unsupported ? (
 								Big(amountNumber > 0 ? amount : amountNumber).gt(max()) ? (
 									<>Insufficient Collateral</>
 								) : !amount || amountNumber == 0 ? (

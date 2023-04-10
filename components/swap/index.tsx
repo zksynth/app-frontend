@@ -38,7 +38,8 @@ function Swap() {
 	const [nullValue, setNullValue] = useState(false);
 	const [gas, setGas] = useState(0);
 	const { getButtonProps, getDisclosureProps, isOpen } = useDisclosure()
-	const [hidden, setHidden] = useState(!isOpen)
+	const [hidden, setHidden] = useState(!isOpen);
+	const { chain } = useNetwork();
 
 	const {
 		isOpen: isInputOpen,
@@ -57,7 +58,7 @@ function Swap() {
 	const [confirmed, setConfirmed] = useState(false);
 	const [message, setMessage] = useState("");
 
-	const { chain, account } = useContext(AppDataContext);
+	const { account } = useContext(AppDataContext);
 
 	const updateInputAmount = (e: any) => {
 		setInputAmount(e.target.value);
@@ -152,7 +153,7 @@ function Swap() {
 		setHash(null);
 		setResponse("");
 		setMessage("");
-		let contract = await getContract("ERC20X", chain, pools[tradingPool].synths[inputAssetIndex].token.id);
+		let contract = await getContract("ERC20X", chain?.id!, pools[tradingPool].synths[inputAssetIndex].token.id);
 		const _inputAmount = inputAmount;
 		const _inputAsset =
 			pools[tradingPool].synths[inputAssetIndex].token.symbol;
@@ -170,8 +171,7 @@ function Swap() {
 				pools[tradingPool].synths[outputAssetIndex].token.id,
 				address,
 				_referral
-			],
-			chain
+			]
 		)
 			.then(async (res: any) => {
 				setLoading(false);
@@ -214,7 +214,7 @@ function Swap() {
 
 	useEffect(() => {
 		if (pools[tradingPool] && !isNaN(Number(inputAmount)) && validateInput() == 0)
-			getContract("ERC20X", chain, pools[tradingPool].synths[inputAssetIndex].token.id).then((contract: any) => {
+			getContract("ERC20X", chain?.id!, pools[tradingPool].synths[inputAssetIndex].token.id).then((contract: any) => {
 				// estimate gas
 				contract.estimateGas
 					.swap(
@@ -235,7 +235,6 @@ function Swap() {
 	});
 
 	const { isConnected, address } = useAccount();
-	const { chain: activeChain } = useNetwork();
 
 	const { pools, tradingPool, updateSynthWalletBalance } =
 		useContext(AppDataContext);
@@ -331,7 +330,7 @@ function Swap() {
 
 	const validateInput = () => {
 		if(!isConnected) return ERRORS.NOT_CONNECTED
-		else if(activeChain?.unsupported) return ERRORS.UNSUPPORTED_CHAIN
+		else if(chain?.unsupported) return ERRORS.UNSUPPORTED_CHAIN
 		else if (inputAmount <= 0) return ERRORS.INVALID_AMOUNT
 		else if (swapInputExceedsBalance()) return ERRORS.INSUFFICIENT_BALANCE
 		else return 0
@@ -613,7 +612,7 @@ function Swap() {
 							bgColor={"primary.400"}
 							rounded={16}
 							onClick={exchange}
-							disabled={
+							isDisabled={
 								loading ||
 								validateInput() > 0 ||
 								!isValid() || 

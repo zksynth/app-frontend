@@ -285,7 +285,7 @@ export default function Claim() {
 												onClick={claim}
 												isLoading={claiming}
 												loadingText="Claiming"
-												disabled={Big(
+												isDisabled={Big(
 													synAccrued ?? 0
 												).eq(0)}
 												rounded={16}

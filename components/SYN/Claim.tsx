@@ -109,7 +109,7 @@ export default function Claim() {
 							onClick={claim}
 							isLoading={claiming}
 							loadingText="Claiming"
-							disabled={Big(synAccrued ?? 0).eq(0)}
+							isDisabled={Big(synAccrued ?? 0).eq(0)}
 							rounded={16}
                             colorScheme="primary"
                             variant="outline"

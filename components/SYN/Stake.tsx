@@ -230,7 +230,7 @@ export default function Stake() {
 						onClick={approve}
 						loadingText="Approving"
 						isLoading={loading}
-						disabled={
+						isDisabled={
 							loading ||
 							Big(amountNumber).lte(0) ||
 							Big(amountNumber).gt(Number(syn.sealedBalance))
@@ -252,7 +252,7 @@ export default function Stake() {
 						colorScheme="primary"
 						variant="outline"
 						onClick={stake}
-						disabled={
+						isDisabled={
 							loading ||
 							Big(amountNumber).lte(0) ||
 							Big(amountNumber).gt(Number(syn.sealedBalance))
@@ -322,7 +322,7 @@ export default function Stake() {
 									loadingText="Claiming"
 									isLoading={claiming}
 									onClick={claim}
-									disabled={
+									isDisabled={
 										claiming ||
 										Big(staking.earned ?? 0).lte(0)
 									}
@@ -348,7 +348,7 @@ export default function Stake() {
 						loadingText="Unstaking"
 						isLoading={unstaking}
 						onClick={exit}
-						disabled={unstaking || Big(staking.staked ?? 0).lte(0)}
+						isDisabled={unstaking || Big(staking.staked ?? 0).lte(0)}
 					>
 						Unstake
 					</Button>

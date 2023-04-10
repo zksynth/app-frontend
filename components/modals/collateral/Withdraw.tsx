@@ -14,12 +14,11 @@ import Big from "big.js";
 import InfoFooter from "../_utils/InfoFooter";
 import Response from "../_utils/Response";
 import { useAccount, useBalance, useNetwork } from "wagmi";
-import Link from "next/link";
 import { ethers } from "ethers";
-import { getAddress, getContract, send } from "../../../src/contract";
+import { getContract, send } from "../../../src/contract";
 import { useContext } from "react";
 import { AppDataContext } from "../../context/AppDataProvider";
-import { WETH_ADDRESS, compactTokenFormatter, dollarFormatter } from "../../../src/const";
+import { compactTokenFormatter, dollarFormatter } from "../../../src/const";
 
 export default function Withdraw({ collateral, amount, setAmount, amountNumber, isNative }: any) {
 	const [loading, setLoading] = useState(false);
@@ -29,7 +28,6 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 	const [message, setMessage] = useState("");
 
 	const {
-		chain,
 		pools,
 		tradingPool,
 		updateCollateralWalletBalance,
@@ -51,7 +49,7 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 		setResponse(null);
 		setHash(null);
 		const poolId = pools[tradingPool].id;
-		const pool = await getContract("Pool", chain, poolId);
+		const pool = await getContract("Pool", chain?.id!, poolId);
 		const _amount = Big(amount).mul(10**collateral.token.decimals).toFixed(0);
 		send(
 				pool,
@@ -60,8 +58,7 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 					collateral.token.id,
 					_amount,
 					isNative
-				],
-				chain
+				]
 			).then(async (res: any) => {
 			setLoading(false);
 			setMessage("Confirming...");
@@ -98,7 +95,7 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 	};
 
 	const { address, isConnected } = useAccount();
-	const { chain: activeChain } = useNetwork();
+	const { chain } = useNetwork();
 
 	return (
 		<>
@@ -200,10 +197,10 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
             
 				
                 <Button
-                    disabled={
+                    isDisabled={
                         loading ||
                         !isConnected ||
-                        activeChain?.unsupported ||
+                        chain?.unsupported ||
                         !amount ||
                         amountNumber == 0 ||
                         Big(amountNumber > 0 ? amount : amountNumber).gt(max()) 
@@ -221,7 +218,7 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
                         opacity: "0.5",
                     }}
                 >
-                    {isConnected && !activeChain?.unsupported ? (
+                    {isConnected && !chain?.unsupported ? (
                         Big(amountNumber > 0 ? amount : amountNumber).gt(max()) ? (
                             <>Insufficient Wallet Balance</>
                         ) : !amount || amountNumber == 0 ? (

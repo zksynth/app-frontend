@@ -18,7 +18,7 @@ import { ethers } from "ethers";
 import { getContract, send } from "../../../src/contract";
 import { useContext } from "react";
 import { AppDataContext } from "../../context/AppDataProvider";
-import { WETH_ADDRESS, compactTokenFormatter } from "../../../src/const";
+import { compactTokenFormatter } from "../../../src/const";
 
 export default function Deposit({ collateral, amount, setAmount, amountNumber, isNative }: any) {
 
@@ -27,9 +27,9 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 	const [hash, setHash] = useState(null);
 	const [confirmed, setConfirmed] = useState(false);
 	const [message, setMessage] = useState("");
+	const { chain } = useNetwork();
 
 	const {
-		chain,
 		pools,
 		tradingPool,
 		updateCollateralWalletBalance,
@@ -50,7 +50,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 		setResponse(null);
 		setHash(null);
 		const poolId = pools[tradingPool].id;
-		const pool = await getContract("Pool", chain, poolId);
+		const pool = await getContract("Pool", chain?.id!, poolId);
 
 		let tx;
 		if (isNative) {
@@ -58,7 +58,6 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 				pool,
 				"depositETH",
 				[],
-				chain,
 				ethers.utils
 					.parseUnits(amount, collateral.token.decimals)
 					.toString()
@@ -70,8 +69,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 				[
 					collateral.token.id,
 					ethers.utils.parseUnits(amount, collateral.token.decimals),
-				],
-				chain
+				]
 			);
 		}
 		tx.then(async (res: any) => {
@@ -112,19 +110,19 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 		setLoading(true);
 		let collateralContract = await getContract(
 			"MockToken",
-			chain,
+			chain?.id!,
 			collateral.token.id
 		);
 		send(
 			collateralContract,
 			"approve",
-			[pools[tradingPool].id, ethers.constants.MaxUint256],
-			chain
+			[pools[tradingPool].id, ethers.constants.MaxUint256]
 		)
 			.then(async (res: any) => {
 				await res.wait(1);
 				addCollateralAllowance(
 					collateral.token.id,
+					pools[tradingPool].id,
 					ethers.constants.MaxInt256.toString()
 				);
 				setLoading(false);
@@ -254,7 +252,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 
 				{tryApprove() ? (
 					<Button
-						disabled={
+					isDisabled={
 							loading ||
 							ethBalance?.value.lt(
 								ethers.utils.parseEther("0.01")
@@ -272,7 +270,6 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 						mt={10}
 						width="100%"
 						onClick={approve}
-						isDisabled={loading}
 						size="lg"
 						rounded={16}
 					>
@@ -290,7 +287,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 					</Button>
 				) : (
 					<Button
-						disabled={
+					isDisabled={
 							loading ||
 							!isConnected ||
 							activeChain?.unsupported ||

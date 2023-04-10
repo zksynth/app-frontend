@@ -10,23 +10,24 @@
     "lint": "node_modules/next/dist/bin/next lint",
     "run:config": "export NODE_ENV=main && export NETWORK=421613 && node scripts/config.js",
     "run:config:staging": "export NODE_ENV=staging && export NETWORK=421613 && node scripts/config.js",
+    "run:config:dev:mainnet": "export NODE_ENV=dev && export NETWORK=42161 && node scripts/config.js",
     "run:config:dev": "export NODE_ENV=dev && export NETWORK=421613 && node scripts/config.js"
   },
   "dependencies": {
     "@ajna/pagination": "^1.4.19",
     "@chakra-ui/collapse": "^1.0.0-next.3",
-    "@chakra-ui/icons": "2.0.13",
-    "@chakra-ui/react": "2.4.4",
+    "@chakra-ui/icons": "^2.0.18",
+    "@chakra-ui/react": "^2.5.5",
     "@chakra-ui/theme-tools": "2.0.14",
-    "@emotion/react": "^11.10.4",
-    "@emotion/styled": "^11.10.4",
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
     "@fontsource/aileron": "^4.5.3",
-    "@rainbow-me/rainbowkit": "^0.7.0",
+    "@rainbow-me/rainbowkit": "^0.12.7",
     "@sentry/nextjs": "^7.30.0",
     "apexcharts": "^3.35.5",
     "big.js": "^6.2.1",
     "chart.js": "^3.9.1",
-    "framer-motion": "^7.5.0",
+    "framer-motion": "^10.11.2",
     "fs": "^0.0.1-security",
     "lightweight-charts": "^3.8.0",
     "moment": "^2.29.4",
@@ -41,7 +42,7 @@
     "recharts": "^2.4.3",
     "tronweb": "^4.4.0",
     "tweetnacl": "^1.0.3",
-    "wagmi": "^0.8.4",
+    "wagmi": "^0.12.10",
     "web3": "^1.8.0"
   },
   "devDependencies": {
@@ -52,7 +53,7 @@
     "@types/react": "^18.0.9",
     "eslint": "^8.15.0",
     "eslint-config-next": "^13.1.3",
-    "ethers": "^5.7.2",
+    "ethers": "^5",
     "typescript": "^4.7.2"
   }
 }

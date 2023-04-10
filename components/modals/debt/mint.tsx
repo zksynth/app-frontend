@@ -34,10 +34,9 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 	const [referral, setReferral] = useState<string | null>(null);
 
 	const { isConnected, address } = useAccount();
-	const { chain: activeChain } = useNetwork();
+	const { chain } = useNetwork();
 	
 	const {
-		chain,
 		updateSynthWalletBalance,
 		pools,
 		tradingPool,
@@ -79,13 +78,13 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 		setResponse("");
 		setMessage("");
 
-		let synth = await getContract("ERC20X", chain, asset.token.id);
+		let synth = await getContract("ERC20X", chain?.id!, asset.token.id);
 		let value = Big(amount)
 			.times(10 ** 18)
 			.toFixed(0);
 		let _referral = useReferral ? BigNumber.from(base58.decode(referral!)).toHexString() : ethers.constants.AddressZero;
 
-		send(synth, "mint", [value, address, _referral], chain)
+		send(synth, "mint", [value, address, _referral])
 			.then(async (res: any) => {
 				setLoading(false);
 				setMessage("Confirming...");
@@ -291,10 +290,10 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 
 			<Flex mt={2} justify="space-between"></Flex>
 			<Button
-				disabled={
+				isDisabled={
 					loading ||
 					!isConnected ||
-					activeChain?.unsupported ||
+					chain?.unsupported ||
 					!amount ||
 					amountNumber == 0 ||
 					Big(amountNumber > 0 ? amount : amountNumber).gt(max()) ||
@@ -313,7 +312,7 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 					opacity: "0.5",
 				}}
 			>
-				{isConnected && !activeChain?.unsupported ? (
+				{isConnected && !chain?.unsupported ? (
 					isValid() ? (
 						Big(amountNumber > 0 ? amount : amountNumber).gt(
 							max()

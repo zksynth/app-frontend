@@ -4,7 +4,8 @@ import { Chain } from 'wagmi';
 export enum ChainID {
     AURORA = 1313161555,
 	HARMONY = 1666700000,
-	ARB_GOERLI = 421613
+	ARB_GOERLI = 421613,
+	ARB = 42161,
 }
 
 const aurora: Chain = {
