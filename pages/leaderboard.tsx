@@ -27,13 +27,13 @@ import { useAccount } from 'wagmi';
 export default function Leaderboard() {
   const [refreshing, setRefreshing] = React.useState(false);
 
-  const {leaderboard: leaderboardData, account, fetchData, chain } = useContext(AppDataContext);
+  const {leaderboard: leaderboardData, account, fetchData } = useContext(AppDataContext);
 
   const {address} = useAccount();
 
   const refresh = async () => {
     setRefreshing(true);
-    fetchData(address || null, chain)
+    fetchData(address || null)
     .then(res => {
       setRefreshing(false);
     })
