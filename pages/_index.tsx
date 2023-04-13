@@ -1,4 +1,4 @@
-import { Box, Flex, Progress, Text, useBreakpointValue } from '@chakra-ui/react';
+import { Box, Button, Flex, Progress, Text, useBreakpointValue, useToast } from '@chakra-ui/react';
 import React, { useContext } from 'react';
 import Footer from '../components/Footer';
 import Navbar from '../components/NavBar/Navbar';
@@ -7,7 +7,7 @@ import { AppDataContext } from '../components/context/AppDataProvider';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
-import { useNetwork } from 'wagmi';
+import { useNetwork, useSwitchNetwork } from 'wagmi';
 
 export default function _index({ children }: any) {
 	const router = useRouter();
@@ -44,21 +44,39 @@ export default function _index({ children }: any) {
 		setHydrated(true);
 	}, []);
 
+	const { chains, error, isLoading, pendingChainId, switchNetworkAsync } = useSwitchNetwork();
+	const toast = useToast();
+
+	const switchNetwork = async (chainId: number) => {
+		switchNetworkAsync!(chainId)
+		.catch(err => {
+			console.log("error", err);
+			toast({
+				title: 'Unable to switch network.',
+				description: 'Please try switching networks from your wallet.',
+				position: 'top-right',
+				status: 'error',
+				duration: 9000,
+				isClosable: true,
+			  })
+		})
+	}
+
 	if(!hydrated) return <></>;
 
 	return (
 		<Box>
-			{(status == 'fetching' || loading) && <Progress bg={'gray.900'} colorScheme='primary' size='xs' isIndeterminate />}
-			{(chain?.testnet) && <Box bgColor="gray.700" color={'gray.400'}>
+			{(chain?.testnet) && <Flex align={'center'} justify={'center'} bgColor="blackAlpha.100" color={'gray.400'}>
 				<Text
 					textAlign={'center'}
-					width="100%"
-					fontSize={'md'}
+					fontSize={'sm'}
 					fontWeight="medium"
-					p={2}>
-					This is a testnet. Please do not send real assets to these addresses.
+					p={3}>
+					This is a testnet. Please do not send real assets to these addresses
 				</Text>
-			</Box>}
+				<Button size={'xs'} rounded='full' onClick={() => switchNetwork!(42161)}>Switch to Arbitrum Mainnet</Button>
+			</Flex>}
+			{(status == 'fetching' || loading) && <Progress bg={'gray.900'} colorScheme='primary' size='xs' isIndeterminate />}
 
 			<Box bgColor="gray.800" color={'gray.400'}>
 			{status == 'error' && (

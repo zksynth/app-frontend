@@ -17,7 +17,7 @@ import {
 import { AppDataContext } from "../components/context/AppDataProvider";
 import { useEffect } from "react";
 
-const nonMintable = ["ETH", "waArbUSDC", "USDC"];
+const nonMintable = ["ETH", "waArbUSDC"];
 
 const mintAmounts: any = {
 	"USDC": "10000",

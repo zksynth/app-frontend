@@ -22,7 +22,7 @@ export default function NavBar() {
 
 	return (
 		<>
-			<Box id="dao-nav-link">
+			<Box id="dao-nav-link" maxH={'40px'}>
 				<motion.nav
 					initial={false}
 					animate={isOpen ? "open" : "closed"}
@@ -122,7 +122,7 @@ export default function NavBar() {
 							listStyle: "none",
 							display: "flex",
 							flexDirection: "column",
-							position: "fixed",
+							position: "relative",
 							paddingBottom: "18px",
 							zIndex: 100,
 						}}

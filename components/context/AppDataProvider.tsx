@@ -35,6 +35,7 @@ interface AppDataValue {
 	setRefresh: (_: number[]) => void;
 	refresh: number[];
 	referrals: any[];
+	incrementNonce: (collateral: string) => void;
 }
 
 // pool.userDebt
@@ -282,6 +283,19 @@ function AppDataProvider({ children }: any) {
 		});
 	};
 
+	const incrementNonce = async (_collateral: any) => {
+		let _pools = [...pools];
+		for (let i = 0; i < _pools.length; i++) {
+			for (let j = 0; j < _pools[i].collaterals.length; j++) {
+				if (_pools[i].collaterals[j].token.id == _collateral) {
+					_pools[i].collaterals[j].nonce = Big(_pools[i].collaterals[j].nonce).plus(1).toString();
+				}
+			}
+		}
+		setPools(_pools);
+		setRandom(Math.random());
+	}
+
 	const updateUserParams = (_pool: any) => {
 		let _totalCollateral = Big(0);
 		let _adjustedCollateral = Big(0);
@@ -501,6 +515,7 @@ function AppDataProvider({ children }: any) {
 		setRefresh,
 		refresh,
 		referrals,
+		incrementNonce
 	};
 
 	return (

@@ -9,11 +9,13 @@ import {
 } from '@chakra-ui/react';
 import { FaTwitter, FaDiscord, FaGithub } from 'react-icons/fa';
 import { AppDataContext } from './context/AppDataProvider';
+import { useNetwork } from 'wagmi';
 
 
 export default function Footer() {
 
   const {block} = useContext(AppDataContext);
+  const {chain} = useNetwork();
 
   return (
     <Box
@@ -33,7 +35,8 @@ export default function Footer() {
           align={{ md: 'center' }}>
             <Flex align={'center'} gap={1}>
             <Box h={2} w={2} bgColor={block == 0 ? 'red': 'primary.400'} rounded='100'></Box>
-          <Text fontSize={'xs'}>{block == 0 ? 'Not Connected': block}</Text>
+          <Text fontSize={'xs'}>{chain?.name} ({block == 0 ? 'Not Connected': block})</Text>
+
           <Text fontSize={'xs'}>| v1.0.0-beta</Text>
 
             </Flex>

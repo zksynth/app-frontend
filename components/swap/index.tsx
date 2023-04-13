@@ -9,6 +9,7 @@ import {
 	Divider,
 	Collapse,
 	Switch,
+	Link,
 } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import { getContract, send, estimateGas } from "../../src/contract";
@@ -28,7 +29,9 @@ import { motion } from "framer-motion";
 import { ERRORS, ERROR_MSG } from '../../src/errors';
 import { useRouter } from "next/router";
 import { base58 } from "ethers/lib/utils.js";
+import { useToast } from '@chakra-ui/react';
 const Big = require("big.js");
+import { ExternalLinkIcon, InfoIcon } from "@chakra-ui/icons";
 
 function Swap() {
 	const [inputAssetIndex, setInputAssetIndex] = useState(1);
@@ -59,6 +62,7 @@ function Swap() {
 	const [message, setMessage] = useState("");
 
 	const { account } = useContext(AppDataContext);
+	const toast = useToast();
 
 	const updateInputAmount = (e: any) => {
 		setInputAmount(e.target.value);
@@ -174,10 +178,9 @@ function Swap() {
 			]
 		)
 			.then(async (res: any) => {
-				setLoading(false);
-				setMessage("Confirming...");
-				setResponse("Transaction sent! Waiting for confirmation");
-				setHash(res.hash);
+				// setMessage("Confirming...");
+				// setResponse("Transaction sent! Waiting for confirmation");
+				// setHash(res.hash);
 				const response = await res.wait(1);
 				// decode response.logs
 				const decodedLogs = response.logs.map((log: any) =>
@@ -191,24 +194,55 @@ function Swap() {
 					decodedLogs[2].args.value.toString(),
 					decodedLogs[0].args.value.toString(),
 				);
-				setMessage(
-					"Transaction Successful!"
-				);
+				// setMessage(
+				// 	"Transaction Successful!"
+				// );
 				setInputAmount(0);
 				setOutputAmount(0);
-				setTimeout(() => {
-					setMessage("");
-					setResponse("");
-					setHash(null);
-				}, 10000)
-				setResponse(`Swapped ${_inputAmount} ${_inputAsset} for ${_outputAmount} ${_outputAsset}`);
+
+				// setTimeout(() => {
+				// 	setMessage("");
+				// 	setResponse("");
+				// 	setHash(null);
+				// }, 10000)
+				// setResponse(`Swapped ${_inputAmount} ${_inputAsset} for ${_outputAmount} ${_outputAsset}`);
+
+				setLoading(false);
+				toast({
+					title: "Transaction Successful!",
+					description: <Box>
+						<Text>
+					{`Swapped ${_inputAmount} ${_inputAsset} for ${_outputAmount} ${_outputAsset}`}
+						</Text>
+					<Link href={chain?.blockExplorers?.default.url + "tx/" + res.hash} target="_blank">
+						<Flex align={'center'} gap={2}>
+						<ExternalLinkIcon />
+						<Text>View Transaction</Text>
+						</Flex>
+					</Link>
+					</Box>,
+					status: "success",
+					duration: 10000,
+					isClosable: true,
+					position: "top-right",
+				})
 			})
 			.catch((err: any) => {
 				console.log(err);
-				setMessage(JSON.stringify(err));
+				if(err?.reason == "user rejected transaction"){
+					toast({
+						title: "Transaction Rejected",
+						description: "You have rejected the transaction",
+						status: "error",
+						duration: 5000,
+						isClosable: true,
+						position: "top-right"
+					})
+				}
 				setLoading(false);
-				setConfirmed(true);
-				setResponse("Transaction failed. Please try again!");
+				// setMessage(JSON.stringify(err));
+				// setConfirmed(true);
+				// setResponse("Transaction failed. Please try again!");
 			});
 	};
 

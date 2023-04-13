@@ -9,6 +9,8 @@ import {
 	Collapse,
 	Input,
 	Tooltip,
+	useToast,
+	Link,
 } from "@chakra-ui/react";
 import { getContract, send } from "../../../src/contract";
 import { useContext, useEffect } from "react";
@@ -21,6 +23,7 @@ import InfoFooter from "../_utils/InfoFooter";
 import { BigNumber, ethers } from "ethers";
 import { useRouter } from "next/router";
 import { base58 } from "ethers/lib/utils.js";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 
 const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 	const router = useRouter();
@@ -70,6 +73,8 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 		).toString();
 	};
 
+	const toast = useToast();
+
 	const mint = async () => {
 		if (!amount) return;
 		setLoading(true);
@@ -86,12 +91,11 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 
 		send(synth, "mint", [value, address, _referral])
 			.then(async (res: any) => {
-				setLoading(false);
-				setMessage("Confirming...");
-				setResponse("Transaction sent! Waiting for confirmation");
-				setHash(res.hash);
-				setConfirmed(true);
-
+				// setMessage("Confirming...");
+				// setResponse("Transaction sent! Waiting for confirmation");
+				// setHash(res.hash);
+				// setConfirmed(true);
+				
 				// decode logs
 				const response = await res.wait(1);
 				const decodedLogs = response.logs.map((log: any) => {
@@ -122,19 +126,49 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 					false
 				);
 				setAmount("0");
-				setMessage("Transaction Successful!");
-				setResponse(
-					`You have minted ${tokenFormatter.format(amountNumber)} ${
-						asset.token.symbol
-					}`
-				);
+
+				setLoading(false);
+				toast({
+					title: "Mint Successful",
+					description: <Box>
+						<Text>
+							{`You have minted ${amount} ${asset.token.symbol}`}
+						</Text>
+						<Link href={chain?.blockExplorers?.default.url + "tx/" + res.hash} target="_blank">
+							<Flex align={'center'} gap={2}>
+							<ExternalLinkIcon />
+							<Text>View Transaction</Text>
+							</Flex>
+						</Link>
+					</Box>,
+					status: "success",
+					duration: 9000,
+					isClosable: true,
+					position: "top-right",
+				})
+				// setMessage("Transaction Successful!");
+				// setResponse(
+				// 	`You have minted ${tokenFormatter.format(amountNumber)} ${
+				// 		asset.token.symbol
+				// 	}`
+				// );
 			})
 			.catch((err: any) => {
 				console.log(err);
+				if(err?.reason == "user rejected transaction"){
+					toast({
+						title: "Transaction Rejected",
+						description: "You have rejected the transaction",
+						status: "error",
+						duration: 5000,
+						isClosable: true,
+						position: "top-right"
+					})
+				}
 				setLoading(false);
-				setConfirmed(true);
-				setResponse("Transaction failed. Please try again!");
-				setMessage(JSON.stringify(err));
+				// setConfirmed(true);
+				// setResponse("Transaction failed. Please try again!");
+				// setMessage(JSON.stringify(err));
 			});
 	};
 
@@ -166,7 +200,7 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 	};
 
 	return (
-		<Box roundedBottom={16} px={5} pb={0.5} pt={0.5} bg="blackAlpha.200">
+		<Box roundedBottom={16} px={5} pb={5} pt={0.5} bg="blackAlpha.200">
 			<Box
 				// border="1px"
 				// borderColor={"gray.700"}
@@ -337,13 +371,13 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 				hash={hash}
 				confirmed={confirmed}
 			/>
-			<Box mx={-4}>
+			{/* <Box mx={-4}>
 				<InfoFooter
 					message="
 						You can issue a new asset against your collateral. Debt is dynamic and depends on total debt of the pool.
 						"
 				/>
-			</Box>
+			</Box> */}
 		</Box>
 	);
 };

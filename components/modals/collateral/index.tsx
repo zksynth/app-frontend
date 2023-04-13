@@ -34,6 +34,7 @@ import { AppDataContext } from "../../context/AppDataProvider";
 import Withdraw from "./Withdraw";
 import { WETH_ADDRESS } from "../../../src/const";
 import { useNetwork, useAccount, useSignTypedData } from 'wagmi';
+import { isValidAndPositiveNS } from '../../utils/number';
 
 export default function CollateralModal({ collateral }: any) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
@@ -62,8 +63,8 @@ export default function CollateralModal({ collateral }: any) {
 
 	const _setAmount = (e: string) => {
 		if (Number(e) !== 0 && Number(e) < 0.000001) e = "0";
-		setAmount(Number(e) ? Big(e).toString() : e);
-		setAmountNumber(isNaN(Number(e)) ? 0 : Number(e));
+		setAmount(e);
+		setAmountNumber(isValidAndPositiveNS(e) ? Number(e) : 0);
 	};
 
 	const selectTab = (index: number) => {
@@ -88,16 +89,6 @@ export default function CollateralModal({ collateral }: any) {
 			// min(v1, v2)
 			return (v1.gt(v2) ? v2 : v1).toString();
 		}
-	};
-
-	const tryApprove = () => {
-		if (!collateral) return true;
-		if (isNative) return false;
-		if (!collateral.allowance) return true;
-		if (Big(collateral.allowance).eq(0)) return true;
-		return Big(collateral.allowance).lt(
-			parseFloat(amount) * 10 ** (collateral.token.decimals ?? 18) || 1
-		);
 	};
 
 	const _onOpen = () => {
@@ -200,7 +191,7 @@ export default function CollateralModal({ collateral }: any) {
 							{collateral.token.id ==
 								WETH_ADDRESS[chain?.id!].toLowerCase() && (
 								<>
-									<Flex justify={"center"} mb={4}>
+									<Flex justify={"center"} mb={5}>
 										<Flex
 											justify={"center"}
 											align="center"
@@ -224,8 +215,6 @@ export default function CollateralModal({ collateral }: any) {
 									</Flex>
 								</>
 							)}
-							{!tryApprove() || tabSelected == 1 ? (
-								<>
 									<InputGroup
 										mt={5}
 										variant={"unstyled"}
@@ -291,17 +280,14 @@ export default function CollateralModal({ collateral }: any) {
 											</Box>
 										</NumberInput>
 									</InputGroup>
-								</>
-							) : (
-								<>
-									<Text mt={16} mb={12} color="gray.400">
+							
+						</Box>
+
+						{/* <Text mt={16} mb={12} color="gray.400">
 										To deposit {collateral.token.symbol} you
 										need to approve the contract to spend
 										your tokens.
-									</Text>
-								</>
-							)}
-						</Box>
+									</Text> */}
 
 						<Tabs onChange={selectTab}>
 							<TabList>

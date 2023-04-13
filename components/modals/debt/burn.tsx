@@ -5,7 +5,8 @@ import {
 	Text,
 	Flex,
 	useDisclosure,
-	Divider
+	Divider,
+	Link
 } from "@chakra-ui/react";
 
 import { getContract, send } from "../../../src/contract";
@@ -16,6 +17,8 @@ import { dollarFormatter, tokenFormatter } from "../../../src/const";
 import Big from "big.js";
 import Response from "../_utils/Response";
 import InfoFooter from "../_utils/InfoFooter";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { useToast } from '@chakra-ui/react';
 
 
 
@@ -28,6 +31,7 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 	const [message, setMessage] = useState("");
 	const { address } = useAccount();
 	const { chain } = useNetwork();
+	const toast = useToast();
 
 	const max = () => {
 		if(!address) return '0';
@@ -62,10 +66,9 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 			[value]
 		)
 			.then(async (res: any) => {
-				setLoading(false);
-				setMessage("Confirming...");
-				setResponse("Transaction sent! Waiting for confirmation");
-				setHash(res.hash);
+				// setMessage("Confirming...");
+				// setResponse("Transaction sent! Waiting for confirmation");
+				// setHash(res.hash);
 				// decode logs
 				const response = await res.wait(1);
 				const decodedLogs = response.logs.map((log: any) =>
@@ -82,26 +85,56 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 				setAmount('0');
 				setConfirmed(true);
 
-				setMessage("Transaction Successful!");
-				setResponse(
-					`You have burned ${tokenFormatter.format(
-						amountNumber
-					)} ${asset.token.symbol}`
-				);
+				// setMessage("Transaction Successful!");
+				// setResponse(
+				// 	`You have burned ${tokenFormatter.format(
+				// 		amountNumber
+				// 	)} ${asset.token.symbol}`
+				// );
+
+				setLoading(false);
+				toast({
+					title: "Burn Successful!",
+					description: <Box>
+						<Text>
+					{`You have burned ${amount} ${asset.token.symbol}`}
+						</Text>
+					<Link href={chain?.blockExplorers?.default.url + "tx/" + res.hash} target="_blank">
+						<Flex align={'center'} gap={2}>
+						<ExternalLinkIcon />
+						<Text>View Transaction</Text>
+						</Flex>
+					</Link>
+					</Box>,
+					status: "success",
+					duration: 5000,
+					isClosable: true,
+					position: "top-right"
+				});
 			})
 			.catch((err: any) => {
 				console.log(err);
+				if(err?.reason == "user rejected transaction"){
+					toast({
+						title: "Transaction Rejected",
+						description: "You have rejected the transaction",
+						status: "error",
+						duration: 5000,
+						isClosable: true,
+						position: "top-right"
+					})
+				}
 				setLoading(false);
-				setConfirmed(true);
-				setResponse("Transaction failed. Please try again!");
-				setMessage(JSON.stringify(err));
+				// setConfirmed(true);
+				// setResponse("Transaction failed. Please try again!");
+				// setMessage(JSON.stringify(err));
 			});
 	};
 
 	const { isConnected } = useAccount();
 
 	return (
-		<Box roundedBottom={16} px={5} pb={0.5} pt={0.5} bg='blackAlpha.200'>
+		<Box roundedBottom={16} px={5} pb={5} pt={0.5} bg='blackAlpha.200'>
 						<Box>
 						<Text mt={8} fontSize={"sm"} color='gray.400' fontWeight={'bold'}>
 							Transaction Overview
@@ -172,14 +205,14 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 							hash={hash}
 							confirmed={confirmed}
 						/>
-						<Box mx={-4}>
+						{/* <Box mx={-4}>
 
 					<InfoFooter
 						message="
 						You can issue a new asset against your collateral. Debt is dynamic and depends on total debt of the pool.
 						"
 						/>
-						</Box>
+						</Box> */}
 		</Box>
 	);
 };
