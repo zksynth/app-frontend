@@ -20,7 +20,7 @@ import { useContext } from "react";
 import { AppDataContext } from "../../context/AppDataProvider";
 import { compactTokenFormatter } from "../../../src/const";
 import { Bs1Circle, Bs1CircleFill, Bs2CircleFill } from "react-icons/bs";
-import { ExternalLinkIcon, InfoIcon } from "@chakra-ui/icons";
+import { ExternalLinkIcon, InfoIcon, InfoOutlineIcon } from "@chakra-ui/icons";
 import { AiFillCheckCircle } from "react-icons/ai";
 import { useToast } from '@chakra-ui/react';
 import Link from "next/link";
@@ -198,6 +198,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 			const collateralId = decodedLogs[decodedLogs.length - 1].args[1].toLowerCase();
 			const depositedAmount = decodedLogs[decodedLogs.length - 1].args[2].toString();
 			if(approveMax){
+				incrementNonce(collateral.token.id);
 				addCollateralAllowance(collateralId, poolId, ethers.constants.MaxUint256.toString());
 			}
 			setConfirmed(true);
@@ -284,7 +285,6 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 				setDeadline(_deadline);
 				setApprovedAmount(approveMax ? (Number.MAX_SAFE_INTEGER).toString() : amount);
 				setApproveLoading(false);
-				incrementNonce(collateral.token.id);
 			})
 			.catch((err: any) => {
 				console.log("err", JSON.stringify(err));
@@ -420,7 +420,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 					}
 
 				
-					{validate().stage != 3 && ((isNative && validate().stage == 0) || !isNative) && <Button
+					{(validate().stage != 2) ? <Button
 						isDisabled={validate().stage != 1}
 						isLoading={approveLoading}
 						loadingText="Please sign the transaction"
@@ -432,12 +432,16 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 						onClick={approve}
 						size="lg"
 						rounded={16}
-						leftIcon={validate().stage == 0 ? <></> : validate().stage == 1 ? <Bs1CircleFill/> : <AiFillCheckCircle/>}
+						leftIcon={
+							validate().stage ==1 ? <Tooltip label='
+								Approve tokens to be used by the protocol.
+							'>
+							<InfoOutlineIcon/>
+							</Tooltip> : null
+						}
 					>
 						{validate().message}
-					</Button>}
-				
-					{validate().stage != 0 && <Button
+					</Button> : <Button
 						isDisabled={validate().stage == 1}
 						isLoading={loading}
 						loadingText="Please sign the transaction"
@@ -449,7 +453,6 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 						onClick={deposit}
 						size="lg"
 						rounded={16}
-						leftIcon={!(isNative || validate().stage == 3) ? <Bs2CircleFill/> : <></>}
 					>
 						{isConnected && !activeChain?.unsupported ? (
 							Big(amountNumber > 0 ? amount : amountNumber).gt(max()) ? (

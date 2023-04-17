@@ -72,7 +72,7 @@ function AppDataProvider({ children }: any) {
 	const [referrals, setReferrals] = React.useState<any[]>([]);
 
 	useEffect(() => {
-		if (refresh.length == 0 && pools.length > 0) {
+		if (refresh.length == 0 && pools.length > 0 && isConnected && !chain?.unsupported) {
 			// set new interval
 			const timer = setInterval(refreshData, 5000);
 			setRefresh([Number(timer.toString())]);
@@ -84,16 +84,17 @@ function AppDataProvider({ children }: any) {
 		console.log("fetching for chain", chain?.id!);
 		return new Promise((resolve, reject) => {
 			setStatus("fetching");
+			const endpoint = Endpoints(chain?.id!)
 			Promise.all([
-				axios.post(Endpoints[chain?.id!], {
+				axios.post(endpoint, {
 					query: query(_address?.toLowerCase() ?? ADDRESS_ZERO),
 					variables: {},
 				}), 
-				axios.post(Endpoints[chain?.id!], {
+				axios.post(endpoint, {
 					query: query_leaderboard,
 					variables: {},
 				}),
-				axios.post(Endpoints[chain?.id!], {
+				axios.post(endpoint, {
 					query: query_referrals(_address?.toLowerCase() ?? ADDRESS_ZERO),
 					variables: {},
 				})
@@ -134,7 +135,7 @@ function AppDataProvider({ children }: any) {
 							pools[i] = pool;
 						}
 						
-						if (_address) {
+						if (_address && !chain?.unsupported) {
 							_setPools(pools, userPoolData.accounts[0], _address)
 							.then((_) => {
 								resolve(0)
@@ -176,7 +177,7 @@ function AppDataProvider({ children }: any) {
 			for (let i = 0; i < _pools.length; i++) {
 				for(let j = 0; j < _pools[i].collaterals.length; j++) {
 					const collateral = _pools[i].collaterals[j];
-					if(collateral.token.id == WETH_ADDRESS[chain?.id!].toLowerCase()) {
+					if(collateral.token.id == WETH_ADDRESS(chain?.id!).toLowerCase()) {
 						calls.push([
 							helper.address,
 							helper.interface.encodeFunctionData("getEthBalance", [
@@ -216,7 +217,7 @@ function AppDataProvider({ children }: any) {
 				// setting wallet balance and allowance
 				for (let i = 0; i < _pools.length; i++) {
 					for(let j = 0; j < _pools[i].collaterals.length; j++) {
-						if(_pools[i].collaterals[j].token.id == WETH_ADDRESS[chain?.id!].toLowerCase()) {
+						if(_pools[i].collaterals[j].token.id == WETH_ADDRESS(chain?.id!).toLowerCase()) {
 							_pools[i].collaterals[j].nativeBalance = BigNumber.from(
 								res.returnData[index]
 							).toString();

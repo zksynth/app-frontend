@@ -129,7 +129,7 @@ function NavBar() {
 							}}
 							src={"/logo.svg"}
 							alt=""
-							width="27px"
+							width="26px"
 						/>
 						<Flex
 						

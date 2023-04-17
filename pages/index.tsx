@@ -98,9 +98,10 @@ export default function TempPage() {
 				display={{ sm: "block", md: "flex" }}
 				pt="100px"
 				justifyContent={"space-between"}
+				alignContent={"center"}
 				// maxW='100px'
 			>
-				<Box>
+				<Flex flexDir={'column'} justify='center'>
 					<Box mb={4}>
 						<PoolSelector />
 					</Box>
@@ -207,7 +208,7 @@ export default function TempPage() {
 							</Flex>
 						</Flex>
 					</motion.div>
-				</Box>
+				</Flex>
 				<motion.div
 					initial={{ opacity: 0, y: 0 }}
 					animate={{ opacity: 1, y: 0 }}

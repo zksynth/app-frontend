@@ -92,7 +92,7 @@ export default function CollateralModal({ collateral }: any) {
 	};
 
 	const _onOpen = () => {
-		if(collateral.token.id == WETH_ADDRESS[chain?.id!].toLowerCase()) setIsNative(true);
+		if(collateral.token.id == WETH_ADDRESS(chain?.id!).toLowerCase()) setIsNative(true);
 		onOpen();
 	}
 
@@ -189,7 +189,7 @@ export default function CollateralModal({ collateral }: any) {
 						<Divider />
 						<Box mb={6} mt={4} px={8}>
 							{collateral.token.id ==
-								WETH_ADDRESS[chain?.id!].toLowerCase() && (
+								WETH_ADDRESS(chain?.id!).toLowerCase() && (
 								<>
 									<Flex justify={"center"} mb={5}>
 										<Flex

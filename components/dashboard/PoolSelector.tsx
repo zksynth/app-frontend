@@ -24,6 +24,12 @@ const itemVariants: Variants = {
 
 export default function PoolSelector() {
 	const { pools, tradingPool, setTradingPool } = useContext(AppDataContext);
+	const [searchedPools, setSearchedPools] = React.useState<any[]>([]);
+
+	React.useEffect(() => {
+		setSearchedPools(pools);
+	}, [pools]);
+
 	const [isOpen, setIsOpen] = React.useState(false);
 
 	window.addEventListener("click", function (e) {
@@ -33,6 +39,18 @@ export default function PoolSelector() {
 			setIsOpen(false);
 		}
 	});
+
+	const handleSearch = (e: any) => {
+		const search = e.target.value;
+		const filteredPools = Object.keys(pools).filter((pool: any) => {
+			return pools[pool].name.toLowerCase().includes(search.toLowerCase());
+		});
+		const newPools: any[] = [];
+		filteredPools.forEach((pool: any) => {
+			newPools[pool] = pools[pool];
+		});
+		setSearchedPools(newPools);
+	};
 
 	return (
 		<div>
@@ -48,15 +66,20 @@ export default function PoolSelector() {
 								whileTap={{ scale: 0.97 }}
 								onClick={() => setIsOpen(!isOpen)}
 							>
-								<Flex align={"center"} mb={4} >
-									<Flex align={"center"}>
+								<Flex align={"end"} mb={4} gap={10}>
+									<Flex>
+										<Box textAlign={'left'}>
+										{/* <Text fontSize={'sm'} color='whiteAlpha.600'>Market Name</Text> */}
 										<Heading fontSize={"3xl"}>
 											{pools[tradingPool].name}
 										</Heading>
+										</Box>
 									</Flex>
+									<Flex align={'center'} color='whiteAlpha.700'>
+									<Text fontSize={'sm'} >{ !isOpen ? 'All Markets' : 'Tap To Close'}</Text>
 									<motion.div
 										variants={{
-											open: { rotate: 180 },
+											open: { rotate: 180, marginBottom: 2 },
 											closed: { rotate: 0 },
 										}}
 										transition={{ duration: 0.2 }}
@@ -64,6 +87,8 @@ export default function PoolSelector() {
 									>
 										<RiArrowDropDownLine size={36} />
 									</motion.div>
+									</Flex>
+
 								</Flex>
 							</motion.button>
 						) : (
@@ -132,15 +157,14 @@ export default function PoolSelector() {
 								my={3}
 								pl={1}
 								variant='unstyled'
-
+								onChange={handleSearch}
 								_active={{ borderColor: "transparent" }}
-
 							/>
 						</motion.div>
 
 						<Divider/>
 
-						{pools.map((pool, index) => {
+						{searchedPools.map((pool, index) => {
 							return (
 								<motion.li
 									variants={itemVariants}
@@ -150,7 +174,6 @@ export default function PoolSelector() {
 										setIsOpen(false);
 									}}
 									key={index}
-									
 								>
 									<Box
 										_hover={{ bg: "whiteAlpha.50" }}
@@ -163,9 +186,44 @@ export default function PoolSelector() {
 											align="center"
 											py="20px"
 										>
-											<Flex mr={6}>
+											<Box>
+												<Heading fontSize={"xl"}>
+													{pool.name}
+												</Heading>
+												<Flex
+													justify={"start"}
+													mr={2}
+													mt="3"
+												>
+													{pool.collaterals
+														.slice(0, 4)
+														.map(
+															(
+																synth: any,
+																index: number
+															) => (
+																<Box
+																	mr={-2}
+																	key={index}
+																>
+																	<Image
+																		width={
+																			"30px"
+																		}
+																		height={
+																			"30px"
+																		}
+																		src={`/icons/${synth.token.symbol}.svg`}
+																		alt={""}
+																	/>
+																</Box>
+															)
+														)}
+												</Flex>
+											</Box>
+											<Flex mr={4}>
 												{pool.synths
-													.slice(0, 3)
+													.slice(0, 4)
 													.map(
 														(
 															synth: any,
@@ -186,41 +244,7 @@ export default function PoolSelector() {
 														)
 													)}
 											</Flex>
-											<Box>
-												<Heading fontSize={"xl"}>
-													{pool.name}
-												</Heading>
-												<Flex
-													justify={"end"}
-													mr={2}
-													mt="2"
-												>
-													{pool.collaterals
-														.slice(0, 3)
-														.map(
-															(
-																synth: any,
-																index: number
-															) => (
-																<Box
-																	mr={-2}
-																	key={index}
-																>
-																	<Image
-																		width={
-																			"22px"
-																		}
-																		height={
-																			"22px"
-																		}
-																		src={`/icons/${synth.token.symbol}.svg`}
-																		alt={""}
-																	/>
-																</Box>
-															)
-														)}
-												</Flex>
-											</Box>
+											
 										</Flex>
 										{index != pools.length - 1 && <Divider
 											borderColor={"whiteAlpha.200"}
