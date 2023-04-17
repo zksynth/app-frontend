@@ -437,7 +437,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 								Approve tokens to be used by the protocol.
 							'>
 							<InfoOutlineIcon/>
-							</Tooltip> : null
+							</Tooltip> : <></>
 						}
 					>
 						{validate().message}
