@@ -60,7 +60,7 @@ export default function Debt({ synth }: any) {
 
 	const _setAmount = (e: string) => {
 		if(Number(e) > 0 && Number(e) < 0.000001) e = '0';
-		setAmount(Number(e) ? Big(e).toString() : e);
+		setAmount(e);
 		setAmountNumber(isNaN(Number(e)) ? 0 : Number(e));
 	};
 
