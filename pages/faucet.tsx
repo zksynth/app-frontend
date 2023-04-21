@@ -29,6 +29,7 @@ const mintAmounts: any = {
     "WBTC": "0.5",
     "LINK": "100",
     "wstETH": "10",
+    "ARB": '100'
 };
 
 import Head from "next/head";

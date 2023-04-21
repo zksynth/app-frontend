@@ -113,7 +113,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 		} else {
 			return {
 				stage: 3,
-				message: ""
+				message: "Deposit"
 			}
 		}
 
@@ -143,12 +143,16 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 		const poolId = pools[tradingPool].id;
 		const pool = await getContract("Pool", chain?.id!, poolId);
 
+		console.log(pool);
+
 		let tx;
 		if (isNative) {
 			tx = send(
 				pool,
 				"depositETH",
-				[],
+				[
+					address
+				],
 				ethers.utils
 					.parseUnits(amount, collateral.token.decimals)
 					.toString()
@@ -163,6 +167,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 					[
 						collateral.token.id,
 						ethers.utils.parseUnits(amount, collateral.token.decimals),
+						address,
 						approveMax ? ethers.constants.MaxUint256 : ethers.utils.parseUnits(approvedAmount.toString(), collateral.token.decimals),
 						deadline,
 						v,
@@ -177,6 +182,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 					[
 						collateral.token.id,
 						ethers.utils.parseUnits(amount, collateral.token.decimals),
+						address
 					]
 				);
 			}
@@ -198,8 +204,10 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 			const collateralId = decodedLogs[decodedLogs.length - 1].args[1].toLowerCase();
 			const depositedAmount = decodedLogs[decodedLogs.length - 1].args[2].toString();
 			if(approveMax){
-				incrementNonce(collateral.token.id);
 				addCollateralAllowance(collateralId, poolId, ethers.constants.MaxUint256.toString());
+			}
+			if(Number(approvedAmount) > 0){
+				incrementNonce(collateral.token.id);
 			}
 			setConfirmed(true);
 			updateCollateralWalletBalance(collateralId, poolId, depositedAmount, true);
@@ -219,7 +227,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 					<Text>
 				{`You have deposited ${Big(depositedAmount).div(10**collateral.token.decimals).toString()} ${collateral.token.symbol}`}
 					</Text>
-				<Link href={chain?.blockExplorers?.default.url + "tx/" + res.hash} target="_blank">
+				<Link href={chain?.blockExplorers?.default.url + "/tx/" + res.hash} target="_blank">
 					<Flex align={'center'} gap={2}>
 					<ExternalLinkIcon />
 					<Text>View Transaction</Text>
@@ -227,7 +235,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 				</Link>
 				</Box>,
 				status: "success",
-				duration: 5000,
+				duration: 10000,
 				isClosable: true,
 				position: "top-right"
 			});
@@ -420,7 +428,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 					}
 
 				
-					{(validate().stage != 2) ? <Button
+					{(validate().stage == 1|| validate().stage == 0) ? <Button
 						isDisabled={validate().stage != 1}
 						isLoading={approveLoading}
 						loadingText="Please sign the transaction"

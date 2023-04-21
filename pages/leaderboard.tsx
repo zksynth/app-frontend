@@ -53,8 +53,8 @@ export default function Leaderboard() {
 
       <Heading size={"lg"}>Trade-To-Earn</Heading>
       <Text mt={2} pb={5} color='whiteAlpha.700'>
-					SYX rewards are passed timely through airdrops. The more you trade, the more you earn.
-				</Text>
+        The more you trade, the more you earn. Earn points by trading on SyntheX and redeem them for SYX tokens.
+      </Text>
 
         <Divider my={5}/>
 

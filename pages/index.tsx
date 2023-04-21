@@ -8,6 +8,7 @@ import {
 	Tooltip,
 	Divider,
 	Link,
+	Tag,
 } from "@chakra-ui/react";
 import React, { useContext } from "react";
 import { AppDataContext } from "../components/context/AppDataProvider";
@@ -91,7 +92,7 @@ export default function TempPage() {
 	return (
 		<>
 			<Head>
-				<title>Dashboard | SyntheX</title>
+				<title>SyntheX | Dashboard</title>
 				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
 			</Head>
 			<Box
@@ -118,13 +119,16 @@ export default function TempPage() {
 							zIndex={1}
 						>
 							<Flex mt={4} gap={3} align="start">
+								<IconBox>
 								<Image
-									h={"35px"}
-									minH="35px"
+									h={"18px"}
 									src="/icon1.svg"
 									alt="icon1"
+									ml={0.5}
 								/>
-								<Box mt={-1}>
+								</IconBox>
+
+								<Box>
 									<Heading
 										size={"sm"}
 										color="whiteAlpha.700"
@@ -132,78 +136,91 @@ export default function TempPage() {
 									>
 										Collateral
 									</Heading>
-									<Text
-										fontWeight={"semibold"}
-										fontSize={"xl"}
-									>
-										{dollarFormatter.format(
+									<Flex fontWeight={"semibold"}
+										fontSize={"xl"} gap={1}>
+									<Text color={'whiteAlpha.800'} fontWeight={"normal"}>$</Text>
+									<Text>
+										{(
 											pools[tradingPool]?.userCollateral ?? 0
-										)}
+										).toFixed(2)}
 									</Text>
+									</Flex>
+
 								</Box>
 							</Flex>
 
 							<Flex mt={4} gap={3} align="start">
+								<IconBox>
 								<Image
-									h={"35px"}
-									minH="35px"
+									h={"20px"}
 									src="/icon2.svg"
 									alt={"icon2"}
 								/>
-								<Box mt={-1}>
+								</IconBox>
+								<APRInfo debtBurnApr={debtBurnApr()} esSyxApr={esSyxApr()}>
+
+								<Box cursor={"help"}>
+									<Flex gap={2} align='center'>
+
 									<Heading
 										fontSize={"sm"}
 										color="whiteAlpha.700"
 									>
 										APY
 									</Heading>
-									<APRInfo debtBurnApr={debtBurnApr()} esSyxApr={esSyxApr()}>
-										<Flex mb={0.5} gap={1.5} align="center" cursor={"help"}>
+									{/* <Tag mb={'1'} gap={1} size={'sm'} fontSize='xs'>
+										Boosted
+										</Tag> */}
+										<Box mb={'4px'}>
+									<BsStars color={"gray.400"} size='12' />
+										</Box>
+									</Flex>
+
+										<Flex mb={0.5} gap={1.5} align="center" >
 											<Text
 												fontSize={"xl"}
 												fontWeight={"semibold"}
 											> {(Number(debtBurnApr()) + Number(esSyxApr())).toFixed(2)} %
 											</Text>
 
-											<BsStars color={"gray.400"} />
 										</Flex>
-										</APRInfo>
 								</Box>
+										</APRInfo>
 							</Flex>
 
 							<Flex mt={4} gap={3} align="start">
-								<Image
-									h={"35px"}
-									minH="35px"
-									src="/icon3.svg"
-									alt={"icon3"}
-								/>
+								<IconBox>
+									<Image
+										h={"17px"}
+										src="/icon3.svg"
+										alt={"icon3"}
+									/>
+								</IconBox>
 								
-										<Info message={`When you issue synths, you are allocated a share of pool's total debt. As the pool's total value changes, your debt changes as well`} title={'Debt is variable'}>
-								<Box mt={-1} cursor={"help"}>
-									
+									<Info message={`When you issue synths, you are allocated a share of pool's total debt. As the pool's total value changes, your debt changes as well`} title={'Debt is variable'}>
+										<Box cursor={"help"}>
 										<Heading
 										mb={0.5}
 											size={"sm"}
 											color="whiteAlpha.700"
 										>
-											Issued Debt
+											Debt
 										</Heading>
-									<Flex  gap={2} align="center">
-
-									<Text
-										fontSize={"xl"}
-										fontWeight={"semibold"}
-									>
-										{dollarFormatter.format(pools[tradingPool]?.userDebt ?? 0)}
+										<Flex gap={2} align="center">
+										<Flex fontWeight={"semibold"}
+										fontSize={"xl"} gap={1}>
+									<Text color={'whiteAlpha.800'} fontWeight={"normal"}>$</Text>
+									<Text>
+										{(
+											pools[tradingPool]?.userDebt ?? 0
+										).toFixed(2)}
 									</Text>
-										
-											<MdOutlineTrackChanges
-												color={"gray.400"}
-											/>
 									</Flex>
-
-								</Box>
+										{/* <MdOutlineTrackChanges
+											color={"gray.400"}
+										/> */}
+										</Flex>
+									</Box>
 								</Info>
 							</Flex>
 						</Flex>
@@ -224,18 +241,18 @@ export default function TempPage() {
 						<Flex
 							justify={{ sm: "start", md: "end" }}
 							align="center"
-							gap={2}
+							gap={1}
 							cursor={"help"}
 						>
 							
 							<Heading size={"sm"} mb={1} color="whiteAlpha.700">
-								Debt Limit
+								Borrow Limit
 							</Heading>
 
-							<Box mb={1.5}>
-
-								<InfoIcon
+							<Box mb={2}>
+								<InfoOutlineIcon
 									color={"gray.400"}
+									h={3}
 									/>
 									</Box>
 						</Flex>
@@ -306,11 +323,13 @@ export default function TempPage() {
 										: 0) 
 										}
 							</Text>
-							
-								<InfoIcon
-									cursor={"help"}
+							<Box mb={1}>
+
+							<InfoOutlineIcon
 									color={"gray.400"}
-								/>
+									h={3}
+									/>
+									</Box>
 						</Flex>
 						</Info>
 					</Box>
@@ -338,10 +357,11 @@ export default function TempPage() {
 						}}
 					>
 						<Box
-							bg={"bg2"}
+							// bg={"bg2"}
+							bgGradient={'linear(to-b, rgba(5, 104, 204, 0.2), rgba(5, 119, 230, 0.05))'}
 							rounded={10}
 							h={"100%"}
-							border="2px"
+							border="1px"
 							borderColor={"whiteAlpha.50"}
 							shadow='xl'
 						>
@@ -358,10 +378,11 @@ export default function TempPage() {
 						key={tradingPool + 2}
 					>
 						<Box
-							bg={"bg2"}
+							// bg={"bg2"}
+							bgGradient={'linear(to-b, rgba(5, 104, 204, 0.2), rgba(5, 119, 230, 0.1))'}
 							rounded={10}
 							h={"100%"}
-							border="2px"
+							border="1px"
 							borderColor={"whiteAlpha.50"}
 							shadow='xl'
 						>
@@ -416,4 +437,10 @@ export default function TempPage() {
 			</Box>
 		</>
 	);
+}
+
+function IconBox ({children}: any) {
+	return <Flex align={'center'} justify='center' h={'40px'} w={'40px'} bg='whiteAlpha.50' border={'2px'} borderColor='whiteAlpha.100' rounded={10}>
+	{children}
+</Flex>
 }

@@ -1,10 +1,18 @@
 import { ethers } from 'ethers';
+import { ChainID } from './chains';
 
 export function getABI(contractName: string, chain: number) {
   const config = require(`../deployments/${chain}/config.json`);
   const deployments = require(`../deployments/${chain}/deployments.json`);
-  const contractBuild = deployments.sources[contractName];
+  let contractBuild = JSON.parse(deployments.sources[contractName]);
   if(!contractBuild) throw new Error("ABI not found: "+contractName)
+
+  if(contractName == 'Pool'){
+    // const PoolLogic = JSON.parse(deployments.sources['PoolLogic']);
+    const CollateralLogic = JSON.parse(deployments.sources['CollateralLogic']);
+    const SynthLogic = JSON.parse(deployments.sources['SynthLogic']);
+    contractBuild = contractBuild.concat(CollateralLogic, SynthLogic);
+  }
   return contractBuild;
 }
 

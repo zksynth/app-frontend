@@ -86,7 +86,7 @@ export default function Claim() {
 					title: "Claimed!",
 					description: "Your rewards have been claimed.",
 					status: "success",
-					duration: 5000,
+					duration: 10000,
 					isClosable: true,
 					position: 'top-right'
 				})
@@ -153,7 +153,7 @@ export default function Claim() {
 				>
 					<Box
 						bg={"bg2"}
-						border="2px"
+						border="1px"
 						borderColor={"whiteAlpha.100"}
 						rounded={16}
 						mt={5}

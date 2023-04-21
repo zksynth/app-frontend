@@ -75,11 +75,11 @@ export default function PoolSelector() {
 										</Heading>
 										</Box>
 									</Flex>
-									<Flex align={'center'} color='whiteAlpha.700'>
+									<Flex align={'center'} color='whiteAlpha.800'>
 									<Text fontSize={'sm'} >{ !isOpen ? 'All Markets' : 'Tap To Close'}</Text>
 									<motion.div
 										variants={{
-											open: { rotate: 180, marginBottom: 2 },
+											open: { rotate: 180 },
 											closed: { rotate: 0 },
 										}}
 										transition={{ duration: 0.2 }}

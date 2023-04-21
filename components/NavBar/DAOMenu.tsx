@@ -43,12 +43,12 @@ export default function NavBar() {
 											pr={1}
 											cursor="pointer"
 											rounded={100}
-											bg="whiteAlpha.50"
-											_hover={{
-												bgColor: "whiteAlpha.100",
-											}}
-											border="2px"
-											borderColor={"whiteAlpha.50"}
+											// bg="whiteAlpha.50"
+											// _hover={{
+											// 	bgColor: "whiteAlpha.100",
+											// }}
+											// border="2px"
+											// borderColor={"whiteAlpha.50"}
 										>
 											<Box
 												color={router.pathname.includes('dao') ? 'primary.400': 'gray.100'}
@@ -60,7 +60,7 @@ export default function NavBar() {
 													<Heading
 														size={"xs"}
 														mr={-1}
-														
+														mt={0.5}
 													>
 														DAO
 													</Heading>

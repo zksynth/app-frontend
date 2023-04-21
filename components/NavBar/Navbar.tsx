@@ -129,7 +129,7 @@ function NavBar() {
 							}}
 							src={"/logo.svg"}
 							alt=""
-							width="26px"
+							width="27px"
 						/>
 						<Flex
 						
@@ -194,9 +194,11 @@ function NavBar() {
 								color={"gray.100"}
 								fontSize="sm"
 							>
-								<Flex align={"center"} gap={2}>
+								<Flex align={"center"} gap={1}>
 									
-									<Heading size={"sm"} color={router.pathname == '/leaderboard' ? 'primary.400' : 'white'}>{(Number(account?.totalPoint ?? '0')).toFixed(0)} Points</Heading>
+									<Heading size={"sm"} color={'primary.400'}>{(Number(account?.totalPoint ?? '0')).toFixed(0)}</Heading>
+									<Heading size={"xs"} color={router.pathname == '/leaderboard' ? 'primary.400' : 'white'}>Points</Heading>
+
 								</Flex>
 							</Box>
 						</Flex>

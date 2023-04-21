@@ -56,14 +56,15 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 		setResponse("");
 		setMessage("");
 
-		let synth = await getContract("ERC20X", chain?.id!, asset.token.id);
+		// let synth = await getContract("ERC20X", chain?.id!, asset.token.id);
+		let pool = await getContract("Pool", chain?.id!, pools[tradingPool].id);
 		let value = Big(amount)
 			.times(10 ** 18)
 			.toFixed(0);
 		send(
-			synth,
+			pool,
 			"burn",
-			[value]
+			[asset.token.id, value]
 		)
 			.then(async (res: any) => {
 				// setMessage("Confirming...");
@@ -74,14 +75,14 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 				const decodedLogs = response.logs.map((log: any) =>
 				{
 					try {
-						return synth.interface.parseLog(log)
+						return pool.interface.parseLog(log)
 					} catch (e) {
 						console.log(e)
 					}
 				});
-				const amountUSD = Big(decodedLogs[3].args.value.toString()).mul(asset.priceUSD).div(10 ** 18).mul(1 - asset.burnFee/10000).toFixed(4);
-				updatePoolBalance(pools[tradingPool].id, decodedLogs[1].args.value.toString(), amountUSD, true);
-				updateSynthWalletBalance(asset.token.id, pools[tradingPool].id, decodedLogs[3].args.value.toString(), true);
+				const amountUSD = Big(decodedLogs[2].args.value.toString()).mul(asset.priceUSD).div(10 ** 18).mul(1 - asset.burnFee/10000).toFixed(4);
+				updatePoolBalance(pools[tradingPool].id, decodedLogs[3].args.value.toString(), amountUSD, true);
+				updateSynthWalletBalance(asset.token.id, pools[tradingPool].id, decodedLogs[2].args.value.toString(), true);
 				setAmount('0');
 				setConfirmed(true);
 
@@ -99,7 +100,7 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 						<Text>
 					{`You have burned ${amount} ${asset.token.symbol}`}
 						</Text>
-					<Link href={chain?.blockExplorers?.default.url + "tx/" + res.hash} target="_blank">
+					<Link href={chain?.blockExplorers?.default.url + "/tx/" + res.hash} target="_blank">
 						<Flex align={'center'} gap={2}>
 						<ExternalLinkIcon />
 						<Text>View Transaction</Text>
@@ -107,7 +108,7 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 					</Link>
 					</Box>,
 					status: "success",
-					duration: 5000,
+					duration: 10000,
 					isClosable: true,
 					position: "top-right"
 				});
@@ -136,7 +137,7 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 	return (
 		<Box roundedBottom={16} px={5} pb={5} pt={0.5} bg='blackAlpha.200'>
 						<Box>
-						<Text mt={8} fontSize={"sm"} color='gray.400' fontWeight={'bold'}>
+						<Text mt={6} fontSize={"sm"} color='gray.400' fontWeight={'bold'}>
 							Transaction Overview
 						</Text>
 						<Box

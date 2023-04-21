@@ -83,13 +83,14 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 		setResponse("");
 		setMessage("");
 
-		let synth = await getContract("ERC20X", chain?.id!, asset.token.id);
+		// let synth = await getContract("ERC20X", chain?.id!, asset.token.id);
+		let pool = await getContract("Pool", chain?.id!, pools[tradingPool].id);
 		let value = Big(amount)
 			.times(10 ** 18)
 			.toFixed(0);
-		let _referral = useReferral ? BigNumber.from(base58.decode(referral!)).toHexString() : ethers.constants.AddressZero;
+		// let _referral = useReferral ? BigNumber.from(base58.decode(referral!)).toHexString() : ethers.constants.AddressZero;
 
-		send(synth, "mint", [value, address, _referral])
+		send(pool, "mint", [asset.token.id, value, address])
 			.then(async (res: any) => {
 				// setMessage("Confirming...");
 				// setResponse("Transaction sent! Waiting for confirmation");
@@ -100,13 +101,14 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 				const response = await res.wait(1);
 				const decodedLogs = response.logs.map((log: any) => {
 					try {
-						return synth.interface.parseLog(log);
+						return pool.interface.parseLog(log);
 					} catch (e) {
 						console.log(e);
 					}
 				});
+				console.log(decodedLogs);
 
-				let amountUSD = Big(decodedLogs[3].args.value.toString())
+				let amountUSD = Big(decodedLogs[2].args.value.toString())
 					.mul(asset.priceUSD)
 					.div(10 ** 18)
 					.mul(1 + asset.mintFee / 10000);
@@ -115,14 +117,14 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 
 				updatePoolBalance(
 					pools[tradingPool].id,
-					decodedLogs[1].args.value.toString(),
+					decodedLogs[3].args.value.toString(),
 					amountUSD.toString(),
 					false
 				);
 				updateSynthWalletBalance(
 					asset.token.id,
 					pools[tradingPool].id,
-					decodedLogs[3].args.value.toString(),
+					decodedLogs[2].args.value.toString(),
 					false
 				);
 				setAmount("0");
@@ -134,7 +136,7 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 						<Text>
 							{`You have minted ${amount} ${asset.token.symbol}`}
 						</Text>
-						<Link href={chain?.blockExplorers?.default.url + "tx/" + res.hash} target="_blank">
+						<Link href={chain?.blockExplorers?.default.url + "/tx/" + res.hash} target="_blank">
 							<Flex align={'center'} gap={2}>
 							<ExternalLinkIcon />
 							<Text>View Transaction</Text>
@@ -142,7 +144,7 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 						</Link>
 					</Box>,
 					status: "success",
-					duration: 9000,
+					duration: 10000,
 					isClosable: true,
 					position: "top-right",
 				})
@@ -184,28 +186,28 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 		}
 	};
 
-	const _setUseReferral = () => {
-		if (useReferral) {
-			setReferral("");
-			setUseReferral(false);
-		} else {
-			const { ref: refCode } = router.query;
-			if (refCode) {
-				setReferral(refCode as string);
-			} else {
-				setReferral("");
-			}
-			setUseReferral(true);
-		}
-	};
+	// const _setUseReferral = () => {
+	// 	if (useReferral) {
+	// 		setReferral("");
+	// 		setUseReferral(false);
+	// 	} else {
+	// 		const { ref: refCode } = router.query;
+	// 		if (refCode) {
+	// 			setReferral(refCode as string);
+	// 		} else {
+	// 			setReferral("");
+	// 		}
+	// 		setUseReferral(true);
+	// 	}
+	// };
 
 	return (
 		<Box roundedBottom={16} px={5} pb={5} pt={0.5} bg="blackAlpha.200">
 			<Box
 				// border="1px"
 				// borderColor={"gray.700"}
-				mt={6}
-				mb={2}
+				// mt={6}
+				// mb={2}
 				rounded={8}
 				// p={2}
 			>
@@ -232,7 +234,7 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 
 			<Box>
 				<Text
-					mt={4}
+					mt={6}
 					fontSize={"sm"}
 					color="gray.400"
 					fontWeight={"bold"}
@@ -287,7 +289,7 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 					</Flex>
 				</Box>
 
-				{!account && (
+				{/* {!account && (
 					<>
 						{" "}
 						<Flex mt={6} gap={2} align={"center"}>
@@ -319,7 +321,7 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 							</Box>
 						</Collapse>{" "}
 					</>
-				)}
+				)} */}
 			</Box>
 
 			<Flex mt={2} justify="space-between"></Flex>

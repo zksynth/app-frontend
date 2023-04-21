@@ -16,7 +16,11 @@ export default function swap() {
 					>
 						<Box
 							animation={"fadeIn 0.5s ease-in-out"}
-							bgColor={"bg2"}
+							// bgColor={"bg2"}
+							border='1px'
+							borderColor='whiteAlpha.50'
+							bgGradient={'linear(to-b, rgba(5, 104, 204, 0.25), rgba(5, 119, 230, 0.1))'}
+							
 							rounded={15}
 						>
 							<Swap />

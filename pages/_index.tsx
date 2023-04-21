@@ -90,30 +90,37 @@ export default function _index({ children }: any) {
 				</Text>
 			)}
 			</Box>
-			<Box w='100%' h={'100%'} bgGradient={'radial(bg2, bg2)'}>
-			<Box w='100%' h={'100%'} bgGradient={'radial(blackAlpha.400, rgba(10,25,49,1) 100%)'}>
+			{/* <Box bg='white'>
+			<Box w='100%' bgRepeat='no-repeat' bgGradient={'radial(primary.500, #0575E6)'}> */}
+			<Box w='100%' h={'100%'} bg='bg1'>
+			{/* <Box w='100%' bgGradient={'linear(to-b, blackAlpha.400, blackAlpha.400)'}> */}
+
 				<Flex
 					justify={'center'}
 					flexDirection={{ sm: 'column', md: 'row' }}
+					
 					minH="94vh">
 					<Box maxWidth={'1300px'} 
                     minW={{sm: '0', md: '0', lg: '1200px'}}
 					px={{sm: '4', md: '0'}}
+					
                     >
 						<Navbar />
 						<motion.div 
-                initial={{opacity: 0, y: 15}}
-                animate={{opacity: 1, y: 0}}
-                exit={{opacity: 0, y: 15}}
-                transition={{duration: 0.25}}
-                >
-						{children}
+							initial={{opacity: 0, y: 15}}
+							animate={{opacity: 1, y: 0}}
+							exit={{opacity: 0, y: 15}}
+							transition={{duration: 0.25}}
+						>
+							{children}
 						</motion.div>
 					</Box>
 				</Flex>
 				<Footer />
+			{/* </Box> */}
 			</Box>
-			</Box>
+			{/* </Box>
+			</Box> */}
 		</Box>
 	);
 }

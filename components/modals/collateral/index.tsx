@@ -103,10 +103,11 @@ export default function CollateralModal({ collateral }: any) {
 				onClick={_onOpen}
 				borderLeft="2px"
 				borderColor="transparent"
-				_hover={{ borderColor: "primary.400", bg: "blackAlpha.100" }}
+				
+				_hover={{ borderColor: "primary.400", bg: "whiteAlpha.100" }}
 			>
 				<Td {...borderStyle}>
-					<Flex gap={3}>
+					<Flex gap={3} ml='-2px'>
 						<Image
 							src={`/icons/${collateral.token.symbol}.svg`}
 							width="38px"

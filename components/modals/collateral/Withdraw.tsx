@@ -77,7 +77,8 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 						console.log(e)
 					}
 				});
-
+			
+			console.log(decodedLogs);
 			const collateralId = decodedLogs[0].args[1].toLowerCase();
 			const depositedAmount = decodedLogs[0].args[2].toString();
 			setConfirmed(true);
@@ -92,7 +93,7 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 					<Text>
 						{`You have withdrawn ${amount} ${collateral.token.symbol}`}
 					</Text>
-					<Link href={chain?.blockExplorers?.default.url + "tx/" + res.hash} target="_blank">
+					<Link href={chain?.blockExplorers?.default.url + "/tx/" + res.hash} target="_blank">
 						<Flex align={'center'} gap={2}>
 						<ExternalLinkIcon />
 						<Text>View Transaction</Text>
@@ -100,7 +101,7 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 					</Link>
 				</Box>,
 				status: "success",
-				duration: 5000,
+				duration: 10000,
 				isClosable: true,
 				position: 'top-right'
 			})

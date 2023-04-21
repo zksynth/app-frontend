@@ -157,7 +157,8 @@ function Swap() {
 		setHash(null);
 		setResponse("");
 		setMessage("");
-		let contract = await getContract("ERC20X", chain?.id!, pools[tradingPool].synths[inputAssetIndex].token.id);
+		// let contract = await getContract("ERC20X", chain?.id!, pools[tradingPool].synths[inputAssetIndex].token.id);
+		let pool = await getContract("Pool", chain?.id!, pools[tradingPool].id);
 		const _inputAmount = inputAmount;
 		const _inputAsset =
 			pools[tradingPool].synths[inputAssetIndex].token.symbol;
@@ -168,13 +169,14 @@ function Swap() {
 		let _referral = useReferral ? BigNumber.from(base58.decode(referral!)).toHexString() : ethers.constants.AddressZero;
 
 		send(
-			contract,
+			pool,
 			"swap",
 			[
+				pools[tradingPool].synths[inputAssetIndex].token.id,
 				ethers.utils.parseEther(inputAmount.toString()),
 				pools[tradingPool].synths[outputAssetIndex].token.id,
-				address,
-				_referral
+				0,
+				address
 			]
 		)
 			.then(async (res: any) => {
@@ -184,8 +186,10 @@ function Swap() {
 				const response = await res.wait(1);
 				// decode response.logs
 				const decodedLogs = response.logs.map((log: any) =>
-					contract.interface.parseLog(log)
+					pool.interface.parseLog(log)
 				);
+
+				console.log(decodedLogs);
 
 				setConfirmed(true);
 				handleExchange(
@@ -209,7 +213,7 @@ function Swap() {
 
 				setLoading(false);
 				toast({
-					title: "Transaction Successful!",
+					title: "Swap Successful!",
 					description: <Box>
 						<Text>
 					{`Swapped ${_inputAmount} ${_inputAsset} for ${_outputAmount} ${_outputAsset}`}
@@ -248,14 +252,15 @@ function Swap() {
 
 	useEffect(() => {
 		if (pools[tradingPool] && !isNaN(Number(inputAmount)) && validateInput() == 0)
-			getContract("ERC20X", chain?.id!, pools[tradingPool].synths[inputAssetIndex].token.id).then((contract: any) => {
+			getContract("Pool", chain?.id!, pools[tradingPool].id).then((contract: any) => {
 				// estimate gas
 				contract.estimateGas
 					.swap(
+						pools[tradingPool].synths[inputAssetIndex].token.id,
 						ethers.utils.parseEther(inputAmount.toString()),
 						pools[tradingPool].synths[outputAssetIndex].token.id,
-						address,
-						ethers.constants.AddressZero
+						0,
+						address
 					)
 					.then((gas: any) => {
 						setGas(
@@ -370,20 +375,20 @@ function Swap() {
 		else return 0
 	}
 
-	const _setUseReferral = () => {
-		if (useReferral) {
-			setReferral("");
-			setUseReferral(false);
-		} else {
-			const { ref: refCode } = router.query;
-			if (refCode) {
-				setReferral(refCode as string);
-			} else {
-				setReferral("");
-			}
-			setUseReferral(true);
-		}
-	};
+	// const _setUseReferral = () => {
+	// 	if (useReferral) {
+	// 		setReferral("");
+	// 		setUseReferral(false);
+	// 	} else {
+	// 		const { ref: refCode } = router.query;
+	// 		if (refCode) {
+	// 			setReferral(refCode as string);
+	// 		} else {
+	// 			setReferral("");
+	// 		}
+	// 		setUseReferral(true);
+	// 	}
+	// };
 
 	const isValid = () => {
 		if (referral == "" || referral == null) return true;
@@ -410,8 +415,10 @@ function Swap() {
 				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
 			</Head>
 			{pools[tradingPool] ? (
-				<Box shadow='2xl' border={'2px'} borderColor='whiteAlpha.100' rounded={16}>
-					<Box px="5" py={10} roundedTop={15} bg={"whiteAlpha.100"}>
+				<Box shadow='2xl' rounded={16}>
+					<Box px="5" py={10} roundedTop={15} 
+						// bg={"whiteAlpha.100"}
+					>
 						<Flex align="center" justify={"space-between"}>
 							<InputGroup width={"70%"}>
 								<Input
@@ -462,11 +469,12 @@ function Swap() {
 						</Flex>
 					</Box>
 
-					<Box px="5">
+					<Flex px="5" mt={-5} align='center'>
+						<Divider w={'10px'} />
 						<Button
-							mt={-5}
-							bg="#212E44"
-							_hover={{ bg: "gray.700" }}
+							
+							bg="whiteAlpha.400"
+							_hover={{ bg: "whiteAlpha.200" }}
 							rounded="100%"
 							onClick={switchTokens}
 							variant="unstyled"
@@ -478,7 +486,9 @@ function Swap() {
 						>
 							<MdOutlineSwapVert size={"18px"} />
 						</Button>
-					</Box>
+						<Divider/>
+
+					</Flex>
 
 					<Box px="5" pt={7} roundedBottom={15} bg={"whiteAlpha"}>
 						{/* Output */}
@@ -527,7 +537,7 @@ function Swap() {
 							</Flex>
 						</Flex>
 					
-					{ gas > 0 && <>
+					{ gas > 0 && <Box pb={10} pt={5}>
 						<Flex
 							justify="space-between"
 							align={"center"}
@@ -571,6 +581,7 @@ function Swap() {
 								initial={false}
 								onAnimationStart={() => setHidden(false)}
 								onAnimationComplete={() => setHidden(!isOpen)}
+								
 								animate={{ height: isOpen ? 94 : 0 }}
 								style={{
 								height: 94,
@@ -600,7 +611,7 @@ function Swap() {
 							</motion.div>
 						</Box>
 
-						<Box py={5}>
+						{/* <Box py={5}>
 						{!account && (
 							<>
 								{" "}
@@ -634,8 +645,8 @@ function Swap() {
 								</Collapse>{" "}
 							</>
 						)}
-						</Box>
-						</>}
+						</Box> */}
+						</Box>}
 
 						<Button
 							mt={!gas ? 14 : 0}
@@ -643,7 +654,8 @@ function Swap() {
 							size="lg"
 							fontSize={"xl"}
 							width={"100%"}
-							bgColor={"primary.400"}
+							// bgColor={"primary.400"}
+							bgGradient="linear(to-b, primary.400, secondary.400)"
 							rounded={16}
 							onClick={exchange}
 							isDisabled={
