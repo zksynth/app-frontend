@@ -205,7 +205,7 @@ function NavBar() {
 					</Link>
 				</motion.div>
 
-				<NavExternalLink path={'https://docs.synthex.finance/r/quick-start'} title={'Docs'}></NavExternalLink>
+				<NavExternalLink path={'https://synthex.finance/intro/quick-start'} title={'Docs'}></NavExternalLink>
 
 				<DAOMenu />
 
