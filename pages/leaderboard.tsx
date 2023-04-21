@@ -27,13 +27,13 @@ import { useAccount } from 'wagmi';
 export default function Leaderboard() {
   const [refreshing, setRefreshing] = React.useState(false);
 
-  const {leaderboard: leaderboardData, account, fetchData, chain } = useContext(AppDataContext);
+  const {leaderboard: leaderboardData, account, fetchData } = useContext(AppDataContext);
 
   const {address} = useAccount();
 
   const refresh = async () => {
     setRefreshing(true);
-    fetchData(address || null, chain)
+    fetchData(address || null)
     .then(res => {
       setRefreshing(false);
     })
@@ -53,8 +53,8 @@ export default function Leaderboard() {
 
       <Heading size={"lg"}>Trade-To-Earn</Heading>
       <Text mt={2} pb={5} color='whiteAlpha.700'>
-					SYX rewards are passed timely through airdrops. The more you trade, the more you earn.
-				</Text>
+        The more you trade, the more you earn. Earn points by trading on SyntheX and redeem them for SYX tokens.
+      </Text>
 
         <Divider my={5}/>
 

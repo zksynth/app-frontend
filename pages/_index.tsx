@@ -1,4 +1,4 @@
-import { Box, Flex, Progress, Text, useBreakpointValue } from '@chakra-ui/react';
+import { Box, Button, Flex, Progress, Text, useBreakpointValue, useToast } from '@chakra-ui/react';
 import React, { useContext } from 'react';
 import Footer from '../components/Footer';
 import Navbar from '../components/NavBar/Navbar';
@@ -7,6 +7,7 @@ import { AppDataContext } from '../components/context/AppDataProvider';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
+import { useNetwork, useSwitchNetwork } from 'wagmi';
 
 export default function _index({ children }: any) {
 	const router = useRouter();
@@ -34,24 +35,47 @@ export default function _index({ children }: any) {
         }
     }, [loading, refresh])
 
-
-	// check chakra device size
-	const isMobile = useBreakpointValue({
-		base: true,
-		lg: false,
-	});
-
 	const [hydrated, setHydrated] = useState(false);
 	const { status, message } = useContext(AppDataContext);
+
+	const {chain} = useNetwork();
 
 	useEffect(() => {
 		setHydrated(true);
 	}, []);
 
+	const { chains, error, isLoading, pendingChainId, switchNetworkAsync } = useSwitchNetwork();
+	const toast = useToast();
+
+	const switchNetwork = async (chainId: number) => {
+		switchNetworkAsync!(chainId)
+		.catch(err => {
+			console.log("error", err);
+			toast({
+				title: 'Unable to switch network.',
+				description: 'Please try switching networks from your wallet.',
+				position: 'top-right',
+				status: 'error',
+				duration: 9000,
+				isClosable: true,
+			  })
+		})
+	}
+
 	if(!hydrated) return <></>;
 
 	return (
 		<Box>
+			{(chain?.testnet) && <Flex align={'center'} justify={'center'} bgColor="blackAlpha.100" color={'gray.400'}>
+				<Text
+					textAlign={'center'}
+					fontSize={'sm'}
+					fontWeight="medium"
+					p={3}>
+					This is a testnet. Please do not send real assets to these addresses
+				</Text>
+				<Button size={'xs'} rounded='full' onClick={() => switchNetwork!(42161)}>Switch to Arbitrum Mainnet</Button>
+			</Flex>}
 			{(status == 'fetching' || loading) && <Progress bg={'gray.900'} colorScheme='primary' size='xs' isIndeterminate />}
 
 			<Box bgColor="gray.800" color={'gray.400'}>
@@ -66,30 +90,37 @@ export default function _index({ children }: any) {
 				</Text>
 			)}
 			</Box>
-			<Box w='100%' h={'100%'} bgGradient={'radial(bg2, bg2)'}>
-			<Box w='100%' h={'100%'} bgGradient={'radial(blackAlpha.400, rgba(10,25,49,1) 100%)'}>
+			{/* <Box bg='white'>
+			<Box w='100%' bgRepeat='no-repeat' bgGradient={'radial(primary.500, #0575E6)'}> */}
+			<Box w='100%' h={'100%'} bg='bg1'>
+			{/* <Box w='100%' bgGradient={'linear(to-b, blackAlpha.400, blackAlpha.400)'}> */}
+
 				<Flex
 					justify={'center'}
 					flexDirection={{ sm: 'column', md: 'row' }}
+					
 					minH="94vh">
 					<Box maxWidth={'1300px'} 
                     minW={{sm: '0', md: '0', lg: '1200px'}}
 					px={{sm: '4', md: '0'}}
+					
                     >
 						<Navbar />
 						<motion.div 
-                initial={{opacity: 0, y: 15}}
-                animate={{opacity: 1, y: 0}}
-                exit={{opacity: 0, y: 15}}
-                transition={{duration: 0.25}}
-                >
-						{children}
+							initial={{opacity: 0, y: 15}}
+							animate={{opacity: 1, y: 0}}
+							exit={{opacity: 0, y: 15}}
+							transition={{duration: 0.25}}
+						>
+							{children}
 						</motion.div>
 					</Box>
 				</Flex>
 				<Footer />
+			{/* </Box> */}
 			</Box>
-			</Box>
+			{/* </Box>
+			</Box> */}
 		</Box>
 	);
 }

@@ -33,6 +33,8 @@ import { useContext, useEffect } from "react";
 import { AppDataContext } from "../../context/AppDataProvider";
 import Withdraw from "./Withdraw";
 import { WETH_ADDRESS } from "../../../src/const";
+import { useNetwork, useAccount, useSignTypedData } from 'wagmi';
+import { isValidAndPositiveNS } from '../../utils/number';
 
 export default function CollateralModal({ collateral }: any) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
@@ -41,6 +43,8 @@ export default function CollateralModal({ collateral }: any) {
 	const [amount, setAmount] = React.useState("0");
 	const [amountNumber, setAmountNumber] = useState(0);
 	const [isNative, setIsNative] = useState(false);
+	const { chain } = useNetwork();
+	const { address } = useAccount();
 
 	const { pools, tradingPool } = useContext(AppDataContext);
 
@@ -59,8 +63,8 @@ export default function CollateralModal({ collateral }: any) {
 
 	const _setAmount = (e: string) => {
 		if (Number(e) !== 0 && Number(e) < 0.000001) e = "0";
-		setAmount(Number(e) ? Big(e).toString() : e);
-		setAmountNumber(isNaN(Number(e)) ? 0 : Number(e));
+		setAmount(e);
+		setAmountNumber(isValidAndPositiveNS(e) ? Number(e) : 0);
 	};
 
 	const selectTab = (index: number) => {
@@ -87,18 +91,8 @@ export default function CollateralModal({ collateral }: any) {
 		}
 	};
 
-	const tryApprove = () => {
-		if (!collateral) return true;
-		if (isNative) return false;
-		if (!collateral.allowance) return true;
-		if (Big(collateral.allowance).eq(0)) return true;
-		return Big(collateral.allowance).lt(
-			parseFloat(amount) * 10 ** (collateral.token.decimals ?? 18) || 1
-		);
-	};
-
 	const _onOpen = () => {
-		if(collateral.token.id == WETH_ADDRESS.toLowerCase()) setIsNative(true);
+		if(collateral.token.id == WETH_ADDRESS(chain?.id!).toLowerCase()) setIsNative(true);
 		onOpen();
 	}
 
@@ -109,10 +103,11 @@ export default function CollateralModal({ collateral }: any) {
 				onClick={_onOpen}
 				borderLeft="2px"
 				borderColor="transparent"
-				_hover={{ borderColor: "primary.400", bg: "blackAlpha.100" }}
+				
+				_hover={{ borderColor: "primary.400", bg: "whiteAlpha.100" }}
 			>
 				<Td {...borderStyle}>
-					<Flex gap={3}>
+					<Flex gap={3} ml='-2px'>
 						<Image
 							src={`/icons/${collateral.token.symbol}.svg`}
 							width="38px"
@@ -121,10 +116,11 @@ export default function CollateralModal({ collateral }: any) {
 						<Box>
 							<Text>{collateral.token.name}</Text>
 							<Flex color="gray.500" fontSize={"sm"} gap={1}>
+							<Text>{collateral.token.symbol} - </Text>
 								<Text>
-									{collateral.token.symbol} -{" "}
 									{tokenFormatter.format(
 										Big(collateral.walletBalance ?? 0)
+										.add(collateral.nativeBalance ?? 0)
 											.div(
 												10 **
 													(collateral.token
@@ -132,7 +128,9 @@ export default function CollateralModal({ collateral }: any) {
 											)
 											.toNumber()
 									)}{" "}
-									in wallet
+								</Text>
+								<Text>
+								in wallet
 								</Text>
 							</Flex>
 						</Box>
@@ -181,20 +179,20 @@ export default function CollateralModal({ collateral }: any) {
 								width={"38px"}
 							/>
 							<Text>{collateral.token.name}</Text>
-							<Link href="/faucet">
+							{chain?.testnet && <Link href="/faucet">
 								<Button size={"xs"} rounded="full">
 									Use Faucet
 								</Button>
-							</Link>
+							</Link>}
 						</Flex>
 					</ModalHeader>
 					<ModalBody m={0} p={0}>
 						<Divider />
 						<Box mb={6} mt={4} px={8}>
 							{collateral.token.id ==
-								WETH_ADDRESS.toLowerCase() && (
+								WETH_ADDRESS(chain?.id!).toLowerCase() && (
 								<>
-									<Flex justify={"center"} mb={2}>
+									<Flex justify={"center"} mb={5}>
 										<Flex
 											justify={"center"}
 											align="center"
@@ -218,8 +216,6 @@ export default function CollateralModal({ collateral }: any) {
 									</Flex>
 								</>
 							)}
-							{!tryApprove() || tabSelected == 1 ? (
-								<>
 									<InputGroup
 										mt={5}
 										variant={"unstyled"}
@@ -285,17 +281,14 @@ export default function CollateralModal({ collateral }: any) {
 											</Box>
 										</NumberInput>
 									</InputGroup>
-								</>
-							) : (
-								<>
-									<Text mt={16} mb={12} color="gray.400">
+							
+						</Box>
+
+						{/* <Text mt={16} mb={12} color="gray.400">
 										To deposit {collateral.token.symbol} you
 										need to approve the contract to spend
 										your tokens.
-									</Text>
-								</>
-							)}
-						</Box>
+									</Text> */}
 
 						<Tabs onChange={selectTab}>
 							<TabList>

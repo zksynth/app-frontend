@@ -9,6 +9,8 @@ import {
 	Collapse,
 	Input,
 	Tooltip,
+	useToast,
+	Link,
 } from "@chakra-ui/react";
 import { getContract, send } from "../../../src/contract";
 import { useContext, useEffect } from "react";
@@ -21,6 +23,7 @@ import InfoFooter from "../_utils/InfoFooter";
 import { BigNumber, ethers } from "ethers";
 import { useRouter } from "next/router";
 import { base58 } from "ethers/lib/utils.js";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 
 const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 	const router = useRouter();
@@ -34,10 +37,9 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 	const [referral, setReferral] = useState<string | null>(null);
 
 	const { isConnected, address } = useAccount();
-	const { chain: activeChain } = useNetwork();
+	const { chain } = useNetwork();
 	
 	const {
-		chain,
 		updateSynthWalletBalance,
 		pools,
 		tradingPool,
@@ -71,6 +73,8 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 		).toString();
 	};
 
+	const toast = useToast();
+
 	const mint = async () => {
 		if (!amount) return;
 		setLoading(true);
@@ -79,31 +83,32 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 		setResponse("");
 		setMessage("");
 
-		let synth = await getContract("ERC20X", chain, asset.token.id);
+		// let synth = await getContract("ERC20X", chain?.id!, asset.token.id);
+		let pool = await getContract("Pool", chain?.id!, pools[tradingPool].id);
 		let value = Big(amount)
 			.times(10 ** 18)
 			.toFixed(0);
-		let _referral = useReferral ? BigNumber.from(base58.decode(referral!)).toHexString() : ethers.constants.AddressZero;
+		// let _referral = useReferral ? BigNumber.from(base58.decode(referral!)).toHexString() : ethers.constants.AddressZero;
 
-		send(synth, "mint", [value, address, _referral], chain)
+		send(pool, "mint", [asset.token.id, value, address])
 			.then(async (res: any) => {
-				setLoading(false);
-				setMessage("Confirming...");
-				setResponse("Transaction sent! Waiting for confirmation");
-				setHash(res.hash);
-				setConfirmed(true);
-
+				// setMessage("Confirming...");
+				// setResponse("Transaction sent! Waiting for confirmation");
+				// setHash(res.hash);
+				// setConfirmed(true);
+				
 				// decode logs
 				const response = await res.wait(1);
 				const decodedLogs = response.logs.map((log: any) => {
 					try {
-						return synth.interface.parseLog(log);
+						return pool.interface.parseLog(log);
 					} catch (e) {
 						console.log(e);
 					}
 				});
+				console.log(decodedLogs);
 
-				let amountUSD = Big(decodedLogs[3].args.value.toString())
+				let amountUSD = Big(decodedLogs[2].args.value.toString())
 					.mul(asset.priceUSD)
 					.div(10 ** 18)
 					.mul(1 + asset.mintFee / 10000);
@@ -112,30 +117,60 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 
 				updatePoolBalance(
 					pools[tradingPool].id,
-					decodedLogs[1].args.value.toString(),
+					decodedLogs[3].args.value.toString(),
 					amountUSD.toString(),
 					false
 				);
 				updateSynthWalletBalance(
 					asset.token.id,
 					pools[tradingPool].id,
-					decodedLogs[3].args.value.toString(),
+					decodedLogs[2].args.value.toString(),
 					false
 				);
 				setAmount("0");
-				setMessage("Transaction Successful!");
-				setResponse(
-					`You have minted ${tokenFormatter.format(amountNumber)} ${
-						asset.token.symbol
-					}`
-				);
+
+				setLoading(false);
+				toast({
+					title: "Mint Successful",
+					description: <Box>
+						<Text>
+							{`You have minted ${amount} ${asset.token.symbol}`}
+						</Text>
+						<Link href={chain?.blockExplorers?.default.url + "/tx/" + res.hash} target="_blank">
+							<Flex align={'center'} gap={2}>
+							<ExternalLinkIcon />
+							<Text>View Transaction</Text>
+							</Flex>
+						</Link>
+					</Box>,
+					status: "success",
+					duration: 10000,
+					isClosable: true,
+					position: "top-right",
+				})
+				// setMessage("Transaction Successful!");
+				// setResponse(
+				// 	`You have minted ${tokenFormatter.format(amountNumber)} ${
+				// 		asset.token.symbol
+				// 	}`
+				// );
 			})
 			.catch((err: any) => {
 				console.log(err);
+				if(err?.reason == "user rejected transaction"){
+					toast({
+						title: "Transaction Rejected",
+						description: "You have rejected the transaction",
+						status: "error",
+						duration: 5000,
+						isClosable: true,
+						position: "top-right"
+					})
+				}
 				setLoading(false);
-				setConfirmed(true);
-				setResponse("Transaction failed. Please try again!");
-				setMessage(JSON.stringify(err));
+				// setConfirmed(true);
+				// setResponse("Transaction failed. Please try again!");
+				// setMessage(JSON.stringify(err));
 			});
 	};
 
@@ -151,28 +186,28 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 		}
 	};
 
-	const _setUseReferral = () => {
-		if (useReferral) {
-			setReferral("");
-			setUseReferral(false);
-		} else {
-			const { ref: refCode } = router.query;
-			if (refCode) {
-				setReferral(refCode as string);
-			} else {
-				setReferral("");
-			}
-			setUseReferral(true);
-		}
-	};
+	// const _setUseReferral = () => {
+	// 	if (useReferral) {
+	// 		setReferral("");
+	// 		setUseReferral(false);
+	// 	} else {
+	// 		const { ref: refCode } = router.query;
+	// 		if (refCode) {
+	// 			setReferral(refCode as string);
+	// 		} else {
+	// 			setReferral("");
+	// 		}
+	// 		setUseReferral(true);
+	// 	}
+	// };
 
 	return (
-		<Box roundedBottom={16} px={5} pb={0.5} pt={0.5} bg="blackAlpha.200">
+		<Box roundedBottom={16} px={5} pb={5} pt={0.5} bg="blackAlpha.200">
 			<Box
 				// border="1px"
 				// borderColor={"gray.700"}
-				mt={6}
-				mb={2}
+				// mt={6}
+				// mb={2}
 				rounded={8}
 				// p={2}
 			>
@@ -199,7 +234,7 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 
 			<Box>
 				<Text
-					mt={4}
+					mt={6}
 					fontSize={"sm"}
 					color="gray.400"
 					fontWeight={"bold"}
@@ -254,7 +289,7 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 					</Flex>
 				</Box>
 
-				{!account && (
+				{/* {!account && (
 					<>
 						{" "}
 						<Flex mt={6} gap={2} align={"center"}>
@@ -286,15 +321,15 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 							</Box>
 						</Collapse>{" "}
 					</>
-				)}
+				)} */}
 			</Box>
 
 			<Flex mt={2} justify="space-between"></Flex>
 			<Button
-				disabled={
+				isDisabled={
 					loading ||
 					!isConnected ||
-					activeChain?.unsupported ||
+					chain?.unsupported ||
 					!amount ||
 					amountNumber == 0 ||
 					Big(amountNumber > 0 ? amount : amountNumber).gt(max()) ||
@@ -313,7 +348,7 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 					opacity: "0.5",
 				}}
 			>
-				{isConnected && !activeChain?.unsupported ? (
+				{isConnected && !chain?.unsupported ? (
 					isValid() ? (
 						Big(amountNumber > 0 ? amount : amountNumber).gt(
 							max()
@@ -338,13 +373,13 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 				hash={hash}
 				confirmed={confirmed}
 			/>
-			<Box mx={-4}>
+			{/* <Box mx={-4}>
 				<InfoFooter
 					message="
 						You can issue a new asset against your collateral. Debt is dynamic and depends on total debt of the pool.
 						"
 				/>
-			</Box>
+			</Box> */}
 		</Box>
 	);
 };

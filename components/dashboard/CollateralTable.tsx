@@ -23,12 +23,12 @@ export default function CollateralTable() {
 	return (
 		<>
 			{pools[tradingPool]?.collaterals.length > 0 ? (
-					<TableContainer rounded={10} pt={1}>
+					<TableContainer rounded={0} pt={1}>
 						<Table variant="simple">
 							<Thead>
 								<Tr>
-									<Th color={"whiteAlpha.800"} borderColor='whiteAlpha.100'>Collateral</Th>
-									<Th color={"whiteAlpha.800"} borderColor='whiteAlpha.100' isNumeric>
+									<Th color={"skyblue"} borderColor='whiteAlpha.100'>Collateral</Th>
+									<Th color={"skyblue"} borderColor='whiteAlpha.100' isNumeric>
 										Balance
 									</Th>
 								</Tr>

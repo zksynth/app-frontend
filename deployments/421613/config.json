@@ -1,12 +1,13 @@
 {
   "name": "synthex",
-  "version": "0.16.0",
-  "latest": "0.16.0",
+  "version": "0.45.0",
+  "latest": "0.45.0",
   "l0Admin": "0x084cD22eA15E4C262408e561a5AFa8431Bd7fa5d",
   "l1Admin": "0x2646306d3191AEE905bf9065bD1B7cC71c9036D0",
   "l2Admin": "0x46c18c6d5526E17B34a3deB43e5E9Ba2A659c23a",
   "rewardAlloc": "10000000",
   "weth": "0x7964Bcc63335E101F23da13583CEaD61d75f863b",
+  "multicall": "0x24125c3374Fe97E26Eeb51ea5e8c621763285D90",
   "esSYX": {
     "initialRewardsDuration": "30",
     "reward": "6000",
@@ -30,7 +31,19 @@
           "address": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
           "params": {
             "cap": "100000000000000000000000",
-            "baseLTV": "8000",
+            "baseLTV": "6500",
+            "liqThreshold": "9000",
+            "liqBonus": "10500"
+          }
+        },
+        {
+          "name": "Arbitrum",
+          "symbol": "ARB",
+          "decimals": 18,
+          "price": "1.44",
+          "params": {
+            "cap": "100000000000000000000000",
+            "baseLTV": "7200",
             "liqThreshold": "9000",
             "liqBonus": "10500"
           }
@@ -39,10 +52,11 @@
           "name": "Wrapped Bitcoin",
           "symbol": "WBTC",
           "decimals": 18,
+          "address": "0xff4B595fDBCbD681DFCe70b3F5aAdfC27B9e8d00",
           "feed": "0x6550bc2301936011c1334555e62A87705A81C12C",
           "params": {
             "cap": "100000000000000000000000",
-            "baseLTV": "8200",
+            "baseLTV": "7200",
             "liqThreshold": "9000",
             "liqBonus": "10500"
           }
@@ -51,11 +65,12 @@
           "name": "USD Coin",
           "symbol": "USDC",
           "decimals": 18,
+          "address": "0xe87Ad4b7a14D8759BC92DAced7Ba243a23aCEc03",
           "feed": "0x1692Bdd32F31b831caAc1b0c9fAF68613682813b",
           "params": {
-            "cap": "100000000000000000000000",
-            "baseLTV": "8000",
-            "liqThreshold": "9000",
+            "cap": "1000000000000000000000000",
+            "baseLTV": "7000",
+            "liqThreshold": "8500",
             "liqBonus": "10200"
           }
         }
@@ -78,7 +93,7 @@
         {
           "name": "US Dollar",
           "symbol": "USD",
-          "feed": "0x1692Bdd32F31b831caAc1b0c9fAF68613682813b",
+          "feed": "0x00529Db9B8bc8270bCaf6a2343A19c9f642813d6",
           "isFeeToken": true,
           "mintFee": "4",
           "burnFee": "2"
@@ -93,6 +108,7 @@
         {
           "name": "Binance Coin",
           "symbol": "BNB",
+          "feed": "0x0c6309E2DF222208487b1958E621DFecC924652E",
           "price": "303.00",
           "mintFee": "8",
           "burnFee": "10"
@@ -100,20 +116,15 @@
         {
           "name": "Solana",
           "symbol": "SOL",
+          "feed": "0xa9e697C6AaeAd92ae213602134e2E39CEA90912f",
           "price": "22.56",
-          "mintFee": "8",
-          "burnFee": "10"
-        },
-        {
-          "name": "Ripple",
-          "symbol": "XRP",
-          "price": "5.1",
           "mintFee": "8",
           "burnFee": "10"
         },
         {
           "name": "Polkadot",
           "symbol": "DOT",
+          "feed": "0xF54c857be93A306518d9fe20bD2F349bCA72895B",
           "price": "5.1",
           "mintFee": "8",
           "burnFee": "10"
@@ -121,6 +132,7 @@
         {
           "name": "Near Protocol",
           "symbol": "NEAR",
+          "feed": "0x0D16d5e3b363B8dB2168F7A986B0E09A5cC151b1",
           "price": "5.1",
           "mintFee": "8",
           "burnFee": "10"
@@ -128,6 +140,7 @@
         {
           "name": "Cardano",
           "symbol": "ADA",
+          "feed": "0xFB7909A87eCc1B32AEeEf433420Fac8cB151A14F",
           "price": "5.1",
           "mintFee": "8",
           "burnFee": "10"
@@ -135,6 +148,7 @@
         {
           "name": "Polygon",
           "symbol": "MATIC",
+          "feed": "0x56EC0A98F7833eCC584D5Fa76D090F4433d43507",
           "price": "1.76",
           "mintFee": "8",
           "burnFee": "10"
@@ -142,7 +156,16 @@
         {
           "name": "DogeCoin",
           "symbol": "DOGE",
+          "feed": "0x8b352F5B23699518E868a30BD3D3c3321ec43A37",
           "price": "1.76",
+          "mintFee": "8",
+          "burnFee": "10"
+        },
+        {
+          "name": "Ripple",
+          "symbol": "XRP",
+          "feed": "0x8b352F5B23699518E868a30BD3D3c3321ec43A37",
+          "price": "1",
           "mintFee": "8",
           "burnFee": "10"
         }
@@ -158,6 +181,7 @@
           "name": "USD Coin",
           "symbol": "USDC",
           "decimals": 18,
+          "address": "0xe87Ad4b7a14D8759BC92DAced7Ba243a23aCEc03",
           "feed": "0x1692Bdd32F31b831caAc1b0c9fAF68613682813b",
           "params": {
             "cap": "100000000000000000000000",
@@ -218,13 +242,6 @@
           "name": "Canadian Dollar",
           "symbol": "CAD",
           "price": "0.80",
-          "mintFee": "5",
-          "burnFee": "7"
-        },
-        {
-          "name": "Korean Republic won",
-          "symbol": "KRW",
-          "price": "0.0009",
           "mintFee": "5",
           "burnFee": "7"
         },

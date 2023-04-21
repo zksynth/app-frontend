@@ -5,7 +5,8 @@ import {
 	Text,
 	Flex,
 	useDisclosure,
-	Divider
+	Divider,
+	Link
 } from "@chakra-ui/react";
 
 import { getContract, send } from "../../../src/contract";
@@ -16,6 +17,8 @@ import { dollarFormatter, tokenFormatter } from "../../../src/const";
 import Big from "big.js";
 import Response from "../_utils/Response";
 import InfoFooter from "../_utils/InfoFooter";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { useToast } from '@chakra-ui/react';
 
 
 
@@ -27,6 +30,8 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 	const [confirmed, setConfirmed] = useState(false);
 	const [message, setMessage] = useState("");
 	const { address } = useAccount();
+	const { chain } = useNetwork();
+	const toast = useToast();
 
 	const max = () => {
 		if(!address) return '0';
@@ -37,7 +42,6 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 	}
 
 	const {
-		chain,
 		updateSynthWalletBalance,
 		pools,
 		tradingPool,
@@ -52,60 +56,88 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 		setResponse("");
 		setMessage("");
 
-		let synth = await getContract("ERC20X", chain, asset.token.id);
+		// let synth = await getContract("ERC20X", chain?.id!, asset.token.id);
+		let pool = await getContract("Pool", chain?.id!, pools[tradingPool].id);
 		let value = Big(amount)
 			.times(10 ** 18)
 			.toFixed(0);
 		send(
-			synth,
+			pool,
 			"burn",
-			[value],
-			chain
+			[asset.token.id, value]
 		)
 			.then(async (res: any) => {
-				setLoading(false);
-				setMessage("Confirming...");
-				setResponse("Transaction sent! Waiting for confirmation");
-				setHash(res.hash);
+				// setMessage("Confirming...");
+				// setResponse("Transaction sent! Waiting for confirmation");
+				// setHash(res.hash);
 				// decode logs
 				const response = await res.wait(1);
 				const decodedLogs = response.logs.map((log: any) =>
 				{
 					try {
-						return synth.interface.parseLog(log)
+						return pool.interface.parseLog(log)
 					} catch (e) {
 						console.log(e)
 					}
 				});
-				const amountUSD = Big(decodedLogs[3].args.value.toString()).mul(asset.priceUSD).div(10 ** 18).mul(1 - asset.burnFee/10000).toFixed(4);
-				updatePoolBalance(pools[tradingPool].id, decodedLogs[1].args.value.toString(), amountUSD, true);
-				updateSynthWalletBalance(asset.token.id, pools[tradingPool].id, decodedLogs[3].args.value.toString(), true);
+				const amountUSD = Big(decodedLogs[2].args.value.toString()).mul(asset.priceUSD).div(10 ** 18).mul(1 - asset.burnFee/10000).toFixed(4);
+				updatePoolBalance(pools[tradingPool].id, decodedLogs[3].args.value.toString(), amountUSD, true);
+				updateSynthWalletBalance(asset.token.id, pools[tradingPool].id, decodedLogs[2].args.value.toString(), true);
 				setAmount('0');
 				setConfirmed(true);
 
-				setMessage("Transaction Successful!");
-				setResponse(
-					`You have burned ${tokenFormatter.format(
-						amountNumber
-					)} ${asset.token.symbol}`
-				);
+				// setMessage("Transaction Successful!");
+				// setResponse(
+				// 	`You have burned ${tokenFormatter.format(
+				// 		amountNumber
+				// 	)} ${asset.token.symbol}`
+				// );
+
+				setLoading(false);
+				toast({
+					title: "Burn Successful!",
+					description: <Box>
+						<Text>
+					{`You have burned ${amount} ${asset.token.symbol}`}
+						</Text>
+					<Link href={chain?.blockExplorers?.default.url + "/tx/" + res.hash} target="_blank">
+						<Flex align={'center'} gap={2}>
+						<ExternalLinkIcon />
+						<Text>View Transaction</Text>
+						</Flex>
+					</Link>
+					</Box>,
+					status: "success",
+					duration: 10000,
+					isClosable: true,
+					position: "top-right"
+				});
 			})
 			.catch((err: any) => {
 				console.log(err);
+				if(err?.reason == "user rejected transaction"){
+					toast({
+						title: "Transaction Rejected",
+						description: "You have rejected the transaction",
+						status: "error",
+						duration: 5000,
+						isClosable: true,
+						position: "top-right"
+					})
+				}
 				setLoading(false);
-				setConfirmed(true);
-				setResponse("Transaction failed. Please try again!");
-				setMessage(JSON.stringify(err));
+				// setConfirmed(true);
+				// setResponse("Transaction failed. Please try again!");
+				// setMessage(JSON.stringify(err));
 			});
 	};
 
 	const { isConnected } = useAccount();
-	const { chain: activeChain } = useNetwork();
 
 	return (
-		<Box roundedBottom={16} px={5} pb={0.5} pt={0.5} bg='blackAlpha.200'>
+		<Box roundedBottom={16} px={5} pb={5} pt={0.5} bg='blackAlpha.200'>
 						<Box>
-						<Text mt={8} fontSize={"sm"} color='gray.400' fontWeight={'bold'}>
+						<Text mt={6} fontSize={"sm"} color='gray.400' fontWeight={'bold'}>
 							Transaction Overview
 						</Text>
 						<Box
@@ -134,10 +166,10 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 						<Flex mt={2} justify="space-between">
 						</Flex>
 						<Button
-							disabled={
+							isDisabled={
 								loading ||
 								!isConnected ||
-								activeChain?.unsupported ||
+								chain?.unsupported ||
 								!amount ||
 								amountNumber == 0 ||
 								Big(amountNumber > 0 ? amount : amountNumber).gt(max()) 
@@ -155,7 +187,7 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 								opacity: "0.5",
 							}}
 						>
-							{isConnected && !activeChain?.unsupported ? (
+							{isConnected && !chain?.unsupported ? (
 								Big(amountNumber > 0 ? amount : amountNumber).gt(max()) ? (
 									<>Insufficient Collateral</>
 								) : !amount || amountNumber == 0 ? (
@@ -174,14 +206,14 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 							hash={hash}
 							confirmed={confirmed}
 						/>
-						<Box mx={-4}>
+						{/* <Box mx={-4}>
 
 					<InfoFooter
 						message="
 						You can issue a new asset against your collateral. Debt is dynamic and depends on total debt of the pool.
 						"
 						/>
-						</Box>
+						</Box> */}
 		</Box>
 	);
 };

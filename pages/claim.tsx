@@ -32,6 +32,7 @@ import {
 } from "@chakra-ui/react";
 import Head from "next/head";
 import { motion } from "framer-motion";
+import { useToast } from '@chakra-ui/react';
 
 export default function Claim() {
 	const { address, isConnected, isConnecting } = useAccount();
@@ -43,6 +44,7 @@ export default function Claim() {
 	const { pools } = useContext(AppDataContext);
 
 	const { claimed } = useContext(TokenContext);
+	const toast = useToast();
 
 	useEffect(() => {
 		if (connectedChain) {
@@ -80,10 +82,26 @@ export default function Claim() {
 				setClaiming(false);
 				setSynAccrued("0");
 				claimed((synAccrued / 1e18).toString());
+				toast({
+					title: "Claimed!",
+					description: "Your rewards have been claimed.",
+					status: "success",
+					duration: 10000,
+					isClosable: true,
+					position: 'top-right'
+				})
 			})
 			.catch((err: any) => {
 				console.log(err);
 				setClaiming(false);
+				toast({
+					title: "Error",
+					description: "There was an error claiming your rewards.",
+					status: "error",
+					duration: 5000,
+					isClosable: true,
+					position: 'top-right'
+				})
 			});
 	};
 
@@ -135,7 +153,7 @@ export default function Claim() {
 				>
 					<Box
 						bg={"bg2"}
-						border="2px"
+						border="1px"
 						borderColor={"whiteAlpha.100"}
 						rounded={16}
 						mt={5}
@@ -285,7 +303,7 @@ export default function Claim() {
 												onClick={claim}
 												isLoading={claiming}
 												loadingText="Claiming"
-												disabled={Big(
+												isDisabled={Big(
 													synAccrued ?? 0
 												).eq(0)}
 												rounded={16}

@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import NavLink from "./NavBar/NavLink";
+import NavLocalLink from "./NavBar/NavLocalLink";
 
 const accountPath = "/account";
 
@@ -49,7 +51,7 @@ const Connect = () => {
 							}
 							return (
 								<>
-									<Link href={{pathname: accountPath, query: router.query}} >
+									{/* <Link href={{pathname: accountPath, query: router.query}} >
 										<Box>
 											<Flex align={"center"}>
 												<motion.div
@@ -103,7 +105,6 @@ const Connect = () => {
 																align={"center"}
 																gap={2}
 															>
-																{/* {children} */}
 																<Heading
 																	size={"xs"}
 																>
@@ -117,7 +118,13 @@ const Connect = () => {
 												</motion.div>
 											</Flex>
 										</Box>
-									</Link>
+									</Link> */}
+
+									<NavLocalLink 
+										path={accountPath}
+										// title={account.displayName}
+										title='Account'
+									/>
 								</>
 							);
 						})()}

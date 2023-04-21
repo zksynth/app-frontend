@@ -9,11 +9,7 @@ import {
 	Stack,
 	IconButton,
 	Heading,
-	useColorMode,
-	Button,
 } from "@chakra-ui/react";
-
-import { ConnectButton as RainbowConnect } from '@rainbow-me/rainbowkit';
 import ConnectButton from '../ConnectButton'; 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
@@ -22,14 +18,9 @@ import "../../styles/Home.module.css";
 import { useAccount, useNetwork } from "wagmi";
 import { useContext } from "react";
 import { AppDataContext } from "../context/AppDataProvider";
-import { ChainID } from "../../src/chains";
-import { BigNumber } from "ethers";
 import { TokenContext } from "../context/TokenContext";
 import { motion } from "framer-motion";
-import { RiArrowDropDownLine } from "react-icons/ri";
 import { CloseIcon, HamburgerIcon } from "@chakra-ui/icons";
-import { tokenFormatter, query } from '../../src/const';
-import { GiHelp } from "react-icons/gi";
 import NavLocalLink from "./NavLocalLink";
 import DAOMenu from "./DAOMenu";
 import NavExternalLink from "./NavExternalLink";
@@ -37,12 +28,11 @@ import NavExternalLink from "./NavExternalLink";
 function NavBar() {
 	const router = useRouter();
 	const { ref } = router.query;
-	const { status, account, fetchData, setChain, refreshData, pools, setRefresh, refresh } = useContext(AppDataContext);
+	const { status, account, fetchData, refreshData, pools, setRefresh, refresh } = useContext(AppDataContext);
 	const { fetchData: fetchTokenData } = useContext(TokenContext);
 
 	const { chain, chains } = useNetwork();
 	const [init, setInit] = useState(false);
-	const [hasRefreshed, setHasRefreshed] = useState(false);
 
 	const { isOpen: isToggleOpen, onToggle } = useDisclosure();
 	const [isSubscribed, setIsSubscribed] = useState(false);
@@ -56,27 +46,25 @@ function NavBar() {
 		onConnect({ address, connector, isReconnected }) {
 			console.log("onConnect");
 			if ((chain as any).unsupported) return;
-			setChain(connector!.chains[0].id);
-			fetchData(address!, connector!.chains[0].id)
+			fetchData(address!)
 			.then((_) => {
 				for(let i in refresh){
 					clearInterval(refresh[i]);
 				}
 				setRefresh([]);
 			})
-			fetchTokenData(address!, connector!.chains[0].id);
+			fetchTokenData(address!);
 			setInit(true);
 		},
 		onDisconnect() {
 			console.log("onDisconnect");
-			fetchData(null, ChainID.ARB_GOERLI)
+			fetchData(null)
 			.then((_) => {
 				for(let i in refresh){
 					clearInterval(refresh[i]);
 				}
 				setRefresh([]);
 			})
-			setChain(ChainID.ARB_GOERLI);
 		},
 	});
 
@@ -109,9 +97,9 @@ function NavBar() {
 			!init
 		) {
 			setInit(true);
-			fetchData(null, ChainID.ARB_GOERLI);
+			fetchData(null);
 		}
-	}, [activeConnector, address, chain?.unsupported, chains, fetchData, init, isConnected, isConnecting, isSubscribed, refresh, setChain, setRefresh, status]);
+	}, [activeConnector, address, chain?.unsupported, chains, fetchData, init, isConnected, isConnecting, isSubscribed, refresh, setRefresh, status]);
 
 
 	const [isOpen, setIsOpen] = React.useState(false);
@@ -206,16 +194,18 @@ function NavBar() {
 								color={"gray.100"}
 								fontSize="sm"
 							>
-								<Flex align={"center"} gap={2}>
+								<Flex align={"center"} gap={1}>
 									
-									<Heading size={"sm"} color={router.pathname == '/leaderboard' ? 'primary.400' : 'white'}>{(Number(account?.totalPoint ?? '0')).toFixed(0)} Points</Heading>
+									<Heading size={"sm"} color={'primary.400'}>{(Number(account?.totalPoint ?? '0')).toFixed(0)}</Heading>
+									<Heading size={"xs"} color={router.pathname == '/leaderboard' ? 'primary.400' : 'white'}>Points</Heading>
+
 								</Flex>
 							</Box>
 						</Flex>
 					</Link>
 				</motion.div>
 
-				<NavExternalLink path={'https://docs.synthex.finance'} title={'Docs'}></NavExternalLink>
+				<NavExternalLink path={'https://docs.synthex.finance/r/quick-start'} title={'Docs'}></NavExternalLink>
 
 				<DAOMenu />
 

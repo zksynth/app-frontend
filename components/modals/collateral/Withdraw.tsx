@@ -9,17 +9,19 @@ import {
 	Button,
 	Divider,
     Tooltip,
+	useToast,
 } from "@chakra-ui/react";
 import Big from "big.js";
 import InfoFooter from "../_utils/InfoFooter";
 import Response from "../_utils/Response";
 import { useAccount, useBalance, useNetwork } from "wagmi";
-import Link from "next/link";
 import { ethers } from "ethers";
-import { getAddress, getContract, send } from "../../../src/contract";
+import { getContract, send } from "../../../src/contract";
 import { useContext } from "react";
 import { AppDataContext } from "../../context/AppDataProvider";
-import { WETH_ADDRESS, compactTokenFormatter, dollarFormatter } from "../../../src/const";
+import { compactTokenFormatter, dollarFormatter } from "../../../src/const";
+import Link from "next/link";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 
 export default function Withdraw({ collateral, amount, setAmount, amountNumber, isNative }: any) {
 	const [loading, setLoading] = useState(false);
@@ -27,9 +29,9 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 	const [hash, setHash] = useState(null);
 	const [confirmed, setConfirmed] = useState(false);
 	const [message, setMessage] = useState("");
+	const toast = useToast();
 
 	const {
-		chain,
 		pools,
 		tradingPool,
 		updateCollateralWalletBalance,
@@ -51,7 +53,7 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 		setResponse(null);
 		setHash(null);
 		const poolId = pools[tradingPool].id;
-		const pool = await getContract("Pool", chain, poolId);
+		const pool = await getContract("Pool", chain?.id!, poolId);
 		const _amount = Big(amount).mul(10**collateral.token.decimals).toFixed(0);
 		send(
 				pool,
@@ -60,13 +62,11 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 					collateral.token.id,
 					_amount,
 					isNative
-				],
-				chain
+				]
 			).then(async (res: any) => {
-			setLoading(false);
-			setMessage("Confirming...");
-			setResponse("Transaction sent! Waiting for confirmation");
-			setHash(res.hash);
+			// setMessage("Confirming...");
+			// setResponse("Transaction sent! Waiting for confirmation");
+			// setHash(res.hash);
 			const response = await res.wait(1);
 			// decode transfer event from response.logs
 			const decodedLogs = response.logs.map((log: any) =>
@@ -77,32 +77,65 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 						console.log(e)
 					}
 				});
-
+			
+			console.log(decodedLogs);
 			const collateralId = decodedLogs[0].args[1].toLowerCase();
 			const depositedAmount = decodedLogs[0].args[2].toString();
 			setConfirmed(true);
 			updateCollateralWalletBalance(collateralId, poolId, depositedAmount, false);
 			updateCollateralAmount(collateralId, poolId, depositedAmount, true);
 			setAmount('0');
-			setMessage(
-				"Transaction Successful!"
-			);
-			setResponse(`You have withdrawn ${amount} ${collateral.token.symbol}.`);
+
+			setLoading(false);
+			toast({
+				title: "Withdrawal Successful",
+				description: <Box>
+					<Text>
+						{`You have withdrawn ${amount} ${collateral.token.symbol}`}
+					</Text>
+					<Link href={chain?.blockExplorers?.default.url + "/tx/" + res.hash} target="_blank">
+						<Flex align={'center'} gap={2}>
+						<ExternalLinkIcon />
+						<Text>View Transaction</Text>
+						</Flex>
+					</Link>
+				</Box>,
+				status: "success",
+				duration: 10000,
+				isClosable: true,
+				position: 'top-right'
+			})
+
+			// setMessage(
+			// 	"Transaction Successful!"
+			// );
+			// setResponse(`You have withdrawn ${amount} ${collateral.token.symbol}.`);
+			
 		}).catch((err: any) => {
 			console.log(err);
-			setMessage(JSON.stringify(err));
+			if(err?.reason == "user rejected transaction"){
+				toast({
+					title: "Transaction Rejected",
+					description: "You have rejected the transaction",
+					status: "error",
+					duration: 5000,
+					isClosable: true,
+					position: "top-right"
+				})
+			}
 			setLoading(false);
-			setConfirmed(true);
-			setResponse("Transaction failed. Please try again!");
+			// setMessage(JSON.stringify(err));
+			// setConfirmed(true);
+			// setResponse("Transaction failed. Please try again!");
 		});
 	};
 
 	const { address, isConnected } = useAccount();
-	const { chain: activeChain } = useNetwork();
+	const { chain } = useNetwork();
 
 	return (
 		<>
-			<Box bg={"blackAlpha.200"} roundedBottom={16} px={5} pt={5} pb={2}>
+			<Box bg={"blackAlpha.200"} roundedBottom={16} px={5} py={5}>
 				<Box
 					// border="1px"
 					// borderColor={"gray.700"}
@@ -200,10 +233,10 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
             
 				
                 <Button
-                    disabled={
+                    isDisabled={
                         loading ||
                         !isConnected ||
-                        activeChain?.unsupported ||
+                        chain?.unsupported ||
                         !amount ||
                         amountNumber == 0 ||
                         Big(amountNumber > 0 ? amount : amountNumber).gt(max()) 
@@ -213,7 +246,7 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
                     bgColor="secondary.400"
                     width="100%"
                     color="white"
-                    mt={4}
+                    mt={2}
                     onClick={withdraw}
                     size="lg"
                     rounded={16}
@@ -221,7 +254,7 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
                         opacity: "0.5",
                     }}
                 >
-                    {isConnected && !activeChain?.unsupported ? (
+                    {isConnected && !chain?.unsupported ? (
                         Big(amountNumber > 0 ? amount : amountNumber).gt(max()) ? (
                             <>Insufficient Wallet Balance</>
                         ) : !amount || amountNumber == 0 ? (
@@ -240,13 +273,13 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 					hash={hash}
 					confirmed={confirmed}
 				/>
-				<Box mx={-4} mb={-3}>
+				{/* <Box mx={-4} mb={-3}>
 				<InfoFooter
 					message="
 						You can issue a new asset against your collateral. Debt is dynamic and depends on total debt of the pool.
 					"
 				/>
-                </Box>
+                </Box> */}
 			</Box>
 		</>
 	);

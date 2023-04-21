@@ -77,7 +77,8 @@ export default function Account() {
 				</Flex>
 			</Box>
 
-			{account && <Box
+			{account && <> 
+			{/* <Box
 				mt={5}
 				bg="bg2"
 				px={6}
@@ -142,7 +143,7 @@ export default function Account() {
 				</Flex>
 				{referrals.length > 0 && (
 					<Box mt={10} mx={-6}>
-						{/* <Heading size={'sm'}>My Referrals</Heading> */}
+						<Heading size={'sm'}>My Referrals</Heading>
 						<TableContainer>
 							<Table variant="simple">
 								<Thead>
@@ -180,8 +181,9 @@ export default function Account() {
 						</TableContainer>
 					</Box>
 				)}
-			</Box>}
-			</>: <>
+			</Box>  */}
+			</>}
+			 </>: <>
 				<Flex flexDir="column"  justify={'center'} align='center' h='80vh'>
 				<Heading mb={5}>{address ? 'Your Account' : 'Connect Your Wallet'}</Heading>
 				<Box>

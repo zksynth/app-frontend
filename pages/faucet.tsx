@@ -17,7 +17,7 @@ import {
 import { AppDataContext } from "../components/context/AppDataProvider";
 import { useEffect } from "react";
 
-const nonMintable = ["ETH", "waArbUSDC", "USDC"];
+const nonMintable = ["ETH", "waArbUSDC"];
 
 const mintAmounts: any = {
 	"USDC": "10000",
@@ -29,6 +29,7 @@ const mintAmounts: any = {
     "WBTC": "0.5",
     "LINK": "100",
     "wstETH": "10",
+    "ARB": '100'
 };
 
 import Head from "next/head";
@@ -43,17 +44,18 @@ import {
     ModalCloseButton,
   } from '@chakra-ui/react'
 import { getContract, send } from "../src/contract";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import { ethers } from "ethers";
 
 export default function Faucet() {
 	const [collaterals, setCollaterals] = React.useState<any>([]);
-	const { pools, updateCollateralWalletBalance, chain } = useContext(AppDataContext);
+	const { pools, updateCollateralWalletBalance } = useContext(AppDataContext);
     const [loading, setLoading] = React.useState<any>(false);
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [openedCollateral, setOpenedCollateral] = React.useState<any>(null);
 
     const {address, isConnected}  = useAccount();
+    const {chain} = useNetwork();
 
 	useEffect(() => {
 		if (collaterals.length == 0) {
@@ -82,9 +84,9 @@ export default function Faucet() {
 
     const mint = async () => {
         setLoading(true);
-        const token = await getContract("MockToken", chain, openedCollateral.token.id);
+        const token = await getContract("MockToken", chain?.id!, openedCollateral.token.id);
         const amount = ethers.utils.parseEther(mintAmounts[openedCollateral.token.symbol]);
-        send(token, "mint", [address, amount], chain)
+        send(token, "mint", [address, amount])
             .then(async(res: any) => {
                 setLoading(false);
                 await res.wait(1);
@@ -155,7 +157,7 @@ export default function Faucet() {
             <ModalBody >
                 <Flex gap={4}>
 
-                <Image src={`/icons/${openedCollateral.token.symbol}.svg`} w='44px' mb={2}/>
+                <Image alt={openedCollateral.token.symbol} src={`/icons/${openedCollateral.token.symbol}.svg`} w='44px' mb={2}/>
                 <Box  mb={2}>
 
                 <Text color={'gray.400'}>
@@ -167,7 +169,7 @@ export default function Faucet() {
             </ModalBody>
 
             <ModalFooter justifyContent={'center'}>
-                <Button disabled={!isConnected} size={'md'} loadingText="Minting" isLoading={loading} bg='secondary.400' color={'white'} mb={0} rounded={16} onClick={mint} width='100%'>
+                <Button isDisabled={!isConnected} size={'md'} loadingText="Minting" isLoading={loading} bg='secondary.400' color={'white'} mb={0} rounded={16} onClick={mint} width='100%'>
                 {isConnected ? 'Mint' : 'Please Connect Your Wallet'}
                 </Button>
             </ModalFooter>

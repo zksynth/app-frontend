@@ -2,7 +2,7 @@ import Big from "big.js";
 import { BigNumber, ethers } from "ethers";
 import * as React from "react";
 import { getContract } from "../../src/contract";
-import SYN from "../SYN/index";
+import { useNetwork } from 'wagmi';
 
 const TokenContext = React.createContext<TokenValue>({} as TokenValue);
 
@@ -45,15 +45,16 @@ function TokenContextProvider({ children }: any) {
 	);
 
 	const [refresh, setRefresh] = React.useState(0);
+	const { chain } = useNetwork();
 
-	const fetchData = async (address: string, chain: number) => {
+	const fetchData = async (address: string) => {
 		// token unlocks
-		const essyx = await getContract("EscrowedSYX", chain);
+		const essyx = await getContract("EscrowedSYX", chain?.id!);
 		const tokenUnlocks = BigNumber.from(
 			await essyx.unlockRequestCount(address)
 		).toNumber();
 
-		const multicall = await getContract("Multicall2", chain);
+		const multicall = await getContract("Multicall2", chain?.id!);
 		let calls = [];
 
 		for (let i = 0; i < tokenUnlocks; i++) {
@@ -89,7 +90,7 @@ function TokenContextProvider({ children }: any) {
 			await essyx.balanceOf(address)
 		).toString();
 
-		const syn = await getContract("SyntheXToken", chain);
+		const syn = await getContract("SyntheXToken", chain?.id!);
 		const synBalance = BigNumber.from(
 			await syn.balanceOf(address)
 		).toString();
@@ -264,7 +265,7 @@ function TokenContextProvider({ children }: any) {
 }
 
 interface TokenValue {
-	fetchData: (address: string, chain: number) => void;
+	fetchData: (address: string) => void;
 	tokenUnlocks: UnlockPosition;
 	syn: SYN;
 	staking: StakingPosition;

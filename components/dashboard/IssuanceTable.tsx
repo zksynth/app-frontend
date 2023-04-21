@@ -28,6 +28,11 @@ import Debt from "../modals/debt";
 
 const pageSize = 8;
 
+const TableHeadStyle = {
+	color: 'skyblue',
+	borderColor: 'whiteAlpha.100'
+}
+
 export default function CollateralTable() {
 	const { pools, tradingPool } = useContext(AppDataContext);
 
@@ -45,10 +50,10 @@ export default function CollateralTable() {
 						<Table variant="simple">
 							<Thead>
 								<Tr>
-									<Th color={"whiteAlpha.800"} borderColor='whiteAlpha.100'>Synthetic Asset</Th>
-									<Th color={"whiteAlpha.800"} borderColor='whiteAlpha.100'>Price</Th>
-									<Th color={"whiteAlpha.800"} borderColor='whiteAlpha.100'>Volume 24h</Th>
-									<Th color={"whiteAlpha.800"} borderColor='whiteAlpha.100' isNumeric>
+									<Th {...TableHeadStyle}>Synthetic Asset</Th>
+									<Th {...TableHeadStyle}>Price</Th>
+									<Th {...TableHeadStyle}>Volume 24h</Th>
+									<Th {...TableHeadStyle} isNumeric>
 										Liquidity
 									</Th>
 								</Tr>
