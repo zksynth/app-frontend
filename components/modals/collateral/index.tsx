@@ -84,8 +84,10 @@ export default function CollateralModal({ collateral }: any) {
 							.div(collateral.priceUSD)
 							.mul(1e4)
 							.div(collateral.baseLTV)
+							.mul(1e18)
+							.div(10**collateral.token.decimals)
 					: Big(0);
-			const v2 = Big(collateral.balance ?? 0).div(10 ** 18);
+			const v2 = Big(collateral.balance ?? 0).div(10 ** collateral.token.decimals);
 			// min(v1, v2)
 			return (v1.gt(v2) ? v2 : v1).toString();
 		}

@@ -41,7 +41,7 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 	// adjustedDebt - pools[tradingPool]?.userDebt = assetAmount*assetPrice*ltv
 	const max = () => {
 		const v1 = collateral.priceUSD > 0 ? Big(pools[tradingPool]?.adjustedCollateral).sub(pools[tradingPool]?.userDebt).div(collateral.priceUSD).mul(1e4).div(collateral.baseLTV) : Big(0);
-        const v2 = Big(collateral.balance ?? 0).div(10**18);
+        const v2 = Big(collateral.balance ?? 0).div(10**collateral.token.decimals);
 		// min(v1, v2)
 		return (v1.gt(v2) ? v2 : v1).toString();
 	};
