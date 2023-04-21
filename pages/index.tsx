@@ -358,7 +358,7 @@ export default function TempPage() {
 					>
 						<Box
 							// bg={"bg2"}
-							bgGradient={'linear(to-b, rgba(5, 104, 204, 0.2), rgba(5, 119, 230, 0.05))'}
+							bgGradient={'linear(to-b, rgba(5, 104, 204, 0.2), rgba(5, 119, 230, 0.1))'}
 							rounded={10}
 							h={"100%"}
 							border="1px"
