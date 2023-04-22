@@ -42,11 +42,12 @@ export default function TempPage() {
 
 	const esSyxApr = () => {
 		if (!pools[tradingPool]) return "0";
-		if(Big(pools[tradingPool]?.totalDebtUSD).eq(0)) return "0"
+		if(Big(pools[tradingPool]?.totalDebtUSD).eq(0)) return "0";
 		return Big(pools[tradingPool]?.rewardSpeeds[0])
 			.div(1e18)
 			.mul(365 * 24 * 60 * 60 * ESYX_PRICE)
 			.div(pools[tradingPool]?.totalDebtUSD)
+			.mul(100)
 			.toFixed(2);
 	};
 
