@@ -66,16 +66,18 @@ export default function PoolSelector() {
 								whileTap={{ scale: 0.97 }}
 								onClick={() => setIsOpen(!isOpen)}
 							>
-								<Flex align={"end"} mb={4} gap={10}>
+								<Flex align={"center"} mb={4} gap={10}>
 									<Flex>
 										<Box textAlign={'left'}>
 										{/* <Text fontSize={'sm'} color='whiteAlpha.600'>Market Name</Text> */}
-										<Heading fontSize={"3xl"}>
+										<Heading fontSize={"4xl"} fontWeight='semibold'
+										// fontFamily='MonumentExtended'
+										>
 											{pools[tradingPool].name}
 										</Heading>
 										</Box>
 									</Flex>
-									<Flex align={'center'} color='whiteAlpha.800'>
+									<Flex align={'center'} color='whiteAlpha.900'>
 									<Text fontSize={'sm'} >{ !isOpen ? 'All Markets' : 'Tap To Close'}</Text>
 									<motion.div
 										variants={{

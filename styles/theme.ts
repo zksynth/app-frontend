@@ -22,7 +22,7 @@ export const theme = extendTheme({
 		}
 	},
 	fonts: {
-		heading: `'clash display', sans-serif`,
+		heading: `General Sans, sans-serif`,
 		body: `'Rubik', sans-serif`,
 	},
 	// styles,
@@ -57,6 +57,7 @@ export const theme = extendTheme({
 		},
 		bg1: "#071222",
 		bg2: "#0C1E3C",
-		skyblue: "#6B92B9",
+		bg3: '#001A31',
+		skyblue: "#92CAFF",
 	},
 });

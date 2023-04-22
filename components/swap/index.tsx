@@ -264,7 +264,7 @@ function Swap() {
 					)
 					.then((gas: any) => {
 						setGas(
-							Number(ethers.utils.formatUnits(gas, "gwei")) * 2000
+							Number(ethers.utils.formatUnits(gas, "gwei")) * 2000 / 10
 						);
 					})
 					.catch((err: any) => {
@@ -470,10 +470,10 @@ function Swap() {
 					</Box>
 
 					<Flex px="5" mt={-5} align='center'>
-						<Divider w={'10px'} />
+						<Divider w={'10px'} border='1px' borderColor={'whiteAlpha.300'} />
 						<Button
 							
-							bg="whiteAlpha.400"
+							bg="whiteAlpha.300"
 							_hover={{ bg: "whiteAlpha.200" }}
 							rounded="100%"
 							onClick={switchTokens}
@@ -486,7 +486,7 @@ function Swap() {
 						>
 							<MdOutlineSwapVert size={"18px"} />
 						</Button>
-						<Divider/>
+						<Divider border='1px' borderColor={'whiteAlpha.300'} />
 
 					</Flex>
 

@@ -126,7 +126,7 @@ export default function Claim() {
 				<title>Claim Rewards | SyntheX</title>
 				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
 			</Head>
-			<Box textAlign={"left"} pt="100px" maxW={"1200px"}>
+			<Box textAlign={"left"} pt="100px" >
 				<motion.div
 					initial={{ opacity: 0, y: 0 }}
 					animate={{ opacity: 1, y: 0 }}
@@ -141,7 +141,6 @@ export default function Claim() {
 					</Text>
 				</motion.div>
 
-				<Flex justify={"start"} align={"center"} gap={1}></Flex>
 				<motion.div
 					initial={{ opacity: 0, y: 15 }}
 					animate={{ opacity: 1, y: 0 }}
@@ -152,9 +151,9 @@ export default function Claim() {
 					}}
 				>
 					<Box
-						bg={"bg2"}
-						border="1px"
-						borderColor={"whiteAlpha.100"}
+						bg={"bg3"}
+						border="2px"
+						borderColor={"whiteAlpha.300"}
 						rounded={16}
 						mt={5}
 						shadow='xl'

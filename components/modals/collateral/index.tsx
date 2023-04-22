@@ -35,8 +35,9 @@ import Withdraw from "./Withdraw";
 import { WETH_ADDRESS } from "../../../src/const";
 import { useNetwork, useAccount, useSignTypedData } from 'wagmi';
 import { isValidAndPositiveNS } from '../../utils/number';
+import TdBox from "../../dashboard/TdBox";
 
-export default function CollateralModal({ collateral }: any) {
+export default function CollateralModal({ collateral, index }: any) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [tabSelected, setTabSelected] = useState(0);
 
@@ -47,12 +48,6 @@ export default function CollateralModal({ collateral }: any) {
 	const { address } = useAccount();
 
 	const { pools, tradingPool } = useContext(AppDataContext);
-
-	useEffect(() => {});
-
-	const borderStyle = {
-		borderColor: "whiteAlpha.100",
-	};
 
 	const _onClose = () => {
 		setAmount("0");
@@ -103,13 +98,16 @@ export default function CollateralModal({ collateral }: any) {
 			<Tr
 				cursor="pointer"
 				onClick={_onOpen}
-				borderLeft="2px"
-				borderColor="transparent"
-				
+				// borderLeft="2px"
+				// borderColor="transparent"
 				_hover={{ borderColor: "primary.400", bg: "whiteAlpha.100" }}
+				
 			>
-				<Td {...borderStyle}>
-					<Flex gap={3} ml='-2px'>
+				<TdBox
+					isFirst={index == 0}
+					alignBox='left'
+				>
+					<Flex gap={3} textAlign='left'>
 						<Image
 							src={`/icons/${collateral.token.symbol}.svg`}
 							width="38px"
@@ -117,7 +115,7 @@ export default function CollateralModal({ collateral }: any) {
 						/>
 						<Box>
 							<Text>{collateral.token.name}</Text>
-							<Flex color="gray.500" fontSize={"sm"} gap={1}>
+							<Flex color="whiteAlpha.700" fontSize={"sm"} gap={1}>
 							<Text>{collateral.token.symbol} - </Text>
 								<Text>
 									{tokenFormatter.format(
@@ -137,24 +135,27 @@ export default function CollateralModal({ collateral }: any) {
 							</Flex>
 						</Box>
 					</Flex>
-				</Td>
-				<Td
-					{...borderStyle}
-					color={
+				</TdBox>
+				<TdBox
+					isFirst={index == 0}
+					alignBox='right'
+					isNumeric
+				>
+					<Text fontSize={'md'} color={
 						Big(collateral.balance ?? 0).gt(0)
 							? "white"
 							: "gray.500"
-					}
-					isNumeric
-					fontSize={"md"}
-				>
+					} >
+
 					{tokenFormatter.format(
 						Big(collateral.balance ?? 0)
 							.div(10 ** (collateral.token.decimals ?? 18))
 							.toNumber()
 					)}
 					{Big(collateral.balance ?? 0).gt(0) ? "" : ".00"}
-				</Td>
+					</Text>
+
+				</TdBox>
 			</Tr>
 
 			<Modal isCentered isOpen={isOpen} onClose={_onClose}>

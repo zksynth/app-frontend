@@ -21,13 +21,13 @@ export default function escrow() {
           </Box>
         </Flex>
 
-        <Flex shadow='xl' bg={"bg2"} border='2px' borderColor={'whiteAlpha.100'} mt='10' p={5} rounded='16' align={'center'} justify='space-between'>
+        <Flex shadow='xl' bg={"bg3"} border='2px' borderColor={'whiteAlpha.100'} mt='10' p={5} rounded='16' align={'center'} justify='space-between'>
           <Heading size={'md'}>Claim WETH</Heading>
           <Tag>Coming soon</Tag>
         </Flex>
 
 
-        <Flex shadow='xl' bg={"bg2"} border='2px' borderColor={'whiteAlpha.100'} mt='5' p={5} rounded='16' align={'center'} justify='space-between'>
+        <Flex shadow='xl' bg={"bg3"} border='2px' borderColor={'whiteAlpha.100'} mt='5' p={5} rounded='16' align={'center'} justify='space-between'>
           <Flex align={'center'} gap={2}>
           <Heading size={'md'}>SYX</Heading>
           <AiOutlineSwap/>

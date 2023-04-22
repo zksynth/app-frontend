@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { useNetwork, useSwitchNetwork } from 'wagmi';
+import Particles from '../components/utils/particles';
 
 export default function _index({ children }: any) {
 	const router = useRouter();
@@ -68,7 +69,7 @@ export default function _index({ children }: any) {
 		<Box>
 			{(chain?.testnet) && <Flex align={'center'} justify={'center'} bgColor="blackAlpha.100" color={'gray.400'}>
 				<Text
-					textAlign={'center'}
+					textAlign={'center'} 
 					fontSize={'sm'}
 					fontWeight="medium"
 					p={3}>
@@ -90,21 +91,23 @@ export default function _index({ children }: any) {
 				</Text>
 			)}
 			</Box>
-			{/* <Box bg='white'>
-			<Box w='100%' bgRepeat='no-repeat' bgGradient={'radial(primary.500, #0575E6)'}> */}
-			<Box w='100%' h={'100%'} bg='bg1'>
-			{/* <Box w='100%' bgGradient={'linear(to-b, blackAlpha.400, blackAlpha.400)'}> */}
+			<Box bgGradient={'linear(to-b, #001121, #001324)'} zIndex={0}>
+				<Box bgImage="url('/bottom-glow.svg')" bgPos={"bottom"} bgRepeat='repeat-x'>
 
 				<Flex
 					justify={'center'}
 					flexDirection={{ sm: 'column', md: 'row' }}
-					
-					minH="94vh">
-					<Box maxWidth={'1300px'} 
-                    minW={{sm: '0', md: '0', lg: '1200px'}}
-					px={{sm: '4', md: '0'}}
-					
-                    >
+					minH="96vh"
+					maxW={'100%'}
+					>
+					<Box position={'absolute'} bottom={0} width='100%' zIndex={1}>
+					<Particles quantity={60} />
+					</Box>
+					<Box zIndex={2} minW={{sm: '0', md: '0', lg: '1200px'}} w={'100%'} px={{sm: '4', md: '0'}}>
+						<Flex justify='center'>
+							<Box maxW={'1200px'}>
+
+
 						<Navbar />
 						<motion.div 
 							initial={{opacity: 0, y: 15}}
@@ -114,13 +117,16 @@ export default function _index({ children }: any) {
 						>
 							{children}
 						</motion.div>
+						</Box>
+
+						</Flex>
+
 					</Box>
 				</Flex>
-				<Footer />
-			{/* </Box> */}
+						<Footer />
+				</Box>
+
 			</Box>
-			{/* </Box>
-			</Box> */}
 		</Box>
 	);
 }

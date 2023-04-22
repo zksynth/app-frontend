@@ -16,6 +16,8 @@ import {
 import { AppDataContext } from "../context/AppDataProvider";
 
 import CollateralModal from "../modals/collateral";
+import ThBox from "./ThBox";
+
 
 export default function CollateralTable() {
 	const { pools, tradingPool } = useContext(AppDataContext);
@@ -23,14 +25,16 @@ export default function CollateralTable() {
 	return (
 		<>
 			{pools[tradingPool]?.collaterals.length > 0 ? (
-					<TableContainer rounded={0} pt={1}>
+					<TableContainer px={'0'} rounded={0} pt={1}>
 						<Table variant="simple">
 							<Thead>
 								<Tr>
-									<Th color={"skyblue"} borderColor='whiteAlpha.100'>Collateral</Th>
-									<Th color={"skyblue"} borderColor='whiteAlpha.100' isNumeric>
+									<ThBox alignBox='left'>
+										Collateral
+									</ThBox>
+									<ThBox alignBox='right' isNumeric>
 										Balance
-									</Th>
+									</ThBox>
 								</Tr>
 							</Thead>
 							<Tbody>
@@ -40,6 +44,7 @@ export default function CollateralTable() {
 											key={index}
 											collateral={collateral}
 											tradingPool={tradingPool}
+											index={index}
 										/>
 									)
 								)}

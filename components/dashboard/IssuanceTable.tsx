@@ -25,12 +25,19 @@ import {
 import { MdNavigateBefore, MdNavigateNext } from "react-icons/md";
 import { Skeleton } from "@chakra-ui/react";
 import Debt from "../modals/debt";
+import ThBox from "./ThBox";
 
 const pageSize = 8;
 
 const TableHeadStyle = {
-	color: 'skyblue',
-	borderColor: 'whiteAlpha.100'
+	color: 'whiteAlpha.700',
+	borderBottom: '2px solid',
+	borderColor: 'whiteAlpha.300',
+	fontWeight: 'medium',
+	fontFamily: 'General Sans',
+	pt: '30px',
+	pb: '22px',
+	px: 4
 }
 
 export default function CollateralTable() {
@@ -46,22 +53,22 @@ export default function CollateralTable() {
 	return (
 		<>
 				{pools[tradingPool]?.synths.length > 0 ? (
-					<TableContainer pt={1}>
+					<TableContainer px={'0'} pt={1}>
 						<Table variant="simple">
 							<Thead>
-								<Tr>
-									<Th {...TableHeadStyle}>Synthetic Asset</Th>
-									<Th {...TableHeadStyle}>Price</Th>
-									<Th {...TableHeadStyle}>Volume 24h</Th>
-									<Th {...TableHeadStyle} isNumeric>
+								<Tr >
+									<ThBox alignBox='left'>Synthetic Asset</ThBox>
+									<ThBox >Price</ThBox>
+									<ThBox >Volume 24h</ThBox>
+									<ThBox alignBox='right' isNumeric>
 										Liquidity
-									</Th>
+									</ThBox>
 								</Tr>
 							</Thead>
 							<Tbody>
 								{[...pools[tradingPool]?.synths.slice((currentPage - 1) * pageSize, currentPage * pageSize)].map(
 									(synth: any, index: number) => (
-										<Debt synth={synth} key={index} />
+										<Debt synth={synth} key={index} index={index} />
 									)
 								)}
 							</Tbody>
@@ -95,10 +102,10 @@ export default function CollateralTable() {
 										page={page}
 										width={10}
 										rounded={"full"}
-										bgColor={
-											page === currentPage
-												? "whiteAlpha.100"
-												: "transparent"
+										bgColor={"transparent"
+										}
+										color={
+											page === currentPage ? 'primary.400' : 'white'
 										}
 										_hover={{ bgColor: "whiteAlpha.200" }}
 									/>

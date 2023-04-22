@@ -70,9 +70,9 @@ export default function Earn() {
 					}}
 				>
 					<Box
-						bg={"bg2"}
+						bg={"bg3"}
 						border="2px"
-						borderColor={"whiteAlpha.100"}
+						borderColor={"whiteAlpha.300"}
 						rounded={16}
 						mt={5}
 						shadow="xl"
@@ -122,9 +122,9 @@ export default function Earn() {
 					}}
 				>
 					<Box
-						bg={"bg2"}
+						bg={"bg3"}
 						border="2px"
-						borderColor={"whiteAlpha.100"}
+						borderColor={"whiteAlpha.300"}
 						rounded={16}
 						mt={5}
 						shadow="xl"
@@ -169,9 +169,9 @@ export default function Earn() {
 					}}
 				>
 					<Box
-						bg={"bg2"}
+						bg={"bg3"}
 						border="2px"
-						borderColor={"whiteAlpha.100"}
+						borderColor={"whiteAlpha.300"}
 						rounded={16}
 						mt={5}
 						shadow="xl"
@@ -216,9 +216,9 @@ export default function Earn() {
 					}}
 				>
 					<Box
-						bg={"bg2"}
+						bg={"bg3"}
 						border="2px"
-						borderColor={"whiteAlpha.100"}
+						borderColor={"whiteAlpha.300"}
 						rounded={16}
 						mt={5}
 						shadow="xl"

@@ -5,21 +5,24 @@ import Swap from "../components/swap/index";
 
 export default function swap() {
 	return (
-		<>
+		<Flex >
+				<Box bgImage='/center-glow.svg' bgRepeat={'no-repeat'} w='100%' h={'100%'} bgPos='50% 50%'>
 			<Flex justify={"center"} align="center" h={"80vh"}>
-				<Box w={"42%"} minW="400px">
+
+				<Box w={"43%"} minW="400px" >
 					<motion.div
 						initial={{ opacity: 0, y: 15 }}
 						animate={{ opacity: 1, y: 0 }}
 						exit={{ opacity: 0, y: 15 }}
 						transition={{ duration: 0.45 }}
 					>
+						
 						<Box
 							animation={"fadeIn 0.5s ease-in-out"}
-							// bgColor={"bg2"}
-							border='1px'
-							borderColor='whiteAlpha.50'
-							bgGradient={'linear(to-b, rgba(5, 104, 204, 0.25), rgba(5, 119, 230, 0.1))'}
+							bgColor={"bg3"}
+							border='2px'
+							borderColor='whiteAlpha.300'
+							// bgGradient={'linear(to-b, rgba(5, 104, 204, 0.25), rgba(5, 119, 230, 0.1))'}
 							
 							rounded={15}
 						>
@@ -27,7 +30,9 @@ export default function swap() {
 						</Box>
 					</motion.div>
 				</Box>
+
 			</Flex>
-		</>
+				</Box>
+		</Flex>
 	);
 }

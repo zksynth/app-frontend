@@ -114,8 +114,8 @@ function NavBar() {
 	});
 
 	return (
-		<>
-			<Flex alignItems={"center"} justify="space-between" h={"100px"} w='100%'>
+		<Flex justify={'center'} align='center' >
+			<Flex alignItems={"center"} justify="space-between" h={"100px"} w='1250px'>
 				<Flex justify="space-between" align={"center"} gap={10} mt={2} w='100%'>
 					<Flex gap={10} align='center' cursor="pointer">
 						<Image
@@ -178,7 +178,6 @@ function NavBar() {
 					align={"center"}
 					gap={2}
 					w='100%'
-					
 				>
 				<motion.div whileHover={{scale: 1.05}} whileTap={{scale: 0.95}}>
 					<Link href={{ pathname: "/leaderboard", query: router.query }} >
@@ -218,7 +217,7 @@ function NavBar() {
 			<Collapse in={isToggleOpen} animateOpacity>
 				<MobileNav />
 			</Collapse>
-		</>
+		</Flex>
 	);
 }
 

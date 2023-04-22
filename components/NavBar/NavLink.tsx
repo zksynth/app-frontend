@@ -38,6 +38,7 @@ export default function NavLink({
 					// border="2px"
 					// borderColor={"whiteAlpha.50"}
 					flex='stretch'
+					color={isPath ? "white" : "whiteAlpha.700"}
 				>
 					<Box
 						// color={isPath ? "primary.400" : "gray.100"}

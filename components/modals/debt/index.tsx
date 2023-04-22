@@ -36,8 +36,9 @@ import Mint from "./mint";
 import Burn from "./burn";
 import Big from "big.js";
 import { useAccount } from "wagmi";
+import TdBox from "../../dashboard/TdBox";
 
-export default function Debt({ synth }: any) {
+export default function Debt({ synth, index }: any) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
 	const { pools, tradingPool, account } = useContext(AppDataContext);
@@ -50,6 +51,7 @@ export default function Debt({ synth }: any) {
 
 	const borderStyle = {
 		borderColor: "whiteAlpha.100",
+		px: 4
 	};
 
 	const _onClose = () => {
@@ -97,10 +99,11 @@ export default function Debt({ synth }: any) {
 			<Tr
 				cursor="pointer"
 				onClick={onOpen}
-				borderLeft='2px' borderColor='transparent' _hover={{ borderColor: 'primary.400', bg: 'whiteAlpha.100' }}
+				// borderLeft='2px' borderColor='transparent' 
+				_hover={{ bg: 'whiteAlpha.100' }}
 			>
-				<Td {...borderStyle}>
-					<Flex gap={3} ml={'-2px'}>
+				<TdBox isFirst={index == 0} alignBox='left'>
+					<Flex gap={3} ml={'-2px'} textAlign='left'>
 						<Image
 							src={`/icons/${synth.token.symbol}.svg`}
 							width="38px"
@@ -113,7 +116,7 @@ export default function Debt({ synth }: any) {
 									.slice(1, -2)
 									.join(" ")}
 							</Text>
-							<Flex color="gray.500" fontSize={"sm"} gap={1}>
+							<Flex color="whiteAlpha.700" fontSize={"sm"} gap={1}>
 								<Text>
 									{synth.token.symbol} -{" "}
 									{tokenFormatter.format(
@@ -126,26 +129,28 @@ export default function Debt({ synth }: any) {
 							</Flex>
 						</Box>
 					</Flex>
-				</Td>
-				<Td {...borderStyle} fontSize="md">
+				</TdBox>
+				<TdBox isFirst={index == 0} alignBox='center'>
 					{dollarFormatter.format(synth.priceUSD)}
-				</Td>
-				<Td {...borderStyle} fontSize="md">
+				</TdBox>
+				<TdBox isFirst={index == 0} alignBox='center'>
 					{dollarFormatter.format(
 						Big(synth.synthDayData[0]?.dailyMinted ?? 0).add(synth.synthDayData[0]?.dailyBurned ?? 0)
 							.mul(synth.priceUSD)
                             .div(10**18)
 							.toNumber()
 					)}
-				</Td>
-				<Td {...borderStyle} fontSize="md" isNumeric>
+				</TdBox>
+				<TdBox isNumeric isFirst={index == 0} alignBox='right'>
+					<Text>
 					{dollarFormatter.format(
 						Big(synth.totalSupply)
-							.mul(synth.priceUSD)
-                            .div(10**18)
-							.toNumber()
-					)}
-				</Td>
+						.mul(synth.priceUSD)
+						.div(10**18)
+						.toNumber()
+						)}
+						</Text>
+				</TdBox>
 			</Tr>
 
 			<Modal isCentered isOpen={isOpen} onClose={_onClose}>

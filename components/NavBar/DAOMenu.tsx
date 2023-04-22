@@ -51,7 +51,7 @@ export default function NavBar() {
 											// borderColor={"whiteAlpha.50"}
 										>
 											<Box
-												color={router.pathname.includes('dao') ? 'primary.400': 'gray.100'}
+												color={router.pathname.includes('dao') ? 'white': 'whiteAlpha.700'}
 												fontFamily="Roboto"
 												fontWeight={"bold"}
 												fontSize="sm"
@@ -87,6 +87,7 @@ export default function NavBar() {
 														/>
 													</motion.div>
 												</Flex>
+											{router.pathname.includes('dao') && <Box w='80%' h={'2px'} rounded='full' bg='primary.400'></Box>}
 											</Box>
 										</Flex>
 									</motion.div>
