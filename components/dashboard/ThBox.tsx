@@ -6,10 +6,10 @@ const tableHeaderStyle = {
 	// borderBottom: '2px solid',
 	// borderColor: 'whiteAlpha.300',
 	borderColor: 'transparent',
-	fontWeight: 'medium',
+	fontWeight: 'bold',
 	fontFamily: 'General Sans',
-	pt: '25px',
-	pb: '20px',
+	pt: '24px',
+	pb: '16px',
 }
 
 export default function ThBox({children, alignBox, isNumeric}: any) {
