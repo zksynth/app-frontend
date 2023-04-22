@@ -124,13 +124,14 @@ export default function PoolSelector() {
 							display: "flex",
 							flexDirection: "column",
 							position: "relative",
-							width: "400px",
+							width: "90%",
 							zIndex: '100',
-							backgroundColor: "#0A1931",
-							border: "2px solid #212E44",
+							backgroundColor: "#001A31",
+							border: "2px solid #2E3E50",
 							borderRadius: "10px"
 						}}
 					>
+						<Box shadow={'xl'}>
 						<motion.div
 							variants={{
 								open: {
@@ -181,6 +182,7 @@ export default function PoolSelector() {
 										_hover={{ bg: "whiteAlpha.50" }}
 										cursor="pointer"
 										px={4}
+										py={1}
 										// p={'12px'}
 									>
 										<Flex
@@ -190,7 +192,7 @@ export default function PoolSelector() {
 										>
 											<Box>
 												<Heading fontSize={"xl"}>
-													{pool.name}
+													{pool.name} ({pool.symbol})
 												</Heading>
 												<Flex
 													justify={"start"}
@@ -225,7 +227,7 @@ export default function PoolSelector() {
 											</Box>
 											<Flex mr={4}>
 												{pool.synths
-													.slice(0, 4)
+													.slice(0, 5)
 													.map(
 														(
 															synth: any,
@@ -257,6 +259,7 @@ export default function PoolSelector() {
 								</motion.li>
 							);
 						})}
+						</Box>
 					</motion.ul>
 				</motion.nav>
 			</Box>

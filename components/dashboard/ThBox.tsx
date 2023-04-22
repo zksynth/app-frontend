@@ -8,8 +8,8 @@ const tableHeaderStyle = {
 	borderColor: 'transparent',
 	fontWeight: 'medium',
 	fontFamily: 'General Sans',
-	pt: '30px',
-	pb: '22px',
+	pt: '25px',
+	pb: '20px',
 }
 
 export default function ThBox({children, alignBox, isNumeric}: any) {

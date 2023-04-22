@@ -27,18 +27,7 @@ import { Skeleton } from "@chakra-ui/react";
 import Debt from "../modals/debt";
 import ThBox from "./ThBox";
 
-const pageSize = 8;
-
-const TableHeadStyle = {
-	color: 'whiteAlpha.700',
-	borderBottom: '2px solid',
-	borderColor: 'whiteAlpha.300',
-	fontWeight: 'medium',
-	fontFamily: 'General Sans',
-	pt: '30px',
-	pb: '22px',
-	px: 4
-}
+const pageSize = 7;
 
 export default function CollateralTable() {
 	const { pools, tradingPool } = useContext(AppDataContext);
@@ -53,7 +42,7 @@ export default function CollateralTable() {
 	return (
 		<>
 				{pools[tradingPool]?.synths.length > 0 ? (
-					<TableContainer px={'0'} pt={1}>
+					<TableContainer>
 						<Table variant="simple">
 							<Thead>
 								<Tr >

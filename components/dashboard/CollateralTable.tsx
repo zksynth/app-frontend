@@ -25,7 +25,7 @@ export default function CollateralTable() {
 	return (
 		<>
 			{pools[tradingPool]?.collaterals.length > 0 ? (
-					<TableContainer px={'0'} rounded={0} pt={1}>
+					<TableContainer>
 						<Table variant="simple">
 							<Thead>
 								<Tr>

@@ -265,6 +265,13 @@ function AppDataProvider({ children }: any) {
 					}
 				}
 
+				// sort collaterals by collateral.walletBalance * collateral.priceUSD
+				for(let i = 0; i < _pools.length; i++){
+					_pools[i].collaterals.sort((a: any, b: any) => {
+						return (Big(a.walletBalance).add(a.nativeBalance ?? 0).div(10**a.token.decimals).mul(a.priceUSD)) < (Big(b.walletBalance).add(b.nativeBalance ?? 0).div(10**b.token.decimals).mul(b.priceUSD)) ? 1 : -1;
+					})
+				}
+
 				for(let j = 0; j < _pools.length; j++){
 					updateUserParams(_pools[j])
 				}
