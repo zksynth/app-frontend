@@ -64,7 +64,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 				message: "Connect Wallet"
 			}
 		} else if (ethBalance?.value.lt(
-			ethers.utils.parseEther("0.01")
+			ethers.utils.parseEther("0.00001")
 		)) {
 			return {
 				stage: 0,
