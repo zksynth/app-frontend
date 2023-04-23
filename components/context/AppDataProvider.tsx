@@ -327,7 +327,7 @@ function AppDataProvider({ children }: any) {
 		if(Big(_pool.totalSupply).gt(0)) _totalDebt = Big(_pool.balance ?? 0).div(_pool.totalSupply).mul(_pool.totalDebtUSD);
 
 		_pool.adjustedCollateral = (_adjustedCollateral.toNumber());
-		_pool.userCollateral = (_totalCollateral.sub('100').toNumber());
+		_pool.userCollateral = (_totalCollateral.toNumber());
 		_pool.userDebt = (_totalDebt.toNumber());
 	}
 
