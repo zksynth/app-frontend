@@ -106,8 +106,6 @@ export default function _index({ children }: any) {
 					<Box zIndex={2} minW={{sm: '0', md: '0', lg: '1200px'}} w={'100%'} px={{sm: '4', md: '0'}}>
 						<Flex justify='center'>
 							<Box maxW={'1200px'}>
-
-
 						<Navbar />
 						<motion.div 
 							initial={{opacity: 0, y: 15}}
@@ -121,9 +119,11 @@ export default function _index({ children }: any) {
 
 						</Flex>
 
+						<Footer />
 					</Box>
 				</Flex>
-						<Footer />
+				<Box>
+				</Box>
 				</Box>
 
 			</Box>
