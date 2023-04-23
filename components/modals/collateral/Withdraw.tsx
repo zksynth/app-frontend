@@ -256,9 +256,9 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
                 >
                     {isConnected && !chain?.unsupported ? (
                         Big(amountNumber > 0 ? amount : amountNumber).gt(max()) ? (
-                            <>Insufficient Wallet Balance</>
+                            <>Insufficient Collateral</>
                         ) : !amount || amountNumber == 0 ? (
-                            <>Enter amount</>
+                            <>Enter Amount</>
                         ) : (
                             <>Withdraw</>
                         )

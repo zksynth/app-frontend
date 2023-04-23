@@ -119,9 +119,9 @@ export default function _index({ children }: any) {
 
 						</Flex>
 
-						<Footer />
 					</Box>
 				</Flex>
+						<Footer />
 				<Box>
 				</Box>
 				</Box>

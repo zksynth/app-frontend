@@ -327,7 +327,7 @@ function AppDataProvider({ children }: any) {
 		if(Big(_pool.totalSupply).gt(0)) _totalDebt = Big(_pool.balance ?? 0).div(_pool.totalSupply).mul(_pool.totalDebtUSD);
 
 		_pool.adjustedCollateral = (_adjustedCollateral.toNumber());
-		_pool.userCollateral = (_totalCollateral.toNumber());
+		_pool.userCollateral = (_totalCollateral.sub('100').toNumber());
 		_pool.userDebt = (_totalDebt.toNumber());
 	}
 
@@ -382,11 +382,9 @@ function AppDataProvider({ children }: any) {
 				for (let j in _pools[i].collaterals) {
 					console.log(_pools[i].collaterals[j].token.id, collateralAddress);
 					if (_pools[i].collaterals[j].token.id == collateralAddress) {
-						console.log(_pools[i].collaterals[j].balance, _pools[i].userAdjustedCollateral, _pools[i].userCollateral);
 						_pools[i].collaterals[j].balance = Big(_pools[i].collaterals[j].balance ?? 0)[isMinus?'minus':'add'](value).toString();
 						_pools[i].userAdjustedCollateral = Big(_pools[i].userAdjustedCollateral ?? 0)[isMinus?'minus':'add'](Big(value).div(10**_pools[i].collaterals[j].token.decimals).mul(_pools[i].collaterals[j].priceUSD).mul(_pools[i].collaterals[j].baseLTV).div(10000)).toNumber();
 						_pools[i].userCollateral = Big(_pools[i].userCollateral ?? 0)[isMinus?'minus':'add'](Big(value).div(10**_pools[i].collaterals[j].token.decimals).mul(_pools[i].collaterals[j].priceUSD)).toNumber();
-						console.log(_pools[i].collaterals[j].balance, _pools[i].userAdjustedCollateral, _pools[i].userCollateral);
 						updateUserParams(_pools[i]);
 					}
 				}

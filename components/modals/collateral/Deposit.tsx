@@ -19,9 +19,7 @@ import { getContract, send } from "../../../src/contract";
 import { useContext } from "react";
 import { AppDataContext } from "../../context/AppDataProvider";
 import { compactTokenFormatter } from "../../../src/const";
-import { Bs1Circle, Bs1CircleFill, Bs2CircleFill } from "react-icons/bs";
 import { ExternalLinkIcon, InfoIcon, InfoOutlineIcon } from "@chakra-ui/icons";
-import { AiFillCheckCircle } from "react-icons/ai";
 import { useToast } from '@chakra-ui/react';
 import Link from "next/link";
 
@@ -142,8 +140,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 		setHash(null);
 		const poolId = pools[tradingPool].id;
 		const pool = await getContract("Pool", chain?.id!, poolId);
-
-		console.log(pool);
+		const _amount = ethers.utils.parseUnits(Big(amount).toFixed(collateral.token.decimals, 0), collateral.token.decimals); 
 
 		let tx;
 		if (isNative) {
@@ -153,9 +150,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 				[
 					address
 				],
-				ethers.utils
-					.parseUnits(amount, collateral.token.decimals)
-					.toString()
+				_amount.toString()
 			);
 		} else {
 			console.log("data", data);
@@ -166,7 +161,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 					"depositWithPermit",
 					[
 						collateral.token.id,
-						ethers.utils.parseUnits(amount, collateral.token.decimals),
+						_amount,
 						address,
 						approveMax ? ethers.constants.MaxUint256 : ethers.utils.parseUnits(approvedAmount.toString(), collateral.token.decimals),
 						deadline,
@@ -181,7 +176,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 					"deposit",
 					[
 						collateral.token.id,
-						ethers.utils.parseUnits(amount, collateral.token.decimals),
+						_amount,
 						address
 					]
 				);
@@ -262,6 +257,9 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 	const approve = async () => {
 		setApproveLoading(true);
 		const _deadline =(Math.floor(Date.now() / 1000) + 60 * 20).toFixed(0);
+		// const _amount = Big(amount).round(collateral.token.decimals, 0).toString()
+		const _amount = Big(amount).toFixed(collateral.token.decimals, 0);
+		const value = approveMax ? ethers.constants.MaxUint256 : ethers.utils.parseUnits(_amount, collateral.token.decimals);
 		signTypedDataAsync({
 			domain: {
 				name: await collateral.token.name,
@@ -281,7 +279,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 			value: {
 				owner: address!,
 				spender: pools[tradingPool].id,
-				value: approveMax ? ethers.constants.MaxUint256 : ethers.utils.parseUnits(amount, collateral.token.decimals),
+				value,
 				nonce: collateral.nonce,
 				deadline: BigNumber.from(_deadline),
 			}
@@ -291,7 +289,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 				console.log(res);
 				setData(res);
 				setDeadline(_deadline);
-				setApprovedAmount(approveMax ? (Number.MAX_SAFE_INTEGER).toString() : amount);
+				setApprovedAmount(approveMax ? (Number.MAX_SAFE_INTEGER).toString() : _amount);
 				setApproveLoading(false);
 			})
 			.catch((err: any) => {
@@ -466,7 +464,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 							Big(amountNumber > 0 ? amount : amountNumber).gt(max()) ? (
 								<>Insufficient Wallet Balance</>
 							) : !amount || amountNumber == 0 ? (
-								<>Enter amount</>
+								<>Enter Amount</>
 							) : (
 								<>Deposit</>
 							)

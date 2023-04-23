@@ -6,7 +6,8 @@ import {
 	Flex,
 	useDisclosure,
 	Divider,
-	Link
+	Link,
+	Tooltip
 } from "@chakra-ui/react";
 
 import { getContract, send } from "../../../src/contract";
@@ -135,7 +136,36 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 	const { isConnected } = useAccount();
 
 	return (
-		<Box roundedBottom={16} px={5} pb={5} pt={0.5} bg='blackAlpha.200'>
+		<Box px={5} pb={5} pt={0.5} bg='blackAlpha.200'>
+		<Box
+				// border="1px"
+				// borderColor={"gray.700"}
+				mt={6}
+				// mb={2}
+				rounded={8}
+				// p={2}
+			>
+				<Tooltip label={`Fee for Minting and Burning ${asset.token.symbol}`}>
+				<Flex justify="space-between">
+						<Text fontSize={"md"} color="gray.400" textDecor={'underline'} cursor={'help'} style={{textUnderlineOffset: '2px', textDecorationStyle: 'dotted'}}>
+							Mint / Burn Fee
+						</Text>
+
+						<Text fontSize={"md"}>
+							{tokenFormatter.format(
+								Number(
+									asset.mintFee / 100
+								) 
+							)} {'%'} / {tokenFormatter.format(
+								Number(
+									asset.burnFee / 100
+								) 
+							)} {'%'}
+						</Text>
+					</Flex> 
+					</Tooltip>
+			</Box>
+				<Box  >
 						<Box>
 						<Text mt={6} fontSize={"sm"} color='gray.400' fontWeight={'bold'}>
 							Transaction Overview
@@ -214,6 +244,7 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 						"
 						/>
 						</Box> */}
+		</Box>
 		</Box>
 	);
 };

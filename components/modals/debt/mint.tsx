@@ -206,12 +206,12 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 			<Box
 				// border="1px"
 				// borderColor={"gray.700"}
-				// mt={6}
+				mt={6}
 				// mb={2}
 				rounded={8}
 				// p={2}
 			>
-				{/* <Tooltip label={`% Fee for Minting and Burning ${asset.token.symbol}`}>
+				<Tooltip label={`Fee for Minting and Burning ${asset.token.symbol}`}>
 				<Flex justify="space-between">
 						<Text fontSize={"md"} color="gray.400" textDecor={'underline'} cursor={'help'} style={{textUnderlineOffset: '2px', textDecorationStyle: 'dotted'}}>
 							Mint / Burn Fee
@@ -229,7 +229,7 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 							)} {'%'}
 						</Text>
 					</Flex> 
-					</Tooltip> */}
+					</Tooltip>
 			</Box>
 
 			<Box>
