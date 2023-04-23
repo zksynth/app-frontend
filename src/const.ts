@@ -7,6 +7,9 @@ const _WETH_ADDRESS: any = {
 	[ChainID.ARB]: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1"
 };
 export const ESYX_PRICE = 0.005;
+
+export const PROJECT_ID = '9635a0d9de95bced3f125a11f3ace2b5';
+export const APP_NAME = 'Synthex';
 const _Endpoints: any = {
 	[ChainID.ARB_GOERLI]: process.env.NEXT_PUBLIC_GRAPH_TESTNET_URL ?? "https://api.thegraph.com/subgraphs/name/prasad-kumkar/synthex",
 	[ChainID.ARB]: process.env.NEXT_PUBLIC_GRAPH_URL ?? "https://api.thegraph.com/subgraphs/name/prasad-kumkar/synthex"

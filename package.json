@@ -8,10 +8,8 @@
     "build:staging": "yarn run:config:staging && node_modules/next/dist/bin/next build",
     "start": "node_modules/next/dist/bin/next start",
     "lint": "node_modules/next/dist/bin/next lint",
-
     "run:config:main:mainnet": "export NODE_ENV=main && export NETWORK=42161 && node scripts/config.js",
     "run:config:dev:mainnet": "export NODE_ENV=dev && export NETWORK=42161 && node scripts/config.js",
-    
     "run:config:main:testnet": "export NODE_ENV=main && export NETWORK=421613 && node scripts/config.js",
     "run:config:dev:testnet": "export NODE_ENV=dev && export NETWORK=421613 && node scripts/config.js"
   },
@@ -24,7 +22,7 @@
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@fontsource/aileron": "^4.5.3",
-    "@rainbow-me/rainbowkit": "^0.12.7",
+    "@rainbow-me/rainbowkit": "^0.12.9",
     "@sentry/nextjs": "^7.30.0",
     "apexcharts": "^3.35.5",
     "big.js": "^6.2.1",
@@ -44,7 +42,7 @@
     "recharts": "^2.4.3",
     "tronweb": "^4.4.0",
     "tweetnacl": "^1.0.3",
-    "wagmi": "^0.12.10",
+    "wagmi": "^0.12.12",
     "web3": "^1.8.0"
   },
   "devDependencies": {

@@ -5,7 +5,18 @@ import {
 	RainbowKitProvider,
 	getDefaultWallets,
 	darkTheme,
+	connectorsForWallets,
 } from '@rainbow-me/rainbowkit';
+import {
+	coinbaseWallet,
+	injectedWallet,
+	ledgerWallet,
+	metaMaskWallet,
+	phantomWallet,
+	rainbowWallet,
+	trustWallet,
+	walletConnectWallet,
+  } from '@rainbow-me/rainbowkit/wallets';
 import {
 	configureChains,
 	createClient,
@@ -23,6 +34,8 @@ import { AppDataProvider } from '../components/context/AppDataProvider';
 import { theme } from '../styles/theme';
 import rainbowTheme from '../styles/rainbowTheme';
 import { TokenContextProvider } from '../components/context/TokenContext';
+import { rabbyWallet } from '@rainbow-me/rainbowkit/wallets';
+import { PROJECT_ID, APP_NAME } from '../src/const';
 
 const { chains, provider } = configureChains(
 	[{
@@ -38,10 +51,27 @@ const { chains, provider } = configureChains(
 	]
   );
   
-  const { connectors } = getDefaultWallets({
-	appName: 'SyntheX',
-	chains
-  });
+  const connectors = connectorsForWallets([
+	{
+	  groupName: 'Recommended',
+	  wallets: [
+		metaMaskWallet({ chains }),
+		walletConnectWallet({ projectId: PROJECT_ID, chains }),
+	  ],
+	},
+	{
+		groupName: 'All Wallets',
+		wallets: [
+			rainbowWallet({ projectId: PROJECT_ID, chains }),
+			trustWallet({ projectId: PROJECT_ID, chains }),
+			phantomWallet({ chains }),
+			coinbaseWallet({ appName: APP_NAME, chains }),
+			rabbyWallet({ chains })
+		],
+	  },
+  ]);
+  
+  
   
   const wagmiClient = createClient({
 	autoConnect: true,
