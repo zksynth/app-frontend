@@ -68,7 +68,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 		)) {
 			return {
 				stage: 0,
-				message: "Insufficient ETH"
+				message: "Insufficient ETH for Gas Fee"
 			}
 		} else if (chain?.unsupported){
 			return {
