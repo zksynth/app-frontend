@@ -38,11 +38,11 @@ import { rabbyWallet } from '@rainbow-me/rainbowkit/wallets';
 import { PROJECT_ID, APP_NAME } from '../src/const';
 
 const { chains, provider } = configureChains(
-	[{
-	  ...arbitrumGoerli,
-	  iconUrl: 'https://arbitrum.io/wp-content/uploads/2021/01/Arbitrum_Symbol-Full-color-White-background.png'
-	} as Chain,
-	arbitrum
+	[arbitrum,
+	// {
+	//   ...arbitrumGoerli,
+	//   iconUrl: 'https://arbitrum.io/wp-content/uploads/2021/01/Arbitrum_Symbol-Full-color-White-background.png'
+	// } as Chain
 	// chain.goerli
   ],
 	[
