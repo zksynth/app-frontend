@@ -19,7 +19,6 @@ import { tokenFormatter, dollarFormatter } from '../src/const';
 import { FaBurn, FaMedal } from 'react-icons/fa';
 import { FaMagic } from 'react-icons/fa';
 import { RiMagicFill } from 'react-icons/ri';
-import { GiMedal } from 'react-icons/gi';
 import Head from 'next/head';
 import { MdRefresh } from 'react-icons/md';
 import { useAccount } from 'wagmi';
@@ -41,6 +40,18 @@ export default function Leaderboard() {
       console.log(err);
       setRefreshing(false);
     })
+  }
+
+  const dailyPointsEarned = (__account : any) => {
+    if(!__account) return '-';
+    if(!__account.accountDayData) return '-';
+    return tokenFormatter.format(__account.accountDayData[0].dayId == Math.floor(Date.now()/(24*3600000)) ? __account.accountDayData[0].dailyPoint : 0);
+  }
+
+  const dailyVolume = (__account : any) => {
+    if(!__account) return '-';
+    if(!__account.accountDayData) return '-';
+    return tokenFormatter.format(__account.accountDayData[0].dayId == Math.floor(Date.now()/(24*3600000)) ? __account.accountDayData[0].dailyMintedUSD : 0);
   }
 
   return (
@@ -77,7 +88,7 @@ export default function Leaderboard() {
           <RiMagicFill size={'22px'}/>
           <Box minW={'100px'}>
             <Heading size={'sm'} color={'whiteAlpha.700'}>Points Earned</Heading>
-            <Text fontSize={'xl'}>{account?.accountDayData ? tokenFormatter.format(account.accountDayData[0]?.dailyPoint ?? 0) : '-'}</Text>
+            <Text fontSize={'xl'}>{dailyPointsEarned(account)}</Text>
           </Box>
         </Flex>
 
@@ -85,7 +96,7 @@ export default function Leaderboard() {
           <FaMagic/>
           <Box minW={'100px'}>
             <Heading size={'sm'} color={'whiteAlpha.700'}>Volume (USD)</Heading>
-            <Text fontSize={'xl'}>{account?.accountDayData ? dollarFormatter.format(account.accountDayData[0]?.dailyMintedUSD ?? 0): '-'}</Text>
+            <Text fontSize={'xl'}>{dailyVolume(account)}</Text>
           </Box>
         </Flex>
 
@@ -120,17 +131,14 @@ export default function Leaderboard() {
             <Text>
           {index + 1}
             </Text>
-
           { index < 10 && <FaMedal color='orange'/> } 
           { index >= 10 && index < 25 && <FaMedal color='gray'/> } 
-
-
           </Flex>
-          
           </Td>
         <Td borderColor={'whiteAlpha.50'}>{(account?.id.toLowerCase() == _account.id ? `You (${_account.id.slice(0,8)})` :  _account.id.slice(0, 8) + '...' + _account.id.slice(36))}</Td>
-        <Td borderColor={'whiteAlpha.50'}>{tokenFormatter.format(_account.accountDayData[0]?.dailyPoint ?? 0)}</Td>
-        <Td borderColor={'whiteAlpha.50'}>{dollarFormatter.format(_account.accountDayData[0]?.dailyMintedUSD ?? 0)}</Td>
+        <Td borderColor={'whiteAlpha.50'}>{dailyPointsEarned(_account)}</Td>
+        <Td borderColor={'whiteAlpha.50'}>{dailyVolume(_account)}</Td>
+       
         <Td borderColor={'whiteAlpha.50'} isNumeric>{tokenFormatter.format(_account.totalPoint)}</Td>
       </Tr>
       })}

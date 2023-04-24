@@ -108,6 +108,7 @@ export const query = (address: string) => (
 			dailyMintedUSD
 			dailyBurnedUSD
 			dailyPoint
+			dayId
 		  }
 		  positions{
 			pool{
@@ -136,6 +137,7 @@ export const query_leaderboard = `
 				dailyMintedUSD
 				dailyBurnedUSD
 				dailyPoint
+				dayId
 			}
 		}
 	}
@@ -151,6 +153,7 @@ export const query_referrals = (address: string) => (`
 				dailyMintedUSD
 				dailyBurnedUSD
 				dailyPoint
+				dayId
 			}
 		}
 	}
