@@ -115,7 +115,7 @@ function NavBar() {
 
 	return (
 		<Flex justify={'center'} align='center' >
-			<Flex alignItems={"center"} justify="space-between" h={"100px"} w='1250px'>
+			<Flex alignItems={"center"} justify="space-between" h={"100px"} minW='0' w={'100%'} maxW='1250px'>
 				<Flex justify="space-between" align={"center"} gap={10} mt={2} w='100%'>
 					<Flex gap={10} align='center' cursor="pointer">
 						<Image
@@ -207,14 +207,13 @@ function NavBar() {
 				<NavExternalLink path={'https://synthex.finance/intro/quick-start'} title={'Docs'}></NavExternalLink>
 
 				<DAOMenu />
-
-
 					<Box>
 						<ConnectButton />
 					</Box>
 				</Flex>
 			</Flex>
 			<Collapse in={isToggleOpen} animateOpacity>
+
 				<MobileNav />
 			</Collapse>
 		</Flex>
@@ -226,7 +225,7 @@ const MobileNav = ({}: any) => {
 	const { account } = useContext(AppDataContext);
 
 	return (
-		<Flex flexDir={"column"}  p={4} gap={4}>
+		<Flex flexDir={"column"} p={4} gap={4}>
 			<NavLocalLink
 				path={"/"}
 				title={"Dashboard"}

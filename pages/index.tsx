@@ -82,8 +82,7 @@ export default function TempPage() {
 				<title>SyntheX | Dashboard</title>
 				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
 			</Head>
-			<Flex justify={'center'} w={'100%'} >
-				<Box w={'1250px'} maxW='1300px'>
+				<Box w={'100%'}>
 				<Box
 					w='100%'
 					display={{ sm: "block", md: "flex" }}
@@ -424,7 +423,6 @@ export default function TempPage() {
 					)}
 				</Box>
 				</Box>
-			</Flex>
 		</>
 	);
 }

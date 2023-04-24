@@ -70,7 +70,7 @@ export default function PoolSelector() {
 									<Flex>
 										<Box textAlign={'left'}>
 										{/* <Text fontSize={'sm'} color='whiteAlpha.600'>Market Name</Text> */}
-										<Heading fontSize={"4xl"} fontWeight='semibold'
+										<Heading fontSize={{sm: '3xl', md: "4xl", lg: '4xl'}} fontWeight='semibold'
 										// fontFamily='MonumentExtended'
 										>
 											{pools[tradingPool].name}
@@ -78,7 +78,7 @@ export default function PoolSelector() {
 										</Box>
 									</Flex>
 									<Flex align={'center'} color='whiteAlpha.900'>
-									<Text fontSize={'sm'} >{ !isOpen ? 'All Markets' : 'Tap To Close'}</Text>
+									<Text fontSize={'sm'} display={{sm: 'none', md: 'block', lg: 'block'}} >{!isOpen ? 'All Markets' : 'Tap To Close'}</Text>
 									<motion.div
 										variants={{
 											open: { rotate: 180 },
@@ -182,10 +182,11 @@ export default function PoolSelector() {
 										_hover={{ bg: "whiteAlpha.50" }}
 										cursor="pointer"
 										px={4}
-										py={1}
+										my={0}
 										// p={'12px'}
 									>
 										<Flex
+											paddingY={1}
 											justify={"space-between"}
 											align="center"
 											py="20px"

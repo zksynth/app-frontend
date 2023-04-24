@@ -33,9 +33,9 @@ function APRInfoBox({ debtBurnApr, esSyxApr }: any) {
 		<>
 			<Box
 				rounded={8}
-				bg={"whiteAlpha.50"}
-				border="1px"
-				borderColor={"whiteAlpha.100"}
+				bg={"bg3"}
+				border="2px"
+				borderColor={"whiteAlpha.300"}
 			>
 				<Box px={3} py={2}>
 					<Text color={"whiteAlpha.700"}>Total APY</Text>
@@ -45,7 +45,7 @@ function APRInfoBox({ debtBurnApr, esSyxApr }: any) {
 				</Box>
 
 				<Divider />
-				<Box px={3} py={1} bg="bg2" roundedBottom={8}>
+				<Box px={3} py={1} bg="whiteAlpha.50" roundedBottom={8}>
 					<Flex align={"center"} gap={2} mb={2} mt={2} color="white">
 						<FaBurn size={"20px"} />
 						<Flex gap={2}>

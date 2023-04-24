@@ -455,6 +455,12 @@ function AppDataProvider({ children }: any) {
 		const pool = new ethers.Contract(_pools[0].id, getABI("Pool", chain?.id!), helper.provider);
 		const priceOracle = new ethers.Contract(_pools[0].oracle, getABI("PriceOracle", chain?.id!), helper.provider);
 		for(let i in _pools) {
+			for(let j in _pools[i].collaterals) {
+				reqs.push([
+					_pools[i].id,
+					pool.interface.encodeFunctionData("accountCollateralBalance", [address, _pools[i].collaterals[j].token.id])
+				]);
+			}
 			reqs.push([
 				_pools[i].oracle,
 				priceOracle.interface.encodeFunctionData("getAssetsPrices", 
@@ -476,19 +482,30 @@ function AppDataProvider({ children }: any) {
 		}
 		helper.callStatic.aggregate(reqs).then((res: any) => {
 			if(res.returnData.length > 0){
-				let reqCount = 4;
+				let reqCount = 0;
 				// if(account?.id) reqCount = 4;
 				for(let i = 0; i < _pools.length; i++) {
-					const _prices = priceOracle.interface.decodeFunctionResult("getAssetsPrices", res.returnData[i*reqCount])[0];
+					let _i = i*(reqCount + _pools[i].collaterals.length);
+					for(let j in _pools[i].collaterals) {
+						_pools[i].collaterals[j].balance = Big(pool.interface.decodeFunctionResult("accountCollateralBalance", res.returnData[reqCount])[0].toString()).toString();
+						reqCount += 1;
+					}
+					const _prices = priceOracle.interface.decodeFunctionResult("getAssetsPrices", res.returnData[reqCount])[0];
+					reqCount += 1;
+
 					for(let j in _pools[i].collaterals) {
 						_pools[i].collaterals[j].priceUSD = Big(_prices[j].toString()).div(1e8).toString();
 					}
 					for(let j in _pools[i].synths) {
 						_pools[i].synths[j].priceUSD = Big(_prices[Number(j)+_pools[i].collaterals.length].toString()).div(1e8).toString();
 					}
-					_pools[i].totalDebtUSD = Big(pool.interface.decodeFunctionResult("getTotalDebtUSD", res.returnData[i*reqCount+1])[0].toString()).div(1e18).toString();
-					_pools[i].totalSupply = pool.interface.decodeFunctionResult("totalSupply", res.returnData[i*reqCount+2])[0].toString();
-					_pools[i].balance = pool.interface.decodeFunctionResult("balanceOf", res.returnData[i*reqCount+3])[0].toString();
+					
+					_pools[i].totalDebtUSD = Big(pool.interface.decodeFunctionResult("getTotalDebtUSD", res.returnData[reqCount])[0].toString()).div(1e18).toString();
+					reqCount += 1;
+					_pools[i].totalSupply = pool.interface.decodeFunctionResult("totalSupply", res.returnData[reqCount])[0].toString();
+					reqCount += 1;
+					_pools[i].balance = pool.interface.decodeFunctionResult("balanceOf", res.returnData[reqCount])[0].toString();
+					reqCount += 1;
 					updateUserParams(_pools[i]);
 				}
 				setPools(_pools);
