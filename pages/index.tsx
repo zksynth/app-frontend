@@ -76,6 +76,12 @@ export default function TempPage() {
 		(100 * pools[tradingPool]?.userDebt) /
 		pools[tradingPool]?.userCollateral;
 
+	const availableToIssue = () => {
+		if(!pools[tradingPool]?.adjustedCollateral) return 0;
+		if(pools[tradingPool].adjustedCollateral - pools[tradingPool]?.userDebt < 0) return 0;
+		return pools[tradingPool].adjustedCollateral - pools[tradingPool].userDebt
+	}
+
 	return (
 		<>
 			<Head>
@@ -284,11 +290,9 @@ export default function TempPage() {
 								mb={2}
 								color={
 									pools[tradingPool]?.userCollateral > 0
-										? debtLimit() < 80
-											? "primary.400"
-											: debtLimit() < 90
-											? "yellow.400"
-											: "red.400"
+										? availableToIssue() > 1
+										? "primary.400"
+										: "yellow.400"
 										: "primary.400"
 								}
 							>
@@ -310,13 +314,9 @@ export default function TempPage() {
 									h={2}
 									rounded="full"
 									bg={
-										pools[tradingPool]?.userCollateral > 0
-											? debtLimit() < 80
+										availableToIssue() > 1
 												? "primary.400"
-												: debtLimit() < 90
-												? "yellow.400"
-												: "red.400"
-											: "primary.400"
+												: "yellow.400"
 									}
 									width={
 										(pools[tradingPool]?.userCollateral > 0
@@ -344,19 +344,7 @@ export default function TempPage() {
 										fontWeight="medium"
 									>
 										{dollarFormatter.format(
-											pools[tradingPool]
-												?.adjustedCollateral
-												? pools[tradingPool]
-														?.adjustedCollateral -
-														pools[tradingPool]
-															?.userDebt <
-												  0
-													? 0
-													: pools[tradingPool]
-															?.adjustedCollateral -
-													  pools[tradingPool]
-															?.userDebt
-												: 0
+											availableToIssue()
 										)}
 									</Text>
 									<Box mb={1}>
