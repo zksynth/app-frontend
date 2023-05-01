@@ -1,17 +1,13 @@
 import {
 	Flex,
-	Text,
 	Box,
 	Image,
-	Progress,
 	useDisclosure,
 	Collapse,
-	Stack,
 	IconButton,
 	Heading,
-	Button,
 } from "@chakra-ui/react";
-import ConnectButton from '../ConnectButton'; 
+import AccountButton from '../ConnectButton'; 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -25,14 +21,12 @@ import { CloseIcon, HamburgerIcon } from "@chakra-ui/icons";
 import NavLocalLink from "./NavLocalLink";
 import DAOMenu from "./DAOMenu";
 import NavExternalLink from "./NavExternalLink";
-import { useChainModal } from "@rainbow-me/rainbowkit";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 function NavBar() {
 	const router = useRouter();
-	const { ref } = router.query;
-	const { status, account, fetchData, refreshData, pools, setRefresh, refresh } = useContext(AppDataContext);
+	const { status, account, fetchData, setRefresh, refresh } = useContext(AppDataContext);
 	const { fetchData: fetchTokenData } = useContext(TokenContext);
-	const { openChainModal } = useChainModal();
 
 	const { chain, chains } = useNetwork();
 	const [init, setInit] = useState(false);
@@ -48,7 +42,7 @@ function NavBar() {
 	} = useAccount({
 		onConnect({ address, connector, isReconnected }) {
 			console.log("onConnect");
-			if ((chain as any).unsupported) return;
+			if(!chain) window.location.reload();
 			fetchData(address!)
 			.then((_) => {
 				for(let i in refresh){
@@ -211,16 +205,11 @@ function NavBar() {
 
 				<DAOMenu />
 					<Box>
-						<ConnectButton />
+						<AccountButton />
 					</Box>
-					<Box>
-					{openChainModal && (
-						<Button variant={'ghost'} rounded={'full'} w={6} onClick={openChainModal} type="button">
-							<Image src={`/icons/${chain?.network}.svg`} minW={'7'} />
-							{/* {chain?.network} */}
-						</Button>
-					)}
-					</Box>
+					{isConnected && <Box>
+						<ConnectButton accountStatus="address" chainStatus="icon" showBalance={false} />
+					</Box>}
 				</Flex>
 			</Flex>
 			<Collapse in={isToggleOpen} animateOpacity>

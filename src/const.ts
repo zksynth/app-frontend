@@ -19,8 +19,8 @@ const _Endpoints: any = {
 	280: process.env.NEXT_PUBLIC_GRAPH_URL_280,
 }
 
-export const Endpoints = (chainId: number) => _Endpoints[chainId] ?? "https://api.thegraph.com/subgraphs/name/prasad-kumkar/synthex"; 
-export const WETH_ADDRESS = (chainId: number) => _WETH_ADDRESS[chainId] ?? _WETH_ADDRESS[ChainID.ARB];
+export const Endpoints = (chainId: number) => _Endpoints[chainId] ??  process.env.NEXT_PUBLIC_NETWORK == 'testnet' ? _Endpoints[ChainID.ARB_GOERLI] : _Endpoints[ChainID.ARB]; 
+export const WETH_ADDRESS = (chainId: number) => _WETH_ADDRESS[chainId] ?? process.env.NEXT_PUBLIC_NETWORK == 'testnet' ? _WETH_ADDRESS[ChainID.ARB_GOERLI] : _WETH_ADDRESS[ChainID.ARB];
 
 export const dollarFormatter = new Intl.NumberFormat("en-US", {
 	style: "currency",

@@ -77,18 +77,17 @@ function AppDataProvider({ children }: any) {
 	useEffect(() => {
 		if (refresh.length == 0 && pools.length > 0 && isConnected && !chain?.unsupported) {
 			// set new interval
-			const timer = setInterval(refreshData, 5000);
+			const timer = setInterval(refreshData, 10000);
 			setRefresh([Number(timer.toString())]);
 			setRandom(Math.random());
 		}
 	}, [refresh, pools, random]);
 
-	const fetchData = (_address: string | null): Promise<number> => {
-		console.log("fetching for chain", chain?.id!);
+	const fetchData = (_address: string | null, chainId = chain?.id!): Promise<number> => {
+		console.log("fetching for chain", chainId);
 		return new Promise((resolve, reject) => {
 			setStatus("fetching");
-			const endpoint = Endpoints(chain?.id!)
-			console.log("endpoint", endpoint, chain?.id!);
+			const endpoint = Endpoints(chainId)
 			Promise.all([
 				axios.post(endpoint, {
 					query: query(_address?.toLowerCase() ?? ADDRESS_ZERO),
@@ -394,7 +393,6 @@ function AppDataProvider({ children }: any) {
 					try{
 						const _token = await getContract("MockToken", chain?.id!, collateral.token.id);
 						let _nonce = (await _token.nonces(_address)).toString();
-						console.log("nonce", _nonce);
 						_pools[i].collaterals[j].nonce = _nonce;
 					} catch (err) {}
 					// calls.push([
