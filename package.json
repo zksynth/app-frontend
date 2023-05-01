@@ -8,10 +8,10 @@
     "build:staging": "yarn run:config:staging && node_modules/next/dist/bin/next build",
     "start": "node_modules/next/dist/bin/next start",
     "lint": "node_modules/next/dist/bin/next lint",
-    "run:config:main:mainnet": "export NODE_ENV=main && export NETWORK=42161 && node scripts/config.js",
-    "run:config:dev:mainnet": "export NODE_ENV=dev && export NETWORK=42161 && node scripts/config.js",
-    "run:config:main:testnet": "export NODE_ENV=main && export NETWORK=421613 && node scripts/config.js",
-    "run:config:dev:testnet": "export NODE_ENV=dev && export NETWORK=421613 && node scripts/config.js"
+    "main:mainnet": "export NODE_ENV=main && export NETWORK=42161 && node scripts/config.js",
+    "dev:mainnet": "export NODE_ENV=dev && export NETWORK=42161 && node scripts/config.js",
+    "main:testnet": "export NODE_ENV=main && export NETWORK=421613 && node scripts/config.js",
+    "dev:testnet": "export NODE_ENV=dev && export NETWORK=421613 && node scripts/config.js"
   },
   "dependencies": {
     "@ajna/pagination": "^1.4.19",
@@ -22,11 +22,13 @@
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@fontsource/aileron": "^4.5.3",
+    "@pythnetwork/pyth-evm-js": "^1.10.0",
     "@rainbow-me/rainbowkit": "^0.12.9",
     "@sentry/nextjs": "^7.30.0",
     "apexcharts": "^3.35.5",
     "big.js": "^6.2.1",
     "chart.js": "^3.9.1",
+    "dotenv": "^16.0.3",
     "framer-motion": "^10.11.2",
     "fs": "^0.0.1-security",
     "lightweight-charts": "^3.8.0",

@@ -34,7 +34,7 @@ export default function CollateralTable() {
 
 	const { currentPage, setCurrentPage, pagesCount, pages } =
 		usePagination({
-			pagesCount: 2,
+			pagesCount: 1, // Math.ceil(pools[tradingPool]?.synths?.length / pageSize) ?? 1,
 			initialState: { currentPage: 1 }
 		}
 	);

@@ -1,21 +1,25 @@
 import { ethers } from "ethers";
-import { ChainID } from "./chains";
+import { ChainID, chains } from "./chains";
+import { zkSyncTestnet } from 'wagmi/chains';
 
 export const ADDRESS_ZERO = ethers.constants.AddressZero;
 const _WETH_ADDRESS: any = {
 	[ChainID.ARB_GOERLI]: "0x7964Bcc63335E101F23da13583CEaD61d75f863b",
-	[ChainID.ARB]: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1"
+	[ChainID.ARB]: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+	280: "0x5e4ccda7f92283d51144db6198877512662dec5c"
 };
 export const ESYX_PRICE = 0.005;
 
 export const PROJECT_ID = '9635a0d9de95bced3f125a11f3ace2b5';
 export const APP_NAME = 'Synthex';
-const _Endpoints: any = {
-	[ChainID.ARB_GOERLI]: process.env.NEXT_PUBLIC_GRAPH_TESTNET_URL ?? "https://api.thegraph.com/subgraphs/name/prasad-kumkar/synthex",
-	[ChainID.ARB]: process.env.NEXT_PUBLIC_GRAPH_URL ?? "https://api.thegraph.com/subgraphs/name/prasad-kumkar/synthex"
-};
 
-export const Endpoints = (chainId: number) => _Endpoints[chainId] ?? _Endpoints[ChainID.ARB]; 
+const _Endpoints: any = {
+	[ChainID.ARB]: process.env.NEXT_PUBLIC_GRAPH_URL_42161,
+	[ChainID.ARB_GOERLI]: process.env.NEXT_PUBLIC_GRAPH_URL_421613,
+	280: process.env.NEXT_PUBLIC_GRAPH_URL_280,
+}
+
+export const Endpoints = (chainId: number) => _Endpoints[chainId] ?? "https://api.thegraph.com/subgraphs/name/prasad-kumkar/synthex"; 
 export const WETH_ADDRESS = (chainId: number) => _WETH_ADDRESS[chainId] ?? _WETH_ADDRESS[ChainID.ARB];
 
 export const dollarFormatter = new Intl.NumberFormat("en-US", {
@@ -82,6 +86,8 @@ export const query = (address: string) => (
 				dailyMinted
 				dailyBurned
 			}
+			feed
+			fallbackFeed
 		  }
 		  collaterals {
 			token {
@@ -95,6 +101,8 @@ export const query = (address: string) => (
 			baseLTV
 			liqThreshold
 			totalDeposits
+			feed
+			fallbackFeed
 		  }
 		}
 		accounts(where: {id: "${address}"}){

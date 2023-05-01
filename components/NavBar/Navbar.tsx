@@ -9,6 +9,7 @@ import {
 	Stack,
 	IconButton,
 	Heading,
+	Button,
 } from "@chakra-ui/react";
 import ConnectButton from '../ConnectButton'; 
 import React, { useEffect, useState } from "react";
@@ -24,12 +25,14 @@ import { CloseIcon, HamburgerIcon } from "@chakra-ui/icons";
 import NavLocalLink from "./NavLocalLink";
 import DAOMenu from "./DAOMenu";
 import NavExternalLink from "./NavExternalLink";
+import { useChainModal } from "@rainbow-me/rainbowkit";
 
 function NavBar() {
 	const router = useRouter();
 	const { ref } = router.query;
 	const { status, account, fetchData, refreshData, pools, setRefresh, refresh } = useContext(AppDataContext);
 	const { fetchData: fetchTokenData } = useContext(TokenContext);
+	const { openChainModal } = useChainModal();
 
 	const { chain, chains } = useNetwork();
 	const [init, setInit] = useState(false);
@@ -210,10 +213,17 @@ function NavBar() {
 					<Box>
 						<ConnectButton />
 					</Box>
+					<Box>
+					{openChainModal && (
+						<Button variant={'ghost'} rounded={'full'} w={6} onClick={openChainModal} type="button">
+							<Image src={`/icons/${chain?.network}.svg`} minW={'7'} />
+							{/* {chain?.network} */}
+						</Button>
+					)}
+					</Box>
 				</Flex>
 			</Flex>
 			<Collapse in={isToggleOpen} animateOpacity>
-
 				<MobileNav />
 			</Collapse>
 		</Flex>

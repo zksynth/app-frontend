@@ -20,6 +20,8 @@ import Response from "../_utils/Response";
 import InfoFooter from "../_utils/InfoFooter";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { useToast } from '@chakra-ui/react';
+import { EvmPriceServiceConnection } from "@pythnetwork/pyth-evm-js";
+import { ethers } from "ethers";
 
 
 
@@ -57,6 +59,10 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 		setResponse("");
 		setMessage("");
 
+		const pythFeeds = pools[tradingPool].collaterals.concat(pools[tradingPool].synths).filter((c: any) => c.feed != ethers.constants.HashZero).map((c: any) => c.feed);
+		const pythPriceService = new EvmPriceServiceConnection('https://xc-testnet.pyth.network');
+		const priceFeedUpdateData = await pythPriceService.getPriceFeedsUpdateData(pythFeeds);
+
 		// let synth = await getContract("ERC20X", chain?.id!, asset.token.id);
 		let pool = await getContract("Pool", chain?.id!, pools[tradingPool].id);
 		let value = Big(amount)
@@ -65,7 +71,7 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 		send(
 			pool,
 			"burn",
-			[asset.token.id, value]
+			[asset.token.id, value, priceFeedUpdateData]
 		)
 			.then(async (res: any) => {
 				// setMessage("Confirming...");
@@ -81,9 +87,14 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 						console.log(e)
 					}
 				});
-				const amountUSD = Big(decodedLogs[2].args.value.toString()).mul(asset.priceUSD).div(10 ** 18).mul(1 - asset.burnFee/10000).toFixed(4);
-				updatePoolBalance(pools[tradingPool].id, decodedLogs[3].args.value.toString(), amountUSD, true);
-				updateSynthWalletBalance(asset.token.id, pools[tradingPool].id, decodedLogs[2].args.value.toString(), true);
+				if(chain?.id! == 280){
+					decodedLogs.pop();
+				}
+				console.log("decodedLogs", decodedLogs);
+				console.log(decodedLogs[decodedLogs.length - 1].args.value.toString(), decodedLogs[decodedLogs.length - 2].args.value.toString(), decodedLogs[decodedLogs.length - 3].args.value.toString());
+				const amountUSD = Big(decodedLogs[decodedLogs.length - 2].args.value.toString()).mul(asset.priceUSD).div(10 ** 18).mul(1 - asset.burnFee/10000).toFixed(4);
+				updatePoolBalance(pools[tradingPool].id, decodedLogs[decodedLogs.length - 1].args.value.toString(), amountUSD, true);
+				updateSynthWalletBalance(asset.token.id, pools[tradingPool].id, decodedLogs[decodedLogs.length - 2].args.value.toString(), true);
 				setAmount('0');
 				setConfirmed(true);
 

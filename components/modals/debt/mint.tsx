@@ -24,6 +24,7 @@ import { BigNumber, ethers } from "ethers";
 import { useRouter } from "next/router";
 import { base58 } from "ethers/lib/utils.js";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { EvmPriceServiceConnection } from "@pythnetwork/pyth-evm-js";
 
 const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 	const router = useRouter();
@@ -89,8 +90,13 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 			.times(10 ** 18)
 			.toFixed(0);
 		// let _referral = useReferral ? BigNumber.from(base58.decode(referral!)).toHexString() : ethers.constants.AddressZero;
+		// get .feed from pool.collaterals & pool.synths if feed is not bytes(0)
+		const pythFeeds = pools[tradingPool].collaterals.concat(pools[tradingPool].synths).filter((c: any) => c.feed != ethers.constants.HashZero).map((c: any) => c.feed);
+		console.log(pythFeeds);
+		const pythPriceService = new EvmPriceServiceConnection('https://xc-testnet.pyth.network');
+		const priceFeedUpdateData = await pythPriceService.getPriceFeedsUpdateData(pythFeeds);
 
-		send(pool, "mint", [asset.token.id, value, address])
+		send(pool, "mint", [asset.token.id, value, address, priceFeedUpdateData])
 			.then(async (res: any) => {
 				// setMessage("Confirming...");
 				// setResponse("Transaction sent! Waiting for confirmation");
@@ -106,9 +112,12 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 						console.log(e);
 					}
 				});
-				console.log(decodedLogs);
+				if(chain?.id == 280){
+					decodedLogs.pop();
+				}
+				console.log(decodedLogs[decodedLogs.length - 3].args.value.toString(), decodedLogs[decodedLogs.length - 2].args.value.toString(), decodedLogs[decodedLogs.length - 1].args.value.toString());
 
-				let amountUSD = Big(decodedLogs[2].args.value.toString())
+				let amountUSD = Big(decodedLogs[decodedLogs.length - 2].args.value.toString())
 					.mul(asset.priceUSD)
 					.div(10 ** 18)
 					.mul(1 + asset.mintFee / 10000);
@@ -117,14 +126,14 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 
 				updatePoolBalance(
 					pools[tradingPool].id,
-					decodedLogs[3].args.value.toString(),
+					decodedLogs[decodedLogs.length - 1].args.value.toString(),
 					amountUSD.toString(),
 					false
 				);
 				updateSynthWalletBalance(
 					asset.token.id,
 					pools[tradingPool].id,
-					decodedLogs[2].args.value.toString(),
+					decodedLogs[decodedLogs.length - 2].args.value.toString(),
 					false
 				);
 				setAmount("0");

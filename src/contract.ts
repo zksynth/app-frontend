@@ -4,13 +4,16 @@ import { ChainID } from './chains';
 export function getABI(contractName: string, chain: number) {
   const config = require(`../deployments/${chain}/config.json`);
   const deployments = require(`../deployments/${chain}/deployments.json`);
-  let contractBuild = JSON.parse(deployments.sources[contractName]);
+  let contractBuild = deployments.sources[contractName];
+  if(typeof contractBuild == 'string') contractBuild = JSON.parse(contractBuild);
   if(!contractBuild) throw new Error("ABI not found: "+contractName)
 
   if(contractName == 'Pool'){
     // const PoolLogic = JSON.parse(deployments.sources['PoolLogic']);
-    const CollateralLogic = JSON.parse(deployments.sources['CollateralLogic']);
-    const SynthLogic = JSON.parse(deployments.sources['SynthLogic']);
+    let CollateralLogic = deployments.sources['CollateralLogic'];
+    if(typeof CollateralLogic == 'string') CollateralLogic = JSON.parse(CollateralLogic);
+    let SynthLogic = deployments.sources['SynthLogic'];
+    if(typeof SynthLogic == 'string') SynthLogic = JSON.parse(SynthLogic);
     contractBuild = contractBuild.concat(CollateralLogic, SynthLogic);
   }
   return contractBuild;
