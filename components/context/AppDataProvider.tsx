@@ -33,7 +33,7 @@ interface AppDataValue {
 	refreshData: () => void;
 	leaderboard: any[];
 	account: any,
-	setRefresh: (_: number[]) => void;
+	setRefresh: (_: number[]) => void; 
 	refresh: number[];
 	referrals: any[];
 	incrementNonce: (collateral: string) => void;
