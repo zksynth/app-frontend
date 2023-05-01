@@ -81,7 +81,7 @@ function AppDataProvider({ children }: any) {
 			setRefresh([Number(timer.toString())]);
 			setRandom(Math.random());
 		}
-	}, [refresh, pools, random]);
+	}, [refresh, pools, random]); 
 
 	const fetchData = (_address: string | null, chainId = chain?.id!): Promise<number> => {
 		console.log("fetching for chain", chainId);
