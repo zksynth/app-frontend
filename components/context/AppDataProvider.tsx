@@ -83,11 +83,13 @@ function AppDataProvider({ children }: any) {
 		}
 	}, [refresh, pools, random]); 
 
-	const fetchData = (_address: string | null, chainId = chain?.id!): Promise<number> => {
+	const fetchData = (_address: string | null): Promise<number> => {
+		const chainId = chain?.id!;
 		console.log("fetching for chain", chainId);
 		return new Promise((resolve, reject) => {
 			setStatus("fetching");
 			const endpoint = Endpoints(chainId)
+			console.log("endpoint", endpoint);
 			Promise.all([
 				axios.post(endpoint, {
 					query: query(_address?.toLowerCase() ?? ADDRESS_ZERO),
