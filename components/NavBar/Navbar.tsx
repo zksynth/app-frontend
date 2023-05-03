@@ -45,6 +45,7 @@ function NavBar() {
 	} = useAccount({
 		onConnect({ address, connector, isReconnected }) {
 			console.log("onConnect");
+			if(!chain) return;
 			if ((chain as any).unsupported) return;
 			fetchData(address!)
 			.then((_) => {
