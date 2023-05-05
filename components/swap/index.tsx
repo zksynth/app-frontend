@@ -19,7 +19,7 @@ import Image from "next/image";
 import { BigNumber, ethers } from "ethers";
 import TokenSelector from "./TokenSelector";
 import { RiArrowDropDownLine, RiArrowDropUpLine, RiArrowUpFill } from "react-icons/ri";
-import { dollarFormatter, tokenFormatter } from "../../src/const";
+import { PYTH_ENDPOINT, dollarFormatter, tokenFormatter } from "../../src/const";
 import SwapSkeleton from "./Skeleton";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import Response from "../modals/_utils/Response";
@@ -168,7 +168,7 @@ function Swap() {
 		let _referral = useReferral ? BigNumber.from(base58.decode(referral!)).toHexString() : ethers.constants.AddressZero;
 
 		const pythFeeds = pools[tradingPool].synths.filter((c: any) => (c.feed != ethers.constants.HashZero) && (c.token.symbol == _inputAsset || c.token.symbol == _outputAsset)).map((c: any) => c.feed);
-		const pythPriceService = new EvmPriceServiceConnection('https://xc-testnet.pyth.network');
+		const pythPriceService = new EvmPriceServiceConnection(PYTH_ENDPOINT);
 		const priceFeedUpdateData = await pythPriceService.getPriceFeedsUpdateData(pythFeeds);
 
 		send(
@@ -265,7 +265,7 @@ function Swap() {
 		if (pools[tradingPool] && !isNaN(Number(inputAmount)) && validateInput() == 0)
 			getContract("Pool", chain?.id!, pools[tradingPool].id).then(async (contract: any) => {
 				const pythFeeds = pools[tradingPool].synths.filter((c: any) => (c.feed != ethers.constants.HashZero) && (c.token.id == inputToken().token.id || c.token.id == outputToken().token.id)).map((c: any) => c.feed);
-				const pythPriceService = new EvmPriceServiceConnection('https://xc-testnet.pyth.network');
+				const pythPriceService = new EvmPriceServiceConnection(PYTH_ENDPOINT);
 				const priceFeedUpdateData = await pythPriceService.getPriceFeedsUpdateData(pythFeeds);
 
 				// estimate gas

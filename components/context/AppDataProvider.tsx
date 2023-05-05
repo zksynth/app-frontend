@@ -1,13 +1,15 @@
 import * as React from "react";
 import axios from "axios";
 import { getAddress, getABI, getContract } from "../../src/contract";
-import { ADDRESS_ZERO, dollarFormatter, Endpoints, WETH_ADDRESS, query, tokenFormatter, query_leaderboard, query_referrals } from '../../src/const';
+import { ADDRESS_ZERO, dollarFormatter, Endpoints, WETH_ADDRESS, query, tokenFormatter, query_leaderboard, query_referrals, PYTH_ENDPOINT } from '../../src/const';
 import { ChainID, chainMapping } from "../../src/chains";
 import { BigNumber, ethers } from "ethers";
 import { useEffect } from 'react';
 import { useAccount, useNetwork } from "wagmi";
 import { Interface } from "ethers/lib/utils.js";
 const { Big } = require("big.js");
+import chains from 'wagmi'
+import { __chains } from "../../pages/_app";
 
 interface AppDataValue {
 	status: "not-fetching" | "fetching" | "ready" | "error";
@@ -84,7 +86,8 @@ function AppDataProvider({ children }: any) {
 	}, [refresh, pools, random]); 
 
 	const fetchData = (_address: string | null): Promise<number> => {
-		const chainId = chain?.id!;
+		let chainId = chain?.id!;
+		if(chain?.unsupported) chainId = process.env.NEXT_PUBLIC_NETWORK == 'testnet' ? ChainID.ARB_GOERLI : ChainID.ARB;
 		console.log("fetching for chain", chainId);
 		return new Promise((resolve, reject) => {
 			setStatus("fetching");
@@ -119,15 +122,7 @@ function AppDataProvider({ children }: any) {
 						// sort pool.synths by liquidity in USD (totalsupply*price)
 						for (let i = 0; i < pools.length; i++) {
 							const pool = pools[i];
-							pool.synths.sort((a: any, b: any) => {
-								return (
-									parseFloat(b.totalSupply) *
-									parseFloat(b.priceUSD)
-								) -
-									(parseFloat(a.totalSupply) *
-										parseFloat(a.priceUSD));
-							});
-
+							
 							// average burn and revenue
 							let averageDailyBurn = Big(0);
 							let averageDailyRevenue = Big(0);
@@ -140,7 +135,7 @@ function AppDataProvider({ children }: any) {
 							pools[i] = pool;
 						}
 						
-						if (_address && !chain?.unsupported) {
+						if (_address) {
 							_setPools(pools, userPoolData.accounts[0], _address)
 							.then((_) => {
 								resolve(0)
@@ -220,6 +215,11 @@ function AppDataProvider({ children }: any) {
 							priceOracle.interface.encodeFunctionData("getAssetPrice", [_pools[i].collaterals[j].token.id])
 						])
 					}
+				} else if (_pools[i].collaterals[j].feed.startsWith('0x0000000000000000000000')){
+					reqs.push([
+						_pools[i].oracle,
+						priceOracle.interface.encodeFunctionData("getAssetPrice", [_pools[i].collaterals[j].token.id])
+					])
 				}
 			}
 			for(let j in _pools[i].synths) {
@@ -235,6 +235,11 @@ function AppDataProvider({ children }: any) {
 							priceOracle.interface.encodeFunctionData("getAssetPrice", [_pools[i].synths[j].token.id])
 						])
 					}
+				} else if (_pools[i].synths[j].feed.startsWith('0x0000000000000000000000')){
+					reqs.push([
+						_pools[i].oracle,
+						priceOracle.interface.encodeFunctionData("getAssetPrice", [_pools[i].synths[j].token.id])
+					])
 				}
 			}
 			reqs.push([
@@ -245,11 +250,23 @@ function AppDataProvider({ children }: any) {
 				_pools[i].id,
 				pool.interface.encodeFunctionData("balanceOf", [address])
 			])
+
+			// sort synths
+			// pool.synths.sort((a: any, b: any) => {
+			// 	return (
+			// 		parseFloat(b.totalSupply) *
+			// 		parseFloat(b.priceUSD)
+			// 	) -
+			// 		(parseFloat(a.totalSupply) *
+			// 			parseFloat(a.priceUSD));
+			// });
+
 		}
 
 		await _setAssetPrices(_pools);
 
 		helper.callStatic.aggregate(reqs).then(async (res: any) => {
+			console.log(res);
 			if(res.returnData.length > 0){
 				let reqCount = 0;
 				// if(account?.id) reqCount = 4;
@@ -264,6 +281,10 @@ function AppDataProvider({ children }: any) {
 								_pools[i].collaterals[j].priceUSD = BigNumber.from(res.returnData[reqCount]).div(1e8).toString();
 								reqCount += 1;
 							}
+						} else if (_pools[i].collaterals[j].feed.startsWith('0x0000000000000000000000')){
+							// update price from feed
+							_pools[i].collaterals[j].priceUSD = Big(BigNumber.from(res.returnData[reqCount]).toString()).div(1e8).toString();
+							reqCount += 1;
 						}
 					}
 					
@@ -281,6 +302,10 @@ function AppDataProvider({ children }: any) {
 								// set price 1
 								_pools[i].synths[j].priceUSD = "1";
 							}
+						} else if (_pools[i].synths[j].feed.startsWith('0x0000000000000000000000')){
+							// update price from feed
+							_pools[i].synths[j].priceUSD = Big(BigNumber.from(res.returnData[reqCount]).toString()).div(1e8).toString();
+							reqCount += 1;
 						}
 						_pools[i].totalDebtUSD = Big(_pools[i].totalDebtUSD).plus(Big(_pools[i].synths[j].totalSupply).div(1e18).times(Big(_pools[i].synths[j].priceUSD))).toString();
 					}
@@ -289,6 +314,17 @@ function AppDataProvider({ children }: any) {
 					reqCount += 1;
 					_pools[i].balance = pool.interface.decodeFunctionResult("balanceOf", res.returnData[reqCount])[0].toString();
 					reqCount += 1;
+
+					// sort pool.synths
+					_pools[i].synths.sort((a: any, b: any) => {
+						return (
+							parseFloat(b.totalSupply) *
+							parseFloat(b.priceUSD)
+						) -
+							
+							(parseFloat(a.totalSupply) *
+								parseFloat(a.priceUSD));
+					});
 					
 					updateUserParams(_pools[i]);
 				}
@@ -309,19 +345,24 @@ function AppDataProvider({ children }: any) {
 		
 		for(let i in _pools){
 			for(let j in _pools[i].collaterals){
-				if(_pools[i].collaterals[j].feed !== ethers.constants.HashZero.toLowerCase()){
+				if(_pools[i].collaterals[j].feed && !_pools[i].collaterals[j].feed.startsWith('0x0000000000000000000000')){
 					pythFeeds.push(_pools[i].collaterals[j].feed);
 				}
 			}
 			for(let j in _pools[i].synths){
-				if(_pools[i].synths[j].feed !== ethers.constants.HashZero.toLowerCase()){
+				if(_pools[i].synths[j].feed && !_pools[i].synths[j].feed.startsWith('0x0000000000000000000000')){
 					pythFeeds.push(_pools[i].synths[j].feed);
 				}
 			}
 		}
 
+		if(pythFeeds.length == 0) {
+			resolve(1)
+			return;
+		};
+
 		Promise.all([
-			axios.get('https://xc-testnet.pyth.network/api/latest_price_feeds?ids[]=' + pythFeeds.join('&ids[]='))
+			axios.get(PYTH_ENDPOINT + '/api/latest_price_feeds?ids[]=' + pythFeeds.join('&ids[]='))
 		])
 		.then((res: any) => {
 			let pythIndex = 0;
@@ -360,6 +401,7 @@ function AppDataProvider({ children }: any) {
 			(window as any).ethereum!,
 			"any"
 		);
+
 		const helper = new ethers.Contract(
 			getAddress("Multicall2", chain?.id!),
 			getABI("Multicall2", chain?.id!),
@@ -412,6 +454,7 @@ function AppDataProvider({ children }: any) {
 			}
 
 			helper.callStatic.aggregate(calls).then(async (res: any) => {
+				console.log("result", res);
 				setBlock(parseInt(res[0].toString()));
 				let index = 0;
 				// setting wallet balance and allowance

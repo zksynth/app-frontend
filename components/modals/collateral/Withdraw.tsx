@@ -19,7 +19,7 @@ import { ethers } from "ethers";
 import { getContract, send } from "../../../src/contract";
 import { useContext } from "react";
 import { AppDataContext } from "../../context/AppDataProvider";
-import { compactTokenFormatter, dollarFormatter } from "../../../src/const";
+import { PYTH_ENDPOINT, compactTokenFormatter, dollarFormatter } from "../../../src/const";
 import Link from "next/link";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { EvmPriceServiceConnection } from "@pythnetwork/pyth-evm-js";
@@ -58,7 +58,7 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 		const _amount = Big(amount).mul(10**collateral.token.decimals).toFixed(0);
 
 		const pythFeeds = pools[tradingPool].collaterals.concat(pools[tradingPool].synths).filter((c: any) => c.feed != ethers.constants.HashZero).map((c: any) => c.feed);
-		const pythPriceService = new EvmPriceServiceConnection('https://xc-testnet.pyth.network');
+		const pythPriceService = new EvmPriceServiceConnection(PYTH_ENDPOINT);
 		const priceFeedUpdateData = await pythPriceService.getPriceFeedsUpdateData(pythFeeds);
 
 		console.log(pythFeeds);

@@ -45,13 +45,13 @@ export default function Leaderboard() {
   const dailyPointsEarned = (__account : any) => {
     if(!__account) return '-';
     if(!__account.accountDayData) return '-';
-    return tokenFormatter.format(__account.accountDayData[0].dayId == Math.floor(Date.now()/(24*3600000)) ? __account.accountDayData[0].dailyPoint : 0);
+    return tokenFormatter.format(__account.accountDayData[0]?.dayId == Math.floor(Date.now()/(24*3600000)) ? __account.accountDayData[0]?.dailyPoint : 0);
   }
 
   const dailyVolume = (__account : any) => {
     if(!__account) return '-';
     if(!__account.accountDayData) return '-';
-    return tokenFormatter.format(__account.accountDayData[0].dayId == Math.floor(Date.now()/(24*3600000)) ? __account.accountDayData[0].dailyMintedUSD : 0);
+    return tokenFormatter.format(__account.accountDayData[0]?.dayId == Math.floor(Date.now()/(24*3600000)) ? __account.accountDayData[0]?.dailyMintedUSD : 0);
   }
 
   return (

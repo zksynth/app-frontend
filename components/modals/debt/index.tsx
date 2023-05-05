@@ -131,7 +131,7 @@ export default function Debt({ synth, index }: any) {
 					</Flex>
 				</TdBox>
 				<TdBox isFirst={index == 0} alignBox='center'>
-					{dollarFormatter.format(synth.priceUSD)}
+					$ {tokenFormatter.format(synth.priceUSD)}
 				</TdBox>
 				<TdBox isFirst={index == 0} alignBox='center'>
 					{dollarFormatter.format(

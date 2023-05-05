@@ -14,7 +14,7 @@ import { getContract, send } from "../../../src/contract";
 import { useContext } from "react";
 import { AppDataContext } from "../../context/AppDataProvider";
 import { useAccount, useNetwork } from "wagmi";
-import { dollarFormatter, tokenFormatter } from "../../../src/const";
+import { PYTH_ENDPOINT, dollarFormatter, tokenFormatter } from "../../../src/const";
 import Big from "big.js";
 import Response from "../_utils/Response";
 import InfoFooter from "../_utils/InfoFooter";
@@ -60,7 +60,7 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 		setMessage("");
 
 		const pythFeeds = pools[tradingPool].collaterals.concat(pools[tradingPool].synths).filter((c: any) => c.feed != ethers.constants.HashZero).map((c: any) => c.feed);
-		const pythPriceService = new EvmPriceServiceConnection('https://xc-testnet.pyth.network');
+		const pythPriceService = new EvmPriceServiceConnection(PYTH_ENDPOINT);
 		const priceFeedUpdateData = await pythPriceService.getPriceFeedsUpdateData(pythFeeds);
 
 		// let synth = await getContract("ERC20X", chain?.id!, asset.token.id);

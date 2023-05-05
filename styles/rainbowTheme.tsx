@@ -43,7 +43,8 @@ const myCustomTheme: Theme = {
     standby: "#FFD641"
   },
   fonts: {
-    body: '...',
+    body: '12px',
+
   },
   radii: {
     actionButton: '20px',

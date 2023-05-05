@@ -43,6 +43,7 @@ function NavBar() {
 		onConnect({ address, connector, isReconnected }) {
 			console.log("onConnect");
 			if(!chain) window.location.reload();
+			if(chain?.unsupported) return;
 			fetchData(address!)
 			.then((_) => {
 				for(let i in refresh){
@@ -55,7 +56,7 @@ function NavBar() {
 		},
 		onDisconnect() {
 			console.log("onDisconnect");
-			fetchData(null)
+			fetchData(address!)
 			.then((_) => {
 				for(let i in refresh){
 					clearInterval(refresh[i]);
@@ -94,7 +95,7 @@ function NavBar() {
 			!init
 		) {
 			setInit(true);
-			fetchData(null);
+			fetchData(address!);
 		}
 	}, [activeConnector, address, chain?.unsupported, chains, fetchData, init, isConnected, isConnecting, isSubscribed, refresh, setRefresh, status]);
 
@@ -207,7 +208,7 @@ function NavBar() {
 					<Box>
 						<AccountButton />
 					</Box>
-					{isConnected && <Box>
+					{(isConnected && !chain?.unsupported) && <Box>
 						<ConnectButton accountStatus="address" chainStatus="icon" showBalance={false} />
 					</Box>}
 				</Flex>

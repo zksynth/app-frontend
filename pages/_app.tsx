@@ -37,10 +37,12 @@ if(process.env.NEXT_PUBLIC_NETWORK == 'testnet'){
 	_chains.push(arbitrum);
 }
 
+export const __chains: Chain[] = _chains;
+
 const { chains, provider } = configureChains(
 	_chains,
 	[
-		alchemyProvider({ apiKey: "HyNaane88yHFsK8Yrn4gf2OOzHkd6GAJ" }),
+		alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY ?? 'demo' }),
 		publicProvider(),
 	]
 );

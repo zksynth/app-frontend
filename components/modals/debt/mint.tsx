@@ -16,7 +16,7 @@ import { getContract, send } from "../../../src/contract";
 import { useContext, useEffect } from "react";
 import { AppDataContext } from "../../context/AppDataProvider";
 import { useAccount, useNetwork } from "wagmi";
-import { dollarFormatter, numOrZero, tokenFormatter } from "../../../src/const";
+import { PYTH_ENDPOINT, dollarFormatter, numOrZero, tokenFormatter } from "../../../src/const";
 import Big from "big.js";
 import Response from "../_utils/Response";
 import InfoFooter from "../_utils/InfoFooter";
@@ -93,7 +93,7 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 		// get .feed from pool.collaterals & pool.synths if feed is not bytes(0)
 		const pythFeeds = pools[tradingPool].collaterals.concat(pools[tradingPool].synths).filter((c: any) => c.feed != ethers.constants.HashZero).map((c: any) => c.feed);
 		console.log(pythFeeds);
-		const pythPriceService = new EvmPriceServiceConnection('https://xc-testnet.pyth.network');
+		const pythPriceService = new EvmPriceServiceConnection(PYTH_ENDPOINT);
 		const priceFeedUpdateData = await pythPriceService.getPriceFeedsUpdateData(pythFeeds);
 
 		send(pool, "mint", [asset.token.id, value, address, priceFeedUpdateData])
