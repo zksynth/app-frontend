@@ -56,7 +56,7 @@ function NavBar() {
 		},
 		onDisconnect() {
 			console.log("onDisconnect");
-			fetchData(address!)
+			fetchData(null)
 			.then((_) => {
 				for(let i in refresh){
 					clearInterval(refresh[i]);
@@ -95,7 +95,7 @@ function NavBar() {
 			!init
 		) {
 			setInit(true);
-			fetchData(address!);
+			fetchData(null);
 		}
 	}, [activeConnector, address, chain?.unsupported, chains, fetchData, init, isConnected, isConnecting, isSubscribed, refresh, setRefresh, status]);
 
