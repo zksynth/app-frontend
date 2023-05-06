@@ -122,6 +122,8 @@ function AppDataProvider({ children }: any) {
 						// sort pool.synths by liquidity in USD (totalsupply*price)
 						for (let i = 0; i < pools.length; i++) {
 							const pool = pools[i];
+							// reverse pool.collaterals
+							pool.collaterals = pool.collaterals.reverse();
 							
 							// average burn and revenue
 							let averageDailyBurn = Big(0);

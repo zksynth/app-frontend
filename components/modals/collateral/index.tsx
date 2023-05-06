@@ -161,11 +161,13 @@ export default function CollateralModal({ collateral, index }: any) {
 					alignBox='right'
 					isNumeric
 				>
-					<Text fontSize={'md'} color={
+					<Box color={
 						Big(collateral.balance ?? 0).gt(0)
 							? "white"
 							: "gray.500"
-					} >
+					}>
+
+					<Text fontSize={'md'}  >
 
 					{tokenFormatter.format(
 						Big(collateral.balance ?? 0)
@@ -174,6 +176,16 @@ export default function CollateralModal({ collateral, index }: any) {
 					)}
 					{Big(collateral.balance ?? 0).gt(0) ? "" : ".00"}
 					</Text>
+
+					{Big(collateral.balance ?? 0).gt(0) && <Text fontSize={'xs'} color={'gray.400'}>
+						{dollarFormatter.format(
+							Big(collateral.balance ?? 0)
+								.div(10 ** (collateral.token.decimals ?? 18))
+								.mul(collateral.priceUSD)
+								.toNumber()
+						)}
+					</Text>}
+					</Box>
 
 				</TdBox>
 			</Tr>
