@@ -19,6 +19,22 @@ const _Endpoints: any = {
 	[280]: process.env.NEXT_PUBLIC_GRAPH_URL_280,
 }
 
+export const PARTNER_ASSETS: any = {
+	"Lodestar": ["lUSDC"]
+}
+
+export const PARTNER_ASSET_LOGOS: any = {
+	"Lodestar": "/icons/lodestar.svg"
+}
+
+export const PARTNER_ASSET_COLOR_GRADIENTS: any = {
+	"Lodestar": ["#162421", "#162421"]
+}
+
+export const PARTNER_ASSET_COLOR: any = {
+	"Lodestar": "#E5D540"
+}
+
 export const Endpoints = (chainId: number) => _Endpoints[chainId] ?? (process.env.NEXT_PUBLIC_NETWORK == 'testnet' ? _Endpoints[ChainID.ARB_GOERLI] : _Endpoints[ChainID.ARB]); 
 export const WETH_ADDRESS = (chainId: number) => _WETH_ADDRESS[chainId] ?? (process.env.NEXT_PUBLIC_NETWORK == 'testnet' ? _WETH_ADDRESS[ChainID.ARB_GOERLI] : _WETH_ADDRESS[ChainID.ARB]);
 

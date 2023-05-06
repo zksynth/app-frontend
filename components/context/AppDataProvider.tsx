@@ -68,7 +68,7 @@ function AppDataProvider({ children }: any) {
 				setTradingPool(parseInt(_tradingPool));
 			}
 		}
-	}, [tradingPool])
+	}, [tradingPool, pools])
 
 	const [refresh, setRefresh] = React.useState<number[]>([]);
 	const [block, setBlock] = React.useState(0);
@@ -209,12 +209,12 @@ function AppDataProvider({ children }: any) {
 					pool.interface.encodeFunctionData("accountCollateralBalance", [address, _pools[i].collaterals[j].token.id])
 				]);
 				if(_pools[i].collaterals[j].feed == ethers.constants.HashZero.toLowerCase()){
-					if(_pools[i].collaterals[j].fallbackFeed && _pools[i].collaterals[j].fallbackFeed !== ethers.constants.AddressZero.toLowerCase()){
+					// if(_pools[i].collaterals[j].fallbackFeed && _pools[i].collaterals[j].fallbackFeed !== ethers.constants.AddressZero.toLowerCase()){
 						reqs.push([
 							_pools[i].oracle,
 							priceOracle.interface.encodeFunctionData("getAssetPrice", [_pools[i].collaterals[j].token.id])
 						])
-					}
+					// }
 				} else if (_pools[i].collaterals[j].feed.startsWith('0x0000000000000000000000')){
 					reqs.push([
 						_pools[i].oracle,
@@ -229,12 +229,12 @@ function AppDataProvider({ children }: any) {
 					pool.interface.encodeFunctionData("totalSupply", [])
 				]);
 				if(_pools[i].synths[j].feed == ethers.constants.HashZero.toLowerCase()){
-					if(_pools[i].synths[j].fallbackFeed && _pools[i].synths[j].fallbackFeed !== ethers.constants.AddressZero.toLowerCase()){
+					// if(_pools[i].synths[j].fallbackFeed && _pools[i].synths[j].fallbackFeed !== ethers.constants.AddressZero.toLowerCase()){
 						reqs.push([
 							_pools[i].oracle,
 							priceOracle.interface.encodeFunctionData("getAssetPrice", [_pools[i].synths[j].token.id])
 						])
-					}
+					// }
 				} else if (_pools[i].synths[j].feed.startsWith('0x0000000000000000000000')){
 					reqs.push([
 						_pools[i].oracle,
@@ -266,7 +266,6 @@ function AppDataProvider({ children }: any) {
 		await _setAssetPrices(_pools);
 
 		helper.callStatic.aggregate(reqs).then(async (res: any) => {
-			console.log(res);
 			if(res.returnData.length > 0){
 				let reqCount = 0;
 				// if(account?.id) reqCount = 4;
@@ -276,11 +275,11 @@ function AppDataProvider({ children }: any) {
 						_pools[i].collaterals[j].balance = Big(pool.interface.decodeFunctionResult("accountCollateralBalance", res.returnData[reqCount])[0].toString()).toString();
 						reqCount += 1;
 						if(_pools[i].collaterals[j].feed == ethers.constants.HashZero.toLowerCase()){
-							if(_pools[i].collaterals[j].fallbackFeed && _pools[i].collaterals[j].fallbackFeed !== ethers.constants.AddressZero.toLowerCase()){
+							// if(_pools[i].collaterals[j].fallbackFeed && _pools[i].collaterals[j].fallbackFeed !== ethers.constants.AddressZero.toLowerCase()){
 								// update price from fallback feed
-								_pools[i].collaterals[j].priceUSD = BigNumber.from(res.returnData[reqCount]).div(1e8).toString();
+								_pools[i].collaterals[j].priceUSD = Big(BigNumber.from(res.returnData[reqCount]).toString()).div(1e8).toString();
 								reqCount += 1;
-							}
+							// }
 						} else if (_pools[i].collaterals[j].feed.startsWith('0x0000000000000000000000')){
 							// update price from feed
 							_pools[i].collaterals[j].priceUSD = Big(BigNumber.from(res.returnData[reqCount]).toString()).div(1e8).toString();
@@ -294,14 +293,14 @@ function AppDataProvider({ children }: any) {
 						_pools[i].synths[j].totalSupply = pool.interface.decodeFunctionResult("totalSupply", res.returnData[reqCount])[0].toString();
 						reqCount += 1;
 						if(_pools[i].synths[j].feed == ethers.constants.HashZero.toLowerCase()){
-							if(_pools[i].synths[j].fallbackFeed && _pools[i].synths[j].fallbackFeed !== ethers.constants.AddressZero.toLowerCase()){
+							// if(_pools[i].synths[j].fallbackFeed && _pools[i].synths[j].fallbackFeed !== ethers.constants.AddressZero.toLowerCase()){
 								// update price from fallback feed
-								_pools[i].synths[j].priceUSD = BigNumber.from(res.returnData[reqCount]).div(1e8).toString();
+								_pools[i].synths[j].priceUSD = Big(BigNumber.from(res.returnData[reqCount]).toString()).div(1e8).toString();
 								reqCount += 1;
-							} else {
-								// set price 1
-								_pools[i].synths[j].priceUSD = "1";
-							}
+							// } else {
+							// 	// set price 1
+							// 	_pools[i].synths[j].priceUSD = "1";
+							// }
 						} else if (_pools[i].synths[j].feed.startsWith('0x0000000000000000000000')){
 							// update price from feed
 							_pools[i].synths[j].priceUSD = Big(BigNumber.from(res.returnData[reqCount]).toString()).div(1e8).toString();

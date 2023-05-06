@@ -315,7 +315,19 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 				duration: 10000,
 				isClosable: true,
 				position: "top-right"
-			});
+			})
+		}).catch((err: any) => {
+			console.log(err);
+			if(err?.reason == "user rejected transaction"){
+				toast({
+					title: "Transaction Rejected",
+					description: "You have rejected the transaction",
+					status: "error",
+					duration: 5000,
+					isClosable: true,
+					position: "top-right"
+				})
+			}
 		})
 	}
 

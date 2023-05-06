@@ -23,7 +23,7 @@ import {
 	Divider,
 	IconButton,
 } from "@chakra-ui/react";
-import { dollarFormatter, tokenFormatter } from "../../../src/const";
+import { PARTNER_ASSETS, PARTNER_ASSET_COLOR, PARTNER_ASSET_COLOR_GRADIENTS, PARTNER_ASSET_LOGOS, dollarFormatter, tokenFormatter } from "../../../src/const";
 import Big from "big.js";
 
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
@@ -93,8 +93,28 @@ export default function CollateralModal({ collateral, index }: any) {
 		onOpen();
 	}
 
+	// 
+	const partner = Object.keys(PARTNER_ASSETS).map((key: string) => PARTNER_ASSETS[key].includes(collateral.token.symbol) ? key : null).filter((key: string | null) => key != null)[0];
+
 	return (
 		<>
+		{partner && <Tr color={PARTNER_ASSET_COLOR[partner]} bgGradient={`linear(to-r, ${PARTNER_ASSET_COLOR_GRADIENTS[partner][0]}, ${PARTNER_ASSET_COLOR_GRADIENTS[partner][1]})`} h={'28px'} p={0} m={0}>
+			<Td py={0} border={0}>
+				<Flex align={'center'} gap={2}>
+					<Image
+						src={PARTNER_ASSET_LOGOS[partner]}
+						h={'22px'}
+						alt="lodestar logo"
+						/>
+					<Text fontWeight={'bold'} fontSize={'sm'}>
+						{partner}
+					</Text>
+				</Flex>
+			</Td>
+			<Td py={0} border={0}>
+
+			</Td>
+		</Tr>}
 			<Tr
 				cursor="pointer"
 				onClick={_onOpen}
