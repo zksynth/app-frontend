@@ -12,9 +12,38 @@ import {
 } from "@chakra-ui/react";
 import { AppDataContext } from "../context/AppDataProvider";
 import { dollarFormatter } from "../../src/const";
+import Big from "big.js";
 
 export default function Portfolio() {
-	const { account } = useContext(AppDataContext);
+	const { account, pools } = useContext(AppDataContext);
+
+	const accountPoints = (__account : any = account) => {
+		if(!__account) return {today: '-', total: '-'};
+		if(!__account.accountDayData) return {today: '-', total: '-'};
+		let today = Big(0);
+		let total = Big(0);
+		for(let i = 0; i < __account.accountDayData.length; i++){
+		  let dailyPoint = Big(0);
+		  if(!__account.accountDayData[i].dailySynthsMinted) continue;
+		  for(let j = 0; j < __account.accountDayData[i].dailySynthsMinted.length; j++){
+			const pool = pools.find((pool: any) => pool.id == __account.accountDayData[i].dailySynthsMinted[j].synth.pool.id);
+			if(!pool) continue;
+			const synth = pool.synths.find(
+			  (synth: any) => synth.token.id == __account.accountDayData[i].dailySynthsMinted[j].synth.id
+			);
+			if(!synth) continue;
+			dailyPoint = dailyPoint.plus(
+			  Big(__account.accountDayData[i].dailySynthsMinted[j].amount)
+			  .mul(synth.priceUSD)
+			);
+		  }
+		  total = total.plus(dailyPoint);
+		  if(__account.accountDayData[i]?.dayId == Math.floor(Date.now()/(24*3600000))){
+			today = dailyPoint;
+		  }
+		}
+		return {today: dollarFormatter.format(today.toNumber()), total: dollarFormatter.format(total.toNumber())};
+	  }
 
 	return (
 		<Box my={10}>
@@ -43,11 +72,22 @@ export default function Portfolio() {
 
 				<Box>
 					<Heading size={"sm"} color="whiteAlpha.700">
+						24h Volume
+					</Heading>
+					<Text mt={0.5} fontSize={"2xl"}>
+						{account
+							? accountPoints().today
+							: "-"}
+					</Text>
+				</Box>
+
+				<Box>
+					<Heading size={"sm"} color="whiteAlpha.700">
 						Total Volume
 					</Heading>
 					<Text mt={0.5} fontSize={"2xl"}>
 						{account
-							? dollarFormatter.format(account?.totalMintUSD ?? 0)
+							? accountPoints().total
 							: "-"}
 					</Text>
 				</Box>

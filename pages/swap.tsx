@@ -7,7 +7,7 @@ export default function swap() {
 	return (
 		<Flex >
 				<Box bgImage='/center-glow.svg' bgRepeat={'no-repeat'} w='100%' h={'100%'} bgPos='50% 50%'>
-			<Flex justify={"center"} align="center" h={"90vh"}>
+			<Flex justify={"center"} align="center" h={"80vh"}>
 
 				<Box w={"43%"} minW="400px" >
 					<motion.div

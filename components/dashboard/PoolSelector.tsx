@@ -9,6 +9,7 @@ import {
 	Divider,
 	Image,
 	Text,
+	Tag,
 } from "@chakra-ui/react";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { motion, Variants } from "framer-motion";
@@ -70,15 +71,21 @@ export default function PoolSelector() {
 									<Flex>
 										<Box textAlign={'left'}>
 										{/* <Text fontSize={'sm'} color='whiteAlpha.600'>Market Name</Text> */}
-										<Heading fontSize={{sm: '3xl', md: "4xl", lg: '4xl'}} fontWeight='semibold'
+										<Flex gap={4}>
+
+										<Heading fontSize={{sm: '3xl', md: "3xl", lg: '3xl'}} fontWeight='semibold'
 										// fontFamily='MonumentExtended'
 										>
 											{pools[tradingPool].name}
 										</Heading>
+										{/* <Text fontSize={'xs'}>Earning</Text> */}
+										{/* <Tag mt={2}>10% APY</Tag> */}
+
+										</Flex>
 										</Box>
 									</Flex>
 									<Flex align={'center'} color='whiteAlpha.900'>
-									<Text fontSize={'sm'} display={{sm: 'none', md: 'block', lg: 'block'}} >{!isOpen ? 'All Markets' : 'Tap To Close'}</Text>
+									<Text fontSize={'xs'} display={{sm: 'none', md: 'block', lg: 'block'}} >{!isOpen ? 'All Markets' : 'Tap To Close'}</Text>
 									<motion.div
 										variants={{
 											open: { rotate: 180 },

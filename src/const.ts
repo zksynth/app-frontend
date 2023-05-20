@@ -20,7 +20,7 @@ const _Endpoints: any = {
 }
 
 export const PARTNER_ASSETS: any = {
-	"Lodestar": ["lUSDC"]
+	"Lodestar": [""]
 }
 
 export const PARTNER_ASSET_LOGOS: any = {
@@ -77,15 +77,9 @@ export const query = (address: string) => (
 		  totalDebtUSD
 		  oracle
 		  paused
+		  issuerAlloc
 		  rewardTokens {
 			id
-		  }
-		  poolDayData(first:7, orderBy: dayId, orderDirection: desc){
-			dailyDebtIssuedUSD
-			dailyDebtBurnedUSD
-			dailyRevenueUSD
-			dailyBurnUSD
-			totalDebtUSD
 		  }
 		  rewardSpeeds
 		  synths {
@@ -95,11 +89,14 @@ export const query = (address: string) => (
 			  symbol
 			  decimals
 			}
+			cumulativeMinted
+			cumulativeBurned
 			priceUSD
 			mintFee
 			burnFee
 			totalSupply
-			synthDayData(first:1, orderBy: dayId, orderDirection: desc){
+			synthDayData(first:7, orderBy: dayId, orderDirection: desc){
+				dayId
 				dailyMinted
 				dailyBurned
 			}
@@ -126,14 +123,17 @@ export const query = (address: string) => (
 		  id
 		  createdAt
 		  referredBy
-		  totalPoint
-		  totalMintUSD
-		  totalBurnUSD
-		  accountDayData(first:1, orderBy: dayId, orderDirection: desc){
-			dailyMintedUSD
-			dailyBurnedUSD
-			dailyPoint
+		  accountDayData(orderBy: dayId, orderDirection: desc){
 			dayId
+			dailySynthsMinted{
+				synth{
+					id
+					pool{
+						id
+					}
+				}
+				amount
+			}
 		  }
 		  positions{
 			pool{
@@ -155,14 +155,19 @@ export const query = (address: string) => (
 
 export const query_leaderboard = `
 	{
-		accounts(orderBy: totalPoint, orderDirection: desc){
+		accounts{
 			id
-			totalPoint
-			accountDayData(first:1, orderBy: dayId, orderDirection: desc){
-				dailyMintedUSD
-				dailyBurnedUSD
-				dailyPoint
+			accountDayData(orderBy: dayId, orderDirection: desc){
 				dayId
+				dailySynthsMinted{
+					synth{
+						id
+						pool{
+							id
+						}
+					}
+					amount
+				}
 			}
 		}
 	}
@@ -172,13 +177,17 @@ export const query_referrals = (address: string) => (`
 	{
 		accounts(where: {referredBy: "${address}"}){
 			id
-			totalMintUSD
-			totalBurnUSD
 			accountDayData(first:1, orderBy: dayId, orderDirection: desc){
-				dailyMintedUSD
-				dailyBurnedUSD
-				dailyPoint
 				dayId
+				dailySynthsMinted{
+					synth{
+						id
+						pool{
+							id
+						}
+					}
+					amount
+				}
 			}
 		}
 	}

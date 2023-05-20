@@ -10,6 +10,8 @@ import {
 	TableContainer,
 	Flex,
 	Box,
+	Heading,
+	Text
 } from "@chakra-ui/react";
 import { AppDataContext } from "../context/AppDataProvider";
 import {
@@ -26,6 +28,9 @@ import { MdNavigateBefore, MdNavigateNext } from "react-icons/md";
 import { Skeleton } from "@chakra-ui/react";
 import Debt from "../modals/debt";
 import ThBox from "./ThBox";
+import Big from "big.js";
+import { ESYX_PRICE } from "../../src/const";
+import APRInfo from "../infos/APRInfo";
 
 const pageSize = 7;
 
@@ -39,14 +44,52 @@ export default function CollateralTable() {
 		}
 	);
 
+	const esSyxApr = () => {
+		if (!pools[tradingPool]) return "0";
+		if (Big(pools[tradingPool]?.totalDebtUSD).eq(0)) return "0";
+		return Big(pools[tradingPool]?.rewardSpeeds[0])
+			.div(1e18)
+			.mul(365 * 24 * 60 * 60 * ESYX_PRICE)
+			.div(pools[tradingPool]?.totalDebtUSD)
+			.mul(100)
+			.toFixed(2);
+	};
+
+	const debtBurnApr = () => {
+		if (!pools[tradingPool]) return "0";
+		if (Big(pools[tradingPool]?.totalDebtUSD).eq(0)) return "0";
+		return Big(pools[tradingPool]?.averageDailyBurn ?? 0)
+			.mul(365)
+			.div(pools[tradingPool]?.totalDebtUSD)
+			.mul(100)
+			.toFixed(2);
+	};
+
 	return (
-		<>
+		<Box>
+			<Box bg={'whiteAlpha.50'} roundedTop={16} px={5} pt={4} pb={4}>
+			<Flex align={'center'} justify={'space-between'}>
+			<Heading size={'md'} color={'secondary.300'}>Synthetic Assets</Heading>
+			<APRInfo
+										debtBurnApr={debtBurnApr()}
+										esSyxApr={esSyxApr()}
+									>
+			<Box cursor={'help'} textAlign={'right'}>
+				<Text fontSize={'xs'}>Rewards APR</Text>
+				<Heading size={'md'} color={'secondary.300'}>{(
+														Number(debtBurnApr()) +
+														Number(esSyxApr())
+													).toFixed(2)}%</Heading>
+			</Box>
+			</APRInfo>
+			</Flex>
+			</Box>
 			{pools[tradingPool]?.synths.length > 0 ? (
 				<TableContainer>
 					<Table variant="simple">
 						<Thead>
 							<Tr >
-								<ThBox alignBox='left'>Synthetic Asset</ThBox>
+								<ThBox alignBox='left'>Asset</ThBox>
 								<ThBox >Price</ThBox>
 								<ThBox >Volume 24h</ThBox>
 								<ThBox alignBox='right' isNumeric>
@@ -107,6 +150,6 @@ export default function CollateralTable() {
 					</PaginationContainer>
 				</Pagination>
 			</Flex>
-		</>
+		</Box>
 	);
 }

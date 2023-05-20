@@ -125,15 +125,18 @@ function AppDataProvider({ children }: any) {
 							// reverse pool.collaterals
 							pool.collaterals = pool.collaterals.reverse();
 							
-							// average burn and revenue
-							let averageDailyBurn = Big(0);
-							let averageDailyRevenue = Big(0);
-							for(let j = 0; j < pool.poolDayData.length; j++) {
-								averageDailyBurn = averageDailyBurn.plus(pool.poolDayData[j].dailyBurnUSD);
-								averageDailyRevenue = averageDailyRevenue.plus(pool.poolDayData[j].dailyRevenueUSD);
-							}
-							pool.averageDailyBurn = pool.poolDayData.length > 0 ? averageDailyBurn.div(pool.poolDayData.length).toString() : '0';
-							pool.averageDailyRevenue = pool.poolDayData.length > 0 ? averageDailyRevenue.div(pool.poolDayData.length).toString() : '0';
+							// TODO: check average burn and revenue
+							// let averageDailyBurn = Big(0);
+							// let averageDailyRevenue = Big(0);
+							// for(let j = 0; j < pool.poolDayData.length; j++) {
+							// 	for(let k = 0; k < pool.poolDayData[j].synths.length; k++) {
+							// 		let synthDayData = pool.poolDayData[j].synths[k].synthDayData;
+							// 		averageDailyBurn = averageDailyBurn.plus(pool.poolDayData[j].dailyBurnUSD);
+							// 		averageDailyRevenue = averageDailyRevenue.plus(pool.poolDayData[j].dailyRevenueUSD);
+							// 	}
+							// }
+							// pool.averageDailyBurn = pool.poolDayData.length > 0 ? averageDailyBurn.div(pool.poolDayData.length).toString() : '0';
+							// pool.averageDailyRevenue = pool.poolDayData.length > 0 ? averageDailyRevenue.div(pool.poolDayData.length).toString() : '0';
 							pools[i] = pool;
 						}
 						
@@ -231,12 +234,10 @@ function AppDataProvider({ children }: any) {
 					pool.interface.encodeFunctionData("totalSupply", [])
 				]);
 				if(_pools[i].synths[j].feed == ethers.constants.HashZero.toLowerCase()){
-					// if(_pools[i].synths[j].fallbackFeed && _pools[i].synths[j].fallbackFeed !== ethers.constants.AddressZero.toLowerCase()){
-						reqs.push([
-							_pools[i].oracle,
-							priceOracle.interface.encodeFunctionData("getAssetPrice", [_pools[i].synths[j].token.id])
-						])
-					// }
+					reqs.push([
+						_pools[i].oracle,
+						priceOracle.interface.encodeFunctionData("getAssetPrice", [_pools[i].synths[j].token.id])
+					])
 				} else if (_pools[i].synths[j].feed.startsWith('0x0000000000000000000000')){
 					reqs.push([
 						_pools[i].oracle,
@@ -252,20 +253,37 @@ function AppDataProvider({ children }: any) {
 				_pools[i].id,
 				pool.interface.encodeFunctionData("balanceOf", [address])
 			])
-
-			// sort synths
-			// pool.synths.sort((a: any, b: any) => {
-			// 	return (
-			// 		parseFloat(b.totalSupply) *
-			// 		parseFloat(b.priceUSD)
-			// 	) -
-			// 		(parseFloat(a.totalSupply) *
-			// 			parseFloat(a.priceUSD));
-			// });
-
 		}
 
 		await _setAssetPrices(_pools);
+
+		for (let i = 0; i < _pools.length; i++) {
+			const pool = _pools[i];
+			
+			// average burn and revenue
+			let averageDailyBurn = Big(0);
+			let averageDailyRevenue = Big(0);
+			for(let k = 0; k < pool.synths.length; k++) {
+				for(let l = 0; l <pool.synths[k].synthDayData.length; l++) {
+					let synthDayData = pool.synths[k].synthDayData[l];
+					// synthDayData.dailyMinted / 1e18 * pool.synths[k].mintFee / 10000 * pool.synths[k].priceUSD
+					let totalFee = Big(synthDayData.dailyMinted).div(1e18).mul(pool.synths[k].mintFee).div(10000).mul(pool.synths[k].priceUSD);
+					// add burn fee
+					totalFee = totalFee.plus(Big(synthDayData.dailyBurned).div(1e18).mul(pool.synths[k].burnFee).div(10000).mul(pool.synths[k].priceUSD));
+
+					// add to average
+					averageDailyBurn = averageDailyBurn.plus(
+						totalFee.mul(pool.issuerAlloc).div(10000)
+					);
+					averageDailyRevenue = averageDailyRevenue.plus(
+						totalFee.mul(10000 - pool.issuerAlloc).div(10000)
+					);
+				}
+			}
+			pool.averageDailyBurn = averageDailyBurn.div(7).toString();
+			pool.averageDailyRevenue = averageDailyRevenue.div(7).toString();
+			_pools[i] = pool;
+		}
 
 		helper.callStatic.aggregate(reqs).then(async (res: any) => {
 			if(res.returnData.length > 0){

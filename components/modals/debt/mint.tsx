@@ -92,7 +92,6 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 		// let _referral = useReferral ? BigNumber.from(base58.decode(referral!)).toHexString() : ethers.constants.AddressZero;
 		// get .feed from pool.collaterals & pool.synths if feed is not bytes(0)
 		const pythFeeds = pools[tradingPool].collaterals.concat(pools[tradingPool].synths).filter((c: any) => c.feed != ethers.constants.HashZero).map((c: any) => c.feed);
-		console.log(pythFeeds);
 		const pythPriceService = new EvmPriceServiceConnection(PYTH_ENDPOINT);
 		const priceFeedUpdateData = await pythPriceService.getPriceFeedsUpdateData(pythFeeds);
 

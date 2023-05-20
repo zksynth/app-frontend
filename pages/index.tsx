@@ -51,27 +51,6 @@ export default function TempPage() {
 
 	if (!hydrated) return <></>;
 
-	const esSyxApr = () => {
-		if (!pools[tradingPool]) return "0";
-		if (Big(pools[tradingPool]?.totalDebtUSD).eq(0)) return "0";
-		return Big(pools[tradingPool]?.rewardSpeeds[0])
-			.div(1e18)
-			.mul(365 * 24 * 60 * 60 * ESYX_PRICE)
-			.div(pools[tradingPool]?.totalDebtUSD)
-			.mul(100)
-			.toFixed(2);
-	};
-
-	const debtBurnApr = () => {
-		if (!pools[tradingPool]) return "0";
-		if (Big(pools[tradingPool]?.totalDebtUSD).eq(0)) return "0";
-		return Big(pools[tradingPool]?.averageDailyBurn ?? 0)
-			.mul(365)
-			.div(pools[tradingPool]?.totalDebtUSD)
-			.mul(100)
-			.toFixed(2);
-	};
-
 	const debtLimit = () =>
 		(100 * pools[tradingPool]?.userDebt) /
 		pools[tradingPool]?.userCollateral;
@@ -80,6 +59,20 @@ export default function TempPage() {
 		if(!pools[tradingPool]?.adjustedCollateral) return 0;
 		if(pools[tradingPool].adjustedCollateral - pools[tradingPool]?.userDebt < 0) return 0;
 		return pools[tradingPool].adjustedCollateral - pools[tradingPool].userDebt
+	}
+
+	const totalPortfolioValue = () => {
+		if (!pools[tradingPool]) return "0";
+		let total = Big(0);
+		for (let i = 0; i < pools[tradingPool]?.synths.length; i++) {
+			const synth = pools[tradingPool]?.synths[i];
+			total = total.add(
+				Big(synth.walletBalance ?? 0)
+					.div(1e18)
+					.mul(synth.priceUSD ?? 0)
+			);
+		}
+		return total.toFixed(2);
 	}
 
 	return (
@@ -109,7 +102,7 @@ export default function TempPage() {
 						>
 							<Flex
 								flexDir={{ sm: "column", md: "row" }}
-								gap={{ sm: 10, md: 16 }}
+								gap={{ sm: 10, md: 12 }}
 								zIndex={1}
 							>
 								<Flex mt={4} gap={3} align="start">
@@ -122,7 +115,14 @@ export default function TempPage() {
 										/>
 									</IconBox>
 
-									<Box>
+									<Info
+										message={`
+											Sum of all your collateral deposited in USD
+										`}
+										title={"Total Collateral"}
+									>
+
+									<Box cursor={'help'}>
 										<Heading
 											size={"sm"}
 											color="whiteAlpha.700"
@@ -149,9 +149,10 @@ export default function TempPage() {
 											</Text>
 										</Flex>
 									</Box>
+									</Info>
 								</Flex>
 
-								<Flex mt={4} gap={3} align="start">
+								{/* <Flex mt={4} gap={3} align="start">
 									<IconBox>
 										<Image
 											h={"20px"}
@@ -198,7 +199,7 @@ export default function TempPage() {
 											</Flex>
 										</Box>
 									</APRInfo>
-								</Flex>
+								</Flex> */}
 
 								<Flex mt={4} gap={3} align="start">
 									<IconBox>
@@ -244,6 +245,51 @@ export default function TempPage() {
 										</Box>
 									</Info>
 								</Flex>
+
+								{Big(pools[tradingPool]?.userDebt ?? 0).gt(0) && <Flex mt={4} gap={3} align="start">
+									<IconBox>
+										<Image
+											h={"20px"}
+											src="/icon2.svg"
+											alt={"icon2"}
+										/>
+									</IconBox>
+
+									<Info
+										message={`
+										In order to make profit, you'd mint synthetics that move up relative to pool's total liquidity. So your debt will be lower to your synthetic holdings.
+										`}
+										title={"Profit and Loss"}
+									>
+										<Box cursor={"help"}>
+											<Heading
+												mb={0.5}
+												size={"sm"}
+												color="whiteAlpha.700"
+											>
+												PnL
+											</Heading>
+											<Flex gap={2} align="center">
+												<Flex
+													fontWeight={"semibold"}
+													fontSize={"xl"}
+													gap={1}
+													color={Big(totalPortfolioValue()).gt(pools[tradingPool]?.userDebt ?? 0) ? 'green.400' : 'red.400'}
+												>
+													<Text
+														// color={"whiteAlpha.800"}
+														fontWeight={"normal"}
+													>
+														$
+													</Text>
+													<Text>
+														{Big(totalPortfolioValue()).sub(pools[tradingPool]?.userDebt).toFixed(2)} ({Big(totalPortfolioValue()).sub(pools[tradingPool]?.userDebt).mul(100).div(pools[tradingPool]?.userDebt).toFixed(2)}%)
+													</Text>
+												</Flex>
+											</Flex>
+										</Box>
+									</Info>
+								</Flex>}
 							</Flex>
 						</motion.div>
 					</Flex>

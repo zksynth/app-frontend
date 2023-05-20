@@ -15,7 +15,7 @@ const tableHeaderStyle = {
 export default function ThBox({children, alignBox, isNumeric}: any) {
   return (
     <Th {...tableHeaderStyle} pr={alignBox == 'right' ? 4 : 0} pl={alignBox == 'left' ? 4 : 0} isNumeric={isNumeric}>
-    <Box pb={4} mb={-3} px={2} borderBottom={'2px'} borderColor='whiteAlpha.300'>
+    <Box color={'whiteAlpha.500'} pb={4} mb={-3} px={2} borderBottom={'2px'} borderColor='whiteAlpha.300'>
         {children}
     </Box>
     </Th>
