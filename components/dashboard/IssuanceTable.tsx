@@ -32,7 +32,7 @@ import Big from "big.js";
 import { ESYX_PRICE } from "../../src/const";
 import APRInfo from "../infos/APRInfo";
 
-const pageSize = 7;
+const pageSize = 5;
 
 export default function CollateralTable() {
 	const { pools, tradingPool } = useContext(AppDataContext);

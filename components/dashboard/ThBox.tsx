@@ -8,7 +8,7 @@ const tableHeaderStyle = {
 	borderColor: 'transparent',
 	fontWeight: 'bold',
 	fontFamily: 'General Sans',
-	pt: '24px',
+	pt: '18px',
 	pb: '16px',
 }
 
