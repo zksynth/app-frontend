@@ -111,6 +111,7 @@ export default function Leaderboard() {
       }
     }
     return {total: dollarFormatter.format(total.toNumber()), daily: dollarFormatter.format(daily.toNumber())};
+
   }
 
   return (
