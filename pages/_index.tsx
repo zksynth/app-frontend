@@ -39,8 +39,6 @@ export default function _index({ children }: any) {
 	const [hydrated, setHydrated] = useState(false);
 	const { status, message } = useContext(AppDataContext);
 
-	const {chain} = useNetwork();
-
 	useEffect(() => {
 		setHydrated(true);
 	}, []);
@@ -67,7 +65,7 @@ export default function _index({ children }: any) {
 
 	return (
 		<Box>
-			{(chain?.testnet) && <Flex align={'center'} justify={'center'} bgColor="blackAlpha.100" color={'gray.400'}>
+			{process.env.NEXT_PUBLIC_NETWORK == 'testnet' && <Flex align={'center'} justify={'center'} bgColor="blackAlpha.100" color={'gray.400'}>
 				<Text
 					textAlign={'center'} 
 					fontSize={'sm'}

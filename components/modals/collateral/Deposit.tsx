@@ -195,9 +195,20 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 					} catch (e) {
 						console.log(e)
 					}
-				});
-			const collateralId = decodedLogs[decodedLogs.length - 1].args[1].toLowerCase();
-			const depositedAmount = decodedLogs[decodedLogs.length - 1].args[2].toString();
+				}
+			);
+
+			console.log("decodedLogs", decodedLogs);
+			let log: any = {};
+			for(let i in decodedLogs){
+				if(decodedLogs[i]){
+					if(decodedLogs[i].name == "Deposit"){
+						log = decodedLogs[i];
+					}
+				}
+			}
+			const collateralId = log.args[1].toLowerCase();
+			const depositedAmount = log.args[2].toString();
 			if(approveMax){
 				addCollateralAllowance(collateralId, poolId, ethers.constants.MaxUint256.toString());
 			}
@@ -254,15 +265,82 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 		});
 	};
 
+	const approveTx = async () => {
+		setApproveLoading(true);
+		const collateralContract = await getContract("MockToken", chain?.id!, collateral.token.id);
+		send(
+			collateralContract,
+			"approve",
+			[
+				pools[tradingPool].id,
+				ethers.constants.MaxUint256
+			]
+		)
+		.then(async (res: any) => {
+			const response = await res.wait(1);
+			const decodedLogs = response.logs.map((log: any) =>
+				{
+					try {
+						return collateralContract.interface.parseLog(log)
+					} catch (e) {
+						console.log(e)
+					}
+				}
+			);
+			console.log("decodedLogs", decodedLogs);
+			let log: any = {};
+			for(let i in decodedLogs){
+				if(decodedLogs[i]){
+					if(decodedLogs[i].name == "Approval"){
+						log = decodedLogs[i];
+					}
+				}
+			}
+			addCollateralAllowance(collateral.token.id, pools[tradingPool].id, log.args[2].toString());
+			setApproveLoading(false);
+			toast({
+				title: "Approval Successful",
+				description: <Box>
+					<Text>
+				{`You have approved ${Big(log.args[2].toString()).div(10**collateral.token.decimals).toString()} ${collateral.token.symbol}`}
+					</Text>
+				<Link href={chain?.blockExplorers?.default.url + "/tx/" + res.hash} target="_blank">
+					<Flex align={'center'} gap={2}>
+					<ExternalLinkIcon />
+					<Text>View Transaction</Text>
+					</Flex>
+				</Link>
+				</Box>,
+				status: "success",
+				duration: 10000,
+				isClosable: true,
+				position: "top-right"
+			})
+		}).catch((err: any) => {
+			console.log(err);
+			if(err?.reason == "user rejected transaction"){
+				toast({
+					title: "Transaction Rejected",
+					description: "You have rejected the transaction",
+					status: "error",
+					duration: 5000,
+					isClosable: true,
+					position: "top-right"
+				})
+			}
+		})
+	}
+
 	const approve = async () => {
 		setApproveLoading(true);
+		console.log(collateral);
 		const _deadline =(Math.floor(Date.now() / 1000) + 60 * 20).toFixed(0);
 		// const _amount = Big(amount).round(collateral.token.decimals, 0).toString()
 		const _amount = Big(amount).toFixed(collateral.token.decimals, 0);
 		const value = approveMax ? ethers.constants.MaxUint256 : ethers.utils.parseUnits(_amount, collateral.token.decimals);
 		signTypedDataAsync({
 			domain: {
-				name: await collateral.token.name,
+				name: collateral.token.name,
 				version: "1",
 				chainId: chain?.id!,
 				verifyingContract: collateral.token.id,
@@ -412,8 +490,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 							</Flex>
 						</Box>
 					</Box>
-
-					{validate().stage == 1 && <Tooltip label='
+					{collateral.nonce && (validate().stage == 1 && <Tooltip label='
 						Approve Max will approve unlimited amount. This will save gas fees in the future.
 					'>
 					<Flex align={'center'} mb={2} mt={6} color='gray.400' gap={2}>
@@ -422,7 +499,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 						</Text>
 						<Switch size={'sm'} colorScheme='primary' onChange={() => setApproveMax(!approveMax)} isChecked={approveMax} />
 					</Flex>
-					</Tooltip>
+					</Tooltip>)
 					}
 
 				
@@ -435,7 +512,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 						color='gray.800'
 						mt={2}
 						width="100%"
-						onClick={approve}
+						onClick={collateral.nonce ? approve : approveTx}
 						size="lg"
 						rounded={16}
 						leftIcon={

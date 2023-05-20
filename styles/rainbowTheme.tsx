@@ -21,7 +21,7 @@ const myCustomTheme: Theme = {
     closeButtonBackground: "rgba(255, 255, 255, 0.08)",
     connectButtonBackgroundError: "#FF494A",
     connectButtonInnerBackground: "#2D3748",
-    connectButtonText: "#000",
+    connectButtonText: "#fff",
     connectButtonTextError: "#000",
     connectionIndicator: "#30E000",
     downloadBottomCardBackground: "linear-gradient(126deg, rgba(0, 0, 0, 0) 9.49%, rgba(120, 120, 120, 0.2) 71.04%), #1A1B1F",
@@ -43,7 +43,8 @@ const myCustomTheme: Theme = {
     standby: "#FFD641"
   },
   fonts: {
-    body: '...',
+    body: '12px',
+
   },
   radii: {
     actionButton: '20px',

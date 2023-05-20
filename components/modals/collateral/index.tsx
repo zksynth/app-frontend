@@ -22,8 +22,9 @@ import {
 	Select,
 	Divider,
 	IconButton,
+	Tag,
 } from "@chakra-ui/react";
-import { dollarFormatter, tokenFormatter } from "../../../src/const";
+import { PARTNER_ASSETS, PARTNER_ASSET_COLOR, PARTNER_ASSET_COLOR_GRADIENTS, PARTNER_ASSET_LOGOS, dollarFormatter, tokenFormatter } from "../../../src/const";
 import Big from "big.js";
 
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
@@ -93,15 +94,34 @@ export default function CollateralModal({ collateral, index }: any) {
 		onOpen();
 	}
 
+	// 
+	const partner = Object.keys(PARTNER_ASSETS).map((key: string) => PARTNER_ASSETS[key].includes(collateral.token.symbol) ? key : null).filter((key: string | null) => key != null)[0];
+
 	return (
 		<>
+		{partner && <Tr color={PARTNER_ASSET_COLOR[partner]} bgGradient={`linear(to-r, ${PARTNER_ASSET_COLOR_GRADIENTS[partner][0]}, ${PARTNER_ASSET_COLOR_GRADIENTS[partner][1]})`} h={'28px'} p={0} m={0}>
+			<Td py={0} border={0}>
+				<Flex align={'center'} gap={2} borderBottom={'1px solid'} py={1}>
+					<Image
+						src={PARTNER_ASSET_LOGOS[partner]}
+						h={'22px'}
+						alt="lodestar logo"
+						/>
+					<Text fontWeight={'bold'} fontSize={'sm'}>
+						{partner}
+					</Text>
+				</Flex>
+			</Td>
+			<Td py={0} border={0} >
+			</Td>
+		</Tr>}
 			<Tr
 				cursor="pointer"
 				onClick={_onOpen}
 				// borderLeft="2px"
 				// borderColor="transparent"
 				_hover={{ borderColor: "primary.400", bg: "whiteAlpha.100" }}
-				
+				bgGradient={partner ? `linear(to-r, ${PARTNER_ASSET_COLOR_GRADIENTS[partner][0]}, ${PARTNER_ASSET_COLOR_GRADIENTS[partner][1]})` : 'linear(to-r, transparent, transparent)'}
 			>
 				<TdBox
 					isFirst={index == 0}
@@ -141,11 +161,13 @@ export default function CollateralModal({ collateral, index }: any) {
 					alignBox='right'
 					isNumeric
 				>
-					<Text fontSize={'md'} color={
+					<Box color={
 						Big(collateral.balance ?? 0).gt(0)
 							? "white"
 							: "gray.500"
-					} >
+					}>
+
+					<Text fontSize={'md'}  >
 
 					{tokenFormatter.format(
 						Big(collateral.balance ?? 0)
@@ -154,6 +176,16 @@ export default function CollateralModal({ collateral, index }: any) {
 					)}
 					{Big(collateral.balance ?? 0).gt(0) ? "" : ".00"}
 					</Text>
+
+					{Big(collateral.balance ?? 0).gt(0) && <Text fontSize={'xs'} color={'gray.400'}>
+						{dollarFormatter.format(
+							Big(collateral.balance ?? 0)
+								.div(10 ** (collateral.token.decimals ?? 18))
+								.mul(collateral.priceUSD)
+								.toNumber()
+						)}
+					</Text>}
+					</Box>
 
 				</TdBox>
 			</Tr>

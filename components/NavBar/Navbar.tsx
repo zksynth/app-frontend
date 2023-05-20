@@ -1,16 +1,13 @@
 import {
 	Flex,
-	Text,
 	Box,
 	Image,
-	Progress,
 	useDisclosure,
 	Collapse,
-	Stack,
 	IconButton,
 	Heading,
 } from "@chakra-ui/react";
-import ConnectButton from '../ConnectButton'; 
+import AccountButton from '../ConnectButton'; 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -24,11 +21,11 @@ import { CloseIcon, HamburgerIcon } from "@chakra-ui/icons";
 import NavLocalLink from "./NavLocalLink";
 import DAOMenu from "./DAOMenu";
 import NavExternalLink from "./NavExternalLink";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 function NavBar() {
 	const router = useRouter();
-	const { ref } = router.query;
-	const { status, account, fetchData, refreshData, pools, setRefresh, refresh } = useContext(AppDataContext);
+	const { status, account, fetchData, setRefresh, refresh } = useContext(AppDataContext);
 	const { fetchData: fetchTokenData } = useContext(TokenContext);
 
 	const { chain, chains } = useNetwork();
@@ -209,12 +206,14 @@ function NavBar() {
 
 				<DAOMenu />
 					<Box>
-						<ConnectButton />
+						<AccountButton />
 					</Box>
+					{(isConnected && !chain?.unsupported) && <Box>
+						<ConnectButton accountStatus="address" chainStatus="icon" showBalance={false} />
+					</Box>}
 				</Flex>
 			</Flex>
 			<Collapse in={isToggleOpen} animateOpacity>
-
 				<MobileNav />
 			</Collapse>
 		</Flex>

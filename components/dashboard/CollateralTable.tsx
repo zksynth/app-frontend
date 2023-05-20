@@ -12,6 +12,8 @@ import {
 	TableContainer,
 	Box,
 	Skeleton,
+	Heading,
+	Divider,
 } from "@chakra-ui/react";
 import { AppDataContext } from "../context/AppDataProvider";
 
@@ -23,14 +25,18 @@ export default function CollateralTable() {
 	const { pools, tradingPool } = useContext(AppDataContext);
 
 	return (
-		<>
+		<Box>
+			<Box bg={'whiteAlpha.50'} roundedTop={16} px={5} pt={6} pb={6}>
+			<Heading size={'md'} color={'primary.400'}>Collaterals</Heading>
+			</Box>
+
 			{pools[tradingPool]?.collaterals.length > 0 ? (
 					<TableContainer>
 						<Table variant="simple">
 							<Thead>
 								<Tr>
 									<ThBox alignBox='left'>
-										Collateral
+										Asset
 									</ThBox>
 									<ThBox alignBox='right' isNumeric>
 										Balance
@@ -61,6 +67,6 @@ export default function CollateralTable() {
 					<Skeleton height="50px" rounded={12} m={6} />
 				</Box>
 			)}
-		</>
+		</Box>
 	);
 }

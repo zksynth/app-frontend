@@ -7,8 +7,6 @@ import {
 	InputGroup,
 	useDisclosure,
 	Divider,
-	Collapse,
-	Switch,
 	Link,
 } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
@@ -21,7 +19,7 @@ import Image from "next/image";
 import { BigNumber, ethers } from "ethers";
 import TokenSelector from "./TokenSelector";
 import { RiArrowDropDownLine, RiArrowDropUpLine, RiArrowUpFill } from "react-icons/ri";
-import { dollarFormatter, tokenFormatter } from "../../src/const";
+import { PYTH_ENDPOINT, dollarFormatter, tokenFormatter } from "../../src/const";
 import SwapSkeleton from "./Skeleton";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import Response from "../modals/_utils/Response";
@@ -32,6 +30,7 @@ import { base58 } from "ethers/lib/utils.js";
 import { useToast } from '@chakra-ui/react';
 const Big = require("big.js");
 import { ExternalLinkIcon, InfoIcon } from "@chakra-ui/icons";
+import { EvmPriceServiceConnection } from "@pythnetwork/pyth-evm-js";
 
 function Swap() {
 	const [inputAssetIndex, setInputAssetIndex] = useState(1);
@@ -168,6 +167,10 @@ function Swap() {
 
 		let _referral = useReferral ? BigNumber.from(base58.decode(referral!)).toHexString() : ethers.constants.AddressZero;
 
+		const pythFeeds = pools[tradingPool].synths.filter((c: any) => (c.feed != ethers.constants.HashZero) && (c.token.symbol == _inputAsset || c.token.symbol == _outputAsset)).map((c: any) => c.feed);
+		const pythPriceService = new EvmPriceServiceConnection(PYTH_ENDPOINT);
+		const priceFeedUpdateData = await pythPriceService.getPriceFeedsUpdateData(pythFeeds);
+
 		send(
 			pool,
 			"swap",
@@ -176,7 +179,8 @@ function Swap() {
 				ethers.utils.parseEther(inputAmount.toString()),
 				pools[tradingPool].synths[outputAssetIndex].token.id,
 				0,
-				address
+				address,
+				priceFeedUpdateData
 			]
 		)
 			.then(async (res: any) => {
@@ -186,17 +190,24 @@ function Swap() {
 				const response = await res.wait(1);
 				// decode response.logs
 				const decodedLogs = response.logs.map((log: any) =>
-					pool.interface.parseLog(log)
+				{try {
+					return pool.interface.parseLog(log);
+				} catch (e) {
+					console.log(e);
+				}}
 				);
-
+				if(chain?.id! == 280){
+					decodedLogs.pop();
+				}
 				console.log(decodedLogs);
+				console.log(decodedLogs[decodedLogs.length - 3].args.value.toString(), decodedLogs[decodedLogs.length - 2].args.value.toString(), decodedLogs[decodedLogs.length - 1].args.value.toString());
 
 				setConfirmed(true);
 				handleExchange(
 					inputToken().token.id,
 					outputToken().token.id,
-					decodedLogs[2].args.value.toString(),
-					decodedLogs[0].args.value.toString(),
+					decodedLogs[decodedLogs.length - 1].args.value.toString(),
+					decodedLogs[decodedLogs.length - 3].args.value.toString(),
 				);
 				// setMessage(
 				// 	"Transaction Successful!"
@@ -232,7 +243,7 @@ function Swap() {
 				})
 			})
 			.catch((err: any) => {
-				console.log(err);
+				console.log('Caught Error', err);
 				if(err?.reason == "user rejected transaction"){
 					toast({
 						title: "Transaction Rejected",
@@ -252,7 +263,11 @@ function Swap() {
 
 	useEffect(() => {
 		if (pools[tradingPool] && !isNaN(Number(inputAmount)) && validateInput() == 0)
-			getContract("Pool", chain?.id!, pools[tradingPool].id).then((contract: any) => {
+			getContract("Pool", chain?.id!, pools[tradingPool].id).then(async (contract: any) => {
+				const pythFeeds = pools[tradingPool].synths.filter((c: any) => (c.feed != ethers.constants.HashZero) && (c.token.id == inputToken().token.id || c.token.id == outputToken().token.id)).map((c: any) => c.feed);
+				const pythPriceService = new EvmPriceServiceConnection(PYTH_ENDPOINT);
+				const priceFeedUpdateData = await pythPriceService.getPriceFeedsUpdateData(pythFeeds);
+
 				// estimate gas
 				contract.estimateGas
 					.swap(
@@ -260,7 +275,8 @@ function Swap() {
 						ethers.utils.parseEther(inputAmount.toString()),
 						pools[tradingPool].synths[outputAssetIndex].token.id,
 						0,
-						address
+						address,
+						priceFeedUpdateData
 					)
 					.then((gas: any) => {
 						setGas(

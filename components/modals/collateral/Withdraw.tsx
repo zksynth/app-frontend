@@ -19,9 +19,10 @@ import { ethers } from "ethers";
 import { getContract, send } from "../../../src/contract";
 import { useContext } from "react";
 import { AppDataContext } from "../../context/AppDataProvider";
-import { compactTokenFormatter, dollarFormatter } from "../../../src/const";
+import { PYTH_ENDPOINT, compactTokenFormatter, dollarFormatter } from "../../../src/const";
 import Link from "next/link";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { EvmPriceServiceConnection } from "@pythnetwork/pyth-evm-js";
 
 export default function Withdraw({ collateral, amount, setAmount, amountNumber, isNative }: any) {
 	const [loading, setLoading] = useState(false);
@@ -55,13 +56,22 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 		const poolId = pools[tradingPool].id;
 		const pool = await getContract("Pool", chain?.id!, poolId);
 		const _amount = Big(amount).mul(10**collateral.token.decimals).toFixed(0);
+
+		const pythFeeds = pools[tradingPool].collaterals.concat(pools[tradingPool].synths).filter((c: any) => c.feed != ethers.constants.HashZero).map((c: any) => c.feed);
+		const pythPriceService = new EvmPriceServiceConnection(PYTH_ENDPOINT);
+		const priceFeedUpdateData = await pythPriceService.getPriceFeedsUpdateData(pythFeeds);
+
+		console.log(pythFeeds);
+		
 		send(
 				pool,
 				"withdraw",
 				[
 					collateral.token.id,
 					_amount,
-					isNative
+					isNative,
+					priceFeedUpdateData, 
+
 				]
 			).then(async (res: any) => {
 			// setMessage("Confirming...");
@@ -78,12 +88,20 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 					}
 				});
 			
-			console.log(decodedLogs);
-			const collateralId = decodedLogs[0].args[1].toLowerCase();
-			const depositedAmount = decodedLogs[0].args[2].toString();
+			let log: any = {};
+			for(let i = 0; i < decodedLogs.length; i++){
+				if(decodedLogs[i]){
+					if(decodedLogs[i].name == "Withdraw"){
+						log = decodedLogs[i];
+						break;
+					}
+				}
+			}
+			const collateralId = log.args[1].toLowerCase();
+			const withdrawnAmount = log.args[2].toString();
 			setConfirmed(true);
-			updateCollateralWalletBalance(collateralId, poolId, depositedAmount, false);
-			updateCollateralAmount(collateralId, poolId, depositedAmount, true);
+			updateCollateralWalletBalance(collateralId, poolId, withdrawnAmount, false);
+			updateCollateralAmount(collateralId, poolId, withdrawnAmount, true);
 			setAmount('0');
 
 			setLoading(false);
@@ -91,7 +109,7 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 				title: "Withdrawal Successful",
 				description: <Box>
 					<Text>
-						{`You have withdrawn ${amount} ${collateral.token.symbol}`}
+						{`You have withdrawn ${Big(withdrawnAmount).div(10**collateral.token.decimals).toString()} ${collateral.token.symbol}`}
 					</Text>
 					<Link href={chain?.blockExplorers?.default.url + "/tx/" + res.hash} target="_blank">
 						<Flex align={'center'} gap={2}>

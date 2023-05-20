@@ -8,7 +8,7 @@ export default function APRInfo({ debtBurnApr, esSyxApr, children }: any) {
 	return (
 		<>
 			<Tooltip
-				bg={"bg2"}
+				bg={"secondary.700"}
 				p={0}
 				rounded={8}
 				label={
@@ -33,7 +33,7 @@ function APRInfoBox({ debtBurnApr, esSyxApr }: any) {
 		<>
 			<Box
 				rounded={8}
-				bg={"bg3"}
+				bg={"secondary.900"}
 				border="2px"
 				borderColor={"whiteAlpha.300"}
 			>
