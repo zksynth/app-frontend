@@ -59,19 +59,24 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 		setResponse("");
 		setMessage("");
 
-		const pythFeeds = pools[tradingPool].collaterals.concat(pools[tradingPool].synths).filter((c: any) => c.feed != ethers.constants.HashZero).map((c: any) => c.feed);
-		const pythPriceService = new EvmPriceServiceConnection(PYTH_ENDPOINT);
-		const priceFeedUpdateData = await pythPriceService.getPriceFeedsUpdateData(pythFeeds);
+		// const pythFeeds = pools[tradingPool].collaterals.concat(pools[tradingPool].synths).filter((c: any) => c.feed != ethers.constants.HashZero).map((c: any) => c.feed);
+		// const pythPriceService = new EvmPriceServiceConnection(PYTH_ENDPOINT);
+		// const priceFeedUpdateData = await pythPriceService.getPriceFeedsUpdateData(pythFeeds);
 
 		// let synth = await getContract("ERC20X", chain?.id!, asset.token.id);
 		let pool = await getContract("Pool", chain?.id!, pools[tradingPool].id);
 		let value = Big(amount)
 			.times(10 ** 18)
 			.toFixed(0);
+
 		send(
 			pool,
 			"burn",
-			[asset.token.id, value, priceFeedUpdateData]
+			[
+				asset.token.id, 
+				value, 
+				// priceFeedUpdateData
+			]
 		)
 			.then(async (res: any) => {
 				// setMessage("Confirming...");

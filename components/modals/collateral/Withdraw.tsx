@@ -57,11 +57,9 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 		const pool = await getContract("Pool", chain?.id!, poolId);
 		const _amount = Big(amount).mul(10**collateral.token.decimals).toFixed(0);
 
-		const pythFeeds = pools[tradingPool].collaterals.concat(pools[tradingPool].synths).filter((c: any) => c.feed != ethers.constants.HashZero).map((c: any) => c.feed);
-		const pythPriceService = new EvmPriceServiceConnection(PYTH_ENDPOINT);
-		const priceFeedUpdateData = await pythPriceService.getPriceFeedsUpdateData(pythFeeds);
-
-		console.log(pythFeeds);
+		// const pythFeeds = pools[tradingPool].collaterals.concat(pools[tradingPool].synths).filter((c: any) => c.feed != ethers.constants.HashZero).map((c: any) => c.feed);
+		// const pythPriceService = new EvmPriceServiceConnection(PYTH_ENDPOINT);
+		// const priceFeedUpdateData = await pythPriceService.getPriceFeedsUpdateData(pythFeeds);
 		
 		send(
 				pool,
@@ -70,8 +68,7 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 					collateral.token.id,
 					_amount,
 					isNative,
-					priceFeedUpdateData, 
-
+					// priceFeedUpdateData, 
 				]
 			).then(async (res: any) => {
 			// setMessage("Confirming...");
