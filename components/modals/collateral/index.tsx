@@ -99,7 +99,7 @@ export default function CollateralModal({ collateral, index }: any) {
 
 	return (
 		<>
-		{partner && <Tr color={PARTNER_ASSET_COLOR[partner]} bgGradient={`linear(to-r, ${PARTNER_ASSET_COLOR_GRADIENTS[partner][0]}, ${PARTNER_ASSET_COLOR_GRADIENTS[partner][1]})`} h={'28px'} p={0} m={0}>
+		{/* {partner && <Tr color={PARTNER_ASSET_COLOR[partner]} bgGradient={`linear(to-r, ${PARTNER_ASSET_COLOR_GRADIENTS[partner][0]}, ${PARTNER_ASSET_COLOR_GRADIENTS[partner][1]})`} h={'28px'} p={0} m={0}>
 			<Td py={0} border={0}>
 				<Flex align={'center'} gap={2} borderBottom={'1px solid'} py={1}>
 					<Image
@@ -114,14 +114,14 @@ export default function CollateralModal({ collateral, index }: any) {
 			</Td>
 			<Td py={0} border={0} >
 			</Td>
-		</Tr>}
+		</Tr>} */}
 			<Tr
 				cursor="pointer"
 				onClick={_onOpen}
 				// borderLeft="2px"
 				// borderColor="transparent"
 				_hover={{ borderColor: "primary.400", bg: "whiteAlpha.100" }}
-				bgGradient={partner ? `linear(to-r, ${PARTNER_ASSET_COLOR_GRADIENTS[partner][0]}, ${PARTNER_ASSET_COLOR_GRADIENTS[partner][1]})` : 'linear(to-r, transparent, transparent)'}
+				// bgGradient={partner ? `linear(to-r, ${PARTNER_ASSET_COLOR_GRADIENTS[partner][0]}, ${PARTNER_ASSET_COLOR_GRADIENTS[partner][1]})` : 'linear(to-r, transparent, transparent)'}
 			>
 				<TdBox
 					isFirst={index == 0}

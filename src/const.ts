@@ -20,7 +20,7 @@ const _Endpoints: any = {
 }
 
 export const PARTNER_ASSETS: any = {
-	"Lodestar": [""]
+	"Lodestar": ["lUSDC"]
 }
 
 export const PARTNER_ASSET_LOGOS: any = {
@@ -66,6 +66,10 @@ export const numOrZero = (num: number) => {
 	if (num === undefined || num === null || isNaN(num)) return 0;
 	return num;
 };
+
+export const PARTNER_WARNINGS: any = {
+	"Lodestar": "If you are borrowing on Lodestar, depositing you lAsset here will lower your collateralization ratio. Please be careful."
+}
 
 export const query = (address: string) => (
 	`{

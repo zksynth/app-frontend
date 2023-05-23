@@ -10,7 +10,7 @@ import {
 	Tooltip,
 	Switch,
 } from "@chakra-ui/react";
-import { dollarFormatter, numOrZero } from '../../../src/const';
+import { PARTNER_ASSETS, PARTNER_WARNINGS, dollarFormatter, numOrZero } from '../../../src/const';
 import Big from "big.js";
 import Response from "../_utils/Response";
 import { useAccount, useBalance, useNetwork, useSignTypedData } from 'wagmi';
@@ -22,6 +22,7 @@ import { compactTokenFormatter } from "../../../src/const";
 import { ExternalLinkIcon, InfoIcon, InfoOutlineIcon } from "@chakra-ui/icons";
 import { useToast } from '@chakra-ui/react';
 import Link from "next/link";
+import InfoFooter from "../_utils/InfoFooter";
 
 export default function Deposit({ collateral, amount, setAmount, amountNumber, isNative }: any) {
 
@@ -393,6 +394,8 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 		address,
 	});
 
+	const partner = Object.keys(PARTNER_ASSETS).map((key: string) => PARTNER_ASSETS[key].includes(collateral.token.symbol) ? key : null).filter((key: string | null) => key != null)[0];
+
 	return (
 		<>
 			<Box bg={"blackAlpha.200"} roundedBottom={16} px={5} pt={5} pb={5}>
@@ -549,7 +552,8 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 							<>Please connect your wallet</>
 						)}
 					</Button>}
-				
+
+					{PARTNER_WARNINGS[partner] && <InfoFooter message={PARTNER_WARNINGS[partner]} />}
 
 				<Response
 					response={response}
