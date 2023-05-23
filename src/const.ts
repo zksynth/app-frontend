@@ -68,7 +68,7 @@ export const numOrZero = (num: number) => {
 };
 
 export const PARTNER_WARNINGS: any = {
-	"Lodestar": "If you are borrowing on Lodestar, depositing you lAsset here will lower your collateralization ratio. Please be careful."
+	"Lodestar": "If you are borrowing on Lodestar, depositing you lAsset here will lower your LTV on Lodestar and put your position at risk. Please be careful."
 }
 
 export const query = (address: string) => (

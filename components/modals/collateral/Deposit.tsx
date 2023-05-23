@@ -553,7 +553,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 						)}
 					</Button>}
 
-					{PARTNER_WARNINGS[partner] && <InfoFooter message={PARTNER_WARNINGS[partner]} />}
+					{partner && PARTNER_WARNINGS[partner] && <InfoFooter message={PARTNER_WARNINGS[partner]} />}
 
 				<Response
 					response={response}
