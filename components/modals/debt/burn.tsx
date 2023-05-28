@@ -22,6 +22,7 @@ import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { useToast } from '@chakra-ui/react';
 import { EvmPriceServiceConnection } from "@pythnetwork/pyth-evm-js";
 import { ethers } from "ethers";
+import useUpdateData from "../../utils/useUpdateData";
 
 
 
@@ -51,6 +52,8 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 		updatePoolBalance
 	} = useContext(AppDataContext);
 
+	const {getUpdateData} = useUpdateData();
+
 	const burn = async () => {
 		if (!amount) return;
 		setLoading(true);
@@ -59,24 +62,24 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 		setResponse("");
 		setMessage("");
 
-		// const pythFeeds = pools[tradingPool].collaterals.concat(pools[tradingPool].synths).filter((c: any) => c.feed != ethers.constants.HashZero).map((c: any) => c.feed);
-		// const pythPriceService = new EvmPriceServiceConnection(PYTH_ENDPOINT);
-		// const priceFeedUpdateData = await pythPriceService.getPriceFeedsUpdateData(pythFeeds);
-
-		// let synth = await getContract("ERC20X", chain?.id!, asset.token.id);
+		
 		let pool = await getContract("Pool", chain?.id!, pools[tradingPool].id);
 		let value = Big(amount)
-			.times(10 ** 18)
-			.toFixed(0);
+		.times(10 ** 18)
+		.toFixed(0);
+		
+		let args = [
+			asset.token.id, 
+			value
+		];
+		
+		const priceFeedUpdateData = await getUpdateData();
+		if(priceFeedUpdateData.length > 0) args.push(priceFeedUpdateData);
 
 		send(
 			pool,
 			"burn",
-			[
-				asset.token.id, 
-				value, 
-				// priceFeedUpdateData
-			]
+			args
 		)
 			.then(async (res: any) => {
 				// setMessage("Confirming...");

@@ -31,6 +31,7 @@ import { useToast } from '@chakra-ui/react';
 const Big = require("big.js");
 import { ExternalLinkIcon, InfoIcon } from "@chakra-ui/icons";
 import { EvmPriceServiceConnection } from "@pythnetwork/pyth-evm-js";
+import useUpdateData from "../utils/useUpdateData";
 
 function Swap() {
 	const [inputAssetIndex, setInputAssetIndex] = useState(1);
@@ -147,6 +148,8 @@ function Swap() {
 		setOutputAmount(0);
 	};
 
+	const {getUpdateData} = useUpdateData();
+
 	const exchange = async () => {
 		if (!inputAmount || !outputAmount) {
 			return;
@@ -167,22 +170,18 @@ function Swap() {
 
 		let _referral = useReferral ? BigNumber.from(base58.decode(referral!)).toHexString() : ethers.constants.AddressZero;
 
-		// const pythFeeds = pools[tradingPool].synths.filter((c: any) => (c.feed != ethers.constants.HashZero) && (c.token.symbol == _inputAsset || c.token.symbol == _outputAsset)).map((c: any) => c.feed);
-		// const pythPriceService = new EvmPriceServiceConnection(PYTH_ENDPOINT);
-		// const priceFeedUpdateData = await pythPriceService.getPriceFeedsUpdateData(pythFeeds);
+		const priceFeedUpdateData = await getUpdateData();
+		let args = [
+			pools[tradingPool].synths[inputAssetIndex].token.id,
+			ethers.utils.parseEther(inputAmount.toString()),
+			pools[tradingPool].synths[outputAssetIndex].token.id,
+			0,
+			address,
+		];
 
-		send(
-			pool,
-			"swap",
-			[
-				pools[tradingPool].synths[inputAssetIndex].token.id,
-				ethers.utils.parseEther(inputAmount.toString()),
-				pools[tradingPool].synths[outputAssetIndex].token.id,
-				0,
-				address,
-				// priceFeedUpdateData
-			]
-		)
+		if(priceFeedUpdateData.length > 0) args.push(priceFeedUpdateData);
+
+		send(pool, "swap", args)
 			.then(async (res: any) => {
 				// setMessage("Confirming...");
 				// setResponse("Transaction sent! Waiting for confirmation");
@@ -261,23 +260,25 @@ function Swap() {
 			});
 	};
 
+
 	useEffect(() => {
 		if (pools[tradingPool] && !isNaN(Number(inputAmount)) && validateInput() == 0)
 			getContract("Pool", chain?.id!, pools[tradingPool].id).then(async (contract: any) => {
-				// const pythFeeds = pools[tradingPool].synths.filter((c: any) => (c.feed != ethers.constants.HashZero) && (c.token.id == inputToken().token.id || c.token.id == outputToken().token.id)).map((c: any) => c.feed);
-				// const pythPriceService = new EvmPriceServiceConnection(PYTH_ENDPOINT);
-				// const priceFeedUpdateData = await pythPriceService.getPriceFeedsUpdateData(pythFeeds);
+
+				const priceFeedUpdateData = await getUpdateData();
+
+				let args = [
+					pools[tradingPool].synths[inputAssetIndex].token.id,
+					ethers.utils.parseEther(inputAmount.toString()),
+					pools[tradingPool].synths[outputAssetIndex].token.id,
+					0,
+					address,
+				];
+		
+				if(priceFeedUpdateData.length > 0) args.push(priceFeedUpdateData);		
 
 				// estimate gas
-				contract.estimateGas
-					.swap(
-						pools[tradingPool].synths[inputAssetIndex].token.id,
-						ethers.utils.parseEther(inputAmount.toString()),
-						pools[tradingPool].synths[outputAssetIndex].token.id,
-						0,
-						address,
-						// priceFeedUpdateData
-					)
+				contract.estimateGas.swap(...args)
 					.then((gas: any) => {
 						setGas(
 							Number(ethers.utils.formatUnits(gas, "gwei")) * 2000 / 10
@@ -606,7 +607,7 @@ function Swap() {
 								}}
 							>
 								{isOpen && 	
-								<Box border={'2px'} borderColor='whiteAlpha.200' mt={2} px={4} py={2} rounded={16} fontSize='sm' color={'gray.400'}>
+								<Box border={'2px'} borderColor='blackAlpha.200' mt={2} px={4} py={2} rounded={16} fontSize='sm' color={'blackAlpha.500'}>
 									<Flex justify={'space-between'}>
 									<Text>Price Impact</Text>
 									<Text>{100*(Number(inputToken().burnFee) + Number(outputToken().mintFee)) / 10000} %</Text>

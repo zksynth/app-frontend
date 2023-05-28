@@ -87,17 +87,16 @@ function TokenSelector({
 				onClose={onClose}
 				scrollBehavior={"inside"}
 				isCentered
-				
 			>
 				<ModalOverlay bg="blackAlpha.600" backdropFilter="blur(30px)" />
-				<ModalContent maxH={"600px"} bgColor="bg2" rounded={16} border='2px' mx={2} borderColor={'#212E44'}>
+				<ModalContent maxH={"600px"} bgColor="white" rounded={16} border='2px' mx={2} borderColor={'whiteAlpha.500'}>
 					<ModalHeader>Select a token</ModalHeader>
 					<Box mx={5} mb={5}>
 					<Select rounded={'full'} placeholder="Select debt pool" value={tradingPool} onChange={(e) => {
 						if(e.target.value !== ''){
 							setTradingPool(Number(e.target.value))
 							localStorage.setItem("tradingPool", e.target.value);
-						}}} bg='whiteAlpha.200' variant={'filled'}  _focus={{bg: 'whiteAlpha.300'}} focusBorderColor='transparent'>
+						}}} bg='blackAlpha.200' variant={'filled'}  _focus={{bg: 'blackAlpha.300'}} focusBorderColor='transparent'>
 							{pools.map((pool: any, index: number) => (
 								<option value={index} key={pool.id}>
 									{pool.name}
@@ -107,7 +106,7 @@ function TokenSelector({
 						</Box>
 						{/* <Divider/> */}
 					<ModalCloseButton rounded={'full'} mt={1} />
-					<ModalBody bgColor="blackAlpha.400">
+					<ModalBody bgColor="whiteAlpha.400">
 
 						{/* Token List */}
 						<Box mx={-6} mt={-2}>
@@ -122,7 +121,7 @@ function TokenSelector({
 									py={3}
 									px={6}
 									_hover={{
-										bg: "whiteAlpha.50",
+										bg: "blackAlpha.50",
 										cursor: "pointer",
 									}}
 									onClick={() =>

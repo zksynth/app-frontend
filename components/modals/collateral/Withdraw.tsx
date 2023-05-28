@@ -23,6 +23,7 @@ import { PYTH_ENDPOINT, compactTokenFormatter, dollarFormatter } from "../../../
 import Link from "next/link";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { EvmPriceServiceConnection } from "@pythnetwork/pyth-evm-js";
+import useUpdateData from "../../utils/useUpdateData";
 
 export default function Withdraw({ collateral, amount, setAmount, amountNumber, isNative }: any) {
 	const [loading, setLoading] = useState(false);
@@ -38,6 +39,8 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 		updateCollateralWalletBalance,
 		updateCollateralAmount,
 	} = useContext(AppDataContext);
+
+	const {getUpdateData} = useUpdateData();
 
 	// adjustedDebt - pools[tradingPool]?.userDebt = assetAmount*assetPrice*ltv
 	const max = () => {
@@ -57,19 +60,19 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 		const pool = await getContract("Pool", chain?.id!, poolId);
 		const _amount = Big(amount).mul(10**collateral.token.decimals).toFixed(0);
 
-		// const pythFeeds = pools[tradingPool].collaterals.concat(pools[tradingPool].synths).filter((c: any) => c.feed != ethers.constants.HashZero).map((c: any) => c.feed);
-		// const pythPriceService = new EvmPriceServiceConnection(PYTH_ENDPOINT);
-		// const priceFeedUpdateData = await pythPriceService.getPriceFeedsUpdateData(pythFeeds);
+		let args = [
+			collateral.token.id,
+			_amount,
+			isNative
+		];
+		
+		const priceFeedUpdateData = await getUpdateData()
+		if(priceFeedUpdateData.length > 0) args.push(priceFeedUpdateData);
 		
 		send(
 				pool,
 				"withdraw",
-				[
-					collateral.token.id,
-					_amount,
-					isNative,
-					// priceFeedUpdateData, 
-				]
+				args
 			).then(async (res: any) => {
 			// setMessage("Confirming...");
 			// setResponse("Transaction sent! Waiting for confirmation");

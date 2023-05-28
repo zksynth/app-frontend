@@ -25,6 +25,7 @@ import { useRouter } from "next/router";
 import { base58 } from "ethers/lib/utils.js";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { EvmPriceServiceConnection } from "@pythnetwork/pyth-evm-js";
+import useUpdateData from "../../utils/useUpdateData";
 
 const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 	const router = useRouter();
@@ -39,7 +40,8 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 
 	const { isConnected, address } = useAccount();
 	const { chain } = useNetwork();
-	
+	const {getUpdateData} = useUpdateData();
+
 	const {
 		updateSynthWalletBalance,
 		pools,
@@ -90,17 +92,18 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 			.times(10 ** 18)
 			.toFixed(0);
 		// let _referral = useReferral ? BigNumber.from(base58.decode(referral!)).toHexString() : ethers.constants.AddressZero;
-		// get .feed from pool.collaterals & pool.synths if feed is not bytes(0)
-		// const pythFeeds = pools[tradingPool].collaterals.concat(pools[tradingPool].synths).filter((c: any) => c.feed != ethers.constants.HashZero).map((c: any) => c.feed);
-		// const pythPriceService = new EvmPriceServiceConnection(PYTH_ENDPOINT);
-		// const priceFeedUpdateData = await pythPriceService.getPriceFeedsUpdateData(pythFeeds);
 
-		send(pool, "mint", [
+		
+		let args = [
 			asset.token.id, 
 			value, 
-			address, 
-			// priceFeedUpdateData
-		])
+			address
+		];
+		
+		const priceFeedUpdateData = await getUpdateData();
+		if(priceFeedUpdateData.length > 0) args.push(priceFeedUpdateData);
+
+		send(pool, "mint", args)
 			.then(async (res: any) => {
 				// setMessage("Confirming...");
 				// setResponse("Transaction sent! Waiting for confirmation");
