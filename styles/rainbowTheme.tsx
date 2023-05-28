@@ -5,12 +5,12 @@ const myCustomTheme: Theme = {
     modalOverlay: '...',
   },
   colors: {
-    accentColor: '#00FFCB',
+    accentColor: 'white',
     accentColorForeground: '#0A1931',
     
-    connectButtonBackground: '#2D3748',
+    connectButtonBackground: '#fff',
     
-    modalBackground: '#071325',
+    modalBackground: 'white',
     // modalBorder: '#2D3748',
     
 
@@ -21,7 +21,7 @@ const myCustomTheme: Theme = {
     closeButtonBackground: "rgba(255, 255, 255, 0.08)",
     connectButtonBackgroundError: "#FF494A",
     connectButtonInnerBackground: "#2D3748",
-    connectButtonText: "#fff",
+    connectButtonText: "#000",
     connectButtonTextError: "#000",
     connectionIndicator: "#30E000",
     downloadBottomCardBackground: "linear-gradient(126deg, rgba(0, 0, 0, 0) 9.49%, rgba(120, 120, 120, 0.2) 71.04%), #1A1B1F",
@@ -33,9 +33,9 @@ const myCustomTheme: Theme = {
     modalBackdrop: "rgba(0, 0, 0, 0.5)",
     // modalBackground: "#1A1B1F",
     modalBorder: "rgba(255, 255, 255, 0.08)",
-    modalText: "#FFF",
-    modalTextDim: "rgba(224, 232, 255, 0.3)",
-    modalTextSecondary: "rgba(255, 255, 255, 0.6)",
+    modalText: "#000",
+    modalTextDim: "rgba(0, 0, 0, 0.3)",
+    modalTextSecondary: "rgba(0, 0, 0, 0.6)",
     profileAction: "rgba(224, 232, 255, 0.1)",
     profileActionHover: "rgba(224, 232, 255, 0.2)",
     profileForeground: "rgba(224, 232, 255, 0.05)",
