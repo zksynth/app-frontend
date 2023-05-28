@@ -6,7 +6,7 @@ export default function SwapSkeleton() {
     <Box height={"382px"} shadow='2xl'>
 					<Flex
 						h={"40%"}
-						bg="bg2"
+						bg="whiteAlpha.500"
 						align={"center"}
 						px={5}
 						roundedTop="15"
@@ -45,7 +45,7 @@ export default function SwapSkeleton() {
 						justify="space-evenly"
 						px={5}
 						h={"60%"}
-						bg="bg1"
+						bg="blackAlpha.100"
 						roundedBottom="15"
 					>
 						<Flex justify="space-between" align={"center"}>
