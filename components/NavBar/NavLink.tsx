@@ -34,11 +34,11 @@ export default function NavLink({
 					// 	bgColor: !isPath ? "whiteAlpha.200" : "whiteAlpha.100",
 					// 	shadow: "md",
 					// }}
-					shadow={isPath ? "md" : "none"}
+					// shadow={isPath ? "md" : "none"}
 					// border="2px"
 					// borderColor={"whiteAlpha.50"}
 					flex='stretch'
-					color={isPath ? "white" : "whiteAlpha.600"}
+					color={isPath ? "black" : "blackAlpha.600"}
 				>
 					<Box
 						// color={isPath ? "primary.400" : "gray.100"}

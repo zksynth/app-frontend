@@ -226,7 +226,7 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 			>
 				<Tooltip label={`Fee for Minting and Burning ${asset.token.symbol}`}>
 				<Flex justify="space-between">
-						<Text fontSize={"md"} color="gray.400" textDecor={'underline'} cursor={'help'} style={{textUnderlineOffset: '2px', textDecorationStyle: 'dotted'}}>
+						<Text fontSize={"md"} color="blackAlpha.600" textDecor={'underline'} cursor={'help'} style={{textUnderlineOffset: '2px', textDecorationStyle: 'dotted'}}>
 							Mint / Burn Fee
 						</Text>
 
@@ -249,7 +249,7 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 				<Text
 					mt={6}
 					fontSize={"sm"}
-					color="gray.400"
+					color="blackAlpha.600"
 					fontWeight={"bold"}
 				>
 					Transaction Overview
@@ -262,7 +262,7 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 					// p={2}
 				>
 					<Flex justify="space-between">
-						<Text fontSize={"md"} color="gray.400">
+						<Text fontSize={"md"} color="blackAlpha.600">
 							Health Factor
 						</Text>
 						<Text fontSize={"md"}>
@@ -284,7 +284,7 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 					</Flex>
 					<Divider my={2} />
 					<Flex justify="space-between">
-						<Text fontSize={"md"} color="gray.400">
+						<Text fontSize={"md"} color="blackAlpha.600">
 							Available to issue
 						</Text>
 						<Text fontSize={"md"}>
@@ -308,7 +308,7 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 						<Flex mt={6} gap={2} align={"center"}>
 							<Text
 								fontSize={"sm"}
-								color="gray.400"
+								color="blackAlpha.600"
 								fontWeight={"bold"}
 							>
 								Use Referral Code
@@ -352,7 +352,7 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 				loadingText="Please sign the transaction"
 				bgColor="primary.400"
 				width="100%"
-				color="gray.700"
+				color="white"
 				mt={4}
 				onClick={mint}
 				size="lg"

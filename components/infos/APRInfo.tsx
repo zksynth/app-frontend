@@ -33,31 +33,31 @@ function APRInfoBox({ debtBurnApr, esSyxApr }: any) {
 		<>
 			<Box
 				rounded={8}
-				bg={"secondary.900"}
+				bg={"white"}
 				border="2px"
-				borderColor={"whiteAlpha.300"}
+				borderColor={"blackAlpha.300"}
 			>
-				<Box px={3} py={2}>
-					<Text color={"whiteAlpha.700"}>Total APY</Text>
-					<Text fontSize={"lg"} color={"white"}>
+				<Box px={3} py={2} color={'black'}>
+					<Text color={"blackAlpha.700"}>Total APY</Text>
+					<Text fontSize={"lg"}>
 						{(Number(debtBurnApr) + Number(esSyxApr)).toFixed(2)} %
 					</Text>
 				</Box>
 
 				<Divider />
-				<Box px={3} py={1} bg="whiteAlpha.50" roundedBottom={8}>
-					<Flex align={"center"} gap={2} mb={2} mt={2} color="white">
+				<Box px={3} py={1} bg="blackAlpha.100" roundedBottom={8}>
+					<Flex align={"center"} gap={2} mb={2} mt={2} color={'black'}>
 						<FaBurn size={"20px"} />
 						<Flex gap={2}>
 							<Text>{debtBurnApr} %</Text>
-							<Text color={"whiteAlpha.700"}>Debt Burn</Text>
+							<Text color={"blackAlpha.700"}>Debt Burn</Text>
 						</Flex>
 					</Flex>
-					<Flex align={"center"} gap={2} mb={2} color="white">
-						<Image src="/esSYX.svg" w={5} alt={"esSYN"} />
+					<Flex align={"center"} gap={2} mb={2} color={'black'}>
+						<Image src="/veZS.png" w={5} alt={"veZS"} />
 						<Flex gap={2}>
 							<Text>{esSyxApr} %</Text>
-							<Text color={"whiteAlpha.700"}>esSYX</Text>
+							<Text color={"blackAlpha.700"}>veZS</Text>
 						</Flex>
 					</Flex>
 				</Box>

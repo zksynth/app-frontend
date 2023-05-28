@@ -7,9 +7,9 @@ export default function IconBox({ children }: any) {
 			justify="center"
 			h={"40px"}
 			w={"40px"}
-			bg="bg3"
+			bg="blackAlpha.200"
 			border={"2px"}
-			borderColor="whiteAlpha.300"
+			borderColor="blackAlpha.50"
 			rounded={10}
 		>
 			{children}

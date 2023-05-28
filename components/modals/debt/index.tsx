@@ -49,11 +49,6 @@ export default function Debt({ synth, index }: any) {
 
 	const { address } = useAccount();
 
-	const borderStyle = {
-		borderColor: "whiteAlpha.100",
-		px: 4
-	};
-
 	const _onClose = () => {
 		setAmount("0");
 		setAmountNumber(0);
@@ -100,7 +95,7 @@ export default function Debt({ synth, index }: any) {
 				cursor="pointer"
 				onClick={onOpen}
 				// borderLeft='2px' borderColor='transparent' 
-				_hover={{ bg: 'whiteAlpha.100' }}
+				_hover={{ bg: 'blackAlpha.100' }}
 			>
 				<TdBox isFirst={index == 0} alignBox='left'>
 					<Flex gap={3} ml={'-2px'} textAlign='left'>
@@ -116,7 +111,7 @@ export default function Debt({ synth, index }: any) {
 									.slice(1, -2)
 									.join(" ")}
 							</Text>
-							<Flex color="whiteAlpha.700" fontSize={"sm"} gap={1}>
+							<Flex color="blackAlpha.500" fontSize={"sm"} gap={1}>
 								<Text>
 									{synth.token.symbol} -{" "}
 									{tokenFormatter.format(
@@ -155,7 +150,7 @@ export default function Debt({ synth, index }: any) {
 
 			<Modal isCentered isOpen={isOpen} onClose={_onClose}>
 				<ModalOverlay bg="blackAlpha.400" backdropFilter="blur(30px)" />
-				<ModalContent width={"30rem"} bgColor="bg2" rounded={16} border='2px' mx={2} borderColor={'#212E44'}>
+				<ModalContent width={"30rem"} bgColor="whiteAlpha.500" rounded={16} border='2px' mx={2} borderColor={'blackAlpha.100'}>
 					<ModalCloseButton rounded={"full"} mt={1} />
 					<ModalHeader>
 						<Flex
@@ -227,7 +222,7 @@ export default function Debt({ synth, index }: any) {
                                         <Text
                                             fontSize="sm"
                                             textAlign={"center"}
-                                            color={"gray.400"}
+                                            color={"blackAlpha.600"}
                                         >
                                             {dollarFormatter.format(
                                                 (synth.priceUSD *

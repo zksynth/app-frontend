@@ -8,7 +8,6 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { useNetwork, useSwitchNetwork } from 'wagmi';
-import Particles from '../components/utils/particles';
 
 export default function _index({ children }: any) {
 	const router = useRouter();
@@ -65,7 +64,7 @@ export default function _index({ children }: any) {
 
 	return (
 		<Box>
-			{process.env.NEXT_PUBLIC_NETWORK == 'testnet' && <Flex align={'center'} justify={'center'} bgColor="blackAlpha.100" color={'gray.400'}>
+			{process.env.NEXT_PUBLIC_NETWORK == 'testnet' && <Flex align={'center'} justify={'center'} bgColor="whiteAlpha.300" color={'blackAlpha.600'}>
 				<Text
 					textAlign={'center'} 
 					fontSize={'sm'}
@@ -73,9 +72,9 @@ export default function _index({ children }: any) {
 					p={3}>
 					This is a testnet. Please do not send real assets to these addresses
 				</Text>
-				<Button size={'xs'} rounded='full' onClick={() => switchNetwork!(42161)}>Switch to Arbitrum Mainnet</Button>
+				{/* <Button size={'xs'} rounded='full' onClick={() => switchNetwork!(42161)}>Switch to Arbitrum Mainnet</Button> */}
 			</Flex>}
-			{(status == 'fetching' || loading) && <Progress bg={'gray.900'} colorScheme='primary' size='xs' isIndeterminate />}
+			{(status == 'fetching' || loading) && <Progress bg={'blackAlpha.200'} colorScheme='primary' size='xs' isIndeterminate />}
 
 			<Box bgColor="gray.800" color={'gray.400'}>
 			{status == 'error' && (
@@ -89,18 +88,16 @@ export default function _index({ children }: any) {
 				</Text>
 			)}
 			</Box>
-			<Box bgGradient={'linear(to-b, #001121, #001324)'} zIndex={0}>
-				<Box bgImage="url('/bottom-glow.svg')" bgPos={"bottom"} bgRepeat='repeat-x'>
-
+			<Box bgGradient={'linear(to-b, gray.200, gray.400)'} zIndex={0}>
 				<Flex
 					justify={'center'}
 					flexDirection={{ sm: 'column', md: 'row' }}
 					minH="96vh"
 					maxW={'100%'}
 					>
-					<Box position={'absolute'} bottom={0} width='100%' zIndex={1}>
+					{/* <Box position={'absolute'} bottom={0} width='100%' zIndex={1}>
 					<Particles quantity={60} />
-					</Box>
+					</Box> */}
 					<Box zIndex={2} minW={{sm: '0', md: '0', lg: '1200px'}} w={'100%'} px={{sm: '4', md: '0'}}>
 						<Flex justify='center'>
 							<Box minW={'0'} w='100%' maxW={'1200px'}>
@@ -121,7 +118,6 @@ export default function _index({ children }: any) {
 				</Flex>
 						<Footer />
 				<Box>
-				</Box>
 				</Box>
 
 			</Box>

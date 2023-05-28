@@ -67,7 +67,7 @@ export default function CollateralTable() {
 
 	return (
 		<Box>
-			<Box bg={'whiteAlpha.50'} roundedTop={16} px={5} pt={4} pb={4}>
+			<Box bg={'blackAlpha.50'} roundedTop={16} px={5} pt={4} pb={4}>
 			<Flex align={'center'} justify={'space-between'}>
 			<Heading size={'md'} color={'secondary.300'}>Synthetic Assets</Heading>
 			<APRInfo
@@ -75,7 +75,7 @@ export default function CollateralTable() {
 										esSyxApr={esSyxApr()}
 									>
 			<Box cursor={'help'} textAlign={'right'}>
-				<Text fontSize={'xs'}>Rewards APR</Text>
+				<Text fontSize={'xs'} color={'blackAlpha.600'}>Rewards APR</Text>
 				<Heading size={'md'} color={'secondary.300'}>{(
 														Number(debtBurnApr()) +
 														Number(esSyxApr())

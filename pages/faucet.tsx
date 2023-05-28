@@ -103,8 +103,8 @@ export default function Faucet() {
 	return (
 		<>
         <Head>
-				<title>Test Faucet | SyntheX</title>
-				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
+				<title>Test Faucet | ZKSynth</title>
+				<link rel="icon" type="image/x-icon" href="/veZS.png"></link>
 			</Head>
 			<Heading mt={'80px'} fontSize={"3xl"}>Faucet</Heading>
             <Text color={'gray.400'} mb={10}>

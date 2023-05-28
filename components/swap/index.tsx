@@ -426,9 +426,9 @@ function Swap() {
 					{tokenFormatter.format(
 						inputToken()?.priceUSD / outputToken()?.priceUSD
 					)}{" "}
-					{outputToken()?.token.symbol}/{inputToken()?.token.symbol} | Synthex
+					{outputToken()?.token.symbol}/{inputToken()?.token.symbol} | ZKSynth
 				</title>
-				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
+				<link rel="icon" type="image/x-icon" href="/veZS.png"></link>
 			</Head>
 			{pools[tradingPool] ? (
 				<Box shadow='2xl' rounded={16}>
@@ -453,7 +453,7 @@ function Swap() {
 
 						<Flex
 							fontSize={"sm"}
-							color="gray.400"
+							color="blackAlpha.700"
 							justify={"space-between"}
 							align="center"
 							mt={4}
@@ -486,11 +486,12 @@ function Swap() {
 					</Box>
 
 					<Flex px="5" mt={-5} align='center'>
-						<Divider w={'10px'} border='1px' borderColor={'whiteAlpha.300'} />
+						<Divider w={'10px'} border='1px' borderColor={'blackAlpha.300'} />
 						<Button
-							
-							bg="whiteAlpha.300"
-							_hover={{ bg: "whiteAlpha.200" }}
+							bg="whiteAlpha.50"
+							border={'2px'}
+							borderColor={'blackAlpha.300'}
+							_hover={{ bg: "blackAlpha.50" }}
 							rounded="100%"
 							onClick={switchTokens}
 							variant="unstyled"
@@ -502,7 +503,7 @@ function Swap() {
 						>
 							<MdOutlineSwapVert size={"18px"} />
 						</Button>
-						<Divider border='1px' borderColor={'whiteAlpha.300'} />
+						<Divider border='1px' borderColor={'blackAlpha.300'} />
 
 					</Flex>
 
@@ -526,7 +527,7 @@ function Swap() {
 
 						<Flex
 							fontSize={"sm"}
-							color="gray.400"
+							color="blackAlpha.700"
 							justify={"space-between"}
 							align="center"
 							mt={4}
@@ -559,8 +560,8 @@ function Swap() {
 							align={"center"}
 							mt={12}
 							mb={!isOpen ? !account ? '-4' : '-6' : '0'}
-							bg="whiteAlpha.50"
-							color="gray.200"
+							bg="blackAlpha.50"
+							color="blackAlpha.700"
 							rounded={16}
 							px={4}
 							py={2}
@@ -671,7 +672,7 @@ function Swap() {
 							fontSize={"xl"}
 							width={"100%"}
 							// bgColor={"primary.400"}
-							bgGradient="linear(to-b, primary.400, secondary.400)"
+							bgGradient="linear(to-b, primary.400, primary.400)"
 							rounded={16}
 							onClick={exchange}
 							isDisabled={
@@ -683,7 +684,7 @@ function Swap() {
 							loadingText="Sign the transaction in your wallet"
 							isLoading={loading}
 							_hover={{ opacity: 0.6 }}
-							color="#171717"
+							color="white"
 							height={"55px"}
 						>
 							{pools[tradingPool].paused ? 'Market Paused Till 5PM EDT' : !isValid() ? 'Invalid Referral' : validateInput() > 0 ? ERROR_MSG[validateInput()] : "Swap"}
@@ -727,6 +728,8 @@ export function SelectBody({ asset, onOpen }: any) {
 				bg="whiteAlpha.200"
 				rounded={"full"}
 				shadow={"2xl"}
+				border={"2px"}
+				borderColor="blackAlpha.200"
 				px={1}
 				py={1}
 				pr={2}
@@ -741,7 +744,7 @@ export function SelectBody({ asset, onOpen }: any) {
 					alt={asset?.symbol}
 				/>
 
-				<Text fontSize="xl" color="gray.200" fontWeight={"bold"}>
+				<Text fontSize="xl" color="blackAlpha.600" fontWeight={"bold"}>
 					{asset.token.symbol}
 				</Text>
 				<Box>

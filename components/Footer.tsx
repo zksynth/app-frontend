@@ -18,13 +18,13 @@ export default function Footer() {
 
   return (
     <Box
-      color={'gray.200'}
+      color={'blackAlpha.400'}
       bg='transparent'
       >
       <Box
         borderTopWidth={1}
         borderStyle={'solid'}
-        borderColor={'whiteAlpha.100'}
+        borderColor={'blackAlpha.200'}
         >
         <Container
           as={Stack}
@@ -34,7 +34,7 @@ export default function Footer() {
           spacing={4}
           justify={{ md: 'space-between' }}
           align={{ md: 'center' }}
-          color='whiteAlpha.800'
+          color='blackAlpha.800'
           >
             <Flex align={'center'} gap={1}>
             <Box h={2} w={2} bgColor={block == 0 ? 'red': 'primary.400'} rounded='100'></Box>

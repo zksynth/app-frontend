@@ -160,7 +160,7 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 				>
 					<Flex justify="space-between">
 						<Tooltip label='Max capacity to have this asset as collateral'>
-						<Text fontSize={"md"} color="gray.400" textDecor={'underline'} cursor={'help'} style={{textUnderlineOffset: '2px', textDecorationStyle: 'dotted'}}>
+						<Text fontSize={"md"} color="blackAlpha.600" textDecor={'underline'} cursor={'help'} style={{textUnderlineOffset: '2px', textDecorationStyle: 'dotted'}}>
 							Capacity
 						</Text>
 						</Tooltip>
@@ -188,7 +188,7 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 					<Divider my={2} />
 
 					<Flex justify="space-between">
-						{/* <Text fontSize={"xs"} color="gray.400">
+						{/* <Text fontSize={"xs"} color="blackAlpha.600">
 								1 {asset._mintedTokens[selectedAssetIndex].symbol} = {asset._mintedTokens[selectedAssetIndex].lastPriceUSD}{" "}
 								USD
 							</Text> */}
@@ -196,16 +196,16 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 							<Flex gap={1}>
 						<Tooltip label='Minimum Loan to Value Ratio'>
 
-						<Text fontSize={"md"} color="gray.400" textDecor={'underline'} cursor={'help'} style={{textUnderlineOffset: '2px', textDecorationStyle: 'dotted'}}>
+						<Text fontSize={"md"} color="blackAlpha.600" textDecor={'underline'} cursor={'help'} style={{textUnderlineOffset: '2px', textDecorationStyle: 'dotted'}}>
 							Base LTV
 						</Text>
 						</Tooltip>
-						<Text fontSize={"md"} color="gray.400">
+						<Text fontSize={"md"} color="blackAlpha.600">
 						/ 
 						</Text>
 						<Tooltip label='Account would be liquidated if LTV reaches this threshold' >
 
-						<Text fontSize={"md"} color="gray.400" textDecor={'underline'} cursor={'help'} style={{textUnderlineOffset: '2px', textDecorationStyle: 'dotted'}}>
+						<Text fontSize={"md"} color="blackAlpha.600" textDecor={'underline'} cursor={'help'} style={{textUnderlineOffset: '2px', textDecorationStyle: 'dotted'}}>
 							Liq Threshold
 						</Text>
 						</Tooltip>
@@ -220,7 +220,7 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 
 				
                 <Box>
-						<Text mt={8} fontSize={"sm"} color='gray.400' fontWeight={'bold'}>
+						<Text mt={8} fontSize={"sm"} color='blackAlpha.600' fontWeight={'bold'}>
 							Transaction Overview
 						</Text>
 						<Box
@@ -231,14 +231,14 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 							// p={2}
 						>
 							<Flex justify="space-between">
-								<Text fontSize={"md"} color="gray.400">
+								<Text fontSize={"md"} color="blackAlpha.600">
 									Health Factor
 								</Text>
 								<Text fontSize={"md"}>{(pools[tradingPool]?.userDebt/pools[tradingPool]?.userCollateral * 100).toFixed(1)} % {"->"} {pools[tradingPool]?.userCollateral - amount*collateral.priceUSD > 0 ? (pools[tradingPool]?.userDebt /(pools[tradingPool]?.userCollateral - (amount*collateral.priceUSD)) * 100).toFixed(1) : '0'}%</Text>
 							</Flex>
 							<Divider my={2} />
 							<Flex justify="space-between">
-								<Text fontSize={"md"} color="gray.400">
+								<Text fontSize={"md"} color="blackAlpha.600">
 									Available to issue
 								</Text>
 								<Text fontSize={"md"}>{dollarFormatter.format(pools[tradingPool]?.adjustedCollateral - pools[tradingPool]?.userDebt)} {"->"} {dollarFormatter.format(pools[tradingPool]?.adjustedCollateral - amount*collateral.priceUSD*collateral.baseLTV/10000 - pools[tradingPool]?.userDebt)}</Text>

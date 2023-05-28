@@ -408,7 +408,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 				>
 					<Flex justify="space-between">
 						<Tooltip label='Max capacity to have this asset as collateral'>
-						<Text fontSize={"md"} color="gray.400" textDecor={'underline'} cursor={'help'} style={{textUnderlineOffset: '2px', textDecorationStyle: 'dotted'}}>
+						<Text fontSize={"md"} color="blackAlpha.600" textDecor={'underline'} cursor={'help'} style={{textUnderlineOffset: '2px', textDecorationStyle: 'dotted'}}>
 							Capacity
 						</Text>
 						</Tooltip>
@@ -445,16 +445,16 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 							<Flex gap={1}>
 						<Tooltip label='Minimum Loan to Value Ratio'>
 
-						<Text fontSize={"md"} color="gray.400" textDecor={'underline'} cursor={'help'} style={{textUnderlineOffset: '2px', textDecorationStyle: 'dotted'}}>
+						<Text fontSize={"md"} color="blackAlpha.600" textDecor={'underline'} cursor={'help'} style={{textUnderlineOffset: '2px', textDecorationStyle: 'dotted'}}>
 							Base LTV
 						</Text>
 						</Tooltip>
-						<Text fontSize={"md"} color="gray.400">
+						<Text fontSize={"md"} color="blackAlpha.600">
 						/ 
 						</Text>
 						<Tooltip label='Account would be liquidated if LTV reaches this threshold' >
 
-						<Text fontSize={"md"} color="gray.400" textDecor={'underline'} cursor={'help'} style={{textUnderlineOffset: '2px', textDecorationStyle: 'dotted'}}>
+						<Text fontSize={"md"} color="blackAlpha.600" textDecor={'underline'} cursor={'help'} style={{textUnderlineOffset: '2px', textDecorationStyle: 'dotted'}}>
 							Liq Threshold
 						</Text>
 						</Tooltip>
@@ -468,7 +468,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 				</Box>
 
 					<Box>
-						<Text mt={8} fontSize={"sm"} color='gray.400' fontWeight={'bold'}>
+						<Text mt={8} fontSize={"sm"} color="blackAlpha.600" fontWeight={'bold'}>
 							Transaction Overview
 						</Text>
 						<Box
@@ -479,14 +479,14 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 							// p={2}
 						>
 							<Flex justify="space-between">
-								<Text fontSize={"md"} color="gray.400">
+								<Text fontSize={"md"} color="blackAlpha.600">
 									Health Factor
 								</Text>
 								<Text fontSize={"md"}>{numOrZero(pools[tradingPool].userDebt/pools[tradingPool].userCollateral * 100).toFixed(1)} % {"->"} {numOrZero(pools[tradingPool].userDebt /(pools[tradingPool].userCollateral + (amount*collateral.priceUSD)) * 100).toFixed(1)}%</Text>
 							</Flex>
 							<Divider my={2} />
 							<Flex justify="space-between">
-								<Text fontSize={"md"} color="gray.400">
+								<Text fontSize={"md"} color="blackAlpha.600">
 									Available to issue
 								</Text>
 								<Text fontSize={"md"}>{dollarFormatter.format(pools[tradingPool].adjustedCollateral - pools[tradingPool].userDebt)} {"->"} {dollarFormatter.format(pools[tradingPool].adjustedCollateral + amount*collateral.priceUSD*collateral.baseLTV/10000 - pools[tradingPool].userDebt)}</Text>
@@ -496,8 +496,8 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 					{collateral.nonce && (validate().stage == 1 && <Tooltip label='
 						Approve Max will approve unlimited amount. This will save gas fees in the future.
 					'>
-					<Flex align={'center'} mb={2} mt={6} color='gray.400' gap={2}>
-						<Text fontSize={"sm"} color='gray.400' fontWeight={'bold'} textDecor={'underline'} cursor={'help'} style={{textUnderlineOffset: '2px', textDecorationStyle: 'dotted'}}>
+					<Flex align={'center'} mb={2} mt={6} color="blackAlpha.600" gap={2}>
+						<Text fontSize={"sm"} color="blackAlpha.600" fontWeight={'bold'} textDecor={'underline'} cursor={'help'} style={{textUnderlineOffset: '2px', textDecorationStyle: 'dotted'}}>
 							Approve Max
 						</Text>
 						<Switch size={'sm'} colorScheme='primary' onChange={() => setApproveMax(!approveMax)} isChecked={approveMax} />
@@ -533,7 +533,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 						loadingText="Please sign the transaction"
 						bgColor={validate().stage == 1 ? "primary.400" : "primary.400"}
 						width="100%"
-						color="gray.700"
+						color="white"
 						colorScheme={'primary'}
 						mt={2}
 						onClick={deposit}

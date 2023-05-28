@@ -58,7 +58,7 @@ export default function Portfolio() {
 
 			<Flex my={10} gap={20}>
 				<Box>
-					<Heading size={"sm"} color="whiteAlpha.700">
+					<Heading size={"sm"} color="blackAlpha.700">
 						Active Since
 					</Heading>
 					<Text mt={0.5} fontSize={"2xl"}>
@@ -71,7 +71,7 @@ export default function Portfolio() {
 				</Box>
 
 				<Box>
-					<Heading size={"sm"} color="whiteAlpha.700">
+					<Heading size={"sm"} color="blackAlpha.700">
 						24h Volume
 					</Heading>
 					<Text mt={0.5} fontSize={"2xl"}>
@@ -82,7 +82,7 @@ export default function Portfolio() {
 				</Box>
 
 				<Box>
-					<Heading size={"sm"} color="whiteAlpha.700">
+					<Heading size={"sm"} color="blackAlpha.700">
 						Total Volume
 					</Heading>
 					<Text mt={0.5} fontSize={"2xl"}>

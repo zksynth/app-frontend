@@ -6,7 +6,10 @@ import Swap from "../components/swap/index";
 export default function swap() {
 	return (
 		<Flex >
-				<Box bgImage='/center-glow.svg' bgRepeat={'no-repeat'} w='100%' h={'100%'} bgPos='50% 50%'>
+				<Box 
+				// bgImage='/center-glow.svg' bgRepeat={'no-repeat'} bgPos='50% 50%'
+				w='100%' h={'100%'} 
+				>
 			<Flex justify={"center"} align="center" h={"80vh"}>
 
 				<Box w={"43%"} minW="400px" >
@@ -18,11 +21,11 @@ export default function swap() {
 					>
 						<Box
 							animation={"fadeIn 0.5s ease-in-out"}
-							bgColor={"bg3"}
+							bgColor={"whiteAlpha.500"}
 							border='2px'
-							borderColor='whiteAlpha.300'
+							borderColor='whiteAlpha.800'
 							// bgGradient={'linear(to-b, rgba(5, 104, 204, 0.25), rgba(5, 119, 230, 0.1))'}
-							rounded={15}
+							rounded={16}
 						>
 							<Swap />
 						</Box>

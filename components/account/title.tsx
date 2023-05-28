@@ -15,7 +15,7 @@ export default function Title() {
 					{/* {address?.slice(0, 8) + "..." + address?.slice(38)} */}
 					Your Account
 				</Heading>
-				<Text mt={1} color='whiteAlpha.700'>{address}</Text>
+				<Text mt={1} color='blackAlpha.700'>{address}</Text>
 
 				
 			</Box>

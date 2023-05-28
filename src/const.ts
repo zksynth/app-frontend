@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 import { ChainID, chains } from "./chains";
-import { zkSyncTestnet } from 'wagmi/chains';
+import { scrollTestnet, zkSyncTestnet } from 'wagmi/chains';
 
 export const ADDRESS_ZERO = ethers.constants.AddressZero;
 const _WETH_ADDRESS: any = {
@@ -16,7 +16,8 @@ export const APP_NAME = 'Synthex';
 const _Endpoints: any = {
 	[ChainID.ARB]: process.env.NEXT_PUBLIC_GRAPH_URL_42161,
 	[ChainID.ARB_GOERLI]: process.env.NEXT_PUBLIC_GRAPH_URL_421613,
-	[280]: process.env.NEXT_PUBLIC_GRAPH_URL_280,
+	[zkSyncTestnet.id]: process.env.NEXT_PUBLIC_GRAPH_URL_280,
+	[scrollTestnet.id]: process.env.NEXT_PUBLIC_GRAPH_URL_534353,
 }
 
 export const PARTNER_ASSETS: any = {
@@ -35,8 +36,8 @@ export const PARTNER_ASSET_COLOR: any = {
 	"Lodestar": "#E5D540"
 }
 
-export const Endpoints = (chainId: number) => _Endpoints[chainId] ?? (process.env.NEXT_PUBLIC_NETWORK == 'testnet' ? _Endpoints[ChainID.ARB_GOERLI] : _Endpoints[ChainID.ARB]); 
-export const WETH_ADDRESS = (chainId: number) => _WETH_ADDRESS[chainId] ?? (process.env.NEXT_PUBLIC_NETWORK == 'testnet' ? _WETH_ADDRESS[ChainID.ARB_GOERLI] : _WETH_ADDRESS[ChainID.ARB]);
+export const Endpoints = (chainId: number) => _Endpoints[chainId] ?? (process.env.NEXT_PUBLIC_NETWORK == 'testnet' ? _Endpoints[zkSyncTestnet.id] : _Endpoints[ChainID.ARB]); 
+export const WETH_ADDRESS = (chainId: number) => _WETH_ADDRESS[chainId] ?? (process.env.NEXT_PUBLIC_NETWORK == 'testnet' ? _WETH_ADDRESS[zkSyncTestnet.id] : _WETH_ADDRESS[ChainID.ARB]);
 
 export const PYTH_ENDPOINT = process.env.NEXT_PUBLIC_NETWORK == 'testnet' ? 'https://xc-testnet.pyth.network' : 'https://xc-mainnet.pyth.network';
 export const dollarFormatter = new Intl.NumberFormat("en-US", {

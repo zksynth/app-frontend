@@ -28,8 +28,8 @@ export default function Account() {
 	return (
 		<>
 			<Head>
-				<title>Account | SyntheX</title>
-				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
+				<title>Account | ZKSynth</title>
+				<link rel="icon" type="image/x-icon" href="/veZS.png"></link>
 			</Head>
 
 			{address ? <>

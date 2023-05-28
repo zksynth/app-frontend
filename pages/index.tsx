@@ -20,7 +20,9 @@ import { motion } from "framer-motion";
 import Head from "next/head";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import Big from "big.js";
-import { BsStars } from "react-icons/bs";
+import { TbReportMoney } from "react-icons/tb";
+import { IoMdCash, IoMdAnalytics } from "react-icons/io";
+
 import APRInfo from "../components/infos/APRInfo";
 import Info from "../components/infos/Info";
 import Highlighter from "../components/utils/highlighter";
@@ -29,7 +31,7 @@ import Paused from "../components/dashboard/Paused";
 import IconBox from "../components/dashboard/IconBox";
 
 const poolBoxStyle = {
-	bg: "bg3",
+	bg: "whiteAlpha.500",
 	// bgGradient={
 	// 	"linear(to-b, rgba(5, 104, 204, 0.2), rgba(5, 119, 230, 0.1))"
 	// }
@@ -78,8 +80,8 @@ export default function TempPage() {
 	return (
 		<>
 			<Head>
-				<title>SyntheX | Dashboard</title>
-				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
+				<title>ZKSynth | Dashboard</title>
+				<link rel="icon" type="image/x-icon" href="/veZS.png"></link>
 			</Head>
 				<Box w={'100%'}>
 				<Box
@@ -107,12 +109,13 @@ export default function TempPage() {
 							>
 								<Flex mt={4} gap={3} align="start">
 									<IconBox>
-										<Image
+										{/* <Image
 											h={"18px"}
 											src="/icon1.svg"
 											alt="icon1"
 											ml={0.5}
-										/>
+										/> */}
+										<IoMdCash size={'22px'} />
 									</IconBox>
 
 									<Info
@@ -125,7 +128,7 @@ export default function TempPage() {
 									<Box cursor={'help'}>
 										<Heading
 											size={"sm"}
-											color="whiteAlpha.700"
+											color="blackAlpha.700"
 											mb={0.5}
 										>
 											Collateral
@@ -134,9 +137,9 @@ export default function TempPage() {
 											fontWeight={"semibold"}
 											fontSize={"xl"}
 											gap={1}
+											color={"blackAlpha.800"}
 										>
 											<Text
-												color={"whiteAlpha.800"}
 												fontWeight={"normal"}
 											>
 												$
@@ -152,62 +155,14 @@ export default function TempPage() {
 									</Info>
 								</Flex>
 
-								{/* <Flex mt={4} gap={3} align="start">
-									<IconBox>
-										<Image
-											h={"20px"}
-											src="/icon2.svg"
-											alt={"icon2"}
-										/>
-									</IconBox>
-									<APRInfo
-										debtBurnApr={debtBurnApr()}
-										esSyxApr={esSyxApr()}
-									>
-										<Box cursor={"help"}>
-											<Flex gap={2} align="center">
-												<Heading
-													fontSize={"sm"}
-													color="whiteAlpha.700"
-												>
-													APY
-												</Heading>
-												<Box mb={"4px"}>
-													<BsStars
-														color={"gray.400"}
-														size="12"
-													/>
-												</Box>
-											</Flex>
-
-											<Flex
-												mb={0.5}
-												gap={1.5}
-												align="center"
-											>
-												<Text
-													fontSize={"xl"}
-													fontWeight={"semibold"}
-												>
-													{" "}
-													{(
-														Number(debtBurnApr()) +
-														Number(esSyxApr())
-													).toFixed(2)}{" "}
-													%
-												</Text>
-											</Flex>
-										</Box>
-									</APRInfo>
-								</Flex> */}
-
 								<Flex mt={4} gap={3} align="start">
 									<IconBox>
-										<Image
+										{/* <Image
 											h={"17px"}
 											src="/icon3.svg"
 											alt={"icon3"}
-										/>
+										/> */}
+										<TbReportMoney size={'22px'}  />
 									</IconBox>
 
 									<Info
@@ -218,7 +173,7 @@ export default function TempPage() {
 											<Heading
 												mb={0.5}
 												size={"sm"}
-												color="whiteAlpha.700"
+												color="blackAlpha.700"
 											>
 												Debt
 											</Heading>
@@ -227,11 +182,9 @@ export default function TempPage() {
 													fontWeight={"semibold"}
 													fontSize={"xl"}
 													gap={1}
+													color={"blackAlpha.800"}
 												>
-													<Text
-														color={"whiteAlpha.800"}
-														fontWeight={"normal"}
-													>
+													<Text fontWeight={"normal"}>
 														$
 													</Text>
 													<Text>
@@ -248,11 +201,12 @@ export default function TempPage() {
 
 								{Big(pools[tradingPool]?.userDebt ?? 0).gt(0) && <Flex mt={4} gap={3} align="start">
 									<IconBox>
-										<Image
+										{/* <Image
 											h={"20px"}
 											src="/icon2.svg"
 											alt={"icon2"}
-										/>
+										/> */}
+										<IoMdAnalytics size={'20px'} />
 									</IconBox>
 
 									<Info
@@ -265,7 +219,7 @@ export default function TempPage() {
 											<Heading
 												mb={0.5}
 												size={"sm"}
-												color="whiteAlpha.700"
+												color="blackAlpha.700"
 											>
 												PnL
 											</Heading>
@@ -317,14 +271,14 @@ export default function TempPage() {
 									<Heading
 										size={"sm"}
 										mb={1}
-										color="whiteAlpha.700"
+										color="blackAlpha.700"
 									>
 										Borrow Limit
 									</Heading>
 
 									<Box mb={2}>
 										<InfoOutlineIcon
-											color={"gray.400"}
+											color={"blackAlpha.500"}
 											h={3}
 										/>
 									</Box>
@@ -354,7 +308,7 @@ export default function TempPage() {
 								h={2}
 								width={"300px"}
 								rounded="full"
-								bg="whiteAlpha.200"
+								bg="blackAlpha.200"
 							>
 								<Box
 									h={2}
@@ -381,7 +335,7 @@ export default function TempPage() {
 									gap={1}
 									cursor={"help"}
 								>
-									<Text fontSize={"sm"} color="gray.400">
+									<Text fontSize={"sm"} color="blackAlpha.700">
 										Available to Issue
 									</Text>
 									<Text
@@ -395,7 +349,7 @@ export default function TempPage() {
 									</Text>
 									<Box mb={1}>
 										<InfoOutlineIcon
-											color={"gray.400"}
+											color={"blackAlpha.600"}
 											h={3}
 										/>
 									</Box>

@@ -123,8 +123,8 @@ export default function Claim() {
 	return (
 		<>
 			<Head>
-				<title>Claim Rewards | SyntheX</title>
-				<link rel="icon" type="image/x-icon" href="/logo32.png"></link>
+				<title>Claim Rewards | ZKSynth</title>
+				<link rel="icon" type="image/x-icon" href="/veZS.png"></link>
 			</Head>
 			<Box textAlign={"left"} pt="100px" >
 				<motion.div
@@ -135,9 +135,8 @@ export default function Claim() {
 				>
 					<Heading size={"lg"}>Liquidity Incentive</Heading>
 
-					<Text mb={5} mt={2} color="whiteAlpha.700">
-						Provide liquidity by issuing synthetic assets to earn
-						esSYX.
+					<Text mb={5} mt={2} color="blackAlpha.700">
+						Provide liquidity by issuing synthetic assets to earn veZS.
 					</Text>
 				</motion.div>
 
@@ -151,7 +150,7 @@ export default function Claim() {
 					}}
 				>
 					<Box
-						bg={"bg3"}
+						bg={"whiteAlpha.500"}
 						border="2px"
 						borderColor={"whiteAlpha.300"}
 						rounded={16}
@@ -179,14 +178,14 @@ export default function Claim() {
 										<Td>
 											<Flex align={"center"} gap={2}>
 												<Image
-													src={"/esSYX.svg"}
+													src={"/veZS.png"}
 													w="10"
-													alt="esSYX"
+													alt="veZS"
 												/>
 												<Box>
 													{/* <Text>Escrowed SYX</Text> */}
 													<Text fontSize={"md"}>
-														esSYX
+														veZS
 													</Text>
 												</Box>
 												<Tooltip label="Add to Metamask">
@@ -202,6 +201,7 @@ export default function Claim() {
 														size={"xs"}
 														rounded="full"
 														aria-label={""}
+														
 													/>
 												</Tooltip>
 											</Flex>
@@ -308,6 +308,9 @@ export default function Claim() {
 												rounded={16}
 												colorScheme="primary"
 												variant="outline"
+												_hover={{
+													color: "white",
+												}}
 											>
 												Claim All
 											</Button>
@@ -318,10 +321,10 @@ export default function Claim() {
 						</TableContainer>
 					</Box>
 
-					<Text mt={12} mb={1} color="whiteAlpha.600">
+					<Text mt={12} mb={1} color="blackAlpha.600">
 						Disclaimer
 					</Text>
-					<Text fontSize={"xs"} color="whiteAlpha.500">
+					<Text fontSize={"xs"} color="blackAlpha.500">
 						Please note that the information provided in this
 						message is intended solely for informational purposes
 						and is not an offer, solicitation, or recommendation to

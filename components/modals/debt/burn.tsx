@@ -163,7 +163,7 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 			>
 				<Tooltip label={`Fee for Minting and Burning ${asset.token.symbol}`}>
 				<Flex justify="space-between">
-						<Text fontSize={"md"} color="gray.400" textDecor={'underline'} cursor={'help'} style={{textUnderlineOffset: '2px', textDecorationStyle: 'dotted'}}>
+						<Text fontSize={"md"} color="blackAlpha.600" textDecor={'underline'} cursor={'help'} style={{textUnderlineOffset: '2px', textDecorationStyle: 'dotted'}}>
 							Mint / Burn Fee
 						</Text>
 
@@ -183,7 +183,7 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 			</Box>
 				<Box  >
 						<Box>
-						<Text mt={6} fontSize={"sm"} color='gray.400' fontWeight={'bold'}>
+						<Text mt={6} fontSize={"sm"} color='blackAlpha.600' fontWeight={'bold'}>
 							Transaction Overview
 						</Text>
 						<Box
@@ -194,14 +194,14 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 							// p={2}
 						>
 							<Flex justify="space-between">
-								<Text fontSize={"md"} color="gray.400">
+								<Text fontSize={"md"} color="blackAlpha.600">
 									Health Factor
 								</Text>
 								<Text fontSize={"md"}>{(pools[tradingPool].userDebt/pools[tradingPool].userCollateral * 100).toFixed(1)} % {"->"} {((pools[tradingPool].userDebt - (amount*asset.priceUSD)) /(pools[tradingPool].userCollateral) * 100).toFixed(1)}%</Text>
 							</Flex>
 							<Divider my={2} />
 							<Flex justify="space-between">
-								<Text fontSize={"md"} color="gray.400">
+								<Text fontSize={"md"} color="blackAlpha.600">
 									Available to issue
 								</Text>
 								<Text fontSize={"md"}>{dollarFormatter.format(pools[tradingPool].adjustedCollateral - pools[tradingPool].userDebt)} {"->"} {dollarFormatter.format(pools[tradingPool].adjustedCollateral + amount*asset.priceUSD - pools[tradingPool].userDebt)}</Text>

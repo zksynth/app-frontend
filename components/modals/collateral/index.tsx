@@ -120,7 +120,7 @@ export default function CollateralModal({ collateral, index }: any) {
 				onClick={_onOpen}
 				// borderLeft="2px"
 				// borderColor="transparent"
-				_hover={{ borderColor: "primary.400", bg: "whiteAlpha.100" }}
+				_hover={{ borderColor: "primary.400", bg: "blackAlpha.100" }}
 				// bgGradient={partner ? `linear(to-r, ${PARTNER_ASSET_COLOR_GRADIENTS[partner][0]}, ${PARTNER_ASSET_COLOR_GRADIENTS[partner][1]})` : 'linear(to-r, transparent, transparent)'}
 			>
 				<TdBox
@@ -134,8 +134,8 @@ export default function CollateralModal({ collateral, index }: any) {
 							alt=""
 						/>
 						<Box>
-							<Text>{collateral.token.name}</Text>
-							<Flex color="whiteAlpha.700" fontSize={"sm"} gap={1}>
+							<Text color="blackAlpha.800">{collateral.token.name}</Text>
+							<Flex color="blackAlpha.600" fontSize={"sm"} gap={1}>
 							<Text>{collateral.token.symbol} - </Text>
 								<Text>
 									{tokenFormatter.format(
@@ -163,8 +163,8 @@ export default function CollateralModal({ collateral, index }: any) {
 				>
 					<Box color={
 						Big(collateral.balance ?? 0).gt(0)
-							? "white"
-							: "gray.500"
+							? "blackAlpha.800"
+							: "blackAlpha.500"
 					}>
 
 					<Text fontSize={'md'}  >
@@ -177,7 +177,7 @@ export default function CollateralModal({ collateral, index }: any) {
 					{Big(collateral.balance ?? 0).gt(0) ? "" : ".00"}
 					</Text>
 
-					{Big(collateral.balance ?? 0).gt(0) && <Text fontSize={'xs'} color={'gray.400'}>
+					{Big(collateral.balance ?? 0).gt(0) && <Text fontSize={'xs'} color={'blackAlpha.600'}>
 						{dollarFormatter.format(
 							Big(collateral.balance ?? 0)
 								.div(10 ** (collateral.token.decimals ?? 18))
@@ -194,10 +194,10 @@ export default function CollateralModal({ collateral, index }: any) {
 				<ModalOverlay bg="blackAlpha.400" backdropFilter="blur(30px)" />
 				<ModalContent
 					width={"30rem"}
-					bgColor="bg2"
+					bgColor="whiteAlpha.500"
 					rounded={16}
 					border="2px"
-					borderColor={"#212E44"}
+					borderColor={"whiteAlpha.100"}
 					mx={2}
 				>
 					<ModalCloseButton rounded={"full"} mt={1} />
@@ -278,7 +278,7 @@ export default function CollateralModal({ collateral, index }: any) {
 												<Text
 													fontSize="sm"
 													textAlign={"center"}
-													color={"gray.400"}
+													color={"blackAlpha.600"}
 												>
 													{dollarFormatter.format(
 														collateral.priceUSD *

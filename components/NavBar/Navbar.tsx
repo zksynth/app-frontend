@@ -84,8 +84,8 @@ function NavBar() {
 			);
 			setIsSubscribed(true);
 		}
-		if (localStorage.getItem("chakra-ui-color-mode") === "light") {
-			localStorage.setItem("chakra-ui-color-mode", "dark");
+		if (localStorage.getItem("chakra-ui-color-mode") === "dark") {
+			localStorage.setItem("chakra-ui-color-mode", "light");
 			// reload
 			window.location.reload();
 		}
@@ -147,10 +147,10 @@ function NavBar() {
 							path={"/claim"}
 							title="Claim"
 						></NavLocalLink>
-						<NavLocalLink
+						{/* <NavLocalLink
 							path={"/earn"}
 							title="Earn"
-						></NavLocalLink>
+						></NavLocalLink> */}
 					</Flex>
 					</Flex>
 					
@@ -177,13 +177,13 @@ function NavBar() {
 					gap={2}
 					w='100%'
 				>
-				<motion.div whileHover={{scale: 1.05}} whileTap={{scale: 0.95}}>
+				{/* <motion.div whileHover={{scale: 1.05}} whileTap={{scale: 0.95}}>
 					<Link href={{ pathname: "/leaderboard", query: router.query }} >
 						<Flex
 							align={"center"}
 							h={"38px"}
 							w='100%'
-							px={3}
+							px={1}
 							cursor="pointer"
 							rounded={100}
 						>
@@ -200,11 +200,11 @@ function NavBar() {
 							</Box>
 						</Flex>
 					</Link>
-				</motion.div>
+				</motion.div> */}
 
-				<NavExternalLink path={'https://synthex.finance/intro/quick-start'} title={'Docs'}></NavExternalLink>
+				{/* <NavExternalLink path={'https://synthex.finance/intro/quick-start'} title={'Docs'}></NavExternalLink> */}
 
-				<DAOMenu />
+				{/* <DAOMenu /> */}
 					<Box>
 						<AccountButton />
 					</Box>

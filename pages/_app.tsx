@@ -14,7 +14,7 @@ import {
 	walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { configureChains, createClient, WagmiConfig, Chain } from "wagmi";
-import { arbitrumGoerli, arbitrum, zkSyncTestnet } from "wagmi/chains";
+import { arbitrumGoerli, arbitrum, zkSyncTestnet, scrollTestnet } from "wagmi/chains";
 // import { chains } from '../src/chains';
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
@@ -31,10 +31,10 @@ import { PROJECT_ID, APP_NAME } from "../src/const";
 const _chains = []
 
 if(process.env.NEXT_PUBLIC_NETWORK == 'testnet'){
-	_chains.push(arbitrumGoerli);
+	_chains.push(scrollTestnet);
 	_chains.push(zkSyncTestnet);
 } else {
-	_chains.push(arbitrum);
+	// _chains.push(arbitrum);
 }
 
 export const __chains: Chain[] = _chains;
