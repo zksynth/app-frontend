@@ -85,13 +85,21 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 				stage: 0,
 				message: "Amount Exceeds Balance"
 			}
-		} else if (!collateral || !collateral?.allowance) {
+		} 
+		else if(Big(amountNumber).mul(10**collateral.token.decimals).add(collateral.totalDeposits).gt(collateral.cap)){
+			return {
+				stage: 0,
+				message: "Amount Exceeds Cap"
+			}
+		}
+		else if (!collateral || !collateral?.allowance) {
 			return {
 				stage: 0,
 				message: "Loading..."
 			}
 		}
-
+		
+		console.log(collateral);
 		// check allowance if not native
 		if (!isNative) {
 			if (Big(collateral.allowance).add(Number(approvedAmount) * 10 ** (collateral.token.decimals ?? 18)).eq(0)){
