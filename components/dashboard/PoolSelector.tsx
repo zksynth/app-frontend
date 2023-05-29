@@ -54,7 +54,7 @@ export default function PoolSelector() {
 	};
 
 	return (
-		<div>
+		<Box>
 			<Box id="menu-list-123" h='50px'>
 				<motion.nav
 					initial={false}
@@ -134,12 +134,12 @@ export default function PoolSelector() {
 							position: "relative",
 							width: "100%",
 							zIndex: '100',
-							backgroundColor: "#ffffff",
-							border: "2px solid gray",
+							backgroundColor: "white",
+							border: "2px solid white",
 							borderRadius: "10px"
 						}}
 					>
-						<Box shadow={'xl'}>
+						<Box shadow={'xl'} bg={'blackAlpha.200'} borderRadius="10px">
 						<motion.div
 							variants={{
 								open: {
@@ -173,7 +173,7 @@ export default function PoolSelector() {
 							/>
 						</motion.div>
 
-						<Divider/>
+						<Divider border={'2px'} borderColor={'#ffffff'} />
 
 						{searchedPools.map((pool, index) => {
 							return (
@@ -272,6 +272,6 @@ export default function PoolSelector() {
 					</motion.ul>
 				</motion.nav>
 			</Box>
-		</div>
+		</Box>
 	);
 }

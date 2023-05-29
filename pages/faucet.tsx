@@ -74,6 +74,8 @@ export default function Faucet() {
 				(item, index) => _collaterals.indexOf(item) === index
 			);
 
+            console.log(_collaterals);
+
 			setCollaterals(_collaterals);
 		}
 	});
@@ -89,8 +91,8 @@ export default function Faucet() {
         const amount = ethers.utils.parseEther(mintAmounts[openedCollateral.token.symbol]);
         send(token, "mint", [address, amount])
             .then(async(res: any) => {
-                setLoading(false);
                 await res.wait(1);
+                setLoading(false);
                 updateCollateralWalletBalance(openedCollateral.token.id, pools[0].id, amount.toString(), false);
                 updateCollateralWalletBalance(openedCollateral.token.id, pools[1].id, amount.toString(), false);
                 onClose();
