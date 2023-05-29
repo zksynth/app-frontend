@@ -20,16 +20,17 @@ import { useEffect } from "react";
 const nonMintable = ["ETH", "waArbUSDC"];
 
 const mintAmounts: any = {
-	"USDC": "10000",
-	"USDT": "10000",
-	"DAI": "10000",
-	"EUROC": "10000",
-	"WETH": "10",
-    "AAVE": "100",
-    "WBTC": "0.5",
-    "LINK": "100",
+	"USDC": "100",
+	"USDT": "100",
+	"DAI": "100",
+	"EUROC": "100",
+	"WETH": "1",
+    "AAVE": "10",
+    "WBTC": "0.1",
+    "LINK": "10",
+    "Link": "10",
     "wstETH": "10",
-    "ARB": '100'
+    "ARB": '10'
 };
 
 import Head from "next/head";
