@@ -329,20 +329,20 @@ export default function Claim() {
 						message is intended solely for informational purposes
 						and is not an offer, solicitation, or recommendation to
 						buy or sell any security, investment product, or other
-						financial instrument. The esSYX tokens mentioned in this
+						financial instrument. The esZS tokens mentioned in this
 						message are being offered solely as a liquidity
 						incentive in our DeFi protocol, and users may earn these
 						tokens by holding debt on Synthex. It is important to
-						note that the SYX token, which the esSYX tokens can be
+						note that the ZS token, which the esZS tokens can be
 						converted to at a later date on a 1:1 basis, is not yet
 						launched, and will be announced at a later date.
-						Furthermore, please be aware that the esSYX tokens are
+						Furthermore, please be aware that the esZS tokens are
 						priced at the public sale price, and this price may
 						fluctuate based on market conditions. Therefore, it is
 						important to conduct your own research and due diligence
 						before deciding to participate in this offering. Please
 						also be advised that the purchase and use of any tokens,
-						including the esSYX tokens, may involve significant
+						including the esZS tokens, may involve significant
 						risks and uncertainties, including the potential for
 						loss of investment. As such, we strongly recommend that
 						you consult with a qualified financial advisor or
