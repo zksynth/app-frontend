@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, useDisclosure } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, useDisclosure, useToast } from "@chakra-ui/react";
 import React, { useContext } from "react";
 
 import {
@@ -47,6 +47,7 @@ import {
 import { getContract, send } from "../src/contract";
 import { useAccount, useNetwork } from "wagmi";
 import { ethers } from "ethers";
+import { tokenFormatter } from "../src/const";
 
 export default function Faucet() {
 	const [collaterals, setCollaterals] = React.useState<any>([]);
@@ -57,6 +58,8 @@ export default function Faucet() {
 
     const {address, isConnected}  = useAccount();
     const {chain} = useNetwork();
+
+    const toast = useToast();
 
 	useEffect(() => {
 		if (collaterals.length == 0) {
@@ -92,6 +95,14 @@ export default function Faucet() {
         send(token, "mint", [address, amount])
             .then(async(res: any) => {
                 await res.wait(1);
+                toast({
+					title: "Mint Successful",
+					description: `You have minted ${tokenFormatter.format(mintAmounts[openedCollateral.token.symbol])} ${openedCollateral.token.symbol}`,
+					status: "success",
+					duration: 10000,
+					isClosable: true,
+					position: "top-right",
+				})
                 setLoading(false);
                 updateCollateralWalletBalance(openedCollateral.token.id, pools[0].id, amount.toString(), false);
                 updateCollateralWalletBalance(openedCollateral.token.id, pools[1].id, amount.toString(), false);
@@ -114,7 +125,7 @@ export default function Faucet() {
                 Note: This is a testnet faucet. These tokens are not real and have no value.
             </Text>
 
-			<TableContainer bg={'whiteAlpha.50'} border='2px' borderColor={'whiteAlpha.100'} rounded={8} pt={1}>
+			<TableContainer bg={'whiteAlpha.600'} border='2px' borderColor={'whiteAlpha.400'} rounded={8} pt={1}>
 				<Table variant="simple">
 					<Thead>
 						<Tr>

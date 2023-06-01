@@ -191,13 +191,13 @@ export default function CollateralModal({ collateral, index }: any) {
 			</Tr>
 
 			<Modal isCentered isOpen={isOpen} onClose={_onClose}>
-				<ModalOverlay bg="blackAlpha.400" backdropFilter="blur(30px)" />
+				<ModalOverlay bg="blackAlpha.600" backdropFilter="blur(30px)" />
 				<ModalContent
 					width={"30rem"}
-					bgColor="whiteAlpha.500"
+					bgColor="whiteAlpha.600"
 					rounded={16}
 					border="2px"
-					borderColor={"whiteAlpha.100"}
+					borderColor={"whiteAlpha.400"}
 					mx={2}
 				>
 					<ModalCloseButton rounded={"full"} mt={1} />
@@ -209,7 +209,7 @@ export default function CollateralModal({ collateral, index }: any) {
 							align={"center"}
 						>
 							<Image
-								src={`/icons/${collateral.token.symbol}.svg`}
+								src={`/icons/${collateral.token?.symbol?.toUpperCase()}.svg`}
 								alt=""
 								width={"38px"}
 							/>
@@ -232,7 +232,7 @@ export default function CollateralModal({ collateral, index }: any) {
 											justify={"center"}
 											align="center"
 											gap={0.5}
-											bg="gray.700"
+											bg="whiteAlpha.500"
 											rounded="full"
 										>
 											<Tabs

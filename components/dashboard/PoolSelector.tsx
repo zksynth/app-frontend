@@ -226,7 +226,7 @@ export default function PoolSelector() {
 																		height={
 																			"30px"
 																		}
-																		src={`/icons/${synth.token.symbol}.svg`}
+																		src={`/icons/${synth.token.symbol?.toUpperCase()}.svg`}
 																		alt={""}
 																	/>
 																</Box>

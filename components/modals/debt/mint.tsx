@@ -9,7 +9,6 @@ import {
 	Collapse,
 	Input,
 	Tooltip,
-	useToast,
 	Link,
 } from "@chakra-ui/react";
 import { getContract, send } from "../../../src/contract";
@@ -26,6 +25,7 @@ import { base58 } from "ethers/lib/utils.js";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { EvmPriceServiceConnection } from "@pythnetwork/pyth-evm-js";
 import useUpdateData from "../../utils/useUpdateData";
+import { useToast } from "@chakra-ui/react";
 
 const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 	const router = useRouter();
@@ -122,8 +122,7 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 				if(chain?.id == 280){
 					decodedLogs.pop();
 				}
-				console.log(decodedLogs[decodedLogs.length - 3].args.value.toString(), decodedLogs[decodedLogs.length - 2].args.value.toString(), decodedLogs[decodedLogs.length - 1].args.value.toString());
-
+				toast
 				let amountUSD = Big(decodedLogs[decodedLogs.length - 2].args.value.toString())
 					.mul(asset.priceUSD)
 					.div(10 ** 18)
@@ -143,6 +142,7 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 					decodedLogs[decodedLogs.length - 2].args.value.toString(),
 					false
 				);
+				
 				setAmount("0");
 
 				setLoading(false);
