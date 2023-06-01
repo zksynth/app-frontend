@@ -56,7 +56,9 @@ export default function Debt({ synth, index }: any) {
 	};
 
 	const _setAmount = (e: string) => {
+
 		if(Number(e) > 0 && Number(e) < 0.000001) e = '0';
+		if(amount == '0' && Number(e) > 0) e = e.replace(/^0+/, '');
 		setAmount(e);
 		setAmountNumber(isNaN(Number(e)) ? 0 : Number(e));
 	};

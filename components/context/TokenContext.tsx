@@ -51,7 +51,8 @@ function TokenContextProvider({ children }: any) {
 		// token unlocks
 		const essyx = await getContract("EscrowedSYX", chain?.id!);
 		const tokenUnlocks = BigNumber.from(
-			await essyx.unlockRequestCount(address)
+			// await essyx.unlockRequestCount(address)
+			0
 		).toNumber();
 
 		const multicall = await getContract("Multicall2", chain?.id!);

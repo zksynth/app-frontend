@@ -11,9 +11,17 @@ export default function useUpdateData() {
 	} = useContext(AppDataContext);
     
     const getUpdateData = async () => {
-        const pythFeeds = pools[tradingPool].collaterals.concat(pools[tradingPool].synths).filter((c: any) => c.feed.slice(0, 20) != ethers.constants.HashZero.slice(0, 20)).map((c: any) => c.feed);
+        const pythFeeds = pools[tradingPool].collaterals.concat(pools[tradingPool].synths).filter((c: any) => c.feed.slice(0, 12) != ethers.constants.HashZero.slice(0, 12)).map((c: any) => c.feed);
+        // remove duplicates
+        let uniquePythFeeds: any[] = [];
+        for (let i = 0; i < pythFeeds.length; i++) {
+            if (!uniquePythFeeds.includes(pythFeeds[i])) {
+                uniquePythFeeds.push(pythFeeds[i]);
+            }
+        }
+
         const pythPriceService = new EvmPriceServiceConnection(PYTH_ENDPOINT);
-        const priceFeedUpdateData = pythFeeds.length > 0 ? await pythPriceService.getPriceFeedsUpdateData(pythFeeds) : [];
+        const priceFeedUpdateData = uniquePythFeeds.length > 0 ? await pythPriceService.getPriceFeedsUpdateData(uniquePythFeeds) : [];
 
         return priceFeedUpdateData;
     }

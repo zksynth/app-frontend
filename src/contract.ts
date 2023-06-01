@@ -40,7 +40,7 @@ export function call(contract: any, method: string, params: any[]) {
 }
 
 export function send(contract: any, method: string, params: any[], value = '0') {
-  return contract[method](...params, {value: value});
+  return contract[method](...params, { value: value });
 }
 
 export function estimateGas(contract: any, method: string, params: any[], value = '0') {
