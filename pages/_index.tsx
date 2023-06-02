@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Progress, Text, useBreakpointValue, useToast } from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, Progress, Text, useBreakpointValue, useToast } from '@chakra-ui/react';
 import React, { useContext } from 'react';
 import Footer from '../components/Footer';
 import Navbar from '../components/NavBar/Navbar';
@@ -108,7 +108,15 @@ export default function _index({ children }: any) {
 							exit={{opacity: 0, y: 15}}
 							transition={{duration: 0.25}}
 						>
-							{children}
+							<Flex h={'70vh'} justify={'center'} align={'center'} flexDir={'column'}>
+								<Heading size={'md'}>
+									Under maintainance. Please check back later.
+								</Heading>
+								<Text my={2} color={'blackAlpha.600'}>
+									We are currently working on some updates. Stay tuned to our Twitter and Discord for annoucements.
+								</Text>
+							</Flex>
+							{/* {children} */}
 						</motion.div>
 						</Box>
 
