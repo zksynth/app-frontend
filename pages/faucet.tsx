@@ -91,7 +91,7 @@ export default function Faucet() {
     const mint = async () => {
         setLoading(true);
         const token = await getContract("MockToken", chain?.id!, openedCollateral.token.id);
-        const amount = ethers.utils.parseEther(mintAmounts[openedCollateral.token.symbol]);
+        const amount = ethers.utils.parseUnits(mintAmounts[openedCollateral.token.symbol], openedCollateral.token.decimals);
         send(token, "mint", [address, amount])
             .then(async(res: any) => {
                 await res.wait(1);

@@ -202,23 +202,8 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 		}
 	};
 
-	// const _setUseReferral = () => {
-	// 	if (useReferral) {
-	// 		setReferral("");
-	// 		setUseReferral(false);
-	// 	} else {
-	// 		const { ref: refCode } = router.query;
-	// 		if (refCode) {
-	// 			setReferral(refCode as string);
-	// 		} else {
-	// 			setReferral("");
-	// 		}
-	// 		setUseReferral(true);
-	// 	}
-	// };
-
 	return (
-		<Box roundedBottom={16} px={5} pb={5} pt={0.5} bg="blackAlpha.200">
+		<Box roundedBottom={16} px={5} pb={5} pt={0.5} bg="blackAlpha.100">
 			<Box
 				// border="1px"
 				// borderColor={"gray.700"}

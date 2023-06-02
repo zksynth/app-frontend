@@ -728,7 +728,7 @@ export function SelectBody({ asset, onOpen }: any) {
 				align={"center"}
 				bg="whiteAlpha.200"
 				rounded={"full"}
-				shadow={"2xl"}
+				shadow={"lg"}
 				border={"2px"}
 				borderColor="blackAlpha.200"
 				px={1}

@@ -151,8 +151,8 @@ export default function Debt({ synth, index }: any) {
 			</Tr>
 
 			<Modal isCentered isOpen={isOpen} onClose={_onClose}>
-				<ModalOverlay bg="blackAlpha.400" backdropFilter="blur(30px)" />
-				<ModalContent width={"30rem"} bgColor="whiteAlpha.500" rounded={16} border='2px' mx={2} borderColor={'whiteAlpha.100'}>
+				<ModalOverlay bg="blackAlpha.600" backdropFilter="blur(30px)" />
+				<ModalContent width={"30rem"} bgColor="whiteAlpha.700" rounded={16} border='2px' mx={2} borderColor={'whiteAlpha.100'}>
 					<ModalCloseButton rounded={"full"} mt={1} />
 					<ModalHeader>
 						<Flex

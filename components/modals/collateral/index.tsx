@@ -194,7 +194,7 @@ export default function CollateralModal({ collateral, index }: any) {
 				<ModalOverlay bg="blackAlpha.600" backdropFilter="blur(30px)" />
 				<ModalContent
 					width={"30rem"}
-					bgColor="whiteAlpha.600"
+					bgColor="whiteAlpha.700"
 					rounded={16}
 					border="2px"
 					borderColor={"whiteAlpha.400"}
@@ -215,7 +215,7 @@ export default function CollateralModal({ collateral, index }: any) {
 							/>
 							<Text>{collateral.token.name}</Text>
 							{chain?.testnet && <Link href="/faucet">
-								<Button size={"xs"} rounded="full">
+								<Button size={"xs"} mb={1} rounded="full">
 									Use Faucet
 								</Button>
 							</Link>}

@@ -89,7 +89,7 @@ function TokenSelector({
 				isCentered
 			>
 				<ModalOverlay bg="blackAlpha.600" backdropFilter="blur(30px)" />
-				<ModalContent maxH={"600px"} bgColor="white" rounded={16} border='2px' mx={2} borderColor={'whiteAlpha.500'}>
+				<ModalContent maxH={"600px"} bgColor="whiteAlpha.700" rounded={16} border='2px' mx={2} borderColor={'whiteAlpha.500'}>
 					<ModalHeader>Select a token</ModalHeader>
 					<Box mx={5} mb={5}>
 					<Select rounded={'full'} placeholder="Select debt pool" value={tradingPool} onChange={(e) => {

@@ -155,7 +155,7 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 	const { isConnected } = useAccount();
 
 	return (
-		<Box px={5} pb={5} pt={0.5} bg='blackAlpha.200'>
+		<Box px={5} pb={5} pt={0.5} bg='blackAlpha.100'>
 		<Box
 				// border="1px"
 				// borderColor={"gray.700"}
