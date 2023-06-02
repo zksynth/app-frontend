@@ -74,7 +74,7 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 		];
 		
 		const priceFeedUpdateData = await getUpdateData();
-		if(priceFeedUpdateData.length > 0) args.push(priceFeedUpdateData);
+		args.push(priceFeedUpdateData);
 
 		send(
 			pool,
@@ -98,8 +98,7 @@ const Burn = ({ asset, amount, setAmount, amountNumber }: any) => {
 				if(chain?.id! == 280){
 					decodedLogs.pop();
 				}
-				console.log("decodedLogs", decodedLogs);
-				console.log(decodedLogs[decodedLogs.length - 1].args.value.toString(), decodedLogs[decodedLogs.length - 2].args.value.toString(), decodedLogs[decodedLogs.length - 3].args.value.toString());
+				
 				const amountUSD = Big(decodedLogs[decodedLogs.length - 2].args.value.toString()).mul(asset.priceUSD).div(10 ** 18).mul(1 - asset.burnFee/10000).toFixed(4);
 				updatePoolBalance(pools[tradingPool].id, decodedLogs[decodedLogs.length - 1].args.value.toString(), amountUSD, true);
 				updateSynthWalletBalance(asset.token.id, pools[tradingPool].id, decodedLogs[decodedLogs.length - 2].args.value.toString(), true);

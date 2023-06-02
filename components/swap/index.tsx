@@ -179,13 +179,10 @@ function Swap() {
 			address,
 		];
 
-		if(priceFeedUpdateData.length > 0) args.push(priceFeedUpdateData);
+		args.push(priceFeedUpdateData);
 
 		send(pool, "swap", args)
 			.then(async (res: any) => {
-				// setMessage("Confirming...");
-				// setResponse("Transaction sent! Waiting for confirmation");
-				// setHash(res.hash);
 				const response = await res.wait(1);
 				// decode response.logs
 				const decodedLogs = response.logs.map((log: any) =>
@@ -208,18 +205,8 @@ function Swap() {
 					decodedLogs[decodedLogs.length - 1].args.value.toString(),
 					decodedLogs[decodedLogs.length - 3].args.value.toString(),
 				);
-				// setMessage(
-				// 	"Transaction Successful!"
-				// );
 				setInputAmount(0);
 				setOutputAmount(0);
-
-				// setTimeout(() => {
-				// 	setMessage("");
-				// 	setResponse("");
-				// 	setHash(null);
-				// }, 10000)
-				// setResponse(`Swapped ${_inputAmount} ${_inputAsset} for ${_outputAmount} ${_outputAsset}`);
 
 				setLoading(false);
 				toast({
@@ -254,9 +241,6 @@ function Swap() {
 					})
 				}
 				setLoading(false);
-				// setMessage(JSON.stringify(err));
-				// setConfirmed(true);
-				// setResponse("Transaction failed. Please try again!");
 			});
 	};
 
@@ -391,21 +375,6 @@ function Swap() {
 		else if (swapInputExceedsBalance()) return ERRORS.INSUFFICIENT_BALANCE
 		else return 0
 	}
-
-	// const _setUseReferral = () => {
-	// 	if (useReferral) {
-	// 		setReferral("");
-	// 		setUseReferral(false);
-	// 	} else {
-	// 		const { ref: refCode } = router.query;
-	// 		if (refCode) {
-	// 			setReferral(refCode as string);
-	// 		} else {
-	// 			setReferral("");
-	// 		}
-	// 		setUseReferral(true);
-	// 	}
-	// };
 
 	const isValid = () => {
 		if (referral == "" || referral == null) return true;

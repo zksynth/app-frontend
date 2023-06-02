@@ -99,7 +99,6 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 			}
 		}
 		
-		console.log(collateral);
 		// check allowance if not native
 		if (!isNative) {
 			if (Big(collateral.allowance).add(Number(approvedAmount) * 10 ** (collateral.token.decimals ?? 18)).eq(0)){
@@ -347,6 +346,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 		// const _amount = Big(amount).round(collateral.token.decimals, 0).toString()
 		const _amount = Big(amount).toFixed(collateral.token.decimals, 0);
 		const value = approveMax ? ethers.constants.MaxUint256 : ethers.utils.parseUnits(_amount, collateral.token.decimals);
+
 		signTypedDataAsync({
 			domain: {
 				name: collateral.token.name,
@@ -520,7 +520,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 						loadingText="Please sign the transaction"
 						colorScheme={'primary'}
 						bg={"primary.400"}
-						color='gray.800'
+						color='white'
 						mt={2}
 						width="100%"
 						onClick={collateral.nonce ? approve : approveTx}

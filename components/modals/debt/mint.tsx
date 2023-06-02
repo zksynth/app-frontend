@@ -92,16 +92,16 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 			.times(10 ** 18)
 			.toFixed(0);
 		// let _referral = useReferral ? BigNumber.from(base58.decode(referral!)).toHexString() : ethers.constants.AddressZero;
-
 		
 		let args = [
 			asset.token.id, 
 			value, 
-			address
+			address,
+
 		];
 		
 		const priceFeedUpdateData = await getUpdateData();
-		if(priceFeedUpdateData.length > 0) args.push(priceFeedUpdateData);
+		args.push(priceFeedUpdateData);
 
 		send(pool, "mint", args)
 			.then(async (res: any) => {
