@@ -130,28 +130,27 @@ function NavBar() {
 							width="27px"
 						/>
 						<Flex
-						
-						gap={2}
-						align="center"
-						display={{ sm: "none", md: "flex" }}
-					>
-						<NavLocalLink
-							path={"/"}
-							title={"Dashboard"}
-						></NavLocalLink>
-						<NavLocalLink
-							path={"/swap"}
-							title="Swap"
-						></NavLocalLink>
-						<NavLocalLink
-							path={"/claim"}
-							title="Claim"
-						></NavLocalLink>
-						{/* <NavLocalLink
-							path={"/earn"}
-							title="Earn"
-						></NavLocalLink> */}
-					</Flex>
+							gap={2}
+							align="center"
+							display={{ sm: "none", md: "flex" }}
+						>
+							<NavLocalLink
+								path={"/"}
+								title={"Dashboard"}
+							></NavLocalLink>
+							<NavLocalLink
+								path={"/swap"}
+								title="Swap"
+							></NavLocalLink>
+							<NavLocalLink
+								path={"/claim"}
+								title="Claim"
+							></NavLocalLink>
+							{/* <NavLocalLink
+								path={"/earn"}
+								title="Earn"
+							></NavLocalLink> */}
+						</Flex>
 					</Flex>
 					
 					<Flex display={{sm: 'flex', md: 'none'}}>

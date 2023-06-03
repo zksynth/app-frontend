@@ -153,6 +153,7 @@ function AppDataProvider({ children }: any) {
 					}
 				})
 				.catch((err) => {
+					console.log(err);
 					setStatus("error");
 					setMessage(
 						"Failed to fetch data. Please refresh the page or try again later."
@@ -205,7 +206,6 @@ function AppDataProvider({ children }: any) {
 			getABI("Multicall2", chain?.id!),
 			provider.getSigner()
 		);
-		console.log(_pools[0].id, getABI("Pool", chain?.id!), helper.provider);
 		const pool = new ethers.Contract(_pools[0].id, getABI("Pool", chain?.id!), helper.provider);
 		const priceOracle = new ethers.Contract(_pools[0].oracle, getABI("PriceOracle", chain?.id!), helper.provider);
 		for(let i in _pools) {

@@ -151,45 +151,34 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 		const _amount = ethers.utils.parseUnits(Big(amount).toFixed(collateral.token.decimals, 0), collateral.token.decimals); 
 
 		let tx;
+		let args: any[] = [];
 		if (isNative) {
-			tx = send(
-				pool,
-				"depositETH",
-				[
-					address
-				],
-				_amount.toString()
-			);
+			args = [address];
+			tx = send(pool, "depositETH", args, _amount.toString());
 		} else {
-			console.log("data", data);
 			if(Number(approvedAmount) > 0){
 				const {v, r, s} = ethers.utils.splitSignature(data!);
-				tx = send(
-					pool,
-					"depositWithPermit",
-					[
-						collateral.token.id,
-						_amount,
-						address,
-						approveMax ? ethers.constants.MaxUint256 : ethers.utils.parseUnits(approvedAmount.toString(), collateral.token.decimals),
-						deadline,
-						v,
-						r,
-						s
-					]
-				);
+				args = [
+					collateral.token.id,
+					_amount,
+					address,
+					approveMax ? ethers.constants.MaxUint256 : ethers.utils.parseUnits(approvedAmount.toString(), collateral.token.decimals),
+					deadline,
+					v,
+					r,
+					s
+				];
+				tx = send(pool, "depositWithPermit", args);
 			} else {
-				tx = send(
-					pool,
-					"deposit",
-					[
-						collateral.token.id,
-						_amount,
-						address
-					]
-				);
+				args = [
+					collateral.token.id,
+					_amount,
+					address
+				]
+				tx = send(pool, "deposit", args);
 			}
 		}
+		console.log(args);
 		tx.then(async (res: any) => {
 			// setMessage("Confirming...");
 			// setResponse("Transaction sent! Waiting for confirmation");
@@ -260,6 +249,15 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 				toast({
 					title: "Transaction Rejected",
 					description: "You have rejected the transaction",
+					status: "error",
+					duration: 5000,
+					isClosable: true,
+					position: "top-right"
+				})
+			} else {
+				toast({
+					title: "Transaction Failed. Please try again",
+					description: JSON.stringify(err).slice(0, 100),
 					status: "error",
 					duration: 5000,
 					isClosable: true,
@@ -341,36 +339,32 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 
 	const approve = async () => {
 		setApproveLoading(true);
-		console.log(collateral);
-		const _deadline =(Math.floor(Date.now() / 1000) + 60 * 20).toFixed(0);
+		const _deadline =(Math.floor(Date.now()) + 600 * 20).toFixed(0);
 		// const _amount = Big(amount).round(collateral.token.decimals, 0).toString()
 		const _amount = Big(amount).toFixed(collateral.token.decimals, 0);
-		const value = approveMax ? ethers.constants.MaxUint256 : ethers.utils.parseUnits(_amount, collateral.token.decimals);
-
-		signTypedDataAsync({
-			domain: {
-				name: collateral.token.name,
-				version: "1",
-				chainId: chain?.id!,
-				verifyingContract: collateral.token.id,
-			},
-			types: {
-				Permit: [
-					{ name: "owner", type: "address" },
-					{ name: "spender", type: "address" },
-					{ name: "value", type: "uint256" },
-					{ name: "nonce", type: "uint256" },
-					{ name: "deadline", type: "uint256" },
-				]
-			},
-			value: {
-				owner: address!,
-				spender: pools[tradingPool].id,
-				value,
-				nonce: collateral.nonce,
-				deadline: BigNumber.from(_deadline),
-			}
-		})
+		const domain = {
+			name: collateral.token.name,
+			version: "1",
+			chainId: chain?.id!,
+			verifyingContract: collateral.token.id,
+		};
+		const value = {
+			owner: address!,
+			spender: pools[tradingPool].id,
+			value: approveMax ? ethers.constants.MaxUint256 : ethers.utils.parseUnits(_amount, collateral.token.decimals),
+			nonce: collateral.nonce,
+			deadline: BigNumber.from(_deadline)
+		};
+		const types = {
+			Permit: [
+				{ name: "owner", type: "address" },
+				{ name: "spender", type: "address" },
+				{ name: "value", type: "uint256" },
+				{ name: "nonce", type: "uint256" },
+				{ name: "deadline", type: "uint256" },
+			]
+		}
+		signTypedDataAsync({domain, types, value})
 			.then(async (res: any) => {
 				// await res.wait(1);
 				console.log(res);
@@ -513,6 +507,9 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 					</Tooltip>)
 					}
 
+
+				
+				
 				
 					{(validate().stage == 1|| validate().stage == 0) ? <Button
 						isDisabled={validate().stage != 1}

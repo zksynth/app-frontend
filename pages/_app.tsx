@@ -31,8 +31,8 @@ import { PROJECT_ID, APP_NAME } from "../src/const";
 const _chains = []
 
 if(process.env.NEXT_PUBLIC_NETWORK == 'testnet'){
-	_chains.push(scrollTestnet);
-	_chains.push(zkSyncTestnet);
+	_chains.push({...scrollTestnet, iconUrl: '/scroll.jpeg'});
+	_chains.push({...zkSyncTestnet, iconUrl: '/zksync.jpeg'});
 } else {
 	// _chains.push(arbitrum);
 }

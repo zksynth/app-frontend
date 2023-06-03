@@ -73,17 +73,8 @@ export default function CollateralModal({ collateral, index }: any) {
 				.div(10 ** collateral.token.decimals)
 				.toString();
 		} else {
-			const v1 =
-				collateral.priceUSD > 0
-					? Big(pools[tradingPool].adjustedCollateral)
-							.sub(pools[tradingPool].userDebt)
-							.div(collateral.priceUSD)
-							.mul(1e4)
-							.div(collateral.baseLTV)
-							.mul(1e18)
-							.div(10**collateral.token.decimals)
-					: Big(0);
-			const v2 = Big(collateral.balance ?? 0).div(10 ** collateral.token.decimals);
+			const v1 = collateral.priceUSD > 0 ? Big(pools[tradingPool]?.adjustedCollateral).sub(pools[tradingPool]?.userDebt).div(collateral.priceUSD).mul(1e4).div(collateral.baseLTV) : Big(0);
+			const v2 = Big(collateral.balance ?? 0).div(10**collateral.token.decimals);
 			// min(v1, v2)
 			return (v1.gt(v2) ? v2 : v1).toString();
 		}

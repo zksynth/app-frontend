@@ -96,8 +96,7 @@ const Issue = ({ asset, amount, setAmount, amountNumber }: any) => {
 		let args = [
 			asset.token.id, 
 			value, 
-			address,
-
+			address
 		];
 		
 		const priceFeedUpdateData = await getUpdateData();

@@ -76,7 +76,7 @@ export default function _index({ children }: any) {
 			</Flex>}
 			{(status == 'fetching' || loading) && <Progress bg={'blackAlpha.200'} colorScheme='primary' size='xs' isIndeterminate />}
 
-			<Box bgColor="gray.800" color={'gray.400'}>
+			<Box  bgColor="blackAlpha.500" color={'white'}>
 			{status == 'error' && (
 				<Text
 					textAlign={'center'}
@@ -108,15 +108,15 @@ export default function _index({ children }: any) {
 							exit={{opacity: 0, y: 15}}
 							transition={{duration: 0.25}}
 						>
-							<Flex h={'70vh'} justify={'center'} align={'center'} flexDir={'column'}>
+							{/* <Flex h={'70vh'} justify={'center'} align={'center'} flexDir={'column'}>
 								<Heading size={'md'}>
 									Under maintainance. Please check back later.
 								</Heading>
 								<Text my={2} color={'blackAlpha.600'}>
 									We are currently working on some updates. Stay tuned to our Twitter and Discord for annoucements.
 								</Text>
-							</Flex>
-							{/* {children} */}
+							</Flex> */}
+							{children}
 						</motion.div>
 						</Box>
 

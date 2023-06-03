@@ -22,7 +22,7 @@ export const theme = extendTheme({
 		}
 	},
 	fonts: {
-		heading: `General Sans, sans-serif`,
+		heading: `Clash Grotesk, sans-serif`,
 		body: `'Rubik', sans-serif`,
 	},
 	// styles,

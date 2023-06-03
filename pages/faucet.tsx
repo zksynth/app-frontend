@@ -77,8 +77,6 @@ export default function Faucet() {
 				(item, index) => _collaterals.indexOf(item) === index
 			);
 
-            console.log(_collaterals);
-
 			setCollaterals(_collaterals);
 		}
 	});
@@ -174,7 +172,7 @@ export default function Faucet() {
                 <Image alt={openedCollateral.token.symbol} src={`/icons/${openedCollateral.token.symbol}.svg`} w='44px' mb={2}/>
                 <Box  mb={2}>
 
-                <Text color={'gray.400'}>
+                <Text color={'gray.600'}>
                     You are about to mint {mintAmounts[openedCollateral.token.symbol]} {openedCollateral.token.symbol} tokens.
                 </Text>
                 </Box>
@@ -183,7 +181,7 @@ export default function Faucet() {
             </ModalBody>
 
             <ModalFooter justifyContent={'center'}>
-                <Button isDisabled={!isConnected} size={'md'} loadingText="Minting" isLoading={loading} bg='secondary.400' color={'white'} mb={0} rounded={16} onClick={mint} width='100%'>
+                <Button isDisabled={!isConnected} size={'md'} loadingText="Minting" isLoading={loading} colorScheme={'blue'} mb={0} rounded={16} onClick={mint} width='100%'>
                 {isConnected ? 'Mint' : 'Please Connect Your Wallet'}
                 </Button>
             </ModalFooter>

@@ -291,8 +291,8 @@ export default function TempPage() {
 								color={
 									pools[tradingPool]?.userCollateral > 0
 										? availableToIssue() > 1
-										? "primary.400"
-										: "yellow.400"
+										? "green.400"
+										: "yellow.500"
 										: "primary.400"
 								}
 							>
@@ -315,8 +315,8 @@ export default function TempPage() {
 									rounded="full"
 									bg={
 										availableToIssue() > 1
-												? "primary.400"
-												: "yellow.400"
+												? "green.500"
+												: "yellow.500"
 									}
 									width={
 										(pools[tradingPool]?.userCollateral > 0

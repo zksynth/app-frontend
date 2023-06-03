@@ -73,8 +73,10 @@ export default function PoolSelector() {
 										{/* <Text fontSize={'sm'} color='whiteAlpha.600'>Market Name</Text> */}
 										<Flex gap={4}>
 
-										<Heading fontSize={{sm: '3xl', md: "3xl", lg: '3xl'}} fontWeight='semibold'
-										// fontFamily='MonumentExtended'
+										<Heading fontSize={{sm: '3xl', md: "3xl", lg: '3xl'}} 
+										// fontFamily='Orbitron'
+										fontWeight='semibold'
+
 										color={'blackAlpha.800'}
 										>
 											{pools[tradingPool].name}

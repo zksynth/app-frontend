@@ -67,16 +67,9 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 		];
 		
 		const priceFeedUpdateData = await getUpdateData()
-		if(priceFeedUpdateData.length > 0) args.push(priceFeedUpdateData);
+		args.push(priceFeedUpdateData);
 		
-		send(
-				pool,
-				"withdraw",
-				args
-			).then(async (res: any) => {
-			// setMessage("Confirming...");
-			// setResponse("Transaction sent! Waiting for confirmation");
-			// setHash(res.hash);
+		send(pool, "withdraw", args).then(async (res: any) => {
 			const response = await res.wait(1);
 			// decode transfer event from response.logs
 			const decodedLogs = response.logs.map((log: any) =>
@@ -123,11 +116,6 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 				isClosable: true,
 				position: 'top-right'
 			})
-
-			// setMessage(
-			// 	"Transaction Successful!"
-			// );
-			// setResponse(`You have withdrawn ${amount} ${collateral.token.symbol}.`);
 			
 		}).catch((err: any) => {
 			console.log(err);
@@ -140,11 +128,17 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 					isClosable: true,
 					position: "top-right"
 				})
+			} else {
+				toast({
+					title: "Transaction Failed. Please try again",
+					description: JSON.stringify(err).slice(0, 100),
+					status: "error",
+					duration: 5000,
+					isClosable: true,
+					position: "top-right"
+				})
 			}
 			setLoading(false);
-			// setMessage(JSON.stringify(err));
-			// setConfirmed(true);
-			// setResponse("Transaction failed. Please try again!");
 		});
 	};
 

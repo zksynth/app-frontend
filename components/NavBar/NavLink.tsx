@@ -48,13 +48,13 @@ export default function NavLink({
 					>
 						<Flex align={"center"} gap={2}>
 							{children}
-							<Heading size={"xs"}>{title}</Heading>
+							<Heading fontSize={"15px"}>{title}</Heading>
 						</Flex>
 					</Box>
 				</Flex>
 			</motion.div>
 		</Flex>
-		{isPath && <Box w='80%' h={'2px'} rounded='full' bg='primary.400'></Box>}
+		{isPath && <Box mt={-0.5} mb={0.5} w='80%' h={'2px'} rounded='full' bg='primary.400'></Box>}
 		</Flex>
 	);
 };
