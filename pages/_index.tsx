@@ -64,16 +64,7 @@ export default function _index({ children }: any) {
 
 	return (
 		<Box>
-			{process.env.NEXT_PUBLIC_NETWORK == 'testnet' && <Flex align={'center'} justify={'center'} bgColor="whiteAlpha.300" color={'blackAlpha.600'}>
-				<Text
-					textAlign={'center'} 
-					fontSize={'sm'}
-					fontWeight="medium"
-					p={3}>
-					This is a testnet. Please do not send real assets to these addresses
-				</Text>
-				{/* <Button size={'xs'} rounded='full' onClick={() => switchNetwork!(42161)}>Switch to Arbitrum Mainnet</Button> */}
-			</Flex>}
+			
 			{(status == 'fetching' || loading) && <Progress bg={'blackAlpha.200'} colorScheme='primary' size='xs' isIndeterminate />}
 
 			<Box  bgColor="blackAlpha.500" color={'white'}>

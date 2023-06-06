@@ -35,7 +35,7 @@ const poolBoxStyle = {
 	// bgGradient={
 	// 	"linear(to-b, rgba(5, 104, 204, 0.2), rgba(5, 119, 230, 0.1))"
 	// }
-	rounded: 18,
+	rounded: 12,
 	h: "100%",
 	border: "2px solid",
 	borderColor: 'whiteAlpha.300',
@@ -92,7 +92,7 @@ export default function TempPage() {
 					alignContent={"center"}
 				>
 					<Flex flexDir={"column"} justify="center">
-						<Box mb={8}>
+						<Box mb={4}>
 							<PoolSelector />
 						</Box>
 						<motion.div

@@ -37,7 +37,7 @@ export default function Footer() {
           color='blackAlpha.800'
           >
             <Flex align={'center'} gap={1}>
-            <Box h={2} w={2} bgColor={block == 0 ? 'red': 'primary.400'} rounded='100'></Box>
+            <Box h={2} w={2} bgColor={block == 0 ? 'red': 'green.600'} rounded='100'></Box>
           <Text fontSize={'xs'}>{chain?.name} ({block == 0 ? 'Not Connected': block})</Text>
 
           <Text fontSize={'xs'}>| v1.0.0-beta</Text>

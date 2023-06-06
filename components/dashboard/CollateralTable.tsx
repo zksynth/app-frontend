@@ -26,7 +26,7 @@ export default function CollateralTable() {
 
 	return (
 		<Box>
-			<Box bg={'blackAlpha.50'} roundedTop={16} px={5} pt={6} pb={6}>
+			<Box bg={'blackAlpha.50'} roundedTop={12} px={5} pt={6} pb={6}>
 			<Heading size={'md'} color={'primary.400'}>Collaterals</Heading>
 			</Box>
 

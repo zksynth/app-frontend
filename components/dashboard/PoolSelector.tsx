@@ -141,7 +141,7 @@ export default function PoolSelector() {
 							borderRadius: "10px"
 						}}
 					>
-						<Box shadow={'xl'} bg={'blackAlpha.200'} borderRadius="10px">
+						<Box bg={'blackAlpha.100'} borderRadius="10px">
 						<motion.div
 							variants={{
 								open: {
