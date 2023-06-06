@@ -47,11 +47,11 @@ const myCustomTheme: Theme = {
 
   },
   radii: {
-    actionButton: '20px',
-    connectButton: '20px',
-    menuButton: '20px',
-    modal: '20px',
-    modalMobile: '20px',
+    actionButton: '10px',
+    connectButton: '10px',
+    menuButton: '10px',
+    modal: '10px',
+    modalMobile: '10px',
   },
   shadows: {
     connectButton: "0px 4px 12px rgba(0, 0, 0, 0.1)",

@@ -152,7 +152,7 @@ export default function Faucet() {
                             </Td>
 							<Td>{mintAmounts[collateral.token.symbol]}</Td>
 							<Td isNumeric>
-                                <Button fontSize={'md'} rounded='full' onClick={() => _onOpen(collateral)}>Mint</Button>
+                                <Button fontSize={'md'} rounded='10' onClick={() => _onOpen(collateral)}>Mint</Button>
                             </Td>
 						</Tr>
                         ))}
@@ -181,7 +181,7 @@ export default function Faucet() {
             </ModalBody>
 
             <ModalFooter justifyContent={'center'}>
-                <Button isDisabled={!isConnected} size={'md'} loadingText="Minting" isLoading={loading} colorScheme={'blue'} mb={0} rounded={16} onClick={mint} width='100%'>
+                <Button isDisabled={!isConnected} size={'md'} loadingText="Minting" isLoading={loading} colorScheme={'blue'} mb={0} rounded={12} onClick={mint} width='100%'>
                 {isConnected ? 'Mint' : 'Please Connect Your Wallet'}
                 </Button>
             </ModalFooter>

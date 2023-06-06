@@ -85,10 +85,23 @@ export default function _index({ children }: any) {
 					flexDirection={{ sm: 'column', md: 'row' }}
 					minH="96vh"
 					maxW={'100%'}
+					
 					>
-					{/* <Box position={'absolute'} bottom={0} width='100%' zIndex={1}>
-					<Particles quantity={60} />
-					</Box> */}
+					{/* large 100vw background1.svg image at bottom of screen, 0.1 opacity */}
+					{/* <Box
+						bgImage={'url(/background1.svg)'}
+						bgRepeat={'no-repeat'}
+						bgSize={'contain'}
+						bgPosition={'bottom'}
+						opacity={0.1}
+						position={'absolute'}
+						top={0}
+						left={0}
+						right={0}
+						bottom={0}
+						zIndex={1}
+					></Box> */}
+
 					<Box zIndex={2} minW={{sm: '0', md: '0', lg: '1200px'}} w={'100%'} px={{sm: '4', md: '0'}}>
 						<Flex justify='center'>
 							<Box minW={'0'} w='100%' maxW={'1200px'}>
