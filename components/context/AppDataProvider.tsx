@@ -1,7 +1,7 @@
 import * as React from "react";
 import axios from "axios";
 import { getAddress, getABI, getContract } from "../../src/contract";
-import { ADDRESS_ZERO, dollarFormatter, Endpoints, WETH_ADDRESS, query, tokenFormatter, query_leaderboard, query_referrals, PYTH_ENDPOINT } from '../../src/const';
+import { ADDRESS_ZERO, dollarFormatter, Endpoints, WETH_ADDRESS, query, tokenFormatter, query_leaderboard, query_referrals, PYTH_ENDPOINT, defaultChain } from '../../src/const';
 import { ChainID, chainMapping } from "../../src/chains";
 import { BigNumber, ethers } from "ethers";
 import { useEffect } from 'react';
@@ -79,14 +79,14 @@ function AppDataProvider({ children }: any) {
 	useEffect(() => {
 		if (refresh.length == 0 && pools.length > 0 && isConnected && !chain?.unsupported) {
 			// set new interval
-			const timer = setInterval(refreshData, 10000);
+			const timer = setInterval(refreshData, 5000);
 			setRefresh([Number(timer.toString())]);
 			setRandom(Math.random());
 		}
 	}, [refresh, pools, random]); 
 
 	const fetchData = (_address: string | null): Promise<number> => {
-		let chainId = chain?.id!;
+		let chainId = chain?.id ?? defaultChain.id;
 		if(chain?.unsupported) chainId = process.env.NEXT_PUBLIC_NETWORK == 'testnet' ? ChainID.ARB_GOERLI : ChainID.ARB;
 		console.log("fetching for chain", chainId);
 		return new Promise((resolve, reject) => {
@@ -124,19 +124,6 @@ function AppDataProvider({ children }: any) {
 							const pool = pools[i];
 							// reverse pool.collaterals
 							pool.collaterals = pool.collaterals.reverse();
-							
-							// TODO: check average burn and revenue
-							// let averageDailyBurn = Big(0);
-							// let averageDailyRevenue = Big(0);
-							// for(let j = 0; j < pool.poolDayData.length; j++) {
-							// 	for(let k = 0; k < pool.poolDayData[j].synths.length; k++) {
-							// 		let synthDayData = pool.poolDayData[j].synths[k].synthDayData;
-							// 		averageDailyBurn = averageDailyBurn.plus(pool.poolDayData[j].dailyBurnUSD);
-							// 		averageDailyRevenue = averageDailyRevenue.plus(pool.poolDayData[j].dailyRevenueUSD);
-							// 	}
-							// }
-							// pool.averageDailyBurn = pool.poolDayData.length > 0 ? averageDailyBurn.div(pool.poolDayData.length).toString() : '0';
-							// pool.averageDailyRevenue = pool.poolDayData.length > 0 ? averageDailyRevenue.div(pool.poolDayData.length).toString() : '0';
 							pools[i] = pool;
 						}
 						
@@ -144,6 +131,10 @@ function AppDataProvider({ children }: any) {
 							_setPools(pools, userPoolData.accounts[0], _address)
 							.then((_) => {
 								resolve(0)
+							})
+							.catch(err => {
+								console.log("error setting pools", err);
+								reject(err);
 							})
 						} else {
 							setPools(pools);
@@ -153,7 +144,6 @@ function AppDataProvider({ children }: any) {
 					}
 				})
 				.catch((err) => {
-					console.log(err);
 					setStatus("error");
 					setMessage(
 						"Failed to fetch data. Please refresh the page or try again later."
@@ -190,176 +180,172 @@ function AppDataProvider({ children }: any) {
 	}
 
 	const refreshData = async (_pools = pools) => {
-		if(!isConnected) return;
-		console.log("Refreshing data", address);
-		const reqs: any[] = [];
-		if(_pools.length == 0) {
-			console.log("No pools found", _pools);
-			return
-		}
-		const provider = new ethers.providers.Web3Provider(
-			(window as any).ethereum!,
-			"any"
-		);
-		const helper = new ethers.Contract(
-			getAddress("Multicall2", chain?.id!),
-			getABI("Multicall2", chain?.id!),
-			provider.getSigner()
-		);
-		const pool = new ethers.Contract(_pools[0].id, getABI("Pool", chain?.id!), helper.provider);
-		const priceOracle = new ethers.Contract(_pools[0].oracle, getABI("PriceOracle", chain?.id!), helper.provider);
-		for(let i in _pools) {
-			for(let j in _pools[i].collaterals) {
-				reqs.push([
-					_pools[i].id,
-					pool.interface.encodeFunctionData("accountCollateralBalance", [address, _pools[i].collaterals[j].token.id])
-				]);
-				if(_pools[i].collaterals[j].feed == ethers.constants.HashZero.toLowerCase()){
-					// if(_pools[i].collaterals[j].fallbackFeed && _pools[i].collaterals[j].fallbackFeed !== ethers.constants.AddressZero.toLowerCase()){
+		return new Promise(async (resolve, reject) => {
+			const chainId = chain?.id ?? defaultChain.id;
+			if(!isConnected) return;
+			const reqs: any[] = [];
+			if(_pools.length == 0) {
+				console.log("No pools found", _pools);
+				return
+			}
+			const provider = new ethers.providers.Web3Provider(
+				(window as any).ethereum!,
+				"any"
+			);
+			const helper = new ethers.Contract(
+				getAddress("Multicall2", chainId),
+				getABI("Multicall2", chainId),
+				provider.getSigner()
+			);
+			const pool = new ethers.Contract(_pools[0].id, getABI("Pool", chainId), helper.provider);
+			const priceOracle = new ethers.Contract(_pools[0].oracle, getABI("PriceOracle", chainId), helper.provider);
+			for(let i in _pools) {
+				for(let j in _pools[i].collaterals) {
+					reqs.push([
+						_pools[i].id,
+						pool.interface.encodeFunctionData("accountCollateralBalance", [address, _pools[i].collaterals[j].token.id])
+					]);
+					if(_pools[i].collaterals[j].feed == ethers.constants.HashZero.toLowerCase()){
 						reqs.push([
 							_pools[i].oracle,
 							priceOracle.interface.encodeFunctionData("getAssetPrice", [_pools[i].collaterals[j].token.id])
 						])
-					// }
-				} else if (_pools[i].collaterals[j].feed.startsWith('0x0000000000000000000000')){
-					reqs.push([
-						_pools[i].oracle,
-						priceOracle.interface.encodeFunctionData("getAssetPrice", [_pools[i].collaterals[j].token.id])
-					])
+					} else if (_pools[i].collaterals[j].feed.startsWith('0x0000000000000000000000')){
+						reqs.push([
+							_pools[i].oracle,
+							priceOracle.interface.encodeFunctionData("getAssetPrice", [_pools[i].collaterals[j].token.id])
+						])
+					}
 				}
-			}
-			for(let j in _pools[i].synths) {
-				const synth = _pools[i].synths[j];
+				for(let j in _pools[i].synths) {
+					const synth = _pools[i].synths[j];
+					reqs.push([
+						synth.token.id,
+						pool.interface.encodeFunctionData("totalSupply", [])
+					]);
+					if(_pools[i].synths[j].feed == ethers.constants.HashZero.toLowerCase()){
+						reqs.push([
+							_pools[i].oracle,
+							priceOracle.interface.encodeFunctionData("getAssetPrice", [_pools[i].synths[j].token.id])
+						])
+					} else if (_pools[i].synths[j].feed.startsWith('0x0000000000000000000000')){
+						reqs.push([
+							_pools[i].oracle,
+							priceOracle.interface.encodeFunctionData("getAssetPrice", [_pools[i].synths[j].token.id])
+						])
+					}
+				}
 				reqs.push([
-					synth.token.id,
+					_pools[i].id,
 					pool.interface.encodeFunctionData("totalSupply", [])
 				]);
-				if(_pools[i].synths[j].feed == ethers.constants.HashZero.toLowerCase()){
-					reqs.push([
-						_pools[i].oracle,
-						priceOracle.interface.encodeFunctionData("getAssetPrice", [_pools[i].synths[j].token.id])
-					])
-				} else if (_pools[i].synths[j].feed.startsWith('0x0000000000000000000000')){
-					reqs.push([
-						_pools[i].oracle,
-						priceOracle.interface.encodeFunctionData("getAssetPrice", [_pools[i].synths[j].token.id])
-					])
-				}
+				reqs.push([
+					_pools[i].id,
+					pool.interface.encodeFunctionData("balanceOf", [address])
+				])
 			}
-			reqs.push([
-				_pools[i].id,
-				pool.interface.encodeFunctionData("totalSupply", [])
-			]);
-			reqs.push([
-				_pools[i].id,
-				pool.interface.encodeFunctionData("balanceOf", [address])
-			])
-		}
 
-		await _setAssetPrices(_pools);
-
-		for (let i = 0; i < _pools.length; i++) {
-			const pool = _pools[i];
-			
-			// average burn and revenue
-			let averageDailyBurn = Big(0);
-			let averageDailyRevenue = Big(0);
-			for(let k = 0; k < pool.synths.length; k++) {
-				for(let l = 0; l <pool.synths[k].synthDayData.length; l++) {
-					let synthDayData = pool.synths[k].synthDayData[l];
-					// synthDayData.dailyMinted / 1e18 * pool.synths[k].mintFee / 10000 * pool.synths[k].priceUSD
-					let totalFee = Big(synthDayData.dailyMinted).div(1e18).mul(pool.synths[k].mintFee).div(10000).mul(pool.synths[k].priceUSD);
-					// add burn fee
-					totalFee = totalFee.plus(Big(synthDayData.dailyBurned).div(1e18).mul(pool.synths[k].burnFee).div(10000).mul(pool.synths[k].priceUSD));
-
-					// add to average
-					averageDailyBurn = averageDailyBurn.plus(
-						totalFee.mul(pool.issuerAlloc).div(10000)
-					);
-					averageDailyRevenue = averageDailyRevenue.plus(
-						totalFee.mul(10000 - pool.issuerAlloc).div(10000)
-					);
-				}
+			// Set prices from pyth feeds
+			try{
+				await _setPythAssetPrices(_pools);
+			} catch (err){
+				console.log("Error setting asset prices", err);
 			}
-			pool.averageDailyBurn = averageDailyBurn.div(7).toString();
-			pool.averageDailyRevenue = averageDailyRevenue.div(7).toString();
-			_pools[i] = pool;
-		}
 
-		helper.callStatic.aggregate(reqs).then(async (res: any) => {
-			if(res.returnData.length > 0){
-				let reqCount = 0;
-				// if(account?.id) reqCount = 4;
-				for(let i = 0; i < _pools.length; i++) {
-					let _i = i*(reqCount + _pools[i].collaterals.length);
-					for(let j in _pools[i].collaterals) {
-						_pools[i].collaterals[j].balance = Big(pool.interface.decodeFunctionResult("accountCollateralBalance", res.returnData[reqCount])[0].toString()).toString();
-						reqCount += 1;
-						if(_pools[i].collaterals[j].feed == ethers.constants.HashZero.toLowerCase()){
-							// if(_pools[i].collaterals[j].fallbackFeed && _pools[i].collaterals[j].fallbackFeed !== ethers.constants.AddressZero.toLowerCase()){
-								// update price from fallback feed
+			for (let i = 0; i < _pools.length; i++) {
+				const pool = _pools[i];
+				// average burn and revenue
+				let averageDailyBurn = Big(0);
+				let averageDailyRevenue = Big(0);
+				for(let k = 0; k < pool.synths.length; k++) {
+					for(let l = 0; l <pool.synths[k].synthDayData.length; l++) {
+						let synthDayData = pool.synths[k].synthDayData[l];
+						// synthDayData.dailyMinted / 1e18 * pool.synths[k].mintFee / 10000 * pool.synths[k].priceUSD
+						let totalFee = Big(synthDayData.dailyMinted).div(1e18).mul(pool.synths[k].mintFee).div(10000).mul(pool.synths[k].priceUSD);
+						// add burn fee
+						totalFee = totalFee.plus(Big(synthDayData.dailyBurned).div(1e18).mul(pool.synths[k].burnFee).div(10000).mul(pool.synths[k].priceUSD));
+
+						// add to average
+						averageDailyBurn = averageDailyBurn.plus(
+							totalFee.mul(pool.issuerAlloc).div(10000)
+						);
+						averageDailyRevenue = averageDailyRevenue.plus(
+							totalFee.mul(10000 - pool.issuerAlloc).div(10000)
+						);
+					}
+				}
+				pool.averageDailyBurn = averageDailyBurn.div(7).toString();
+				pool.averageDailyRevenue = averageDailyRevenue.div(7).toString();
+				_pools[i] = pool;
+			}
+
+			helper.callStatic.aggregate(reqs).then(async (res: any) => {
+				if(res.returnData.length > 0){
+					let reqCount = 0;
+					for(let i = 0; i < _pools.length; i++) {
+						for(let j in _pools[i].collaterals) {
+							_pools[i].collaterals[j].balance = Big(pool.interface.decodeFunctionResult("accountCollateralBalance", res.returnData[reqCount])[0].toString()).toString();
+							reqCount += 1;
+							if(_pools[i].collaterals[j].feed == ethers.constants.HashZero.toLowerCase()){
 								_pools[i].collaterals[j].priceUSD = Big(BigNumber.from(res.returnData[reqCount]).toString()).div(1e8).toString();
 								reqCount += 1;
-							// }
-						} else if (_pools[i].collaterals[j].feed.startsWith('0x0000000000000000000000')){
-							// update price from feed
-							_pools[i].collaterals[j].priceUSD = Big(BigNumber.from(res.returnData[reqCount]).toString()).div(1e8).toString();
-							reqCount += 1;
+							} else if (_pools[i].collaterals[j].feed.startsWith('0x0000000000000000000000')){
+								// update price from feed
+								_pools[i].collaterals[j].priceUSD = Big(BigNumber.from(res.returnData[reqCount]).toString()).div(1e8).toString();
+								reqCount += 1;
+							}
 						}
-					}
-					
-					// calculate total debt usd
-					_pools[i].totalDebtUSD = "0";
-					for(let j in _pools[i].synths) {
-						_pools[i].synths[j].totalSupply = pool.interface.decodeFunctionResult("totalSupply", res.returnData[reqCount])[0].toString();
-						reqCount += 1;
-						if(_pools[i].synths[j].feed == ethers.constants.HashZero.toLowerCase()){
-							// if(_pools[i].synths[j].fallbackFeed && _pools[i].synths[j].fallbackFeed !== ethers.constants.AddressZero.toLowerCase()){
-								// update price from fallback feed
+						
+						// calculate total debt usd
+						_pools[i].totalDebtUSD = "0";
+						for(let j in _pools[i].synths) {
+							_pools[i].synths[j].totalSupply = pool.interface.decodeFunctionResult("totalSupply", res.returnData[reqCount])[0].toString();
+							reqCount += 1;
+							if(_pools[i].synths[j].feed == ethers.constants.HashZero.toLowerCase()){
 								_pools[i].synths[j].priceUSD = Big(BigNumber.from(res.returnData[reqCount]).toString()).div(1e8).toString();
 								reqCount += 1;
-							// } else {
-							// 	// set price 1
-							// 	_pools[i].synths[j].priceUSD = "1";
-							// }
-						} else if (_pools[i].synths[j].feed.startsWith('0x0000000000000000000000')){
-							// update price from feed
-							_pools[i].synths[j].priceUSD = Big(BigNumber.from(res.returnData[reqCount]).toString()).div(1e8).toString();
-							reqCount += 1;
+							} else if (_pools[i].synths[j].feed.startsWith('0x0000000000000000000000')){
+								// update price from feed
+								_pools[i].synths[j].priceUSD = Big(BigNumber.from(res.returnData[reqCount]).toString()).div(1e8).toString();
+								reqCount += 1;
+							}
+							_pools[i].totalDebtUSD = Big(_pools[i].totalDebtUSD).plus(Big(_pools[i].synths[j].totalSupply).div(1e18).times(Big(_pools[i].synths[j].priceUSD))).toString();
 						}
-						_pools[i].totalDebtUSD = Big(_pools[i].totalDebtUSD).plus(Big(_pools[i].synths[j].totalSupply).div(1e18).times(Big(_pools[i].synths[j].priceUSD))).toString();
-					}
-					
-					_pools[i].totalSupply = pool.interface.decodeFunctionResult("totalSupply", res.returnData[reqCount])[0].toString();
-					reqCount += 1;
-					_pools[i].balance = pool.interface.decodeFunctionResult("balanceOf", res.returnData[reqCount])[0].toString();
-					reqCount += 1;
+						
+						_pools[i].totalSupply = pool.interface.decodeFunctionResult("totalSupply", res.returnData[reqCount])[0].toString();
+						reqCount += 1;
+						_pools[i].balance = pool.interface.decodeFunctionResult("balanceOf", res.returnData[reqCount])[0].toString();
+						reqCount += 1;
 
-					// sort pool.synths
-					_pools[i].synths.sort((a: any, b: any) => {
-						return (
-							parseFloat(b.totalSupply) *
-							parseFloat(b.priceUSD)
-						) -
-							
-							(parseFloat(a.totalSupply) *
-								parseFloat(a.priceUSD));
-					});
-					
-					updateUserParams(_pools[i]);
+						// sort pool.synths
+						_pools[i].synths.sort((a: any, b: any) => {
+							return (
+								parseFloat(b.totalSupply) *
+								parseFloat(b.priceUSD)
+							) -
+								
+								(parseFloat(a.totalSupply) *
+									parseFloat(a.priceUSD));
+						});
+						
+						updateUserParams(_pools[i]);
+					}
+					setPools(_pools);
+					setRandom(Math.random());
+					resolve("Refreshed pools");
+				} else {
+					console.log("No return data");
+					reject("No return data")
 				}
-				setPools(_pools);
-				setRandom(Math.random());
-			} else {
-				console.log("No return data");
-			}
-		})
-		.catch(err => {
-			console.log("Failed multicall", err);
+			})
+			.catch(err => {
+				console.log("Failed multicall", err);
+				reject(err);
+			})
 		})
 	}
 
-	const _setAssetPrices = async (_pools: any[]) => {
+	const _setPythAssetPrices = async (_pools: any[]) => {
 		return new Promise(async (resolve, reject) => {
 		const pythFeeds = [];
 		
@@ -414,27 +400,30 @@ function AppDataProvider({ children }: any) {
 	const _setPools = (
 		_pools: any[],
 		_account: any,
-		_address: string
+		_address: string,
+		nTries: number = 0
 	): Promise<number> => {
-		console.log("setting pools");
+		const chainId = chain?.id ?? defaultChain.id;
 		const provider = new ethers.providers.Web3Provider(
 			(window as any).ethereum!,
 			"any"
 		);
 
+		_pools = _pools.reverse();
+
 		const helper = new ethers.Contract(
-			getAddress("Multicall2", chain?.id!),
-			getABI("Multicall2", chain?.id!),
+			getAddress("Multicall2", chainId),
+			getABI("Multicall2", chainId),
 			provider.getSigner()
 		);
 		return new Promise(async (resolve, reject) => {
 			let calls: any[] = [];
-			const itf = new ethers.utils.Interface(getABI("MockToken", chain?.id!));
+			const itf = new ethers.utils.Interface(getABI("MockToken", chainId));
 
 			for (let i = 0; i < _pools.length; i++) {
 				for(let j = 0; j < _pools[i].collaterals.length; j++) {
 					const collateral = _pools[i].collaterals[j];
-					if(collateral.token.id == WETH_ADDRESS(chain?.id!).toLowerCase()) {
+					if(collateral.token.id == WETH_ADDRESS(chainId)?.toLowerCase()) {
 						calls.push([
 							helper.address,
 							helper.interface.encodeFunctionData("getEthBalance", [
@@ -455,14 +444,10 @@ function AppDataProvider({ children }: any) {
 					]);
 					// nonces
 					try{
-						const _token = await getContract("MockToken", chain?.id!, collateral.token.id);
+						const _token = await getContract("MockToken", chainId, collateral.token.id);
 						let _nonce = (await _token.nonces(_address)).toString();
 						_pools[i].collaterals[j].nonce = _nonce;
 					} catch (err) {}
-					// calls.push([
-					// 	collateral.token.id,
-					// 	itf.encodeFunctionData("nonces", [_address]),
-					// ]);
 				}
 				for(let j = 0; j < _pools[i].synths.length; j++) {
 					const synth = _pools[i].synths[j];
@@ -474,13 +459,12 @@ function AppDataProvider({ children }: any) {
 			}
 
 			helper.callStatic.aggregate(calls).then(async (res: any) => {
-				console.log("result", res);
 				setBlock(parseInt(res[0].toString()));
 				let index = 0;
 				// setting wallet balance and allowance
 				for (let i = 0; i < _pools.length; i++) {
 					for(let j = 0; j < _pools[i].collaterals.length; j++) {
-						if(_pools[i].collaterals[j].token.id == WETH_ADDRESS(chain?.id!).toLowerCase()) {
+						if(_pools[i].collaterals[j].token.id == WETH_ADDRESS(chainId)?.toLowerCase()) {
 							_pools[i].collaterals[j].nativeBalance = BigNumber.from(
 								res.returnData[index]
 							).toString();
@@ -494,10 +478,6 @@ function AppDataProvider({ children }: any) {
 							res.returnData[index]
 						).toString();
 						index++;
-						// _pools[i].collaterals[j].nonce = BigNumber.from(
-						// 	res.returnData[index] == '0x' ? '0' : res.returnData[index]
-						// ).toString();
-						// index++;
 					}
 					for(let j = 0; j < _pools[i].synths.length; j++) {
 						_pools[i].synths[j].walletBalance = BigNumber.from(
@@ -528,7 +508,7 @@ function AppDataProvider({ children }: any) {
 					}
 				}
 
-				await _setAssetPrices(_pools)
+				await refreshData(_pools);
 
 				// sort collaterals by collateral.walletBalance * collateral.priceUSD
 				for(let i = 0; i < _pools.length; i++){
@@ -543,72 +523,29 @@ function AppDataProvider({ children }: any) {
 
 				setStatus("ready");
 				setPools(_pools);
-				refreshData(_pools);
-				_setPortfolio(_pools);
+				
 				resolve(0);
 			})
 			.catch(err => {
-				console.log("Failed to get balances and allowances", err);
+				console.log("Failed to get balances and allowances", err, calls);
 				setStatus("error");
 				setMessage(
 					"Failed to fetch data. Please refresh the page or try again later."
 				);
-				reject(err)
+				// reject(err)
+				if(nTries > 5) {
+					reject(err);
+					return;
+				}
+				else {
+					// try again in 5 seconds
+					setTimeout(() => {
+						_setPools(_pools, _account, _address, nTries + 1)
+					}, 1000)
+				}	
 			})
 		});
 	};
-
-	const _setPortfolio = async (
-		_pools: any,
-		length: number = 1,
-	) => {
-		// let _portfolio: any = [];
-		// // 4 block /sec 
-		// const dailyBlocks = 4 * 60 * 60 * 24;
-		// const itf = new ethers.utils.Interface(getABI("MockToken", chain?.id!));
-		// // multicall for 7 days of data
-		// const multicall = await getContract("Multicall2", chain?.id!);
-
-		// // balances requests of all synths in pool
-		// const reqs = _pools.reduce((acc: any, pool: any) => {
-		// 	return acc.concat(
-		// 		pool.synths.map((synth: any) => {
-		// 			return {
-		// 				target: synth.token.id,
-		// 				callData: itf.encodeFunctionData("balanceOf", [address]),
-		// 			};
-		// 		})
-		// 	);
-		// }, []);
-
-		// console.log(reqs);
-
-		// // multicall for 7 days of data
-		// const provider = new ethers.providers.JsonRpcProvider("https://arb1.arbitrum.io/rpc");
-		// const _block = await provider.getBlockNumber();
-
-		// console.log(
-		// 	Array.from({ length }, (_, i) => {
-		// 		return _block - dailyBlocks * i
-		// 	})
-		// );
-		// Promise.all(
-		// 	Array.from({ length }, (_, i) => {
-		// 		return multicall.callStatic.aggregate(reqs, {
-		// 			blockTag: _block - dailyBlocks * i,
-		// 		});
-		// 	})
-		// )
-		// 	.then((res: any) => {
-		// 		// parsing data
-		// 		console.log(res);
-		// 	})
-		// 	.catch((err: any) => {
-		// 		console.log(err);
-		// 	});
-
-		// setPortfolio(_portfolio);
-	}
 
 	const incrementNonce = async (_collateral: any) => {
 		let _pools = [...pools];
@@ -753,6 +690,10 @@ function AppDataProvider({ children }: any) {
 			{children}
 		</AppDataContext.Provider>
 	);
+}
+
+export const useAppData = () => {
+	return React.useContext(AppDataContext);
 }
 
 export { AppDataProvider, AppDataContext };

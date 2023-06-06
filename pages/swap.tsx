@@ -25,7 +25,7 @@ export default function swap() {
 							border='2px'
 							borderColor='whiteAlpha.800'
 							// bgGradient={'linear(to-b, rgba(5, 104, 204, 0.25), rgba(5, 119, 230, 0.1))'}
-							rounded={16}
+							rounded={8}
 						>
 							<Swap />
 						</Box>

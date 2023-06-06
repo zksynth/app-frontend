@@ -15,11 +15,11 @@ export const PROJECT_ID = '9635a0d9de95bced3f125a11f3ace2b5';
 export const APP_NAME = 'Synthex';
 
 const _Endpoints: any = {
-	[ChainID.ARB]: process.env.NEXT_PUBLIC_GRAPH_URL_42161,
-	[ChainID.ARB_GOERLI]: process.env.NEXT_PUBLIC_GRAPH_URL_421613,
 	[zkSyncTestnet.id]: process.env.NEXT_PUBLIC_GRAPH_URL_280,
 	[scrollTestnet.id]: process.env.NEXT_PUBLIC_GRAPH_URL_534353,
 }
+
+export const defaultChain = zkSyncTestnet;
 
 export const PARTNER_ASSETS: any = {
 	"Lodestar": ["lUSDC"]
@@ -37,8 +37,8 @@ export const PARTNER_ASSET_COLOR: any = {
 	"Lodestar": "#E5D540"
 }
 
-export const Endpoints = (chainId: number) => _Endpoints[chainId] ?? (process.env.NEXT_PUBLIC_NETWORK == 'testnet' ? _Endpoints[zkSyncTestnet.id] : _Endpoints[ChainID.ARB]); 
-export const WETH_ADDRESS = (chainId: number) => _WETH_ADDRESS[chainId] ?? (process.env.NEXT_PUBLIC_NETWORK == 'testnet' ? _WETH_ADDRESS[zkSyncTestnet.id] : _WETH_ADDRESS[ChainID.ARB]);
+export const Endpoints = (chainId: number) => _Endpoints[chainId] ?? (process.env.NEXT_PUBLIC_NETWORK == 'testnet' ? _Endpoints[zkSyncTestnet.id] : _Endpoints[zkSyncTestnet.id]); 
+export const WETH_ADDRESS = (chainId: number) => _WETH_ADDRESS[chainId] ?? (process.env.NEXT_PUBLIC_NETWORK == 'testnet' ? _WETH_ADDRESS[zkSyncTestnet.id] : _WETH_ADDRESS[zkSyncTestnet.id]);
 
 export const PYTH_ENDPOINT = !process.env.NEXT_PUBLIC_NETWORK || process.env.NEXT_PUBLIC_NETWORK == 'testnet' ? 'https://xc-testnet.pyth.network' : 'https://xc-mainnet.pyth.network';
 export const dollarFormatter = new Intl.NumberFormat("en-US", {
@@ -75,7 +75,7 @@ export const PARTNER_WARNINGS: any = {
 
 export const query = (address: string) => (
 	`{
-		pools {
+		pools (orderBy: symbol) {
 		  id
 		  name
 		  symbol

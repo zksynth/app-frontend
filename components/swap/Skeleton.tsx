@@ -9,7 +9,7 @@ export default function SwapSkeleton() {
 						bg="whiteAlpha.500"
 						align={"center"}
 						px={5}
-						roundedTop="15"
+						roundedTop="8"
 						justify="space-between"
 					>
 						<Skeleton
@@ -46,7 +46,7 @@ export default function SwapSkeleton() {
 						px={5}
 						h={"60%"}
 						bg="blackAlpha.100"
-						roundedBottom="15"
+						roundedBottom="8"
 					>
 						<Flex justify="space-between" align={"center"}>
 							<Skeleton

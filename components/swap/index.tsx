@@ -36,7 +36,7 @@ import useUpdateData from "../utils/useUpdateData";
 function Swap() {
 	const [inputAssetIndex, setInputAssetIndex] = useState(1);
 	const [outputAssetIndex, setOutputAssetIndex] = useState(0);
-	const [inputAmount, setInputAmount] = useState(0);
+	const [inputAmount, setInputAmount] = useState<number>('' as any);
 	const [outputAmount, setOutputAmount] = useState(0);
 	const [nullValue, setNullValue] = useState(false);
 	const [gas, setGas] = useState(0);
@@ -86,7 +86,7 @@ function Swap() {
 		}
 		setInputAssetIndex(e);
 		// calculate output amount
-		let _outputAmount = Big(inputAmount)
+		let _outputAmount = Big(inputAmount || 0)
 			.times(inputToken(e).priceUSD)
 			.div(outputToken().priceUSD);
 		setOutputAmount(
@@ -401,7 +401,7 @@ function Swap() {
 				<link rel="icon" type="image/x-icon" href="/veZS.png"></link>
 			</Head>
 			{pools[tradingPool] ? (
-				<Box shadow='2xl' rounded={16}>
+				<Box shadow='2xl' rounded={8}>
 					<Box px="5" py={10} roundedTop={15} 
 						// bg={"whiteAlpha.100"}
 					>

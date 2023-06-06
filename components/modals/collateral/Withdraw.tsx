@@ -147,7 +147,7 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 
 	return (
 		<>
-			<Box bg={"blackAlpha.100"} roundedBottom={16} px={5} py={5}>
+			<Box bg={"blackAlpha.100"} roundedBottom={8} px={5} py={5}>
 				<Box
 					// border="1px"
 					// borderColor={"gray.700"}

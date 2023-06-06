@@ -43,20 +43,19 @@ export default function Debt({ synth, index }: any) {
 
 	const { pools, tradingPool, account } = useContext(AppDataContext);
 
-	const [amount, setAmount] = React.useState("0");
+	const [amount, setAmount] = React.useState("");
 	const [amountNumber, setAmountNumber] = useState(0);
 	const [tabSelected, setTabSelected] = useState(0);
 
 	const { address } = useAccount();
 
 	const _onClose = () => {
-		setAmount("0");
+		setAmount("");
 		setAmountNumber(0);
 		onClose();
 	};
 
 	const _setAmount = (e: string) => {
-
 		if(Number(e) > 0 && Number(e) < 0.000001) e = '0';
 		if(amount == '0' && Number(e) > 0) e = e.replace(/^0+/, '');
 		setAmount(e);
@@ -152,7 +151,7 @@ export default function Debt({ synth, index }: any) {
 
 			<Modal isCentered isOpen={isOpen} onClose={_onClose}>
 				<ModalOverlay bg="blackAlpha.600" backdropFilter="blur(30px)" />
-				<ModalContent width={"30rem"} bgColor="whiteAlpha.700" rounded={16} border='2px' mx={2} borderColor={'whiteAlpha.100'}>
+				<ModalContent width={"30rem"} bgColor="whiteAlpha.700" rounded={8} border='2px' mx={2} borderColor={'whiteAlpha.100'}>
 					<ModalCloseButton rounded={"full"} mt={1} />
 					<ModalHeader>
 						<Flex

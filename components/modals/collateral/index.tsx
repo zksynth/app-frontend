@@ -42,16 +42,15 @@ export default function CollateralModal({ collateral, index }: any) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [tabSelected, setTabSelected] = useState(0);
 
-	const [amount, setAmount] = React.useState("0");
+	const [amount, setAmount] = React.useState("");
 	const [amountNumber, setAmountNumber] = useState(0);
 	const [isNative, setIsNative] = useState(false);
 	const { chain } = useNetwork();
-	const { address } = useAccount();
 
 	const { pools, tradingPool } = useContext(AppDataContext);
 
 	const _onClose = () => {
-		setAmount("0");
+		setAmount("");
 		setAmountNumber(0);
 		onClose();
 		setIsNative(false);
@@ -90,29 +89,10 @@ export default function CollateralModal({ collateral, index }: any) {
 
 	return (
 		<>
-		{/* {partner && <Tr color={PARTNER_ASSET_COLOR[partner]} bgGradient={`linear(to-r, ${PARTNER_ASSET_COLOR_GRADIENTS[partner][0]}, ${PARTNER_ASSET_COLOR_GRADIENTS[partner][1]})`} h={'28px'} p={0} m={0}>
-			<Td py={0} border={0}>
-				<Flex align={'center'} gap={2} borderBottom={'1px solid'} py={1}>
-					<Image
-						src={PARTNER_ASSET_LOGOS[partner]}
-						h={'22px'}
-						alt="lodestar logo"
-						/>
-					<Text fontWeight={'bold'} fontSize={'sm'}>
-						{partner}
-					</Text>
-				</Flex>
-			</Td>
-			<Td py={0} border={0} >
-			</Td>
-		</Tr>} */}
 			<Tr
 				cursor="pointer"
 				onClick={_onOpen}
-				// borderLeft="2px"
-				// borderColor="transparent"
 				_hover={{ borderColor: "primary.400", bg: "blackAlpha.100" }}
-				// bgGradient={partner ? `linear(to-r, ${PARTNER_ASSET_COLOR_GRADIENTS[partner][0]}, ${PARTNER_ASSET_COLOR_GRADIENTS[partner][1]})` : 'linear(to-r, transparent, transparent)'}
 			>
 				<TdBox
 					isFirst={index == 0}
@@ -186,7 +166,7 @@ export default function CollateralModal({ collateral, index }: any) {
 				<ModalContent
 					width={"30rem"}
 					bgColor="whiteAlpha.700"
-					rounded={16}
+					rounded={8}
 					border="2px"
 					borderColor={"whiteAlpha.400"}
 					mx={2}

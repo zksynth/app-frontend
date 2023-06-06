@@ -400,7 +400,7 @@ export default function Deposit({ collateral, amount, setAmount, amountNumber, i
 
 	return (
 		<>
-			<Box bg={"blackAlpha.100"} roundedBottom={16} px={5} pt={5} pb={5}>
+			<Box bg={"blackAlpha.100"} roundedBottom={8} px={5} pt={5} pb={5}>
 				<Box
 					// border="1px"
 					// borderColor={"gray.700"}
