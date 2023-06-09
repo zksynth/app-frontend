@@ -188,7 +188,9 @@ function AppDataProvider({ children }: any) {
 				console.log("No pools found", _pools);
 				return;
 			}
-			let provider = new ethers.providers.JsonRpcProvider(defaultChain.rpcUrls.default.http[0]);
+			let provider;
+			if(window.ethereum) provider = new ethers.providers.Web3Provider(window.ethereum as any, "any");
+			else provider = new ethers.providers.JsonRpcProvider(defaultChain.rpcUrls.default.http[0]);
 			
 			const helper = new ethers.Contract(
 				getAddress("Multicall2", chainId),
@@ -407,7 +409,9 @@ function AppDataProvider({ children }: any) {
 	): Promise<number> => {
 		const chainId = chain?.id ?? defaultChain.id;
 		if(chain?.unsupported) return Promise.resolve(1);
-		const provider = new ethers.providers.JsonRpcProvider(defaultChain.rpcUrls.default.http[0]);
+		let provider;
+		if(window.ethereum) provider = new ethers.providers.Web3Provider(window.ethereum as any, "any");
+		else provider = new ethers.providers.JsonRpcProvider(defaultChain.rpcUrls.default.http[0]);
 		const helper = new ethers.Contract(
 			getAddress("Multicall2", chainId),
 			getABI("Multicall2", chainId),
