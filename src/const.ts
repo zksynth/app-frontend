@@ -1,12 +1,9 @@
 import { ethers } from "ethers";
-import { ChainID, chains } from "./chains";
 import { scrollTestnet, zkSyncTestnet } from 'wagmi/chains';
 
 export const ADDRESS_ZERO = ethers.constants.AddressZero;
 const _WETH_ADDRESS: any = {
-	[ChainID.ARB_GOERLI]: "0x7964Bcc63335E101F23da13583CEaD61d75f863b",
-	[ChainID.ARB]: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
-	280: "0x5e4ccda7f92283d51144db6198877512662dec5c",
+	[zkSyncTestnet.id]: "0x5e4ccda7f92283d51144db6198877512662dec5c",
 	[scrollTestnet.id]: "0x169063Ded3b76E27c0Ca004DDa8439d26cB6ad60"
 };
 export const ESYX_PRICE = 0.005;

@@ -2,7 +2,8 @@ import Big from "big.js";
 import { BigNumber, ethers } from "ethers";
 import * as React from "react";
 import { getContract } from "../../src/contract";
-import { useNetwork } from 'wagmi';
+import { useNetwork } from "wagmi";
+import { defaultChain } from "../../src/const";
 
 const TokenContext = React.createContext<TokenValue>({} as TokenValue);
 
@@ -10,7 +11,7 @@ interface StakingPosition {
 	staked: string;
 	earned: string;
 	rewardRate: string;
-    allowance: string;
+	allowance: string;
 	totalSupply: string;
 }
 
@@ -49,56 +50,60 @@ function TokenContextProvider({ children }: any) {
 
 	const fetchData = async (address: string) => {
 		// token unlocks
-		const essyx = await getContract("EscrowedSYX", chain?.id!);
+		const essyx = await getContract(
+			"EscrowedSYX",
+			chain?.id ?? defaultChain.id
+		);
 		const tokenUnlocks = BigNumber.from(
-			// await essyx.unlockRequestCount(address)
-			0
+			await essyx.unlockRequestCount(address)
 		).toNumber();
 
-		const multicall = await getContract("Multicall2", chain?.id!);
+		const multicall = await getContract(
+			"Multicall2",
+			chain?.id ?? defaultChain.id
+		);
 		let calls = [];
 
 		for (let i = 0; i < tokenUnlocks; i++) {
 			calls.push({
 				target: essyx.address,
-				callData: essyx.interface.encodeFunctionData(
-					"unlockRequests",
-					[
-						ethers.utils.solidityKeccak256(
-							["address", "uint256"],
-							[address, i]
-						),
-					]
-				),
+				callData: essyx.interface.encodeFunctionData("unlockRequests", [
+					ethers.utils.solidityKeccak256(
+						["address", "uint256"],
+						[address, i]
+					),
+				]),
 			});
 		}
+		let unlockData = [];
+		if (calls.length > 0) {
+			const result = await multicall.callStatic.aggregate(calls);
+			const decoded = result.returnData.map((data: any) =>
+				essyx.interface.decodeFunctionResult("unlockRequests", data)
+			);
 
-		const result = await multicall.callStatic.aggregate(calls);
-		const decoded = result.returnData.map((data: any) =>
-			essyx.interface.decodeFunctionResult("unlockRequests", data)
-		);
-
-		const unlockData = decoded.map((data: any) => {
-			return {
-				amount: Number(ethers.utils.formatEther(data.amount)),
-				requestTime: Number(data.requestTime),
-				claimed: Number(ethers.utils.formatEther(data.claimed)),
-			};
-		});
+			unlockData = decoded.map((data: any) => {
+				return {
+					amount: Number(ethers.utils.formatEther(data.amount)),
+					requestTime: Number(data.requestTime),
+					claimed: Number(ethers.utils.formatEther(data.claimed)),
+				};
+			});
+		}
 
 		// sealed syn balance
 		const sealedSYNBalance = BigNumber.from(
 			await essyx.balanceOf(address)
 		).toString();
 
-		const syn = await getContract("SyntheXToken", chain?.id!);
+		const syn = await getContract("SyntheXToken", chain?.id ?? defaultChain.id);
 		const synBalance = BigNumber.from(
 			await syn.balanceOf(address)
 		).toString();
 
 		setSyn({
-			balance: (ethers.utils.formatEther(synBalance)),
-			sealedBalance: (ethers.utils.formatEther(sealedSYNBalance)),
+			balance: ethers.utils.formatEther(synBalance),
+			sealedBalance: ethers.utils.formatEther(sealedSYNBalance),
 		});
 
 		calls = [];
@@ -115,15 +120,11 @@ function TokenContextProvider({ children }: any) {
 		// percUnlockAtRelease
 		calls.push({
 			target: essyx.address,
-			callData: essyx.interface.encodeFunctionData(
-				"percUnlockAtRelease"
-			),
+			callData: essyx.interface.encodeFunctionData("percUnlockAtRelease"),
 		});
 		calls.push({
 			target: essyx.address,
-			callData: essyx.interface.encodeFunctionData(
-				"remainingQuota"
-			),
+			callData: essyx.interface.encodeFunctionData("remainingQuota"),
 		});
 
 		// allowance
@@ -139,13 +140,15 @@ function TokenContextProvider({ children }: any) {
 
 		setTokenUnlocks({
 			unlocking: tokenUnlocks,
-			lockupPeriod: (unlockerResult.returnData[0]),
-			unlockPeriod: (unlockerResult.returnData[1]),
-			percUnlockAtRelease: (
-				ethers.utils.formatEther(unlockerResult.returnData[2])
+			lockupPeriod: unlockerResult.returnData[0],
+			unlockPeriod: unlockerResult.returnData[1],
+			percUnlockAtRelease: ethers.utils.formatEther(
+				unlockerResult.returnData[2]
 			),
 			pendingUnlocks: unlockData,
-			remainingQuota: ethers.utils.formatEther(unlockerResult.returnData[3]),
+			remainingQuota: ethers.utils.formatEther(
+				unlockerResult.returnData[3]
+			),
 			allowance: BigNumber.from(unlockerResult.returnData[4]).toString(),
 		});
 
@@ -168,14 +171,14 @@ function TokenContextProvider({ children }: any) {
 				address,
 			]),
 		});
-        // allowance
-        calls.push({
-            target: essyx.address,
-            callData: essyx.interface.encodeFunctionData("allowance", [
-                address,
-                essyx.address,
-            ]),
-        });
+		// allowance
+		calls.push({
+			target: essyx.address,
+			callData: essyx.interface.encodeFunctionData("allowance", [
+				address,
+				essyx.address,
+			]),
+		});
 		// totalSupply
 		calls.push({
 			target: essyx.address,
@@ -185,19 +188,11 @@ function TokenContextProvider({ children }: any) {
 		const stakingResult = await multicall.callStatic.aggregate(calls);
 
 		setStaking({
-			rewardRate: (
-				ethers.utils.formatEther(stakingResult.returnData[0])
-			),
-			earned: (
-				ethers.utils.formatEther(stakingResult.returnData[1])
-			),
-			staked: (
-				ethers.utils.formatEther(stakingResult.returnData[2])
-			),
-            allowance: BigNumber.from(stakingResult.returnData[3]).toString(),
-			totalSupply: (
-				ethers.utils.formatEther(stakingResult.returnData[4])
-			),
+			rewardRate: ethers.utils.formatEther(stakingResult.returnData[0]),
+			earned: ethers.utils.formatEther(stakingResult.returnData[1]),
+			staked: ethers.utils.formatEther(stakingResult.returnData[2]),
+			allowance: BigNumber.from(stakingResult.returnData[3]).toString(),
+			totalSupply: ethers.utils.formatEther(stakingResult.returnData[4]),
 		});
 
 		setRefresh(Math.random());
@@ -208,14 +203,14 @@ function TokenContextProvider({ children }: any) {
 		_staking.allowance = Big(_staking.allowance).add(amount).toString();
 		setStaking(_staking);
 		setRefresh(Math.random());
-	}
+	};
 
 	const increaseUnlockAllowance = async (amount: string) => {
 		const _unlock = tokenUnlocks;
 		_unlock.allowance = Big(_unlock.allowance).add(amount).toString();
 		setTokenUnlocks(_unlock);
 		setRefresh(Math.random());
-	}
+	};
 
 	const staked = async (amount: string) => {
 		const _staking = staking;
@@ -225,7 +220,7 @@ function TokenContextProvider({ children }: any) {
 		setStaking(_staking);
 		setSyn(_syn);
 		setRefresh(Math.random());
-	}
+	};
 
 	const addedToUnlock = async (amount: string) => {
 		const _unlock = tokenUnlocks;
@@ -234,19 +229,19 @@ function TokenContextProvider({ children }: any) {
 		_unlock.pendingUnlocks.push({
 			amount: amount,
 			requestTime: (Date.now() / 1000).toString(),
-			claimed: '0'
-		})
+			claimed: "0",
+		});
 		_syn.sealedBalance = Big(_syn.sealedBalance).sub(amount).toString();
 		setTokenUnlocks(_unlock);
 		setRefresh(Math.random());
-	}
+	};
 
 	const claimed = async (amount: string) => {
 		const _syn = syn;
 		_syn.sealedBalance = Big(_syn.sealedBalance).add(amount).toString();
 		setSyn(_syn);
 		setRefresh(Math.random());
-	}
+	};
 
 	const value: TokenValue = {
 		fetchData,
@@ -257,7 +252,7 @@ function TokenContextProvider({ children }: any) {
 		increaseStakingAllowance,
 		staked,
 		addedToUnlock,
-		claimed
+		claimed,
 	};
 
 	return (
