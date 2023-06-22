@@ -4,7 +4,7 @@ import { scrollTestnet, zkSyncTestnet } from 'wagmi/chains';
 export const ADDRESS_ZERO = ethers.constants.AddressZero;
 const _WETH_ADDRESS: any = {
 	[zkSyncTestnet.id]: "0x5e4ccda7f92283d51144db6198877512662dec5c",
-	[scrollTestnet.id]: "0x169063Ded3b76E27c0Ca004DDa8439d26cB6ad60"
+	[scrollTestnet.id]: "0x0d712e355700a4d99f103d54daf0f389de1fc8f6"
 };
 export const ESYX_PRICE = 0.005;
 

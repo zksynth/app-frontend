@@ -153,7 +153,7 @@ export default function Claim() {
 						bg={"whiteAlpha.500"}
 						border="2px"
 						borderColor={"whiteAlpha.300"}
-						rounded={16}
+						rounded={8}
 						mt={5}
 						shadow='xl'
 					>
