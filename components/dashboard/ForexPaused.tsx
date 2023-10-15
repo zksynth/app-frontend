@@ -1,8 +1,8 @@
-import { Flex, Heading, Text, Box } from '@chakra-ui/react'
-import React from 'react'
+import { Flex, Heading, Text, Box, useColorMode } from "@chakra-ui/react";
+import React from "react";
 
 export default function ForexPaused() {
-    const getTimeUntilNextSunday5PM = () => {
+	const getTimeUntilNextSunday5PM = () => {
 		const now: any = new Date();
 		const dayOfWeek = now.getUTCDay();
 		const targetDayOfWeek = 0; // Sunday
@@ -30,51 +30,50 @@ export default function ForexPaused() {
 			seconds: seconds,
 		};
 	};
-  return (
-    <Flex
-							gap={3}
-							bg={"bg2"}
-							rounded="16"
-							flexDir={"column"}
-							h="360px"
-							w={"100%"}
-							align="center"
-							justify={"center"}
-							border="2px"
-							borderColor={"whiteAlpha.200"}
-						>
-							<Heading size={"lg"}>Market Paused</Heading>
-							<Text
-								textAlign={"center"}
-								color="whiteAlpha.700"
-								maxW={"400px"}
-							>
-								Forex (Foreign Exchange) markets are traded only
-								from 5PM EDT on Sunday through 4PM EDT on Friday
-							</Text>
-							<Text mt={5}>Opening back in</Text>
-							<Flex justify={"center"} gap={4}>
-								<Box textAlign={"center"}>
-									<Heading>
-										{getTimeUntilNextSunday5PM().days}
-									</Heading>
-									<Text>Day</Text>
-								</Box>
-								<Heading>:</Heading>
-								<Box textAlign={"center"}>
-									<Heading>
-										{getTimeUntilNextSunday5PM().hours}
-									</Heading>
-									<Text>Hour</Text>
-								</Box>
-								<Heading>:</Heading>
-								<Box textAlign={"center"}>
-									<Heading>
-										{getTimeUntilNextSunday5PM().minutes}
-									</Heading>
-									<Text>Minute</Text>
-								</Box>
-							</Flex>
-						</Flex>
-  )
+
+	const { colorMode } = useColorMode();
+
+	return (
+		<Flex
+			gap={3}
+			bg={"bg2"}
+			rounded="16"
+			flexDir={"column"}
+			h="360px"
+			w={"100%"}
+			align="center"
+			justify={"center"}
+			border="2px"
+			borderColor={"whiteAlpha.200"}
+		>
+			<Heading size={"lg"}>Market Paused</Heading>
+			<Text
+				textAlign={"center"}
+				color={
+					colorMode == "dark" ? "whiteAlpha.700" : "blackAlpha.700"
+				}
+				maxW={"400px"}
+			>
+				Forex (Foreign Exchange) markets are traded only from 5PM EDT on
+				Sunday through 4PM EDT on Friday
+			</Text>
+			<Text mt={5}>Opening back in</Text>
+			<Flex justify={"center"} gap={4}>
+				<Box textAlign={"center"}>
+					<Heading>{getTimeUntilNextSunday5PM().days}</Heading>
+					<Text>Day</Text>
+				</Box>
+				<Heading>:</Heading>
+				<Box textAlign={"center"}>
+					<Heading>{getTimeUntilNextSunday5PM().hours}</Heading>
+					<Text>Hour</Text>
+				</Box>
+				<Heading>:</Heading>
+				<Box textAlign={"center"}>
+					<Heading>{getTimeUntilNextSunday5PM().minutes}</Heading>
+					<Text>Minute</Text>
+				</Box>
+			</Flex>
+		</Flex>
+	);
 }

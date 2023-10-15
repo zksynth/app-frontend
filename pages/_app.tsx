@@ -1,23 +1,14 @@
 import "../styles/globals.css";
+import "../styles/edgy-dark.css";
+import "../styles/edgy-light.css";
+import "../styles/rounded-dark.css";
+import "../styles/rounded-light.css";
+
 import "@rainbow-me/rainbowkit/styles.css";
 import type { AppProps } from "next/app";
 import {
-	RainbowKitProvider,
-	connectorsForWallets,
+	RainbowKitProvider, getDefaultWallets,
 } from "@rainbow-me/rainbowkit";
-import {
-	coinbaseWallet,
-	metaMaskWallet,
-	phantomWallet,
-	rainbowWallet,
-	trustWallet,
-	walletConnectWallet,
-} from "@rainbow-me/rainbowkit/wallets";
-import { configureChains, createClient, WagmiConfig, Chain } from "wagmi";
-import { arbitrumGoerli, arbitrum, zkSyncTestnet, scrollTestnet } from "wagmi/chains";
-// import { chains } from '../src/chains';
-import { alchemyProvider } from "wagmi/providers/alchemy";
-import { publicProvider } from "wagmi/providers/public";
 import { Box, ChakraProvider, Flex } from "@chakra-ui/react";
 import Index from "./_index";
 
@@ -25,65 +16,51 @@ import { AppDataProvider } from "../components/context/AppDataProvider";
 import { theme } from "../styles/theme";
 import rainbowTheme from "../styles/rainbowTheme";
 import { TokenContextProvider } from "../components/context/TokenContext";
-import { rabbyWallet } from "@rainbow-me/rainbowkit/wallets";
-import { PROJECT_ID, APP_NAME } from "../src/const";
+import { BalanceContext, BalanceContextProvider } from "../components/context/BalanceProvider";
+import { PriceContextProvider } from "../components/context/PriceContext";
+import { SyntheticsPositionProvider } from "../components/context/SyntheticsPosition";
 
-const _chains = []
-
-if(process.env.NEXT_PUBLIC_NETWORK == 'testnet'){
-	_chains.push({...scrollTestnet, iconUrl: '/scroll.jpeg'});
-	_chains.push({...zkSyncTestnet, iconUrl: '/zksync.jpeg'});
-} else {
-	// _chains.push(arbitrum);
-}
-
-export const __chains: Chain[] = _chains;
-
-const { chains, provider } = configureChains(
-	_chains,
+import { WagmiConfig, configureChains, createConfig, mainnet } from 'wagmi'
+import { scrollSepolia } from "viem/chains";
+import { publicProvider } from 'wagmi/providers/public';
+ 
+const { chains, publicClient } = configureChains(
+	[scrollSepolia],
 	[
-		alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY ?? 'demo' }),
-		publicProvider(),
+	  publicProvider()
 	]
-);
-
-const connectors = connectorsForWallets([
-	{
-		groupName: "Recommended",
-		wallets: [
-			metaMaskWallet({ chains }),
-			walletConnectWallet({ projectId: PROJECT_ID, chains }),
-		],
-	},
-	{
-		groupName: "All Wallets",
-		wallets: [
-			rainbowWallet({ projectId: PROJECT_ID, chains }),
-			trustWallet({ projectId: PROJECT_ID, chains }),
-			phantomWallet({ chains }),
-			coinbaseWallet({ appName: APP_NAME, chains }),
-			rabbyWallet({ chains }),
-		],
-	},
-]);
-
-const wagmiClient = createClient({
+  );
+  
+  const { connectors } = getDefaultWallets({
+	appName: 'My RainbowKit App',
+	projectId: 'YOUR_PROJECT_ID',
+	chains
+  });
+  
+  const wagmiConfig = createConfig({
 	autoConnect: true,
 	connectors,
-	provider,
-});
+	publicClient
+  })
 
 function MyApp({ Component, pageProps }: AppProps) {
+
 	return (
 		<ChakraProvider theme={theme}>
-			<WagmiConfig client={wagmiClient}>
-				<RainbowKitProvider chains={chains} theme={rainbowTheme}>
+			<WagmiConfig config={wagmiConfig}>
+				<RainbowKitProvider chains={[scrollSepolia]} modalSize="compact" theme={rainbowTheme}>
 					<AppDataProvider>
-						<TokenContextProvider>
-							<Index>
-								<Component {...pageProps} />
-							</Index>
-						</TokenContextProvider>
+							<BalanceContextProvider>
+								<PriceContextProvider>
+									<TokenContextProvider>
+									<SyntheticsPositionProvider>
+										<Index>
+											<Component {...pageProps} />
+										</Index>
+									</SyntheticsPositionProvider>
+									</TokenContextProvider>
+								</PriceContextProvider>
+							</BalanceContextProvider>
 					</AppDataProvider>
 				</RainbowKitProvider>
 			</WagmiConfig>

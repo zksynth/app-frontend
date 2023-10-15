@@ -11,7 +11,9 @@ import {
 	Flex,
 	Box,
 	Heading,
-	Text
+	Text,
+	Tfoot,
+	useColorMode
 } from "@chakra-ui/react";
 import { AppDataContext } from "../context/AppDataProvider";
 import {
@@ -28,9 +30,7 @@ import { MdNavigateBefore, MdNavigateNext } from "react-icons/md";
 import { Skeleton } from "@chakra-ui/react";
 import Debt from "../modals/debt";
 import ThBox from "./ThBox";
-import Big from "big.js";
-import { ESYX_PRICE } from "../../src/const";
-import APRInfo from "../infos/APRInfo";
+import { VARIANT } from "../../styles/theme";
 
 const pageSize = 5;
 
@@ -42,46 +42,18 @@ export default function CollateralTable() {
 			pagesCount: Math.ceil((pools[tradingPool]?.synths?.length ?? 1) / pageSize) ?? 1,
 			initialState: { currentPage: 1 }
 		}
-	);
+	);	
 
-	const esSyxApr = () => {
-		if (!pools[tradingPool]) return "0";
-		if (Big(pools[tradingPool]?.totalDebtUSD).eq(0)) return "0";
-		return Big(pools[tradingPool]?.rewardSpeeds[0])
-			.div(1e18)
-			.mul(365 * 24 * 60 * 60 * ESYX_PRICE)
-			.div(pools[tradingPool]?.totalDebtUSD)
-			.mul(100)
-			.toFixed(2);
-	};
-
-	const debtBurnApr = () => {
-		if (!pools[tradingPool]) return "0";
-		if (Big(pools[tradingPool]?.totalDebtUSD).eq(0)) return "0";
-		return Big(pools[tradingPool]?.averageDailyBurn ?? 0)
-			.mul(365)
-			.div(pools[tradingPool]?.totalDebtUSD)
-			.mul(100)
-			.toFixed(2);
-	};
+	// sort by synth.totalSupply * price
+	pools[tradingPool]?.synths.sort((a: any, b: any) => {
+		return (b.totalSupply * b.priceUSD) - (a.totalSupply * a.priceUSD);
+	});
+	const { colorMode } = useColorMode();
 
 	return (
 		<Box>
-			<Box bg={'blackAlpha.50'} roundedTop={12} px={5} pt={4} pb={4}>
-			<Flex align={'center'} justify={'space-between'}>
-			<Heading size={'md'} color={'secondary.300'}>Synthetic Assets</Heading>
-			<APRInfo debtBurnApr={debtBurnApr()} esSyxApr={esSyxApr()}>
-				<Box cursor={'help'} textAlign={'right'}>
-					<Text fontSize={'xs'} color={'blackAlpha.600'}>Rewards APR</Text>
-					<Heading size={'md'} color={'secondary.300'}>
-						{(
-							Number(debtBurnApr()) +
-							Number(esSyxApr())
-						).toFixed(2)}%
-					</Heading>
-				</Box>
-			</APRInfo>
-			</Flex>
+			<Box className={`${VARIANT}-${colorMode}-containerHeader`} px={5} py={5}>
+				<Heading fontSize={'18px'} color={'secondary.300'}>Mint Synthetic Assets</Heading>			
 			</Box>
 			{pools[tradingPool]?.synths.length > 0 ? (
 				<TableContainer>
@@ -136,9 +108,9 @@ export default function CollateralTable() {
 									bgColor={"transparent"
 									}
 									color={
-										page === currentPage ? 'primary.400' : 'white'
+										page === currentPage ? 'primary.400' : colorMode == 'dark' ? 'white' : 'blackAlpha.600'
 									}
-									_hover={{ bgColor: "whiteAlpha.200" }}
+									_hover={{ bgColor: colorMode == 'dark' ? "whiteAlpha.200" : "blackAlpha.200" }}
 								/>
 							))}
 						</PaginationPageGroup>

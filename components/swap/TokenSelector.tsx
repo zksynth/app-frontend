@@ -2,13 +2,13 @@ import {
 	Box,
 	Text,
 	Flex,
-	Select,
-	useDisclosure,
-	Button,
 	Input,
-	Tooltip,
 	Divider,
-	Image
+	Image,
+	Button,
+	Tooltip,
+	Heading,
+	useColorMode
 } from "@chakra-ui/react";
 
 import { useContext, useState, useEffect } from "react";
@@ -24,8 +24,14 @@ import {
 	ModalBody,
 	ModalCloseButton,
 } from "@chakra-ui/react";
-import { InfoOutlineIcon, SearchIcon } from "@chakra-ui/icons";
-import InfoFooter from "../modals/_utils/InfoFooter";
+import { useBalanceData } from "../context/BalanceProvider";
+import { ethers } from "ethers";
+import { useAccount, useNetwork } from "wagmi";
+import { MdTrendingUp, MdVerified } from "react-icons/md";
+import whitelistedTokens from "../../src/whitelistedTokens";
+import { VARIANT } from "../../styles/theme";
+
+const POPULAR_TOKENS = ['WETH', 'MNT', 'USDT', 'cUSD']
 
 function TokenSelector({
 	onTokenSelected,
@@ -34,103 +40,121 @@ function TokenSelector({
 	onOpen,
 	onClose,
 }: any) {
-	const { tradingPool, setTradingPool, pools } = useContext(AppDataContext);
-
-	const [searchPools, setSearchPools] = useState<any[]>([]);
+	const [searchedTokens, setSearchedTokens] = useState<any[]>([]);
+	const { walletBalances, tokens: _tokens } = useBalanceData();
+	const {chain} = useNetwork();
+	const {isConnected} = useAccount();
+    const tokens: any[] = [{ id: ethers.constants.AddressZero, symbol: chain?.nativeCurrency.symbol ?? 'MNT', name: chain?.nativeCurrency.name ?? 'Mantle', decimals: chain?.nativeCurrency.decimals ?? 18, balance: walletBalances[ethers.constants.AddressZero] }].concat(_tokens);
 
 	const selectToken = (tokenIndex: number) => {
 		onTokenSelected(tokenIndex);
 	};
 
-	const searchToken = (searchTerm: string) => {
-		// search token from all pool _mintedTokens
-		const _pools = [...pools];
-		const _searchedTokens = [];
-		for (let i in _pools) {
-			const _mintedTokens = _pools[i]._mintedTokens;
-			const _seachedPool: any = { ..._pools[i] };
-			_seachedPool._mintedTokens = [];
-			for (let j in _mintedTokens) {
-				const _token = _mintedTokens[j];
-				if (
-					_token.name
-						.toLowerCase()
-						.includes(searchTerm.toLowerCase()) ||
-					_token.symbol
-						.toLowerCase()
-						.includes(searchTerm.toLowerCase())
-				) {
-					_seachedPool._mintedTokens.push({
-						..._token,
-						poolIndex: i,
-						tokenIndex: j,
-					});
-				}
-			}
-			_searchedTokens.push(_seachedPool);
-		}
-		setSearchPools(_searchedTokens);
-	};
-
 	useEffect(() => {
-		if (pools.length > 0 && searchPools.length == 0) {
+		if (tokens.length > 1) {
 			searchToken("");
 		}
-	}, [searchToken]);
+	}, [tokens.length]);
 
-	if(!pools[tradingPool]) return <></>
+	const searchToken = (searchTerm: string) => {
+		// search token from all pool _mintedTokens
+		const _searchedTokens = [];
+		for (let j in tokens) {
+			const _token = tokens[j];
+			if (
+				_token.name
+					.toLowerCase()
+					.includes(searchTerm.toLowerCase()) ||
+				_token.symbol
+					.toLowerCase()
+					.includes(searchTerm.toLowerCase())
+			) {
+				_searchedTokens.push({
+					..._token,
+					tokenIndex: j,
+				});
+			}
+		}
+		setSearchedTokens(_searchedTokens);
+	};
+
+	const _onClose = () => {
+		searchToken("");
+		onClose();
+	}
+
+	if(tokens.length <= 1) return <></>
+
+	// eslint-disable-next-line react-hooks/rules-of-hooks
+	const { colorMode } = useColorMode();
 
 	return (
 		<>
 			<Modal
 				isOpen={isOpen}
-				onClose={onClose}
+				onClose={_onClose}
 				scrollBehavior={"inside"}
 				isCentered
 			>
-				<ModalOverlay bg="blackAlpha.600" backdropFilter="blur(30px)" />
-				<ModalContent maxH={"600px"} bgColor="whiteAlpha.700" rounded={8} border='2px' mx={2} borderColor={'whiteAlpha.500'}>
-					<ModalHeader>Select a token</ModalHeader>
-					<Box mx={5} mb={5}>
-					<Select rounded={'full'} placeholder="Select debt pool" value={tradingPool} onChange={(e) => {
-						if(e.target.value !== ''){
-							setTradingPool(Number(e.target.value))
-							localStorage.setItem("tradingPool", e.target.value);
-						}}} bg='blackAlpha.200' variant={'filled'}  _focus={{bg: 'blackAlpha.300'}} focusBorderColor='transparent'>
-							{pools.map((pool: any, index: number) => (
-								<option value={index} key={pool.id}>
-									{pool.name}
-								</option>
-							))}
-						</Select>
+				<ModalOverlay bg="blackAlpha.800" backdropFilter="blur(30px)" />
+				<ModalContent bg={'transparent'} shadow={'none'} rounded={0} maxH={"800px"} mx={2}>
+					<Box className={`${VARIANT}-${colorMode}-containerBody`}>
+						<Box className={`${VARIANT}-${colorMode}-containerHeader`}>
+					<ModalHeader>Select a Token </ModalHeader>
+					<Box mx={5} mb={0}>
+						<Input bg={colorMode == 'dark' ? 'darkBg.600' : 'lightBg.600'} size={'lg'} _focus={{border: 0, outline: 0}} focusBorderColor='secondary.100' rounded={0} placeholder="Search by Token Name or Address" onChange={(e) => searchToken(e.target.value)} />
+					</Box>
+					<Box mx={5} mt={2} pb={4}>
+						<Flex align={'center'} >
+						{/* <Text mr={2} fontSize={'sm'} color={'whiteAlpha.700'}>Trending </Text> */}
+						<Box p={'3'} border={'1px'} borderColor={colorMode == 'dark' ? 'whiteAlpha.300' : 'blackAlpha.300'}>
+							<MdTrendingUp/>
 						</Box>
-						{/* <Divider/> */}
+						{POPULAR_TOKENS.map((token, index) => (
+							tokens.map((t: any, i: number) => (
+								t.symbol === token && (
+									<Box border={'1px'} borderColor={colorMode == 'dark' ? 'whiteAlpha.300' : 'blackAlpha.300'} bg={colorMode == 'dark' ? 'darkBg.200' : 'blackAlpha.100'} py={1} px={3} pr={4} _hover={{bg: 'blackAlpha.50'}} key={i}>
+										<Button size={'sm'} fontWeight={'normal'} variant={'unstyled'} onClick={() => selectToken(i)}>
+											<Flex align={'center'}>
+											<Image src={`/icons/${t.symbol}.svg`} w={'22px'} alt="" />
+											<Text fontSize={'sm'} ml={2} color={colorMode == 'dark' ? 'white' : 'black'}>{t.symbol}</Text>
+											</Flex>
+										</Button>
+									</Box>
+								)
+							))
+						))}
+						</Flex>
+					</Box>
+
+					{ VARIANT == 'edgy' && <Divider borderColor={colorMode == 'dark' ? 'whiteAlpha.400' : 'blackAlpha.400'} /> }
+
 					<ModalCloseButton rounded={'full'} mt={1} />
-					<ModalBody bgColor="whiteAlpha.400">
+
+					</Box>
+					<ModalBody bg={colorMode == 'dark' ? 'darkBg.600' : 'lightBg.600'} maxH={'55vh'}>
 
 						{/* Token List */}
 						<Box mx={-6} mt={-2}>
-						{pools[tradingPool].synths.map(
-							(_synth: any, tokenIndex: number) => (
+						{searchedTokens.map(
+							(token: any, tokenIndex: number) => (
 								<Box key={tokenIndex}>
-								<Divider/>
+								{tokenIndex > 0 && <Divider borderColor={colorMode == 'dark' ? 'whiteAlpha.400' : 'blackAlpha.400'} /> }
 								<Flex
-									
 									justify="space-between"
 									align={"center"}
 									py={3}
 									px={6}
 									_hover={{
-										bg: "blackAlpha.50",
+										bg: "bg.400",
 										cursor: "pointer",
 									}}
 									onClick={() =>
 										selectToken(
-											tokenIndex
+											token.tokenIndex
 										)
 									}
 								>
-									
 									<Box
 										borderColor={"gray.700"}
 									>
@@ -142,17 +166,26 @@ function TokenSelector({
 											<Image
 												src={
 													"/icons/" +
-													_synth.token.symbol +
+													token.symbol +
 													".svg"
 												}
 												height={'40px'}
-												alt={_synth.token.symbol}
+												alt={''}
 											/>
 
 											<Box>
+												<Flex gap={1} align={'center'}>
 												<Text>
-													{_synth.token.symbol}
+													{token.symbol}
 												</Text>
+												{whitelistedTokens.includes(token.id) && (
+													<Tooltip label={'Verified'}>
+														<Box color="green.400">
+														<MdVerified />
+														</Box>
+													</Tooltip>
+												)}
+												</Flex>
 
 												<Text
 													color={
@@ -160,44 +193,33 @@ function TokenSelector({
 													}
 													fontSize={"sm"}
 												>
-													{_synth.token.name.split(" ").slice(1, -2).join(" ")}
+													{token.name}
 												</Text>
 											</Box>
 										</Flex>
 									</Box>
 
-									<Box
+									{isConnected && <Box
 										borderColor={"gray.700"}
-										px={2}
+										pl={2}
 										textAlign="right"
 									>
 										<Text fontSize={'xs'} color={"gray.500"}>Balance</Text>
-										<Text
-											fontSize={"md"}
-										>
-											{_synth.walletBalance
-												? tokenFormatter.format(
-														_synth.walletBalance /
-															10 ** 18
-													)
-												: "-"}{" "}
+										<Text fontSize={"md"}>
+											{tokenFormatter.format((walletBalances[token.id] ?? 0) / 10 ** (token.decimals ?? 18))}
 										</Text>
-									</Box>
+									</Box>}
 								</Flex>
 								</Box>
 							)
 						)}
 						</Box>
 					</ModalBody>
-					{/* <Flex rounded={16} bg='gray.700' color={'gray.400'} align={'center'} px={6} gap={2} my={2}>
-						<InfoOutlineIcon width={3}/>
-						<Text fontSize={'xs'}>Atomic (or) Cross-pool asset swaps are not yet supported</Text>
-					</Flex> */}
-					<Flex roundedBottom={16} py={1} justify='space-between' px={4} fontSize='sm' >
-						<Text>{pools[tradingPool].synths.length} Tokens</Text>
-						<Text>SyntheX</Text>
-						
+					<Flex className={`${VARIANT}-${colorMode}-containerFooter`} roundedBottom={16} py={1} justify='space-between' px={4} fontSize='sm' >
+						<Text>{tokens.length} Tokens</Text>
+						<Text>{process.env.NEXT_PUBLIC_TOKEN_SYMBOL} Token List</Text>
 					</Flex>
+					</Box>
 				</ModalContent>
 			</Modal>
 		</>

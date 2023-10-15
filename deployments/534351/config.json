@@ -1,0 +1,143 @@
+{
+  "name": "synthex",
+  "version": "0.125.0",
+  "latest": "0.125.0",
+  "l0Admin": "0x0eD6a1F7a99E8Bc1c752E4515f7AB3aFe20BdBF7",
+  "l1Admin": "0x0eD6a1F7a99E8Bc1c752E4515f7AB3aFe20BdBF7",
+  "l2Admin": "0x0eD6a1F7a99E8Bc1c752E4515f7AB3aFe20BdBF7",
+  "rewardAlloc": "10000000",
+  "weth": "0x2c1b868d6596a18e32e61b901e4060c872647b6c",
+  "esSYX": {
+    "initialRewardsDuration": "30",
+    "reward": "6000",
+    "lockPeriod": "15552000",
+    "unlockPeriod": "4838400",
+    "percReleaseAtUnlock": "500",
+    "quota": "1000000"
+  },
+  "pools": [
+    {
+      "name": "Crypto Pool",
+      "symbol": "C",
+      "rewardSpeed": "100000000000000000",
+      "issuerAlloc": "0",
+      "pyth": "0xA2aa501b19aff244D90cc15a4Cf739D2725B5729",
+      "collaterals": [
+        {
+          "name": "Ethereum",
+          "symbol": "ETH",
+          "decimals": 18,
+          "address": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+          "pyth": "0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6",
+          "params": {
+            "cap": "100000000000000000000000000",
+            "baseLTV": "7000",
+            "liqThreshold": "8500",
+            "liqBonus": "10200"
+          }
+        },
+        {
+          "name": "Tether USD",
+          "symbol": "USDT",
+          "decimals": 8,
+          "mintAmount": "100000000000",
+          "pyth": "0x1fc18861232290221461220bd4e2acd1dcdfbc89c84092c93c18bdc7756c1588",
+          "params": {
+            "cap": "10000000000000000000",
+            "baseLTV": "7000",
+            "liqThreshold": "8500",
+            "liqBonus": "10200"
+          }
+        },
+        {
+          "name": "USD Coin",
+          "symbol": "USDC",
+          "decimals": 6,
+          "mintAmount": "1000000000",
+          "pyth": "0x41f3625971ca2ed2263e78573fe5ce23e13d2558ed3f2e47ab0f84fb9e7ae722",
+          "params": {
+            "cap": "10000000000000000000",
+            "baseLTV": "7000",
+            "liqThreshold": "8500",
+            "liqBonus": "10200"
+          }
+        }
+      ],
+      "synths": [
+        {
+          "name": "Bitcoin",
+          "symbol": "BTC",
+          "pyth": "0xf9c0172ba10dfa4d19088d94f5bf61d3b54d5bd7483a322a982e1373ee8ea31b",
+          "mintFee": "10",
+          "burnFee": "15"
+        },
+        {
+          "name": "Ethereum",
+          "symbol": "ETH",
+          "pyth": "0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6",
+          "mintFee": "10",
+          "burnFee": "15"
+        },
+        {
+          "name": "US Dollar",
+          "symbol": "USD",
+          "price": "1",
+          "isBaseCurrency": true,
+          "isFeeToken": true,
+          "mintFee": "10",
+          "burnFee": "15"
+        },
+        {
+          "name": "Ripple",
+          "symbol": "XRP",
+          "pyth": "0xbfaf7739cb6fe3e1c57a0ac08e1d931e9e6062d476fa57804e165ab572b5b621",
+          "mintFee": "10",
+          "burnFee": "15"
+        },
+        {
+          "name": "Binance Coin",
+          "symbol": "BNB",
+          "pyth": "0xecf553770d9b10965f8fb64771e93f5690a182edc32be4a3236e0caaa6e0581a",
+          "mintFee": "10",
+          "burnFee": "15"
+        },
+        {
+          "name": "Solana",
+          "symbol": "SOL",
+          "pyth": "0xfe650f0367d4a7ef9815a593ea15d36593f0643aaaf0149bb04be67ab851decd",
+          "mintFee": "10",
+          "burnFee": "15"
+        },
+        {
+          "name": "Dogecoin",
+          "symbol": "DOGE",
+          "pyth": "0x31775e1d6897129e8a84eeba975778fb50015b88039e9bc140bbd839694ac0ae",
+          "mintFee": "10",
+          "burnFee": "15"
+        },
+        {
+          "name": "Litecoin",
+          "symbol": "LTC",
+          "pyth": "0x997e0bf451cb36b4aea096e6b5c254d700922211dd933d9d17c467f0d6f34321",
+          "mintFee": "10",
+          "burnFee": "15"
+        },
+        {
+          "name": "Cardano",
+          "symbol": "ADA",
+          "pyth": "0x73dc009953c83c944690037ea477df627657f45c14f16ad3a61089c5a3f9f4f2",
+          "mintFee": "10",
+          "burnFee": "15"
+        },
+        {
+          "name": "Polkadot",
+          "symbol": "DOT",
+          "pyth": "0x36032e522b810babd8e3148e9f0d588af9e95e93b97ffb58566b837fdbd31f7f",
+          "mintFee": "10",
+          "burnFee": "15"
+        }
+      ]
+    }
+  ],
+  "dummyTokens": []
+}

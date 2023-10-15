@@ -1,0 +1,159 @@
+/* Light Mode */
+.rounded-light-navBar{
+    background: #ffffff;
+    border-radius: 28px;
+    padding: 0px 16px;
+    margin-top: 100px;
+}
+
+.rounded-light-containerBody {
+	background: #ededed;
+    border-radius: 16px;
+}
+
+.rounded-light-halfContainerBody {
+    background: #ededed;
+    border-radius: 16px;
+}
+
+.rounded-light-halfContainerBody2 {
+	background: #ffffff;
+    border-radius: 16px;
+}
+
+.rounded-light-halfButton2 {
+	background: #ededed;
+    border-radius: 16px;
+}
+
+.rounded-light-containerBody2 {
+	background: #e8e8e8;
+    border-radius: 16px;
+}
+
+.rounded-light-containerHeader {
+	background: #ffffff;
+    border-radius: 16px;
+}
+
+.rounded-light-containerFooter {
+	background: #ffffff;
+    border-radius: 16px;
+}
+
+.rounded-light-containerFooter2 {
+	background: #ffffff;
+    border-radius: 16px;
+}
+
+.rounded-light-primaryButton {
+	background: #f64e00;
+    border-radius: 12px;
+    color: white;
+}
+
+.rounded-light-primaryButton:hover {
+    background: #b34f2b;
+    border-radius: 12px;
+}
+
+.rounded-light-disabledPrimaryButton {
+    background: rgb(164, 100, 82);
+    border-radius: 12px;
+}
+
+.rounded-light-secondaryButton {
+    background: #ff9400;
+    border-radius: 12px;
+}
+
+.rounded-light-secondaryButton:hover {
+    background: #cd832e;
+    border-radius: 12px;
+}
+
+.rounded-light-disabledSecondaryButton {
+    background: #9e6413;
+    border-radius: 12px;
+}
+
+.rounded-light-outlinedButton {
+    background: #ffffff;
+    border-radius: 12px;
+}
+
+/* hover for outlined button */
+.rounded-light-outlinedButton:hover {
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 12px;
+}
+
+.rounded-light-outlinedBox {
+    background: #ffffff;
+    border-radius: 12px;
+}
+
+.rounded-light-iconButton {
+    background: #e8e8e8;
+    border-radius: 12px;
+}
+
+.rounded-light-iconButton:hover {
+    background: rgba(52, 59, 72, 0.5);
+    border-radius: 12px;
+}
+
+.rounded-light-errorButton {
+    background: rgb(246, 45, 0);
+    border-radius: 12px;
+}
+
+.rounded-light-selectButton {
+    background: #dddddd;
+    border-radius: 12px;
+}
+
+.rounded-light-selectButton:hover {
+    background: #d4d4d4;
+    border-radius: 12px;
+}
+
+.rounded-light-primaryTabLeft {
+	background: white;
+	border-radius: 80px 0 0 80px;
+}
+
+.rounded-light-primaryTabLeftSelected {
+	background: #d4d4d4;
+	border-radius: 80px 0 0 80px;
+}
+
+.rounded-light-primaryTabRight {
+	background: white;
+	border-radius: 0 80px 80px 0;
+}
+
+.rounded-light-primaryTabRightSelected {
+	background: #d4d4d4;
+	border-radius: 0 80px 80px 0;
+}
+
+.rounded-light-secondaryTabLeft {
+	background: white;
+	border-radius: 80px 0 0 80px;
+}
+
+.rounded-light-secondaryTabLeftSelected {
+	background: #d4d4d4;
+	border-radius: 80px 0 0 80px;
+}
+
+.rounded-light-secondaryTabRight {
+	background: white;
+	border-radius: 0 80px 80px 0;
+}
+
+.rounded-light-secondaryTabRightSelected {
+	background: #d4d4d4;
+	border-radius: 0 80px 80px 0;
+}

@@ -6,12 +6,9 @@ import {
 	ModalOverlay,
 	ModalContent,
 	ModalHeader,
-	ModalFooter,
 	ModalBody,
 	ModalCloseButton,
 	Tr,
-	Th,
-	Td,
 	Flex,
 	Image,
 	Text,
@@ -25,8 +22,8 @@ import {
 	Link,
 	Divider,
 	Tooltip,
+	useColorMode,
 } from "@chakra-ui/react";
-import { AppDataContext } from "../../context/AppDataProvider";
 import {
 	dollarFormatter,
 	tokenFormatter
@@ -37,17 +34,27 @@ import Burn from "./burn";
 import Big from "big.js";
 import { useAccount } from "wagmi";
 import TdBox from "../../dashboard/TdBox";
+import { useBalanceData } from "../../context/BalanceProvider";
+import { usePriceData } from "../../context/PriceContext";
+import { useSyntheticsData } from "../../context/SyntheticsPosition";
+import { formatInput, parseInput } from "../../utils/number";
+import TokenInfo from "../_utils/TokenInfo";
+import { VARIANT } from "../../../styles/theme";
 
 export default function Debt({ synth, index }: any) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
-
-	const { pools, tradingPool, account } = useContext(AppDataContext);
 
 	const [amount, setAmount] = React.useState("");
 	const [amountNumber, setAmountNumber] = useState(0);
 	const [tabSelected, setTabSelected] = useState(0);
 
 	const { address } = useAccount();
+
+	const { walletBalances } = useBalanceData();
+
+	const { prices } = usePriceData();
+	const { position } = useSyntheticsData();
+	const pos = position(0);
 
 	const _onClose = () => {
 		setAmount("");
@@ -56,8 +63,7 @@ export default function Debt({ synth, index }: any) {
 	};
 
 	const _setAmount = (e: string) => {
-		if(Number(e) > 0 && Number(e) < 0.000001) e = '0';
-		if(amount == '0' && Number(e) > 0) e = e.replace(/^0+/, '');
+		e = parseInput(e);
 		setAmount(e);
 		setAmountNumber(isNaN(Number(e)) ? 0 : Number(e));
 	};
@@ -68,10 +74,22 @@ export default function Debt({ synth, index }: any) {
 
 	const max = () => {
 		if(!address) return '0';
+		if(!prices[synth.token.id] || prices[synth.token.id] == 0) return '0';
 		if (tabSelected == 0) {
-			return (Big(pools[tradingPool].adjustedCollateral).sub(pools[tradingPool].userDebt).div(synth.priceUSD).gt(0) ? Big(pools[tradingPool].adjustedCollateral).sub(pools[tradingPool].userDebt).div(synth.priceUSD) : 0).toString();
+			return (
+				Big(pos.adjustedCollateral)
+					.sub(pos.debt)
+					.div(prices[synth.token.id] ?? 0)
+					.gt(0)
+					? Big(pos.adjustedCollateral)
+							.sub(pos.debt)
+							.div(prices[synth.token.id] ?? 0)
+					: 0
+			).toString();
 		} else {
-			return (Big(pools[tradingPool].userDebt).div(synth.priceUSD).gt(Big(synth.walletBalance ?? 0).div(10 ** 18)) ? Big(synth.walletBalance ?? 0).div(10 ** 18) : Big(pools[tradingPool].userDebt).div(synth.priceUSD)).toString()
+			const v1 = Big(pos.debt ?? 0).div(prices[synth.token.id] ?? 0);
+			const v2 = Big(walletBalances[synth.token.id] ?? 0).div(10 ** 18);
+			return (v1.gt(v2) ? v2 : v1).toFixed(18);
 		}
 	};
 
@@ -84,74 +102,52 @@ export default function Debt({ synth, index }: any) {
                 address: synth.token.id, // The address that the token is at.
                 symbol: synth.token.symbol, // A ticker symbol or shorthand, up to 5 chars.
                 decimals: synth.token.decimals, // The number of decimals in the token
-                image: 'https://app.synthex.finance/icons/'+synth.token.symbol+'.svg', // A string url of the token logo
+                image: process.env.NEXT_PUBLIC_VERCEL_URL + '/icons/'+synth.token.symbol+'.svg', // A string url of the token logo
               },
             }
         });
     }
+
+	const { colorMode } = useColorMode();
 
 	return (
 		<>
 			<Tr
 				cursor="pointer"
 				onClick={onOpen}
-				// borderLeft='2px' borderColor='transparent' 
-				_hover={{ bg: 'blackAlpha.100' }}
+				_hover={{ bg: colorMode == 'dark' ? "darkBg.400" : "whiteAlpha.600" }}
 			>
 				<TdBox isFirst={index == 0} alignBox='left'>
-					<Flex gap={3} ml={'-2px'} textAlign='left'>
-						<Image
-							src={`/icons/${synth.token.symbol}.svg`}
-							width="38px"
-							alt=""
-						/>
-						<Box>
-							<Text>
-								{synth.token.name
-									.split(" ")
-									.slice(1, -2)
-									.join(" ")}
-							</Text>
-							<Flex color="blackAlpha.500" fontSize={"sm"} gap={1}>
-								<Text>
-									{synth.token.symbol} -{" "}
-									{tokenFormatter.format(
-										Big(synth.walletBalance ?? 0)
-											.div(10 ** synth.token.decimals)
-											.toNumber()
-									)}{" "}
-									in wallet
-								</Text>
-							</Flex>
-						</Box>
-					</Flex>
+					<TokenInfo token={synth.token} color={colorMode == 'dark' ? "secondary.200" : "secondary.600"} />
 				</TdBox>
 				<TdBox isFirst={index == 0} alignBox='center'>
-					$ {tokenFormatter.format(synth.priceUSD)}
+					$ {tokenFormatter.format(prices[synth.token.id] ?? 0)}
 				</TdBox>
 				<TdBox isFirst={index == 0} alignBox='center'>
+					
 					{dollarFormatter.format(
-						Big(synth.synthDayData[0]?.dailyMinted ?? 0).add(synth.synthDayData[0]?.dailyBurned ?? 0)
-							.mul(synth.priceUSD)
+						Number(synth.synthDayData?.[0]?.dayId ?? 0) == Math.floor(Date.now() / (1000 * 3600 * 24)) ? Big(synth.synthDayData?.[0]?.dailyMinted ?? 0).add(synth.synthDayData?.[0]?.dailyBurned ?? 0)
+							.mul(prices[synth.token.id] ?? 0)
                             .div(10**18)
-							.toNumber()
+							.toNumber() : 0
 					)}
 				</TdBox>
 				<TdBox isNumeric isFirst={index == 0} alignBox='right'>
-					<Text>
+					<Text color={colorMode == 'dark' ? "secondary.200" : "secondary.600"}>
 					{dollarFormatter.format(
 						Big(synth.totalSupply)
-						.mul(synth.priceUSD)
+						.mul(prices[synth.token.id] ?? 0)
 						.div(10**18)
 						.toNumber()
 						)}
-						</Text>
+					</Text>
 				</TdBox>
 			</Tr>
 
 			<Modal isCentered isOpen={isOpen} onClose={_onClose}>
-				<ModalOverlay bg="blackAlpha.600" backdropFilter="blur(30px)" />
-				<ModalContent width={"30rem"} bgColor="whiteAlpha.700" rounded={8} border='2px' mx={2} borderColor={'whiteAlpha.100'}>
+				<ModalOverlay bg="blackAlpha.400" backdropFilter="blur(30px)" />
+				<ModalContent width={"30rem"} bgColor="transparent" shadow={'none'} rounded={0} mx={2}>
+					<Box className={`${VARIANT}-${colorMode}-containerBody2`}>
 					<ModalCloseButton rounded={"full"} mt={1} />
 					<ModalHeader>
 						<Flex
@@ -163,7 +159,7 @@ export default function Debt({ synth, index }: any) {
 							<Image
 								src={`/icons/${synth.token.symbol}.svg`}
 								alt=""
-								width={"38px"}
+								width={"32px"}
 							/>
 
 							<Text>{synth.token.name.split(" ").slice(1, -2).join(" ")}</Text>
@@ -185,98 +181,105 @@ export default function Debt({ synth, index }: any) {
 						</Flex>
 					</ModalHeader>
 					<ModalBody m={0} p={0}>
-						<Divider />
-						<Box mb={6} mt={4} px={8}>
-                            <Flex justify={"center"} mb={2}>
-                                <Flex
-                                    justify={"center"}
-                                    align="center"
-                                    gap={0.5}
-                                    bg="gray.700"
-                                    rounded="full"
-                                ></Flex>
-                            </Flex>
-                            <InputGroup
-                                mt={5}
-                                variant={"unstyled"}
-                                display="flex"
-                                placeholder="Enter amount"
-                            >
-                                <NumberInput
-                                    w={"100%"}
-                                    value={amount}
-                                    onChange={_setAmount}
-                                    min={0}
-                                    step={0.01}
-                                    display="flex"
-                                    alignItems="center"
-                                    justifyContent={"center"}
-                                >
-                                    <Box ml={10}>
-                                        <NumberInputField
-                                            textAlign={"center"}
-                                            pr={0}
-                                            fontSize={"5xl"}
-                                            placeholder="0"
-                                        />
 
-                                        <Text
-                                            fontSize="sm"
-                                            textAlign={"center"}
-                                            color={"blackAlpha.600"}
-                                        >
-                                            {dollarFormatter.format(
-                                                (synth.priceUSD *
-                                                    amountNumber)
-                                            )}
-                                        </Text>
-                                    </Box>
-									<Box>
-									<Button
-                                        variant={"unstyled"}
-                                        fontSize="sm"
-                                        fontWeight={"bold"}
-                                        onClick={() => _setAmount(Big(max()).div(2).toString())}
-										py={-2}
-                                    >
-                                        50%
-                                    </Button>
-                                    <Button
-                                        variant={"unstyled"}
-                                        fontSize="sm"
-                                        fontWeight={"bold"}
-                                        onClick={() => _setAmount(max())}
-                                    >
-                                        MAX
-                                    </Button>
-									</Box>
+						{<>
+							<Divider borderColor={colorMode == 'dark' ? 'whiteAlpha.400' : 'blackAlpha.200'}/>
+							<Box bg={colorMode == 'dark' ? 'darkBg.600' : 'lightBg.600'} pb={12} pt={6} px={8}>
+								<Flex justify={"center"} mb={2}>
+									<Flex
+										justify={"center"}
+										align="center"
+										gap={0.5}
+										bg="gray.700"
+										rounded="full"
+									></Flex>
+								</Flex>
+								<InputGroup
+									mt={5}
+									variant={"unstyled"}
+									display="flex"
+									placeholder="Enter amount"
+								>
+									<NumberInput
+										w={"100%"}
+										value={formatInput(amount)}
+										onChange={_setAmount}
+										min={0}
+										step={0.01}
+										display="flex"
+										alignItems="center"
+										justifyContent={"center"}
+									>
+										<Box ml={10}>
+											<NumberInputField
+												textAlign={"center"}
+												pr={0}
+												fontSize={"5xl"}
+												placeholder="0"
+											/>
 
-                                </NumberInput>
-                            </InputGroup>
-						</Box>
+											<Text
+												fontSize="sm"
+												textAlign={"center"}
+												color={colorMode == 'dark' ? "whiteAlpha.600" : "blackAlpha.600"}
+											>
+												{dollarFormatter.format(
+													((prices[synth.token.id] ?? 0) *
+														amountNumber)
+												)}
+											</Text>
+										</Box>
+										<Box>
+										<Button
+											variant={"unstyled"}
+											fontSize="sm"
+											fontWeight={"bold"}
+											onClick={() => _setAmount(Big(max()).div(2).toFixed(18))}
+											py={-2}
+										>
+											50%
+										</Button>
+										<Button
+											variant={"unstyled"}
+											fontSize="sm"
+											fontWeight={"bold"}
+											onClick={() => _setAmount(Big(max()).toFixed(18))}
+										>
+											MAX
+										</Button>
+										</Box>
 
-						<Tabs onChange={selectTab} index={tabSelected}>
+									</NumberInput>
+								</InputGroup>
+							</Box>
+							{VARIANT == 'edgy' && <Divider borderColor={colorMode == 'dark' ? 'whiteAlpha.400' : 'blackAlpha.400'} /> }
+							<Box className={`${VARIANT}-${colorMode}-containerFooter`}>
+						<Tabs variant={'enclosed'} onChange={selectTab} index={tabSelected}>
 							<TabList>
 								<Tab
 									w={"50%"}
+									borderX={0}
+									borderColor={colorMode == 'dark' ? 'whiteAlpha.50' : 'blackAlpha.200'}
 									_selected={{
 										color: "primary.400",
-										borderColor: "primary.400",
 									}}
+									rounded={0}
 								>
 									Mint
 								</Tab>
+								<Divider borderColor={colorMode == 'dark' ? 'whiteAlpha.400' : 'blackAlpha.300'} orientation="vertical" h={'44px'} />
 								<Tab
 									w={"50%"}
+									borderX={0}
+									borderColor={colorMode == 'dark' ? 'whiteAlpha.50' : 'blackAlpha.200'}
 									_selected={{
-										color: "secondary.400",
-										borderColor: "secondary.400",
+										color: "primary.400",
 									}}
+									rounded={0}
 								>
 									Burn
 								</Tab>
 							</TabList>
-
 							<TabPanels>
 								<TabPanel m={0} p={0}>
 									<Mint
@@ -284,6 +287,7 @@ export default function Debt({ synth, index }: any) {
 										amount={amount}
 										amountNumber={amountNumber}
 										setAmount={_setAmount}
+										onClose={_onClose}
 									/>
 								</TabPanel>
 								<TabPanel m={0} p={0}>
@@ -292,11 +296,16 @@ export default function Debt({ synth, index }: any) {
 										amount={amount}
 										amountNumber={amountNumber}
 										setAmount={_setAmount}
+										onClose={_onClose}
 									/>
 								</TabPanel>
 							</TabPanels>
 						</Tabs>
+							</Box>
+						</>}
+
 					</ModalBody>
+					</Box>
 				</ModalContent>
 			</Modal>
 		</>

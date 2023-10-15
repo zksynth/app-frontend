@@ -12,7 +12,7 @@ export default function NavLocalLink ({
 }: any) {
 	const router = useRouter();
 	return (
-		<Link href={{ pathname: path, query: router.query }} >
+		<Link href={{ pathname: path }} >
 			<Box>
 				<NavLink
 					path={path}

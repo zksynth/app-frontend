@@ -1,416 +1,187 @@
-import {
-	Box,
-	Flex,
-	Image,
-	Text,
-	Heading,
-	Progress,
-	Tooltip,
-	Divider,
-	Link,
-	Tag,
-} from "@chakra-ui/react";
-import React, { useContext } from "react";
-import { AppDataContext } from "../components/context/AppDataProvider";
-import CollateralTable from "../components/dashboard/CollateralTable";
-import PoolSelector from "../components/dashboard/PoolSelector";
-import { dollarFormatter, ESYX_PRICE } from "../src/const";
-import IssuanceTable from "../components/dashboard/IssuanceTable";
-import { motion } from "framer-motion";
-import Head from "next/head";
-import { InfoOutlineIcon } from "@chakra-ui/icons";
+import { Box, Divider, Flex, Heading, Image, Text, Tooltip, useColorMode } from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
+import { BsArrowRight, BsArrowRightShort, BsStars } from "react-icons/bs";
+import { ESYX_PRICE, POOL_COLORS, dollarFormatter, tokenFormatter } from "../src/const";
+import ThBox from "../components/dashboard/ThBox";
+import { HEADING_FONT, VARIANT } from "../styles/theme";
+import TdBox from "../components/dashboard/TdBox";
+import { useRouter } from "next/router";
+import { useAppData } from "../components/context/AppDataProvider";
 import Big from "big.js";
-import { TbReportMoney } from "react-icons/tb";
-import { IoMdCash, IoMdAnalytics } from "react-icons/io";
-
+import { usePriceData } from "../components/context/PriceContext";
+import { Status } from "../components/utils/status";
 import APRInfo from "../components/infos/APRInfo";
-import Info from "../components/infos/Info";
-import Highlighter from "../components/utils/highlighter";
-import ForexPaused from "../components/dashboard/ForexPaused";
-import Paused from "../components/dashboard/Paused";
-import IconBox from "../components/dashboard/IconBox";
+import Skeleton1 from "../components/others/Skeleton1";
+import { useSyntheticsData } from "../components/context/SyntheticsPosition";
+import Head from "next/head";
 
-const poolBoxStyle = {
-	bg: "whiteAlpha.500",
-	// bgGradient={
-	// 	"linear(to-b, rgba(5, 104, 204, 0.2), rgba(5, 119, 230, 0.1))"
-	// }
-	rounded: 12,
-	h: "100%",
-	border: "2px solid",
-	borderColor: 'whiteAlpha.300',
-	shadow: "xl"
-}
+export default function Synth() {
+	const { pools: allPools } = useAppData();
+	const { colorMode } = useColorMode();
+    const router = useRouter();
+    const {prices, status} = usePriceData();
+    const {position} = useSyntheticsData();
 
-export default function TempPage() {
-	const { pools, tradingPool, account } = useContext(AppDataContext);
+    const [pools, setPools] = useState<any>([]);
 
-	const [hydrated, setHydrated] = React.useState(false);
+    useEffect(() => {
+        if(pools.length > 0) return;
+        if(!allPools[0]) return;
+        // if(status != Status.SUCCESS) return;
+        // clone allPools
+        let allPoolsClone = JSON.parse(JSON.stringify(allPools));
+        // Set pool total debt
+        for(let i in allPoolsClone){
+            console.log(allPoolsClone);
+            // Total Debt
+            allPoolsClone[i].totalDebt = Big(0);
+            for(let j in allPoolsClone[i].synths){
+                allPoolsClone[i].totalDebt = allPoolsClone[i].totalDebt.plus(Big(allPoolsClone[i].synths[j].totalSupply).div(10**18).mul(prices[allPoolsClone[i].synths[j].token.id] ?? 0));
+            }
+            allPoolsClone[i].totalDebt = allPoolsClone[i].totalDebt.toFixed(2);
+            // Total Collateral
+            allPoolsClone[i].totalCollateral = Big(0);
+            for(let j in allPoolsClone[i].collaterals){
+                allPoolsClone[i].totalCollateral = allPoolsClone[i].totalCollateral.plus(Big(allPoolsClone[i].collaterals[j].totalDeposits).div(10**allPoolsClone[i].collaterals[j].token.decimals).mul(prices[allPoolsClone[i].collaterals[j].token.id] ?? 0));
+            }
+            allPoolsClone[i].totalCollateral = allPoolsClone[i].totalCollateral.toFixed(2);
+            // Debt Burn APR
+            let averageDailyBurn = Big(0);
+            for(let k = 0; k < allPoolsClone[i].synths.length; k++) {
+                for(let l = 0; l <allPoolsClone[i].synths[k].synthDayData.length; l++) {
+                    let synthDayData = allPoolsClone[i].synths[k].synthDayData[l];
+                    // synthDayData.dailyMinted / 1e18 * pool.synths[k].mintFee / 10000 * pool.synths[k].priceUSD
+                    let totalFee = Big(synthDayData.dailyMinted).div(1e18).mul(allPoolsClone[i].synths[k].mintFee).div(10000).mul(prices[allPoolsClone[i].synths[k].token.id] ?? 0);
+                    // add burn fee
+                    totalFee = totalFee.plus(Big(synthDayData.dailyBurned).div(1e18).mul(allPoolsClone[i].synths[k].burnFee).div(10000).mul(prices[allPoolsClone[i].synths[k].token.id] ?? 0));
 
-	React.useEffect(() => {
-		setHydrated(true);
-	}, []);
+                    // add to average
+                    averageDailyBurn = averageDailyBurn.plus(
+                        totalFee.mul(allPoolsClone[i].issuerAlloc).div(10000)
+                    );
+                }
+            }
+            if(Number(allPoolsClone[i].totalDebt) == 0) {
+                allPoolsClone[i].debtBurnApr = 0;
+                allPoolsClone[i].rewardAPY = 0;
+                continue;
+            }
+            allPoolsClone[i].debtBurnApr = averageDailyBurn
+                .div(7)
+                .mul(365)
+                .div(allPoolsClone[i].totalDebt)
+                .mul(100)
+                .toFixed(2);
+            allPoolsClone[i].rewardAPY = Big(allPoolsClone[i]?.rewardSpeeds[0] ?? 0)
+                .div(1e18)
+                .mul(365 * 24 * 60 * 60 * ESYX_PRICE)
+                .div(allPoolsClone[i].totalDebt ?? 0)
+                .mul(100)
+                .toFixed(2);
+            console.log(allPoolsClone);
 
-	if (!hydrated) return <></>;
+        }
+        let sortedPools = allPoolsClone.sort((a: any, b: any) => {
+            return Big(b.totalDebt).minus(a.totalDebt);
+        });
+        setPools(sortedPools);
+    }, [allPools, status, prices, pools.length]);
 
-	const debtLimit = () =>
-		(100 * pools[tradingPool]?.userDebt) /
-		pools[tradingPool]?.userCollateral;
 
-	const availableToIssue = () => {
-		if(!pools[tradingPool]?.adjustedCollateral) return 0;
-		if(pools[tradingPool].adjustedCollateral - pools[tradingPool]?.userDebt < 0) return 0;
-		return pools[tradingPool].adjustedCollateral - pools[tradingPool].userDebt
-	}
+	return (<>
+        <Head>
+            <title>{process.env.NEXT_PUBLIC_TOKEN_SYMBOL} | Synthetics</title>
+            <link rel="icon" type="image/x-icon" href={`/${process.env.NEXT_PUBLIC_TOKEN_SYMBOL}.svg`}></link>
+        </Head>
+		<Box mt={"80px"}>
+            <Flex flexDir={'column'} align={'start'} gap={6} mb={10}>
+            <Heading fontWeight={HEADING_FONT == 'Chakra Petch' ? 'bold' : 'semibold'} fontSize={'32px'}>
+                Synthetic Pools
+            </Heading>
+            <Text color={colorMode == 'dark' ? 'whiteAlpha.600' : 'blackAlpha.600'}>
+                Enabling the creation of trustless synthetic assets
+            </Text>
+            </Flex>
+            {pools.length > 0? 
+                pools.map((pool: any, index: number) => (
+			    <Box maxW={'400px'} key={index} className={`${VARIANT}-${colorMode}-halfButton2`} cursor={'pointer'} onClick={() => router.push('/'+index)}>
+                    <Box className={`${VARIANT}-${colorMode}-halfContainerBody2`} >
+                        <Flex py={4} px={5} align={'center'} justify={'space-between'} gap={4} >
+                            <Heading fontSize={'22px'} fontWeight={'bold'}>{pool.name}</Heading>
+                            <Flex>
+                                {pool.synths.slice(0, 5).map((synth: any, index: number) => (<Box key={index} ml={-3} border={'1.5px white solid'} rounded={'full'}>
+                                    <Tooltip label={synth.token.symbol} placement={'top'}>
+                                        <Image src={`/icons/${synth.token.symbol}.svg`} w={'32px'} key={index} />
+                                    </Tooltip>
+                                </Box>))}
+                            </Flex>
+                        </Flex>
+                    </Box>
+                        <Box pt={4} >
+                        <Flex mx={4} >
+                            <Box>
+                                <Text fontSize={'sm'} color={colorMode == 'dark' ? 'whiteAlpha.600' : 'blackAlpha.600'}>TVL</Text>
+                                <Flex gap={1.5}>
+                                <Text fontSize={'lg'}>{dollarFormatter.format(Number(pool.totalCollateral))}</Text>
+                                <Flex ml={1}>
+                                {pool.collaterals.map((collateral: any, index: number) => (<Box key={index} ml={-1}>
+                                    <Tooltip label={collateral.token.symbol} placement={'top'}>
+                                        <Image src={`/icons/${collateral.token.symbol}.svg`} w={'22px'} key={index} />
+                                    </Tooltip>
+                                </Box>))}
+                                </Flex>
+                                </Flex>
+                            </Box>
+                        </Flex>
+                        
+                        {/* <Box border={'1px white dotted'} borderColor={'whiteAlpha.400'} bg='darkBg.400' borderRadius={6} p={2} mx={4} mt={4}>
+                            <Flex justify={'space-between'}>
+                                <Flex gap={1} align={'end'}>
+                                    <Text fontSize={'sm'} color={'whiteAlpha.600'}>Your Collateral:</Text>
+                                    <Text>{dollarFormatter.format(Number(position(index).collateral))}</Text>
+                                </Flex>
 
-	const totalPortfolioValue = () => {
-		if (!pools[tradingPool]) return "0";
-		let total = Big(0);
-		for (let i = 0; i < pools[tradingPool]?.synths.length; i++) {
-			const synth = pools[tradingPool]?.synths[i];
-			total = total.add(
-				Big(synth.walletBalance ?? 0)
-					.div(1e18)
-					.mul(synth.priceUSD ?? 0)
-			);
-		}
-		return total.toFixed(2);
-	}
+                                <Flex gap={1} align={'end'}>
+                                    <Text fontSize={'sm'} color={'whiteAlpha.600'}>Debt:</Text>
+                                    <Text>{dollarFormatter.format(Number(position(index).debt))}</Text>
+                                </Flex>
 
-	return (
-		<>
-			<Head>
-				<title>ZKSynth | Dashboard</title>
-				<link rel="icon" type="image/x-icon" href="/veZS.png"></link>
-			</Head>
-				<Box w={'100%'}>
-				<Box
-					w='100%'
-					display={{ sm: "block", md: "flex" }}
-					pt="100px"
-					justifyContent={"space-between"}
-					alignContent={"center"}
-				>
-					<Flex flexDir={"column"} justify="center">
-						<Box mb={4}>
-							<PoolSelector />
-						</Box>
-						<motion.div
-							initial={{ opacity: 0, y: 0 }}
-							animate={{ opacity: 1, y: 0 }}
-							exit={{ opacity: 0, y: 15 }}
-							transition={{ duration: 0.25 }}
-							key={tradingPool}
-						>
-							<Flex
-								flexDir={{ sm: "column", md: "row" }}
-								gap={{ sm: 10, md: 12 }}
-								zIndex={1}
-							>
-								<Flex mt={4} gap={3} align="start">
-									<IconBox>
-										{/* <Image
-											h={"18px"}
-											src="/icon1.svg"
-											alt="icon1"
-											ml={0.5}
-										/> */}
-										<IoMdCash size={'22px'} />
-									</IconBox>
-
-									<Info
-										message={`
-											Sum of all your collateral deposited in USD
-										`}
-										title={"Total Collateral"}
-									>
-
-									<Box cursor={'help'}>
-										<Heading
-											size={"sm"}
-											color="blackAlpha.700"
-											mb={0.5}
-										>
-											Collateral
-										</Heading>
-										<Flex
-											fontWeight={"semibold"}
-											fontSize={"xl"}
-											gap={1}
-											color={"blackAlpha.800"}
-										>
-											<Text
-												fontWeight={"normal"}
-											>
-												$
-											</Text>
-											<Text>
-												{(
-													pools[tradingPool]
-														?.userCollateral ?? 0
-												).toFixed(2)}
-											</Text>
-										</Flex>
-									</Box>
-									</Info>
-								</Flex>
-
-								<Flex mt={4} gap={3} align="start">
-									<IconBox>
-										{/* <Image
-											h={"17px"}
-											src="/icon3.svg"
-											alt={"icon3"}
-										/> */}
-										<TbReportMoney size={'22px'}  />
-									</IconBox>
-
-									<Info
-										message={`When you issue synths, you are allocated a share of pool's total debt. As the pool's total value changes, your debt changes as well`}
-										title={"Debt is variable"}
-									>
-										<Box cursor={"help"}>
-											<Heading
-												mb={0.5}
-												size={"sm"}
-												color="blackAlpha.700"
-											>
-												Debt
-											</Heading>
-											<Flex gap={2} align="center">
-												<Flex
-													fontWeight={"semibold"}
-													fontSize={"xl"}
-													gap={1}
-													color={"blackAlpha.800"}
-												>
-													<Text fontWeight={"normal"}>
-														$
-													</Text>
-													<Text>
-														{(
-															pools[tradingPool]
-																?.userDebt ?? 0
-														).toFixed(2)}
-													</Text>
-												</Flex>
-											</Flex>
-										</Box>
-									</Info>
-								</Flex>
-
-								{Big(pools[tradingPool]?.userDebt ?? 0).gt(0) && <Flex mt={4} gap={3} align="start">
-									<IconBox>
-										{/* <Image
-											h={"20px"}
-											src="/icon2.svg"
-											alt={"icon2"}
-										/> */}
-										<IoMdAnalytics size={'20px'} />
-									</IconBox>
-
-									<Info
-										message={`
-										In order to make profit, you'd mint synthetics that move up relative to pool's total liquidity. So your debt will be lower to your synthetic holdings.
-										`}
-										title={"Profit and Loss"}
-									>
-										<Box cursor={"help"}>
-											<Heading
-												mb={0.5}
-												size={"sm"}
-												color="blackAlpha.700"
-											>
-												PnL
-											</Heading>
-											<Flex gap={2} align="center">
-												<Flex
-													fontWeight={"semibold"}
-													fontSize={"xl"}
-													gap={1}
-													color={Big(totalPortfolioValue()).gt(pools[tradingPool]?.userDebt ?? 0) ? 'green.400' : 'red.400'}
-												>
-													<Text
-														// color={"whiteAlpha.800"}
-														fontWeight={"normal"}
-													>
-														$
-													</Text>
-													<Text>
-														{Big(totalPortfolioValue()).sub(pools[tradingPool]?.userDebt).toFixed(2)} ({Big(totalPortfolioValue()).sub(pools[tradingPool]?.userDebt).mul(100).div(pools[tradingPool]?.userDebt).toFixed(2)}%)
-													</Text>
-												</Flex>
-											</Flex>
-										</Box>
-									</Info>
-								</Flex>}
-							</Flex>
-						</motion.div>
-					</Flex>
-					<motion.div
-						initial={{ opacity: 0, y: 0 }}
-						animate={{ opacity: 1, y: 0 }}
-						exit={{ opacity: 0, y: 15 }}
-						transition={{ duration: 0.25 }}
-						key={tradingPool}
-					>
-						<Box
-							textAlign={{ sm: "left", md: "right" }}
-							mt={{ sm: 16, md: 3 }}
-						>
-							<Info
-								message={`Your Debt Limit depends on your LTV %. Account would be liquidated if LTV is greater than your Collateral's Liquidation Threshold`}
-								title={"Loan to Value (LTV) Ratio"}
-							>
-								<Flex
-									justify={{ sm: "start", md: "end" }}
-									align="center"
-									gap={1}
-									cursor={"help"}
-								>
-									<Heading
-										size={"sm"}
-										mb={1}
-										color="blackAlpha.700"
-									>
-										Borrow Limit
-									</Heading>
-
-									<Box mb={2}>
-										<InfoOutlineIcon
-											color={"blackAlpha.500"}
-											h={3}
-										/>
-									</Box>
-								</Flex>
-							</Info>
-							<Text
-								fontWeight={"semibold"}
-								fontSize={"3xl"}
-								mb={2}
-								color={
-									pools[tradingPool]?.userCollateral > 0
-										? availableToIssue() > 1
-										? "green.400"
-										: "yellow.500"
-										: "primary.400"
-								}
-							>
-								{(pools[tradingPool]?.userCollateral > 0
-									? debtLimit()
-									: pools[tradingPool]?.userCollateral ?? 0
-								).toFixed(1)}{" "}
-								%
-							</Text>
-							<Box
-								my={2}
-								mt={4}
-								h={2}
-								width={"300px"}
-								rounded="full"
-								bg="blackAlpha.200"
-							>
-								<Box
-									h={2}
-									rounded="full"
-									bg={
-										availableToIssue() > 1
-												? "green.500"
-												: "yellow.500"
-									}
-									width={
-										(pools[tradingPool]?.userCollateral > 0
-											? debtLimit()
-											: "0") + "%"
-									}
-								></Box>
-							</Box>
-							<Info
-								message={`You can issue debt till you reach Collateral's Base LTV`}
-								title={"Borrow Capacity"}
-							>
-								<Flex
-									justify={{ sm: "start", md: "end" }}
-									align="center"
-									gap={1}
-									cursor={"help"}
-								>
-									<Text fontSize={"sm"} color="blackAlpha.700">
-										Available to Issue
-									</Text>
-									<Text
-										fontSize={"sm"}
-										mr={0.5}
-										fontWeight="medium"
-									>
-										{dollarFormatter.format(
-											availableToIssue()
-										)}
-									</Text>
-									<Box mb={1}>
-										<InfoOutlineIcon
-											color={"blackAlpha.600"}
-											h={3}
-										/>
-									</Box>
-								</Flex>
-							</Info>
-						</Box>
-					</motion.div>
-				</Box>
-
-				<Box pb={"100px"} mt={"75px"} w='100%'>
-					{!pools[tradingPool]?.paused ? (
-						<Flex
-							flexDir={{ sm: "column", md: "row" }}
-							align={"stretch"}
-							gap={8}
-							zIndex={1}
-						>
-							<Box
-								w={{ sm: "100%", md: "33%" }}
-								alignSelf="stretch"
-							>
-								<motion.div
-									initial={{ opacity: 0, y: 15 }}
-									animate={{ opacity: 1, y: 0 }}
-									exit={{ opacity: 0, y: 15 }}
-									transition={{ duration: 0.25 }}
-									key={tradingPool}
-									style={{
-										height: "100%",
-									}}
-								>
-									<Box
-										{...poolBoxStyle}
-									>
-										<CollateralTable />
-									</Box>
-								</motion.div>
-							</Box>
-							<Box w={{ sm: "100%", md: "67%" }}>
-								<motion.div
-									initial={{ opacity: 0, y: 15 }}
-									animate={{ opacity: 1, y: 0 }}
-									exit={{ opacity: 0, y: 15 }}
-									transition={{ duration: 0.25 }}
-									key={tradingPool + 2}
-								>
-									<Box
-										{...poolBoxStyle}
-									>
-										<IssuanceTable />
-									</Box>
-								</motion.div>
-							</Box>
-						</Flex>
-					) : tradingPool == 0 ? (
-						<ForexPaused />
-					) : (
-						<Paused />
-					)}
-				</Box>
-				</Box>
-		</>
+                                <Flex gap={1} align={'end'}>
+                                    <Text fontSize={'sm'} color={'whiteAlpha.600'}>Health:</Text>
+                                    <Text>{(Number(position(index).debtLimit)).toFixed(2)}</Text>
+                                </Flex>
+                            </Flex>
+                        </Box> */}
+                        <Flex justify={'space-between'} align={'end'} mx={4} mt={4} pb={6}>
+                            <Box>
+                                <Text fontSize={'sm'}  color={colorMode == 'dark' ? 'whiteAlpha.600' : 'blackAlpha.600'}>APR</Text>
+                                <Box maxW={'100px'}>
+                                <APRInfo
+                                    debtBurnApr={pool.debtBurnApr}
+                                    esSyxApr={pool.rewardAPY}
+                                >
+                                    <Flex gap={1} align={'center'} cursor={"help"} color={'primary.400'}>
+                                        <Heading size={"md"} >
+                                            {(
+                                                Number(pool.debtBurnApr)
+                                                + Number(pool.rewardAPY)
+                                            ).toFixed(2)}
+                                            %
+                                        </Heading>
+                                        <BsStars />
+                                    </Flex>
+                                </APRInfo>
+                                </Box>
+                            </Box>
+                            <Flex align={'center'} color={'whiteAlpha.600'}>
+                                <Text>Enter Now</Text>
+                                <BsArrowRightShort />
+                            </Flex>
+                        </Flex>
+                    </Box>
+			</Box>
+            )): <Skeleton1 />}
+		</Box>
+    </>
 	);
 }

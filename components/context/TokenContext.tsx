@@ -48,10 +48,11 @@ function TokenContextProvider({ children }: any) {
 	const [refresh, setRefresh] = React.useState(0);
 	const { chain } = useNetwork();
 
-	const fetchData = async (address: string) => {
+	const fetchData = async (address?: string) => {
+		return;
 		// token unlocks
 		const essyx = await getContract(
-			"EscrowedSYX",
+			process.env.NEXT_PUBLIC_VESTED_TOKEN_NAME!,
 			chain?.id ?? defaultChain.id
 		);
 		const tokenUnlocks = BigNumber.from(
@@ -96,7 +97,7 @@ function TokenContextProvider({ children }: any) {
 			await essyx.balanceOf(address)
 		).toString();
 
-		const syn = await getContract("SyntheXToken", chain?.id ?? defaultChain.id);
+		const syn = await getContract(process.env.NEXT_PUBLIC_TOKEN_NAME!, chain?.id ?? defaultChain.id);
 		const synBalance = BigNumber.from(
 			await syn.balanceOf(address)
 		).toString();
@@ -238,7 +239,7 @@ function TokenContextProvider({ children }: any) {
 
 	const claimed = async (amount: string) => {
 		const _syn = syn;
-		_syn.sealedBalance = Big(_syn.sealedBalance).add(amount).toString();
+		_syn.sealedBalance = Big(_syn.sealedBalance ?? 0).add(amount).toString();
 		setSyn(_syn);
 		setRefresh(Math.random());
 	};
@@ -261,7 +262,7 @@ function TokenContextProvider({ children }: any) {
 }
 
 interface TokenValue {
-	fetchData: (address: string) => void;
+	fetchData: (address?: string) => void;
 	tokenUnlocks: UnlockPosition;
 	syn: SYN;
 	staking: StakingPosition;

@@ -1,4 +1,4 @@
-# SyntheX Frontend
+# Frontend
 
 ### How to run
 
@@ -12,5 +12,4 @@
 
 `yarn build`
 
-Serve `/dist`# app-2
-# app-2
+Serve `/dist`
