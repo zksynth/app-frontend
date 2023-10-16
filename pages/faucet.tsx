@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { AppDataContext } from "../components/context/AppDataProvider";
 
-const nonMintable = ["MNT", "cMNT", "WETH", "cUSD", "sUSD", "cBTC", 'cETH', 'cBNB', 'sAAPL', 'sMSFT', 'sCOIN', 'sGOOGL', 'cXRP', 'cDOGE', 'cSOL', 'cDOT', 'cADA', 'cLTC', 'WMNT'];
+const nonMintable = ["MNT", "sMNT", "WETH", "sUSD", "sBTC", 'sETH', 'sBNB', 'sAAPL', 'sMSFT', 'sCOIN', 'sGOOGL', 'sXRP', 'sDOGE', 'sSOL', 'sDOT', 'sADA', 'sLTC', 'WMNT'];
 
 const mintAmounts: any = {
     "USDT": "1000",
@@ -79,12 +79,10 @@ export default function Faucet() {
     const mint = async () => {
         setLoading(true);
         const token = await getContract("MockToken", chain?.id!, openedCollateral.id);
-        const amount = ethers.utils.parseUnits(mintAmounts[openedCollateral.symbol], openedCollateral.decimals);
-        send(token, "mint", [address, amount])
+        send(token, "mint(address)", [address])
             .then(async(res: any) => {
                 let response = await res.wait();
                 updateFromTx(response);
-
                 setLoading(false);
                 toast({
                     title: `Minted ${openedCollateral.symbol}`,

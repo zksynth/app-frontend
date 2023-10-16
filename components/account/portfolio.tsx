@@ -11,12 +11,9 @@ import { useAccount } from "wagmi";
 import { MdRefresh } from "react-icons/md";
 import { usePriceData } from "../context/PriceContext";
 import MinimalSynthPosition from "../dashboard/MinimalSynthPosition";
-import MinimalLendingPosition from "../dashboard/lending/MinimalLendingPosition";
-import { useLendingData } from "../context/LendingDataProvider";
 
 export default function Portfolio() {
 	const { account, pools, fetchData } = useContext(AppDataContext);
-	const {pools: lendingPools} = useLendingData();
 	const [refreshing, setRefreshing] = React.useState(false);
 	const { address } = useAccount();
 	const { prices } = usePriceData();
@@ -31,11 +28,7 @@ export default function Portfolio() {
 			</Flex>
 
 			<Heading size={'md'} mt={14} mb={4}>Lending Positions</Heading>
-			<Flex gap={4} wrap={'wrap'}>
-			{lendingPools.map((pool: any, index: number) => <>
-				<MinimalLendingPosition poolIndex={index} />
-			</>)}
-			</Flex>
+
 		</Box>
 	);
 }

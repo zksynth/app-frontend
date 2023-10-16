@@ -49,7 +49,8 @@ export function call(contract: any, method: string, params: any[]) {
 }
 
 export function send(contract: any, method: string, params: any[], value = '0') {
-  const provider = new ethers.providers.Web3Provider(window.ethereum as any);
+  const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+  console.log(contract);
   return contract.connect(provider.getSigner())[method](...params, {value: value});
 }
 

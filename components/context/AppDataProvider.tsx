@@ -5,7 +5,6 @@ import { ADDRESS_ZERO, defaultChain } from '../../src/const';
 import { ethers } from "ethers";
 import { useEffect } from 'react';
 import { useNetwork } from "wagmi";
-import { __chains } from "../../pages/_app";
 import { Status } from "../utils/status";
 import { Endpoints, query } from "../../src/queries/synthetic";
 import Big from "big.js";

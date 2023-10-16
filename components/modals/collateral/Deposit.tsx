@@ -28,6 +28,7 @@ import { usePriceData } from "../../context/PriceContext";
 import { useSyntheticsData } from "../../context/SyntheticsPosition";
 import useHandleError, { PlatformType } from "../../utils/useHandleError";
 import { VARIANT } from "../../../styles/theme";
+import { TypedDataDomain } from "viem";
 
 export default function Deposit({ collateral, amount, setAmount, isNative, onClose }: any) {
 
@@ -263,12 +264,12 @@ export default function Deposit({ collateral, amount, setAmount, isNative, onClo
 		setApproveLoading(true);
 		const _deadline =(Math.floor(Date.now() / 1000) + 60 * 20).toFixed(0);
 		const _amount = Big(amount).toFixed(collateral.token.decimals, 0);
-		const value = approveMax ? ethers.constants.MaxUint256 : ethers.utils.parseUnits(_amount, collateral.token.decimals);
+		const _value = approveMax ? ethers.constants.MaxUint256 : ethers.utils.parseUnits(_amount, collateral.token.decimals);
 		signTypedDataAsync({
 			domain: {
 				name: collateral.token.name,
 				version: EIP712_VERSION(collateral.token.id),
-				chainId: chain?.id ?? defaultChain.id,
+				chainId: defaultChain.id,
 				verifyingContract: collateral.token.id,
 			},
 			types: {
@@ -280,13 +281,14 @@ export default function Deposit({ collateral, amount, setAmount, isNative, onClo
 					{ name: "deadline", type: "uint256" },
 				]
 			},
-			value: {
+			message: {
 				owner: address!,
 				spender: pools[tradingPool].id,
-				value,
+				value: _value.toString(),
 				nonce: nonces[collateral.token.id] ?? 0,
-				deadline: BigNumber.from(_deadline),
-			}
+				deadline: _deadline,
+			},
+			primaryType: "Permit",
 		})
 			.then(async (res: any) => {
 				setData(res);

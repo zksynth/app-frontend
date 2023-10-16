@@ -1,12 +1,14 @@
 {
-  "name": "synthex",
-  "version": "0.125.0",
-  "latest": "0.125.0",
+  "name": "ZkSynth",
+  "symbol": "ZS",
+  "version": "0.12.0",
+  "latest": "0.12.0",
   "l0Admin": "0x0eD6a1F7a99E8Bc1c752E4515f7AB3aFe20BdBF7",
   "l1Admin": "0x0eD6a1F7a99E8Bc1c752E4515f7AB3aFe20BdBF7",
   "l2Admin": "0x0eD6a1F7a99E8Bc1c752E4515f7AB3aFe20BdBF7",
   "rewardAlloc": "10000000",
-  "weth": "0x2c1b868d6596a18e32e61b901e4060c872647b6c",
+  "weth": "0x86e6dd832c9a692CA6ED2fD562c55FaB9Cd4B259",
+  "multicall": "0xecf8cacF3C02D6653A1f9eD1279e2dE487AEA395",
   "esSYX": {
     "initialRewardsDuration": "30",
     "reward": "6000",
@@ -18,7 +20,7 @@
   "pools": [
     {
       "name": "Crypto Pool",
-      "symbol": "C",
+      "symbol": "S",
       "rewardSpeed": "100000000000000000",
       "issuerAlloc": "0",
       "pyth": "0xA2aa501b19aff244D90cc15a4Cf739D2725B5729",
@@ -31,30 +33,17 @@
           "pyth": "0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6",
           "params": {
             "cap": "100000000000000000000000000",
-            "baseLTV": "7000",
-            "liqThreshold": "8500",
-            "liqBonus": "10200"
-          }
-        },
-        {
-          "name": "Tether USD",
-          "symbol": "USDT",
-          "decimals": 8,
-          "mintAmount": "100000000000",
-          "pyth": "0x1fc18861232290221461220bd4e2acd1dcdfbc89c84092c93c18bdc7756c1588",
-          "params": {
-            "cap": "10000000000000000000",
-            "baseLTV": "7000",
-            "liqThreshold": "8500",
-            "liqBonus": "10200"
+            "baseLTV": "6500",
+            "liqThreshold": "9000",
+            "liqBonus": "10500"
           }
         },
         {
           "name": "USD Coin",
           "symbol": "USDC",
           "decimals": 6,
-          "mintAmount": "1000000000",
           "pyth": "0x41f3625971ca2ed2263e78573fe5ce23e13d2558ed3f2e47ab0f84fb9e7ae722",
+          "mintAmount": "1000",
           "params": {
             "cap": "10000000000000000000",
             "baseLTV": "7000",

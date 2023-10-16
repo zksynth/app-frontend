@@ -102,7 +102,7 @@ export default function Synth() {
                 Enabling the creation of trustless synthetic assets
             </Text>
             </Flex>
-            {pools.length > 0? 
+            {pools.length > 0 ? 
                 pools.map((pool: any, index: number) => (
 			    <Box maxW={'400px'} key={index} className={`${VARIANT}-${colorMode}-halfButton2`} cursor={'pointer'} onClick={() => router.push('/'+index)}>
                     <Box className={`${VARIANT}-${colorMode}-halfContainerBody2`} >
@@ -173,7 +173,7 @@ export default function Synth() {
                                 </APRInfo>
                                 </Box>
                             </Box>
-                            <Flex align={'center'} color={'whiteAlpha.600'}>
+                            <Flex align={'center'} color={colorMode == 'dark' ? 'whiteAlpha.600' : 'blackAlpha.600'}>
                                 <Text>Enter Now</Text>
                                 <BsArrowRightShort />
                             </Flex>

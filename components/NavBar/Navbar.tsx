@@ -56,7 +56,7 @@ function NavBar() {
 	});
 
 	useEffect(() => {
-		if (activeConnector && window.ethereum && !isSubscribed) {
+		if (activeConnector && (window as any).ethereum && !isSubscribed) {
 			(window as any).ethereum.on(
 				"accountsChanged",
 				function (accounts: any[]) {
@@ -189,15 +189,14 @@ function NavBar() {
 						path={"/leaderboard"}
 						title={<Flex gap={2} align={'center'}>
 						<Text color={'secondary.400'} fontWeight={'bold'} fontSize={'md'}>{tokenFormatter.format(dex?.yourPoints?.totalPoints ?? 0)}</Text> <Text color={colorMode == 'dark' ? 'white' : 'black'}>Points</Text>
-						</Flex>}></NavLocalLink>
-						{isConnected && process.env.NEXT_PUBLIC_NETWORK == 'testnet' && <>
-							<NavLocalLink
-							path={"/faucet"}
-							title="Faucet"></NavLocalLink>
-						</>} */}
-					{/* <Box>
-						<AccountButton />
-					</Box> */}
+						</Flex>}>
+					</NavLocalLink> */}
+
+					{isConnected && process.env.NEXT_PUBLIC_NETWORK == 'testnet' && <>
+						<NavLocalLink
+						path={"/faucet"}
+						title="Faucet"></NavLocalLink>
+					</>}
 					<Box ml={2}>
 						<CustomConnectButton />
 					</Box>
