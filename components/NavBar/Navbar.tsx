@@ -73,11 +73,11 @@ function NavBar() {
 			);
 			setIsSubscribed(true);
 		}
-		// if (localStorage.getItem("chakra-ui-color-mode") === "light") {
-		// 	localStorage.setItem("chakra-ui-color-mode", "dark");
-		// 	// reload
-		// 	window.location.reload();
-		// }
+		if (localStorage.getItem("chakra-ui-color-mode") === "dark") {
+			localStorage.setItem("chakra-ui-color-mode", "light");
+			// reload
+			window.location.reload();
+		}
 		if (
 			(!(isConnected && !isConnecting) || chain?.unsupported) &&
 			status !== Status.FETCHING &&
@@ -108,7 +108,7 @@ function NavBar() {
 
 	return (
 		<>
-		<Flex className={`${VARIANT}-${colorMode}-navBar`} justify={'center'} zIndex={0} mt={8} align='center' >
+		<Flex className={`${VARIANT}-${colorMode}-navBar`} justify={'center'} shadow={'2xl'} zIndex={0} mt={8} align='center' >
 			<Box minW='0' w={'100%'} maxW='1250px'>
 			<Flex align={"center"} justify="space-between" >
 				<Flex justify="space-between" align={"center"} w='100%'>
@@ -126,7 +126,12 @@ function NavBar() {
 						>
 							<NavLocalLink
 								path={"/"}
-								title="Home"
+								title="Swap"
+							></NavLocalLink>
+
+							<NavLocalLink
+								path={"/pools"}
+								title="Pools"
 							></NavLocalLink>
 
 							{/* <NavLocalLink

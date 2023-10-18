@@ -12,7 +12,8 @@ import {
 } from "@chakra-ui/react";
 import { AppDataContext } from "../components/context/AppDataProvider";
 
-const nonMintable = ["MNT", "sMNT", "WETH", "sUSD", "sBTC", 'sETH', 'sBNB', 'sAAPL', 'sMSFT', 'sCOIN', 'sGOOGL', 'sXRP', 'sDOGE', 'sSOL', 'sDOT', 'sADA', 'sLTC', 'WMNT'];
+const nonMintable = ["MNT", "WETH", 'WMNT'];
+const startWithNonMintable = ["a", "s"]
 
 const mintAmounts: any = {
     "USDT": "1000",
@@ -134,7 +135,7 @@ export default function Faucet() {
                 Note: This is a testnet faucet. These tokens are not real and have no value.
             </Text>
 
-			<TableContainer px={4} pb={4} className={`${VARIANT}-${colorMode}-containerBody`} rounded={0}>
+			<TableContainer px={4} pb={4} className={`${VARIANT}-${colorMode}-containerBody`} rounded={12}>
 				<Table variant="simple">
 					<Thead>
 						<Tr>
@@ -145,7 +146,7 @@ export default function Faucet() {
 					</Thead>
 					<Tbody>
                         {tokens.map((token: any, index: number) => {
-                            if(nonMintable.includes(token.symbol)) return;
+                            if(nonMintable.includes(token.symbol) || token.symbol.startsWith(startWithNonMintable[0]) || token.symbol.startsWith(startWithNonMintable[1])) return;
                             return <Tr key={index}>
                                 <TdBox style={index == token.length - 1 ? {border: 0} : {}}>
                                     <Flex gap={2}>
@@ -196,32 +197,28 @@ export default function Faucet() {
 			</TableContainer>
 
             {openedCollateral && <Modal isOpen={isOpen} onClose={_onClose} isCentered>
-            <ModalOverlay />
-            <ModalContent rounded={0} bg={'transparent'} shadow={0} width={'400px'}>
-                <Box className={`${VARIANT}-${colorMode}-containerBody2`}>
-            <ModalHeader>{openedCollateral.name}</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody >
-                <Flex gap={4}>
-
-                <Image alt={openedCollateral.symbol} src={`/icons/${openedCollateral.symbol}.svg`} w='44px' mb={2}/>
-                <Box  mb={2}>
-
-                <Text color={'gray.400'}>
-                    You are about to mint {mintAmounts[openedCollateral.symbol]} {openedCollateral.symbol} tokens.
-                </Text>
-                </Box>
-                </Flex>
-                
-            </ModalBody>
+                <ModalOverlay />
+                <ModalContent rounded={0} bg={'transparent'} shadow={0} width={'400px'}>
+                    <Box className={`${VARIANT}-${colorMode}-containerBody2`}>
+                <ModalHeader>{openedCollateral.name}</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody >
+                    <Flex gap={4}>
+                    <Image alt={openedCollateral.symbol} src={`/icons/${openedCollateral.symbol}.svg`} w='44px' mb={2}/>
+                    <Box  mb={2}>
+                        <Text color={'blackAlpha.600'}>
+                            You are about to mint {mintAmounts[openedCollateral.symbol]} {openedCollateral.symbol} tokens.
+                        </Text>
+                    </Box>
+                    </Flex>
+                </ModalBody>
 
             <ModalFooter justifyContent={'center'}>
             <Box w={'100%'} className={`${VARIANT}-${colorMode}-primaryButton`}>
 
-                <Button w={'100%'} isDisabled={!validate().valid} color={"white"}
-								size={"lg"} 
-								bg={'transparent'} 
-								_hover={{bg: 'transparent'}} loadingText="Minting" isLoading={loading} mb={0} rounded={0} onClick={mint}>
+                <Button w={'100%'} isDisabled={!validate().valid} color={"white"} size={"lg"} bg={'transparent'} 
+					_hover={{bg: 'transparent'}} loadingText="Minting" isLoading={loading} mb={0} rounded={0} onClick={mint}
+                >
                     {validate().message}
                 </Button>
                 </Box>

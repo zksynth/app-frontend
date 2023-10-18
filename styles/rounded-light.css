@@ -7,7 +7,7 @@
 }
 
 .rounded-light-containerBody {
-	background: #ededed;
+	background: #f2f2f2;
     border-radius: 16px;
 }
 
@@ -38,7 +38,7 @@
 
 .rounded-light-containerFooter {
 	background: #ffffff;
-    border-radius: 16px;
+    border-radius: 0 0 16px 16px;
 }
 
 .rounded-light-containerFooter2 {
@@ -47,33 +47,33 @@
 }
 
 .rounded-light-primaryButton {
-	background: #f64e00;
+	background: #EC255A;
     border-radius: 12px;
     color: white;
 }
 
 .rounded-light-primaryButton:hover {
-    background: #b34f2b;
+    background: #ff225d;
     border-radius: 12px;
 }
 
 .rounded-light-disabledPrimaryButton {
-    background: rgb(164, 100, 82);
+    background: #B11B43;
     border-radius: 12px;
 }
 
 .rounded-light-secondaryButton {
-    background: #ff9400;
+    background: #FD5D5D;
     border-radius: 12px;
 }
 
 .rounded-light-secondaryButton:hover {
-    background: #cd832e;
+    background: #ff5151;
     border-radius: 12px;
 }
 
 .rounded-light-disabledSecondaryButton {
-    background: #9e6413;
+    background: #BC3F3F;
     border-radius: 12px;
 }
 
@@ -104,7 +104,7 @@
 }
 
 .rounded-light-errorButton {
-    background: rgb(246, 45, 0);
+    background: #ff1755;
     border-radius: 12px;
 }
 
