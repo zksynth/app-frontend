@@ -249,13 +249,13 @@ function Swap() {
 	useEffect(() => {
 		if (
 			inputAssetIndex > 1 &&
-			pools[tradingPool].synths.length < inputAssetIndex
+			pools[tradingPool]?.synths?.length < inputAssetIndex
 		) {
 			setInputAssetIndex(0);
 		}
 		if (
 			outputAssetIndex > 1 &&
-			pools[tradingPool].synths.length < outputAssetIndex
+			pools[tradingPool]?.synths?.length < outputAssetIndex
 		) {
 			setOutputAssetIndex(pools[tradingPool].synths.length - 1);
 		}
