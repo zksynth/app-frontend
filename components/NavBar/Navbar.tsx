@@ -6,27 +6,27 @@ import {
 	Collapse,
 	IconButton,
 	Heading,
+	Divider,
+	Text,
+	useColorMode,
+	Button
 } from "@chakra-ui/react";
-import AccountButton from '../ConnectButton'; 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import Link from "next/link";
 import "../../styles/Home.module.css";
 import { useAccount, useNetwork } from "wagmi";
 import { useContext } from "react";
 import { AppDataContext } from "../context/AppDataProvider";
 import { TokenContext } from "../context/TokenContext";
-import { motion } from "framer-motion";
 import { CloseIcon, HamburgerIcon } from "@chakra-ui/icons";
 import NavLocalLink from "./NavLocalLink";
-import DAOMenu from "./DAOMenu";
-import NavExternalLink from "./NavExternalLink";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { Status } from "../utils/status";
+import { CustomConnectButton } from "./ConnectButton";
+import { tokenFormatter } from "../../src/const";
+import { VARIANT } from "../../styles/theme";
 
 function NavBar() {
-	const router = useRouter();
-	const { status, account, fetchData, setRefresh, refresh } = useContext(AppDataContext);
-	const { fetchData: fetchTokenData } = useContext(TokenContext);
+	const { status, account, fetchData } = useContext(AppDataContext);
 
 	const { chain, chains } = useNetwork();
 	const [init, setInit] = useState(false);
@@ -41,33 +41,22 @@ function NavBar() {
 		connector: activeConnector,
 	} = useAccount({
 		onConnect({ address, connector, isReconnected }) {
-			console.log("onConnect");
-			if(!chain) return;
-			if ((chain as any).unsupported) return;
-			fetchData(address!)
-			.then((_) => {
-				for(let i in refresh){
-					clearInterval(refresh[i]);
-				}
-				setRefresh([]);
-			})
-			fetchTokenData(address!);
+			// if(!chain) return;
+			// if ((chain as any).unsupported) return;
+			fetchData(address!);
+			// fetchLendingData(address!);
+			// fetchDexData(address!);
+			// fetchTokenData(address!);
 			setInit(true);
 		},
 		onDisconnect() {
 			console.log("onDisconnect");
-			fetchData(null)
-			.then((_) => {
-				for(let i in refresh){
-					clearInterval(refresh[i]);
-				}
-				setRefresh([]);
-			})
+			window.location.reload();
 		},
 	});
 
 	useEffect(() => {
-		if (activeConnector && window.ethereum && !isSubscribed) {
+		if (activeConnector && (window as any).ethereum && !isSubscribed) {
 			(window as any).ethereum.on(
 				"accountsChanged",
 				function (accounts: any[]) {
@@ -91,13 +80,16 @@ function NavBar() {
 		}
 		if (
 			(!(isConnected && !isConnecting) || chain?.unsupported) &&
-			status !== "fetching" &&
+			status !== Status.FETCHING &&
 			!init
 		) {
+			fetchData();
+			// fetchLendingData();
+			// fetchDexData();
+			// fetchTokenData();
 			setInit(true);
-			fetchData(null);
 		}
-	}, [activeConnector, address, chain?.unsupported, chains, fetchData, init, isConnected, isConnecting, isSubscribed, refresh, setRefresh, status]);
+	}, [activeConnector, address, chain?.unsupported, chains, fetchData, init, isConnected, isConnecting, isSubscribed, status]);
 
 
 	const [isOpen, setIsOpen] = React.useState(false);
@@ -111,53 +103,60 @@ function NavBar() {
 
 	});
 
+	const {colorMode} = useColorMode();
+	const router = useRouter();
+
 	return (
-		<Flex justify={'center'} align='center' >
-			<Flex alignItems={"center"} justify="space-between" h={"100px"} minW='0' w={'100%'} maxW='1250px'>
-				<Flex justify="space-between" align={"center"} gap={10} mt={2} w='100%'>
-					<Flex gap={10} align='center' cursor="pointer">
+		<>
+		<Flex className={`${VARIANT}-${colorMode}-navBar`} justify={'center'} shadow={'xl'} zIndex={0} mt={8} align='center' >
+			<Box minW='0' w={'100%'} maxW='1250px'>
+			<Flex align={"center"} justify="space-between" >
+				<Flex justify="space-between" align={"center"} w='100%'>
+					<Flex gap={10} align='center'>
 						<Image
-							onClick={() => {
-								router.push(
-									{
-										pathname: '/',
-										query: router.query
-									}
-								);
-							}}
-							src={"/logo.svg"}
-							alt=""
-							width="27px"
+							src={`/${process.env.NEXT_PUBLIC_TOKEN_SYMBOL}-logo-${colorMode}.svg`}
+							alt="logo"
+							height="36px"
+							ml={-2}
+							mr={-6}
 						/>
 						<Flex
-							gap={2}
 							align="center"
 							display={{ sm: "none", md: "flex" }}
 						>
 							<NavLocalLink
 								path={"/"}
-								title={"Dashboard"}
-							></NavLocalLink>
-							<NavLocalLink
-								path={"/swap"}
 								title="Swap"
 							></NavLocalLink>
+
 							<NavLocalLink
-								path={"/claim"}
-								title="Claim"
+								path={"/pools"}
+								title="Pools"
 							></NavLocalLink>
+
 							{/* <NavLocalLink
-								path={"/earn"}
-								title="Earn"
+								path={"/synthetics"}
+								title={"Synths"}
+							></NavLocalLink>
+
+							<NavLocalLink
+								path={"/lend"}
+								title="Markets"
+							></NavLocalLink>
+							
+							<NavLocalLink
+								path={"/pools"}
+								title="Liquidity"
 							></NavLocalLink> */}
 						</Flex>
 					</Flex>
 					
-					<Flex display={{sm: 'flex', md: 'none'}}>
+					<Flex display={{sm: 'flex', md: 'none'}} my={4} gap={2}>
+						<CustomConnectButton />
 						<IconButton
 							onClick={onToggle}
 							icon={
-								isOpen ? (
+								isToggleOpen ? (
 									<CloseIcon w={3} h={3} />
 								) : (
 									<HamburgerIcon w={5} h={5} />
@@ -165,6 +164,7 @@ function NavBar() {
 							}
 							variant={"ghost"}
 							aria-label={"Toggle Navigation"}
+							rounded={0}
 						/>
 					</Flex>
 				</Flex>
@@ -173,105 +173,58 @@ function NavBar() {
 					display={{ sm: "none", md: "flex" }}
 					justify="flex-end"
 					align={"center"}
-					gap={2}
+					// gap={2}
 					w='100%'
 				>
-				{/* <motion.div whileHover={{scale: 1.05}} whileTap={{scale: 0.95}}>
-					<Link href={{ pathname: "/leaderboard", query: router.query }} >
-						<Flex
-							align={"center"}
-							h={"38px"}
-							w='100%'
-							px={1}
-							cursor="pointer"
-							rounded={100}
-						>
-							<Box
-								color={"gray.100"}
-								fontSize="sm"
-							>
-								<Flex align={"center"} gap={1}>
-									
-									<Heading size={"sm"} color={'primary.400'}>{(Number(account?.totalPoint ?? '0')).toFixed(0)}</Heading>
-									<Heading size={"xs"} color={router.pathname == '/leaderboard' ? 'primary.400' : 'white'}>Points</Heading>
-
-								</Flex>
+					{/* <Button mr={4} size={'sm'} bg={'secondary.600'} _hover={{bg: 'secondary.800'}} px={3} py={1} rounded={'full'} onClick={() => router.push('/synthetics')}>
+						<Flex ml={-1.5} mr={1.5}>
+							<Box border={'0px white solid'} rounded={'full'}>
+								<Image src={'/icons/cBTC.svg'} w={'25px'} />
+							</Box>
+							<Box border={'0px white solid'} rounded={'full'} ml={-2}>
+								<Image src={'/icons/cETH.svg'} w={'25px'}  />
+							</Box>
+							<Box border={'0px white solid'} rounded={'full'} ml={-2}>
+								<Image src={'/icons/cSOL.svg'} w={'25px'} />
 							</Box>
 						</Flex>
-					</Link>
-				</motion.div> */}
+						Mint Synths & Earn {"20"}% APY
+					</Button> */}
+					{/* <NavLocalLink
+						path={"/leaderboard"}
+						title={<Flex gap={2} align={'center'}>
+						<Text color={'secondary.400'} fontWeight={'bold'} fontSize={'md'}>{tokenFormatter.format(dex?.yourPoints?.totalPoints ?? 0)}</Text> <Text color={colorMode == 'dark' ? 'white' : 'black'}>Points</Text>
+						</Flex>}>
+					</NavLocalLink> */}
 
-				{/* <NavExternalLink path={'https://synthex.finance/intro/quick-start'} title={'Docs'}></NavExternalLink> */}
-
-				{/* <DAOMenu /> */}
-					<Box>
-						<AccountButton />
+					{isConnected && process.env.NEXT_PUBLIC_NETWORK == 'testnet' && <>
+						<NavLocalLink
+						path={"/faucet"}
+						title="Faucet"></NavLocalLink>
+					</>}
+					<Box ml={2}>
+						<CustomConnectButton />
 					</Box>
-					{(isConnected && !chain?.unsupported) && <Box>
-						<ConnectButton accountStatus="address" chainStatus="icon" showBalance={false} />
-					</Box>}
 				</Flex>
 			</Flex>
+			</Box>
+		</Flex>
 			<Collapse in={isToggleOpen} animateOpacity>
 				<MobileNav />
 			</Collapse>
-		</Flex>
+		</>
 	);
 }
 
 const MobileNav = ({}: any) => {
 	const router = useRouter();
-	const { account } = useContext(AppDataContext);
-
 	return (
-		<Flex flexDir={"column"} p={4} gap={4}>
+		<Flex flexDir={"row"} wrap={'wrap'} gap={0}>
 			<NavLocalLink
 				path={"/"}
-				title={"Dashboard"}
+				title={"Home"}
 			></NavLocalLink>
-			<NavLocalLink
-				path={"/swap"}
-				title="Swap"
-			></NavLocalLink>
-			<NavLocalLink
-				path={"/claim"}
-				title="Claim"
-			></NavLocalLink>
-			<NavLocalLink
-				path={"/dao/syx"}
-				title="Token"
-			></NavLocalLink>
-
-			<NavLocalLink
-				path={"/dao/vest"}
-				title="Vest"
-			></NavLocalLink>
-
-<motion.div whileHover={{scale: 1.05}} whileTap={{scale: 0.95}}>
-					<Link href={{ pathname: "/leaderboard", query: router.query }} >
-						<Flex
-							align={"center"}
-							h={"38px"}
-							w='100%'
-							px={3}
-							cursor="pointer"
-							rounded={100}
-						>
-							<Box
-								color={"gray.100"}
-								fontSize="sm"
-							>
-								<Flex align={"center"} gap={2}>
-									
-									<Heading size={"sm"} color={router.pathname == '/leaderboard' ? 'primary.400' : 'white'}>{(Number(account?.totalPoint ?? '0')).toFixed(0)} Points</Heading>
-								</Flex>
-							</Box>
-						</Flex>
-					</Link>
-				</motion.div>
-			<Box>
-				<ConnectButton />
-			</Box>
+			
 		</Flex>
 	);
 };

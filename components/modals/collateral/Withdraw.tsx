@@ -2,53 +2,61 @@ import React, { useState } from "react";
 
 import {
 	Flex,
-	Image,
 	Text,
 	Box,
-	useDisclosure,
 	Button,
 	Divider,
     Tooltip,
 	useToast,
+	useColorMode,
 } from "@chakra-ui/react";
 import Big from "big.js";
-import InfoFooter from "../_utils/InfoFooter";
 import Response from "../_utils/Response";
 import { useAccount, useBalance, useNetwork } from "wagmi";
 import { ethers } from "ethers";
 import { getContract, send } from "../../../src/contract";
-import { useContext } from "react";
-import { AppDataContext } from "../../context/AppDataProvider";
-import { PYTH_ENDPOINT, compactTokenFormatter, dollarFormatter } from "../../../src/const";
+import { AppDataContext, useAppData } from "../../context/AppDataProvider";
+import { PYTH_ENDPOINT, compactTokenFormatter, dollarFormatter, numOrZero } from "../../../src/const";
 import Link from "next/link";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { EvmPriceServiceConnection } from "@pythnetwork/pyth-evm-js";
 import useUpdateData from "../../utils/useUpdateData";
+import { useBalanceData } from "../../context/BalanceProvider";
+import { usePriceData } from "../../context/PriceContext";
+import { useSyntheticsData } from "../../context/SyntheticsPosition";
+import useHandleError, { PlatformType } from "../../utils/useHandleError";
+import { VARIANT } from "../../../styles/theme";
 
-export default function Withdraw({ collateral, amount, setAmount, amountNumber, isNative }: any) {
+export default function Withdraw({ collateral, amount, setAmount, isNative, onClose }: any) {
 	const [loading, setLoading] = useState(false);
 	const [response, setResponse] = useState<string | null>(null);
 	const [hash, setHash] = useState(null);
 	const [confirmed, setConfirmed] = useState(false);
 	const [message, setMessage] = useState("");
 	const toast = useToast();
+	const { prices } = usePriceData();
+	const { position } = useSyntheticsData();
+	const pos = position();
+	const { pools, tradingPool, updateFromTx: updateFromSynthTx } = useAppData();
 
-	const {
-		pools,
-		tradingPool,
-		updateCollateralWalletBalance,
-		updateCollateralAmount,
-	} = useContext(AppDataContext);
-
+	const {updateFromTx} = useBalanceData();
 	const {getUpdateData} = useUpdateData();
+	const { address, isConnected } = useAccount();
+	const { chain } = useNetwork();
 
 	// adjustedDebt - pools[tradingPool]?.userDebt = assetAmount*assetPrice*ltv
 	const max = () => {
-		const v1 = collateral.priceUSD > 0 ? Big(pools[tradingPool]?.adjustedCollateral).sub(pools[tradingPool]?.userDebt).div(collateral.priceUSD).mul(1e4).div(collateral.baseLTV) : Big(0);
-        const v2 = Big(collateral.balance ?? 0).div(10**collateral.token.decimals);
+		const v1 = prices[collateral.token.id] > 0 ? Big(pos.adjustedCollateral)
+							.sub(pos.debt)
+							.div(prices[collateral.token.id])
+							.div(collateral.baseLTV)
+							.mul(1e4)
+					: Big(0);
+		const v2 = Big(collateral.balance ?? 0).div(10 ** collateral.token.decimals);
 		// min(v1, v2)
 		return (v1.gt(v2) ? v2 : v1).toString();
 	};
+
+	const handleError = useHandleError(PlatformType.SYNTHETICS);
 
 	const withdraw = async () => {
 		setLoading(true);
@@ -60,49 +68,23 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 		const pool = await getContract("Pool", chain?.id!, poolId);
 		const _amount = Big(amount).mul(10**collateral.token.decimals).toFixed(0);
 
-		let args = [
-			collateral.token.id,
-			_amount,
-			isNative
-		];
+		let args = [collateral.token.id, _amount, isNative];
 		
 		const priceFeedUpdateData = await getUpdateData()
-		args.push(priceFeedUpdateData);
+		if(priceFeedUpdateData.length > 0) args.push(priceFeedUpdateData);
 		
 		send(pool, "withdraw", args).then(async (res: any) => {
-			const response = await res.wait(1);
-			// decode transfer event from response.logs
-			const decodedLogs = response.logs.map((log: any) =>
-				{
-					try {
-						return pool.interface.parseLog(log)
-					} catch (e) {
-						console.log(e)
-					}
-				});
-			
-			let log: any = {};
-			for(let i = 0; i < decodedLogs.length; i++){
-				if(decodedLogs[i]){
-					if(decodedLogs[i].name == "Withdraw"){
-						log = decodedLogs[i];
-						break;
-					}
-				}
-			}
-			const collateralId = log.args[1].toLowerCase();
-			const withdrawnAmount = log.args[2].toString();
-			setConfirmed(true);
-			updateCollateralWalletBalance(collateralId, poolId, withdrawnAmount, false);
-			updateCollateralAmount(collateralId, poolId, withdrawnAmount, true);
+			const response = await res.wait();
+			updateFromTx(response);
+			updateFromSynthTx(response);
 			setAmount('0');
-
 			setLoading(false);
+			onClose();
 			toast({
 				title: "Withdrawal Successful",
 				description: <Box>
 					<Text>
-						{`You have withdrawn ${Big(withdrawnAmount).div(10**collateral.token.decimals).toString()} ${collateral.token.symbol}`}
+						{`You have withdrawn ${amount} ${collateral.token.symbol}`}
 					</Text>
 					<Link href={chain?.blockExplorers?.default.url + "/tx/" + res.hash} target="_blank">
 						<Flex align={'center'} gap={2}>
@@ -116,48 +98,35 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 				isClosable: true,
 				position: 'top-right'
 			})
-			
 		}).catch((err: any) => {
-			console.log(err);
-			if(err?.reason == "user rejected transaction"){
-				toast({
-					title: "Transaction Rejected",
-					description: "You have rejected the transaction",
-					status: "error",
-					duration: 5000,
-					isClosable: true,
-					position: "top-right"
-				})
-			} else {
-				toast({
-					title: "Transaction Failed. Please try again",
-					description: JSON.stringify(err).slice(0, 100),
-					status: "error",
-					duration: 5000,
-					isClosable: true,
-					position: "top-right"
-				})
-			}
+			handleError(err)
 			setLoading(false);
 		});
 	};
 
-	const { address, isConnected } = useAccount();
-	const { chain } = useNetwork();
+	const validate = () => {
+		if(!isConnected || chain?.unsupported){
+			return { valid: false, message: 'Please connect your wallet' }
+		} else if (Number(amount) == 0 || isNaN(Number(amount))){
+			return { valid: false, message: 'Enter Amount'}
+		} else if(Big(amount).gt(max())){
+			return { valid: false, message: 'Amount exceeds balance'}
+		} else if (loading) {
+			return { valid: false, message: 'Loading'}
+		} else {
+			return { valid: true, message: 'Withdraw'}
+		}
+	}
+
+	const { colorMode } = useColorMode();
 
 	return (
 		<>
-			<Box bg={"blackAlpha.100"} roundedBottom={8} px={5} py={5}>
-				<Box
-					// border="1px"
-					// borderColor={"gray.700"}
-					mt={4}
-					rounded={8}
-					// p={2}
-				>
+			<Box px={5} py={5}>
+				<Box>
 					<Flex justify="space-between">
 						<Tooltip label='Max capacity to have this asset as collateral'>
-						<Text fontSize={"md"} color="blackAlpha.600" textDecor={'underline'} cursor={'help'} style={{textUnderlineOffset: '2px', textDecorationStyle: 'dotted'}}>
+						<Text fontSize={"md"} color={colorMode == 'dark' ? "whiteAlpha.600" : "blackAlpha.600"} textDecor={'underline'} cursor={'help'} style={{textUnderlineOffset: '2px', textDecorationStyle: 'dotted'}}>
 							Capacity
 						</Text>
 						</Tooltip>
@@ -185,24 +154,19 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 					<Divider my={2} />
 
 					<Flex justify="space-between">
-						{/* <Text fontSize={"xs"} color="blackAlpha.600">
-								1 {asset._mintedTokens[selectedAssetIndex].symbol} = {asset._mintedTokens[selectedAssetIndex].lastPriceUSD}{" "}
-								USD
-							</Text> */}
-
 							<Flex gap={1}>
 						<Tooltip label='Minimum Loan to Value Ratio'>
 
-						<Text fontSize={"md"} color="blackAlpha.600" textDecor={'underline'} cursor={'help'} style={{textUnderlineOffset: '2px', textDecorationStyle: 'dotted'}}>
+						<Text fontSize={"md"} color={colorMode == 'dark' ? "whiteAlpha.600" : "blackAlpha.600"} textDecor={'underline'} cursor={'help'} style={{textUnderlineOffset: '2px', textDecorationStyle: 'dotted'}}>
 							Base LTV
 						</Text>
 						</Tooltip>
-						<Text fontSize={"md"} color="blackAlpha.600">
+						<Text fontSize={"md"} color={colorMode == 'dark' ? "whiteAlpha.600" : "blackAlpha.600"}>
 						/ 
 						</Text>
 						<Tooltip label='Account would be liquidated if LTV reaches this threshold' >
 
-						<Text fontSize={"md"} color="blackAlpha.600" textDecor={'underline'} cursor={'help'} style={{textUnderlineOffset: '2px', textDecorationStyle: 'dotted'}}>
+						<Text fontSize={"md"} color={colorMode == 'dark' ? "whiteAlpha.600" : "blackAlpha.600"} textDecor={'underline'} cursor={'help'} style={{textUnderlineOffset: '2px', textDecorationStyle: 'dotted'}}>
 							Liq Threshold
 						</Text>
 						</Tooltip>
@@ -217,67 +181,51 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 
 				
                 <Box>
-						<Text mt={8} fontSize={"sm"} color='blackAlpha.600' fontWeight={'bold'}>
+						<Text mt={8} fontSize={"sm"} color={colorMode == 'dark' ? "whiteAlpha.600" : "blackAlpha.600"} fontWeight={'bold'}>
 							Transaction Overview
 						</Text>
 						<Box
-							// border="1px"
-							// borderColor={"gray.700"}
 							my={4}
 							rounded={8}
-							// p={2}
 						>
 							<Flex justify="space-between">
-								<Text fontSize={"md"} color="blackAlpha.600">
+								<Text fontSize={"md"} color={colorMode == 'dark' ? "whiteAlpha.600" : "blackAlpha.600"}>
 									Health Factor
 								</Text>
-								<Text fontSize={"md"}>{(pools[tradingPool]?.userDebt/pools[tradingPool]?.userCollateral * 100).toFixed(1)} % {"->"} {pools[tradingPool]?.userCollateral - amount*collateral.priceUSD > 0 ? (pools[tradingPool]?.userDebt /(pools[tradingPool]?.userCollateral - (amount*collateral.priceUSD)) * 100).toFixed(1) : '0'}%</Text>
+								<Text fontSize={"md"}>
+								{Number(pos.debtLimit).toFixed(2)} % {"->"} {Number(pos.collateral) - amount*prices[collateral.token.id] > 0 ? (Number(pos.debt)/(Number(pos.collateral) - (amount*prices[collateral.token.id])) * 100).toFixed(1) : '0'} %
+								</Text>
 							</Flex>
 							<Divider my={2} />
 							<Flex justify="space-between">
-								<Text fontSize={"md"} color="blackAlpha.600">
+								<Text fontSize={"md"} color={colorMode == 'dark' ? "whiteAlpha.600" : "blackAlpha.600"}>
 									Available to issue
 								</Text>
-								<Text fontSize={"md"}>{dollarFormatter.format(pools[tradingPool]?.adjustedCollateral - pools[tradingPool]?.userDebt)} {"->"} {dollarFormatter.format(pools[tradingPool]?.adjustedCollateral - amount*collateral.priceUSD*collateral.baseLTV/10000 - pools[tradingPool]?.userDebt)}</Text>
+								<Text fontSize={"md"}>
+								{dollarFormatter.format(Number(pos.availableToIssue))} {"->"} {dollarFormatter.format(Number(pos.adjustedCollateral) - amount*prices[collateral.token.id]*collateral.baseLTV/10000 - Number(pos.debt))}
+								</Text>
 							</Flex>
 						</Box>
 					</Box>
             
-				
+				<Box mt={6} className={!validate().valid ? `${VARIANT}-${colorMode}-disabledPrimaryButton` : `${VARIANT}-${colorMode}-primaryButton`}>
                 <Button
-                    isDisabled={
-                        loading ||
-                        !isConnected ||
-                        chain?.unsupported ||
-                        !amount ||
-                        amountNumber == 0 ||
-                        Big(amountNumber > 0 ? amount : amountNumber).gt(max()) 
-                    }
+                    isDisabled={!validate().valid}
                     isLoading={loading}
-                    loadingText="Please sign the transaction"
-                    bgColor="secondary.400"
+                    loadingText="Loading"
+                    bgColor="transparent"
                     width="100%"
                     color="white"
-                    mt={2}
                     onClick={withdraw}
                     size="lg"
-                    rounded={16}
+                    rounded={0}
                     _hover={{
-                        opacity: "0.5",
+                        bg: "transparent",
                     }}
                 >
-                    {isConnected && !chain?.unsupported ? (
-                        Big(amountNumber > 0 ? amount : amountNumber).gt(max()) ? (
-                            <>Insufficient Collateral</>
-                        ) : !amount || amountNumber == 0 ? (
-                            <>Enter Amount</>
-                        ) : (
-                            <>Withdraw</>
-                        )
-                    ) : (
-                        <>Please connect your wallet</>
-                    )}
+                    {validate().message}
                 </Button>
+				</Box>
 
 				<Response
 					response={response}
@@ -285,13 +233,6 @@ export default function Withdraw({ collateral, amount, setAmount, amountNumber, 
 					hash={hash}
 					confirmed={confirmed}
 				/>
-				{/* <Box mx={-4} mb={-3}>
-				<InfoFooter
-					message="
-						You can issue a new asset against your collateral. Debt is dynamic and depends on total debt of the pool.
-					"
-				/>
-                </Box> */}
 			</Box>
 		</>
 	);

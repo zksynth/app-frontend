@@ -1,0 +1,212 @@
+/* Light Mode */
+.edgy-light-containerBody {
+	background: linear-gradient(45deg, transparent 10px, #ededed 0) bottom left,
+		linear-gradient(-135deg, transparent 10px, #ededed 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+}
+
+.edgy-light-halfContainerBody {
+	background: linear-gradient(45deg, transparent 0px, #ededed 0) bottom left,
+		linear-gradient(-135deg, transparent 10px, #f0f0f0 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+}
+
+.edgy-light-halfContainerBody2 {
+	background: linear-gradient(45deg, transparent 0px, #ffffff 0) bottom left,
+		linear-gradient(-135deg, transparent 10px, #ffffff 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+}
+
+.edgy-light-containerBody2 {
+	background: linear-gradient(45deg, transparent 10px, #e8e8e8 0) bottom left,
+		linear-gradient(-135deg, transparent 10px, #e8e8e8 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+}
+
+.edgy-light-containerHeader {
+	background: linear-gradient(45deg, transparent 0px, #ffffff 0) bottom left,
+		linear-gradient(-135deg, transparent 10px, #ffffff 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+}
+
+.edgy-light-containerFooter {
+	background: linear-gradient(45deg, transparent 10px, #ffffff 0) bottom left,
+		linear-gradient(-135deg, transparent 0px, #ffffff 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+}
+
+.edgy-light-containerFooter2 {
+	background: linear-gradient(45deg, transparent 10px, #ffffff 0) bottom left,
+		linear-gradient(-135deg, transparent 0px, #ffffff 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+}
+
+.edgy-light-primaryButton {
+	background: linear-gradient(45deg, transparent 6px, #f64e00 0) bottom left,
+		linear-gradient(-135deg, transparent 6px, #f64e00 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+    color: white;
+}
+
+.edgy-light-primaryButton:hover {
+	background: linear-gradient(45deg, transparent 6px, #b34f2b 0) bottom left,
+		linear-gradient(-135deg, transparent 6px, #b34f2b 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+    color: white;
+}
+
+.edgy-light-disabledPrimaryButton {
+	background: linear-gradient(45deg, transparent 6px, rgb(164, 100, 82) 0)
+			bottom left,
+		linear-gradient(-135deg, transparent 6px, rgb(164, 100, 82) 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+    color: white;
+}
+
+.edgy-light-secondaryButton {
+	background: linear-gradient(45deg, transparent 6px, #ff9400 0) bottom left,
+		linear-gradient(-135deg, transparent 6px, #ff9400 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+    color: white;
+}
+
+.edgy-light-secondaryButton:hover {
+	background: linear-gradient(45deg, transparent 6px, #cd832e 0) bottom left,
+		linear-gradient(-135deg, transparent 6px, #cd832e 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 50%;
+    color: white;
+}
+
+.edgy-light-disabledSecondaryButton {
+	background: linear-gradient(45deg, transparent 6px, #9e6413 0) bottom left,
+		linear-gradient(-135deg, transparent 6px, #9e6413 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 50%;
+    color: white;
+}
+
+.edgy-light-primaryTabLeft {
+	background: linear-gradient(45deg, transparent 6px, #e8e8e8 0) bottom left,
+		linear-gradient(-135deg, transparent 0px, #e8e8e8 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+}
+
+.edgy-light-primaryTabLeftSelected {
+	background: linear-gradient(45deg, transparent 6px, rgb(246, 78, 0) 0)
+			bottom left,
+		linear-gradient(-135deg, transparent 0px, #f64e00 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+    color: white;
+}
+
+.edgy-light-primaryTabRight {
+	background: linear-gradient(45deg, transparent 0px, #e8e8e8 0) bottom left,
+		linear-gradient(-135deg, transparent 6px, #e8e8e8 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+}
+
+.edgy-light-primaryTabRightSelected {
+	background: linear-gradient(45deg, transparent 0px, rgb(246, 78, 0) 0)
+			bottom left,
+		linear-gradient(-135deg, transparent 6px, #f64e00 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+    color: white;
+}
+
+.edgy-light-secondaryTabLeft {
+	background: linear-gradient(45deg, transparent 6px, #e8e8e8 0) bottom left,
+		linear-gradient(-135deg, transparent 0px, #e8e8e8 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+}
+
+.edgy-light-secondaryTabLeftSelected {
+	background: linear-gradient(45deg, transparent 6px, #d97f00 0) bottom left,
+		linear-gradient(-135deg, transparent 0px, #d97f00 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+}
+
+.edgy-light-secondaryTabRight {
+	background: linear-gradient(45deg, transparent 0px, #e8e8e8 0) bottom left,
+		linear-gradient(-135deg, transparent 6px, #e8e8e8 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+}
+
+.edgy-light-secondaryTabRightSelected {
+	background: linear-gradient(45deg, transparent 0px, #d97f00 0) bottom left,
+		linear-gradient(-135deg, transparent 6px, #d97f00 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+    color: white;
+}
+
+.edgy-light-outlinedBox {
+	background: linear-gradient(45deg, transparent 5px, #ffffff 0) bottom left,
+		linear-gradient(-135deg, transparent 5px, #ffffff 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+}
+
+.edgy-light-outlinedButton {
+	background: linear-gradient(45deg, transparent 5px, #ffffff 0) bottom left,
+		linear-gradient(-135deg, transparent 5px, #ffffff 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+}
+
+/* hover for outlined button */
+.edgy-light-outlinedButton:hover {
+	background: linear-gradient(
+				45deg,
+				transparent 5px,
+				rgba(255, 255, 255, 0.5) 0
+			)
+			bottom left,
+		linear-gradient(-135deg, transparent 5px, rgba(255, 255, 255, 0.5) 0)
+			top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+}
+
+.edgy-light-iconButton {
+	background: linear-gradient(45deg, transparent 6px, #e8e8e8 0) bottom left,
+		linear-gradient(-135deg, transparent 6px, #e8e8e8 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+}
+
+.edgy-light-iconButton:hover {
+	background: linear-gradient(45deg, transparent 6px, rgba(52, 59, 72, 0.5))
+			bottom left,
+		linear-gradient(-135deg, transparent 6px, rgba(52, 59, 72, 0.5) 0) top
+			right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+}
+
+.edgy-light-errorButton {
+	background: linear-gradient(45deg, transparent 6px, rgb(246, 45, 0) 0)
+			bottom left,
+		linear-gradient(-135deg, transparent 6px, rgb(246, 45, 0) 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+    color: white;
+}

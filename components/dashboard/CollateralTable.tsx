@@ -7,27 +7,27 @@ import {
 	Tbody,
 	Tfoot,
 	Tr,
-	Th,
-	Td,
 	TableContainer,
 	Box,
 	Skeleton,
 	Heading,
 	Divider,
+	useColorMode,
 } from "@chakra-ui/react";
 import { AppDataContext } from "../context/AppDataProvider";
 
 import CollateralModal from "../modals/collateral";
 import ThBox from "./ThBox";
-
+import { VARIANT } from "../../styles/theme";
 
 export default function CollateralTable() {
 	const { pools, tradingPool } = useContext(AppDataContext);
+	const { colorMode } = useColorMode();
 
 	return (
-		<Box>
-			<Box bg={'blackAlpha.50'} roundedTop={12} px={5} pt={6} pb={6}>
-			<Heading size={'md'} color={'primary.400'}>Collaterals</Heading>
+		<>
+			<Box className={`${VARIANT}-${colorMode}-containerHeader`} px={5} py={5}>
+				<Heading fontSize={'18px'} color={'primary.400'}>Add Collateral</Heading>
 			</Box>
 
 			{pools[tradingPool]?.collaterals.length > 0 ? (
@@ -67,6 +67,6 @@ export default function CollateralTable() {
 					<Skeleton height="50px" rounded={12} m={6} />
 				</Box>
 			)}
-		</Box>
+		</>
 	);
 }

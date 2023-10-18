@@ -24,8 +24,7 @@ import {
 	ModalBody,
 	ModalCloseButton,
 } from "@chakra-ui/react";
-import { InfoOutlineIcon, SearchIcon } from "@chakra-ui/icons";
-import InfoFooter from "../modals/_utils/InfoFooter";
+import { useBalanceData } from "../context/BalanceProvider";
 
 function TokenSelector({
 	onTokenSelected,
@@ -35,6 +34,7 @@ function TokenSelector({
 	onClose,
 }: any) {
 	const { tradingPool, setTradingPool, pools } = useContext(AppDataContext);
+	const { walletBalances } = useBalanceData();
 
 	const [searchPools, setSearchPools] = useState<any[]>([]);
 
@@ -87,16 +87,17 @@ function TokenSelector({
 				onClose={onClose}
 				scrollBehavior={"inside"}
 				isCentered
+				
 			>
 				<ModalOverlay bg="blackAlpha.600" backdropFilter="blur(30px)" />
-				<ModalContent maxH={"600px"} bgColor="whiteAlpha.700" rounded={8} border='2px' mx={2} borderColor={'whiteAlpha.500'}>
+				<ModalContent maxH={"700px"} bgColor="lightBg.600" rounded={16} mx={2}>
 					<ModalHeader>Select a token</ModalHeader>
 					<Box mx={5} mb={5}>
-					<Select rounded={'full'} placeholder="Select debt pool" value={tradingPool} onChange={(e) => {
+					<Select rounded={'full'} placeholder="Select a pool" value={tradingPool} onChange={(e) => {
 						if(e.target.value !== ''){
 							setTradingPool(Number(e.target.value))
 							localStorage.setItem("tradingPool", e.target.value);
-						}}} bg='blackAlpha.200' variant={'filled'}  _focus={{bg: 'blackAlpha.300'}} focusBorderColor='transparent'>
+						}}} bg='white' variant={'filled'} _focus={{bg: 'white'}} cursor={'pointer'} focusBorderColor='transparent'>
 							{pools.map((pool: any, index: number) => (
 								<option value={index} key={pool.id}>
 									{pool.name}
@@ -106,16 +107,15 @@ function TokenSelector({
 						</Box>
 						{/* <Divider/> */}
 					<ModalCloseButton rounded={'full'} mt={1} />
-					<ModalBody bgColor="whiteAlpha.400">
+					<ModalBody bgColor="whiteAlpha.100">
 
 						{/* Token List */}
 						<Box mx={-6} mt={-2}>
 						{pools[tradingPool].synths.map(
 							(_synth: any, tokenIndex: number) => (
-								<Box key={tokenIndex}>
-								<Divider/>
+								<Box key={tokenIndex} bg={'white'}>
+								<Divider borderColor={'blackAlpha.400'}/>
 								<Flex
-									
 									justify="space-between"
 									align={"center"}
 									py={3}
@@ -130,7 +130,6 @@ function TokenSelector({
 										)
 									}
 								>
-									
 									<Box
 										borderColor={"gray.700"}
 									>
@@ -175,10 +174,10 @@ function TokenSelector({
 										<Text
 											fontSize={"md"}
 										>
-											{_synth.walletBalance
+											{walletBalances[_synth.token.id]
 												? tokenFormatter.format(
-														_synth.walletBalance /
-															10 ** 18
+													walletBalances[_synth.token.id] /
+															10 ** (_synth.token.decimals)
 													)
 												: "-"}{" "}
 										</Text>
@@ -195,7 +194,7 @@ function TokenSelector({
 					</Flex> */}
 					<Flex roundedBottom={16} py={1} justify='space-between' px={4} fontSize='sm' >
 						<Text>{pools[tradingPool].synths.length} Tokens</Text>
-						<Text>SyntheX</Text>
+						<Text>zkSynth</Text>
 						
 					</Flex>
 				</ModalContent>

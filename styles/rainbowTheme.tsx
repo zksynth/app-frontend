@@ -1,57 +1,58 @@
 import { RainbowKitProvider, Theme } from '@rainbow-me/rainbowkit';
+import { VARIANT } from './theme';
 
 const myCustomTheme: Theme = {
   blurs: {
     modalOverlay: '...',
   },
   colors: {
-    accentColor: 'white',
-    accentColorForeground: '#0A1931',
-    
-    connectButtonBackground: '#fff',
-    
+    accentColor: '#EC255A',
+    accentColorForeground: '#ffffff',
+    connectButtonBackground: '#EC255A',
     modalBackground: 'white',
-    // modalBorder: '#2D3748',
-    
-
-    actionButtonBorder: "rgba(255, 255, 255, 0.04)",
-    actionButtonBorderMobile: "rgba(255, 255, 255, 0.08)",
-    actionButtonSecondaryBackground: "rgba(255, 255, 255, 0.08)",
-    closeButton: "rgba(224, 232, 255, 0.6)",
-    closeButtonBackground: "rgba(255, 255, 255, 0.08)",
+    actionButtonBorder: "rgba(0, 0, 0, 0.1)",
+    actionButtonBorderMobile: "rgba(0, 0, 0, 0.08)",
+    actionButtonSecondaryBackground: "rgba(0, 0, 0, 0.25)",
+    closeButton: "rgba(0, 0, 0, 0.6)",
+    closeButtonBackground: "rgba(0, 0, 0, 0.08)",
     connectButtonBackgroundError: "#FF494A",
-    connectButtonInnerBackground: "#2D3748",
-    connectButtonText: "#000",
+    connectButtonInnerBackground: "#ffffff",
+    connectButtonText: "#fff",
     connectButtonTextError: "#000",
     connectionIndicator: "#30E000",
     downloadBottomCardBackground: "linear-gradient(126deg, rgba(0, 0, 0, 0) 9.49%, rgba(120, 120, 120, 0.2) 71.04%), #1A1B1F",
     downloadTopCardBackground: "linear-gradient(126deg, rgba(120, 120, 120, 0.2) 9.49%, rgba(0, 0, 0, 0) 71.04%), #1A1B1F",
     error: "#FF494A",
-    generalBorder: "rgba(255, 255, 255, 0.08)",
-    generalBorderDim: "rgba(255, 255, 255, 0.04)",
-    menuItemBackground: "rgba(224, 232, 255, 0.1)",
+    generalBorder: "rgba(0, 0, 0, 0)",
+    generalBorderDim: "rgba(0, 0, 0, 0.04)",
+    menuItemBackground: "rgba(0, 0, 0, 0.1)",
     modalBackdrop: "rgba(0, 0, 0, 0.5)",
     // modalBackground: "#1A1B1F",
     modalBorder: "rgba(255, 255, 255, 0.08)",
     modalText: "#000",
     modalTextDim: "rgba(0, 0, 0, 0.3)",
     modalTextSecondary: "rgba(0, 0, 0, 0.6)",
-    profileAction: "rgba(224, 232, 255, 0.1)",
-    profileActionHover: "rgba(224, 232, 255, 0.2)",
-    profileForeground: "rgba(224, 232, 255, 0.05)",
-    selectedOptionBorder: "rgba(224, 232, 255, 0.1)",
+    profileAction: "rgba(0, 0, 0, 0.07)",
+    profileActionHover: "rgba(0, 0, 0, 0.1)",
+    profileForeground: "rgba(0, 0, 0, 0.05)",
+    selectedOptionBorder: "rgba(0, 0, 0, 0.1)",
     standby: "#FFD641"
   },
   fonts: {
     body: '12px',
-
   },
-  radii: {
+  radii: VARIANT == 'edgy' ? {
+    actionButton: '0px',
+    connectButton: '0px',
+    menuButton: '0px',
+    modal: '0px',
+    modalMobile: '0px',
+  }: {
     actionButton: '10px',
     connectButton: '10px',
     menuButton: '10px',
-    modal: '10px',
-    modalMobile: '10px',
+    modal: '20px',
+    modalMobile: '0px',
   },
   shadows: {
     connectButton: "0px 4px 12px rgba(0, 0, 0, 0.1)",

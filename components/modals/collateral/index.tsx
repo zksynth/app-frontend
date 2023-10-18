@@ -19,47 +19,46 @@ import {
 	InputGroup,
 	NumberInput,
 	NumberInputField,
-	Select,
 	Divider,
-	IconButton,
-	Tag,
+	useColorMode,
 } from "@chakra-ui/react";
-import { PARTNER_ASSETS, PARTNER_ASSET_COLOR, PARTNER_ASSET_COLOR_GRADIENTS, PARTNER_ASSET_LOGOS, dollarFormatter, tokenFormatter } from "../../../src/const";
+import { ADDRESS_ZERO, NATIVE, W_NATIVE, dollarFormatter, tokenFormatter } from "../../../src/const";
 import Big from "big.js";
 
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 import Deposit from "./Deposit";
 import Link from "next/link";
-import { useContext, useEffect } from "react";
-import { AppDataContext } from "../../context/AppDataProvider";
 import Withdraw from "./Withdraw";
 import { WETH_ADDRESS } from "../../../src/const";
 import { useNetwork, useAccount, useSignTypedData } from 'wagmi';
-import { isValidAndPositiveNS } from '../../utils/number';
+import { formatInput, isValidAndPositiveNS, parseInput } from '../../utils/number';
 import TdBox from "../../dashboard/TdBox";
+import { useBalanceData } from "../../context/BalanceProvider";
+import { useSyntheticsData } from "../../context/SyntheticsPosition";
+import { usePriceData } from "../../context/PriceContext";
+import TokenInfo from "../_utils/TokenInfo";
+import { VARIANT } from "../../../styles/theme";
 
 export default function CollateralModal({ collateral, index }: any) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [tabSelected, setTabSelected] = useState(0);
 
 	const [amount, setAmount] = React.useState("");
-	const [amountNumber, setAmountNumber] = useState(0);
 	const [isNative, setIsNative] = useState(false);
 	const { chain } = useNetwork();
-
-	const { pools, tradingPool } = useContext(AppDataContext);
+	const { prices } = usePriceData();
+	const { position } = useSyntheticsData();
+	const pos = position();
 
 	const _onClose = () => {
-		setAmount("");
-		setAmountNumber(0);
+		setAmount("0");
 		onClose();
 		setIsNative(false);
 	};
 
 	const _setAmount = (e: string) => {
-		if (Number(e) !== 0 && Number(e) < 0.000001) e = "0";
+		e = parseInput(e);
 		setAmount(e);
-		setAmountNumber(isValidAndPositiveNS(e) ? Number(e) : 0);
 	};
 
 	const selectTab = (index: number) => {
@@ -68,64 +67,44 @@ export default function CollateralModal({ collateral, index }: any) {
 
 	const max = () => {
 		if (tabSelected == 0) {
-			return Big((isNative ?  collateral.nativeBalance : collateral.walletBalance) ?? 0)
+			return Big((isNative ? walletBalances[ADDRESS_ZERO] : walletBalances[collateral.token.id]) ?? 0)
 				.div(10 ** collateral.token.decimals)
 				.toString();
 		} else {
-			const v1 = collateral.priceUSD > 0 ? Big(pools[tradingPool]?.adjustedCollateral).sub(pools[tradingPool]?.userDebt).div(collateral.priceUSD).mul(1e4).div(collateral.baseLTV) : Big(0);
-			const v2 = Big(collateral.balance ?? 0).div(10**collateral.token.decimals);
+			const v1 = prices[collateral.token.id] > 0
+					? Big(pos.adjustedCollateral)
+							.sub(pos.debt)
+							.div(prices[collateral.token.id])
+							.div(collateral.baseLTV)
+							.mul(1e4)
+					: Big(0);
+			const v2 = Big(collateral.balance ?? 0).div(10 ** collateral.token.decimals);
 			// min(v1, v2)
 			return (v1.gt(v2) ? v2 : v1).toString();
 		}
 	};
 
 	const _onOpen = () => {
-		if(collateral.token.id == WETH_ADDRESS(chain?.id!).toLowerCase()) setIsNative(true);
+		if(collateral.token.id == WETH_ADDRESS(chain?.id!)?.toLowerCase()) setIsNative(true);
 		onOpen();
 	}
 
-	// 
-	const partner = Object.keys(PARTNER_ASSETS).map((key: string) => PARTNER_ASSETS[key].includes(collateral.token.symbol) ? key : null).filter((key: string | null) => key != null)[0];
+	const { walletBalances, allowances, nonces } = useBalanceData();
+
+	const { colorMode } = useColorMode();
 
 	return (
 		<>
 			<Tr
 				cursor="pointer"
 				onClick={_onOpen}
-				_hover={{ borderColor: "primary.400", bg: "blackAlpha.100" }}
+				_hover={{ bg: colorMode == 'dark' ? "darkBg.400" : "whiteAlpha.600" }}
 			>
 				<TdBox
 					isFirst={index == 0}
 					alignBox='left'
 				>
-					<Flex gap={3} textAlign='left'>
-						<Image
-							src={`/icons/${collateral.token.symbol}.svg`}
-							width="38px"
-							alt=""
-						/>
-						<Box>
-							<Text color="blackAlpha.800">{collateral.token.name}</Text>
-							<Flex color="blackAlpha.600" fontSize={"sm"} gap={1}>
-							<Text>{collateral.token.symbol} - </Text>
-								<Text>
-									{tokenFormatter.format(
-										Big(collateral.walletBalance ?? 0)
-										.add(collateral.nativeBalance ?? 0)
-											.div(
-												10 **
-													(collateral.token
-														.decimals ?? 18)
-											)
-											.toNumber()
-									)}{" "}
-								</Text>
-								<Text>
-								in wallet
-								</Text>
-							</Flex>
-						</Box>
-					</Flex>
+					<TokenInfo token={collateral.token} color={colorMode == 'dark' ? "primary.200" : "primary.600"} />
 				</TdBox>
 				<TdBox
 					isFirst={index == 0}
@@ -134,43 +113,40 @@ export default function CollateralModal({ collateral, index }: any) {
 				>
 					<Box color={
 						Big(collateral.balance ?? 0).gt(0)
-							? "blackAlpha.800"
-							: "blackAlpha.500"
+							? colorMode == 'dark' ? "primary.200" : "primary.600"
+							: colorMode == 'dark' ? "whiteAlpha.500" : "blackAlpha.500"
 					}>
 
-					<Text fontSize={'md'}  >
-
-					{tokenFormatter.format(
-						Big(collateral.balance ?? 0)
-							.div(10 ** (collateral.token.decimals ?? 18))
-							.toNumber()
-					)}
-					{Big(collateral.balance ?? 0).gt(0) ? "" : ".00"}
+					<Text fontSize={'md'}>
+						{tokenFormatter.format(
+							Big(collateral.balance ?? 0)
+								.div(10 ** (collateral.token.decimals ?? 18))
+								.toNumber()
+						)}
+						{Big(collateral.balance ?? 0).gt(0) ? "" : ".00"}
 					</Text>
 
-					{Big(collateral.balance ?? 0).gt(0) && <Text fontSize={'xs'} color={'blackAlpha.600'}>
+					{Big(collateral.balance ?? 0).gt(0) && <Text fontSize={'xs'} color={colorMode == 'dark' ? 'whiteAlpha.600' : 'blackAlpha.600'}>
 						{dollarFormatter.format(
 							Big(collateral.balance ?? 0)
 								.div(10 ** (collateral.token.decimals ?? 18))
-								.mul(collateral.priceUSD)
+								.mul(prices[collateral.token.id] ?? 0)
 								.toNumber()
 						)}
 					</Text>}
 					</Box>
-
 				</TdBox>
 			</Tr>
 
 			<Modal isCentered isOpen={isOpen} onClose={_onClose}>
-				<ModalOverlay bg="blackAlpha.600" backdropFilter="blur(30px)" />
+				<ModalOverlay bg="blackAlpha.400" backdropFilter="blur(30px)" />
 				<ModalContent
 					width={"30rem"}
-					bgColor="whiteAlpha.700"
-					rounded={8}
-					border="2px"
-					borderColor={"whiteAlpha.400"}
+					bgColor="transparent" shadow={'none'}
+					rounded={0}
 					mx={2}
 				>
+					<Box className={`${VARIANT}-${colorMode}-containerBody2`}>
 					<ModalCloseButton rounded={"full"} mt={1} />
 					<ModalHeader>
 						<Flex
@@ -180,45 +156,48 @@ export default function CollateralModal({ collateral, index }: any) {
 							align={"center"}
 						>
 							<Image
-								src={`/icons/${collateral.token?.symbol?.toUpperCase()}.svg`}
+								src={`/icons/${collateral.token.symbol}.svg`}
 								alt=""
-								width={"38px"}
+								width={"32px"}
 							/>
 							<Text>{collateral.token.name}</Text>
 							{chain?.testnet && <Link href="/faucet">
-								<Button size={"xs"} mb={1} rounded="full">
+								<Button size={"xs"} rounded="full" mb={1}>
 									Use Faucet
 								</Button>
 							</Link>}
 						</Flex>
 					</ModalHeader>
 					<ModalBody m={0} p={0}>
-						<Divider />
-						<Box mb={6} mt={4} px={8}>
+						{<Divider borderColor={colorMode == 'dark' ? 'whiteAlpha.400' : 'blackAlpha.200'}/>}
+						<Box bg={colorMode == 'dark' ? 'darkBg.600' : 'lightBg.600'} pb={12} pt={4} px={8}>
 							{collateral.token.id ==
-								WETH_ADDRESS(chain?.id!).toLowerCase() && (
+								WETH_ADDRESS(chain?.id!)?.toLowerCase() && (
 								<>
 									<Flex justify={"center"} mb={5}>
-										<Flex
-											justify={"center"}
-											align="center"
-											gap={0.5}
-											bg="whiteAlpha.500"
-											rounded="full"
-										>
-											<Tabs
-												variant="soft-rounded"
-												colorScheme="primary"
-												onChange={(index) => index == 1 ? setIsNative(false) : setIsNative(true)}
-												index={isNative ? 0 : 1}
-												size='sm'
-											>
-												<TabList>
-													<Tab _selected={{bg: 'white'}}>ETH</Tab>
-													<Tab _selected={{bg: 'white'}}>WETH</Tab>
-												</TabList>
-											</Tabs>
-										</Flex>
+									<Tabs
+										variant="unstyled"
+										onChange={(index) =>
+											index == 1
+												? setIsNative(false)
+												: setIsNative(true)
+										}
+										index={isNative ? 0 : 1}
+										size="sm"
+									>
+										<TabList>
+											<Box className={VARIANT + '-' + colorMode + '-' + (isNative ? `${tabSelected == 0 ? 'secondary' : 'primary'}TabLeftSelected` : `${tabSelected == 0 ? 'secondary' : 'primary'}TabLeft`)}>
+											<Tab>
+												{NATIVE}
+											</Tab>
+											</Box>
+											<Box className={VARIANT + '-' + colorMode + '-' + (!isNative ? `${tabSelected == 0 ? 'secondary' : 'primary'}TabRightSelected` : `${tabSelected == 0 ? 'secondary' : 'primary'}TabRight`)}>
+											<Tab>
+												{W_NATIVE}
+											</Tab>
+											</Box>
+										</TabList>
+									</Tabs>
 									</Flex>
 								</>
 							)}
@@ -230,7 +209,7 @@ export default function CollateralModal({ collateral, index }: any) {
 									>
 										<NumberInput
 											w={"100%"}
-											value={amount}
+											value={formatInput(amount)}
 											onChange={_setAmount}
 											min={0}
 											step={0.01}
@@ -249,11 +228,11 @@ export default function CollateralModal({ collateral, index }: any) {
 												<Text
 													fontSize="sm"
 													textAlign={"center"}
-													color={"blackAlpha.600"}
+													color={colorMode == 'dark' ? "whiteAlpha.600" : "blackAlpha.600"}
 												>
 													{dollarFormatter.format(
-														collateral.priceUSD *
-															amountNumber
+														prices[collateral.token.id] *
+															Number(amount)
 													)}
 												</Text>
 											</Box>
@@ -289,30 +268,32 @@ export default function CollateralModal({ collateral, index }: any) {
 									</InputGroup>
 							
 						</Box>
-
-						{/* <Text mt={16} mb={12} color="gray.400">
-										To deposit {collateral.token.symbol} you
-										need to approve the contract to spend
-										your tokens.
-									</Text> */}
-
-						<Tabs onChange={selectTab}>
+						{VARIANT == 'edgy' && <Divider borderColor={colorMode == 'dark' ? 'whiteAlpha.400' : 'blackAlpha.400'} /> }
+						<Box className={`${VARIANT}-${colorMode}-containerFooter`}>
+						<Tabs variant={'enclosed'} onChange={selectTab}>
 							<TabList>
 								<Tab
 									w={"50%"}
+									border={0}
+									borderColor={colorMode == 'dark' ? 'whiteAlpha.50' : 'primary.400'}
 									_selected={{
 										color: "primary.400",
-										borderColor: "primary.400",
+										borderBottom: "2px"
 									}}
+									rounded={0}
 								>
 									Deposit
 								</Tab>
+								<Divider borderColor={colorMode == 'dark' ? 'whiteAlpha.400' : 'blackAlpha.300'} orientation="vertical" h={'44px'} />
 								<Tab
 									w={"50%"}
+									border={0}
+									borderColor={colorMode == 'dark' ? 'whiteAlpha.50' : 'primary.400'}
 									_selected={{
-										color: "secondary.400",
-										borderColor: "secondary.400",
+										color: "primary.400",
+										borderBottom: "2px"
 									}}
+									rounded={0}
 								>
 									Withdraw
 								</Tab>
@@ -323,22 +304,25 @@ export default function CollateralModal({ collateral, index }: any) {
 									<Deposit
 										collateral={collateral}
 										amount={amount}
-										amountNumber={amountNumber}
 										setAmount={_setAmount}
 										isNative={isNative}
+										onClose={_onClose}
 									/>
 								</TabPanel>
 								<TabPanel m={0} p={0}>
 									<Withdraw
 										collateral={collateral}
 										amount={amount}
-										amountNumber={amountNumber}
 										setAmount={_setAmount}
+										isNative={isNative}
+										onClose={_onClose}
 									/>
 								</TabPanel>
 							</TabPanels>
 						</Tabs>
+						</Box>
 					</ModalBody>
+					</Box>
 				</ModalContent>
 			</Modal>
 		</>

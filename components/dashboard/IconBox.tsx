@@ -1,16 +1,15 @@
-import { Flex } from "@chakra-ui/react";
+import { Flex, useColorMode } from "@chakra-ui/react";
 
 export default function IconBox({ children }: any) {
+	const { colorMode } = useColorMode();
 	return (
 		<Flex
 			align={"center"}
 			justify="center"
-			h={"40px"}
-			w={"40px"}
-			bg="blackAlpha.200"
-			border={"2px"}
-			borderColor="blackAlpha.50"
-			rounded={10}
+			h={"30px"}
+			w={"30px"}
+			bg={colorMode == 'dark' ? "whiteAlpha.200" : "blackAlpha.200"}
+			rounded={0}
 		>
 			{children}
 		</Flex>

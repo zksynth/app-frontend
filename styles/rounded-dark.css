@@ -1,0 +1,176 @@
+/* dark Mode */
+.rounded-dark-navBar{
+    background: #252B36;
+    border-radius: 28px;
+    padding: 0px 16px;
+}
+
+.rounded-dark-containerBody {
+	background: #191D25;
+    border-radius: 16px;
+}
+
+.rounded-dark-halfContainerBody {
+    background: #191D25;
+    border-radius: 16px;
+}
+
+.rounded-dark-halfContainerBody2 {
+	background: #252B36;
+    border-radius: 16px;
+}
+
+.rounded-dark-halfButton2 {
+	background: #191D25;
+    border-radius: 16px;
+}
+
+.rounded-dark-containerBody2 {
+	background: #191D25;
+    border-radius: 16px;
+}
+
+.rounded-dark-containerHeader {
+	background: #252B36;
+    border-radius: 16px;
+}
+
+.rounded-dark-containerFooter {
+	background: #252B36;
+    border-radius: 16px;
+}
+
+.rounded-dark-containerFooter2 {
+	background: #252B36;
+    border-radius: 16px;
+}
+
+.rounded-dark-primaryButton {
+	background: #f64e00;
+    border-radius: 12px;
+    color: white;
+}
+
+.rounded-dark-primaryButton:hover {
+    background: #b34f2b;
+    border-radius: 12px;
+}
+
+.rounded-dark-disabledPrimaryButton {
+    background: rgb(164, 100, 82);
+    border-radius: 12px;
+}
+
+.rounded-dark-secondaryButton {
+    background: #ff9400;
+    border-radius: 12px;
+}
+
+.rounded-dark-secondaryButton:hover {
+    background: #cd832e;
+    border-radius: 12px;
+}
+
+.rounded-dark-disabledSecondaryButton {
+    background: #9e6413;
+    border-radius: 12px;
+}
+
+.rounded-dark-outlinedButton {
+    background: #252B36;
+    border-radius: 12px;
+}
+
+/* hover for outlined button */
+.rounded-dark-outlinedButton:hover {
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 12px;
+}
+
+.rounded-dark-outlinedBox {
+    background: #252B36;
+    border-radius: 12px;
+}
+
+.rounded-dark-iconButton {
+    background: #313847;
+    border-radius: 12px;
+}
+
+.rounded-dark-iconButton:hover {
+    background: rgba(52, 59, 72, 0.5);
+    border-radius: 12px;
+}
+
+.rounded-dark-errorButton {
+    background: rgb(246, 45, 0);
+    border-radius: 12px;
+}
+
+.rounded-dark-selectButton {
+    background: #252B36;
+    border-radius: 12px;
+}
+
+.rounded-dark-selectButton:hover {
+    background: #1e232c;
+    border-radius: 12px;
+}
+
+.rounded-dark-primaryTabLeft {
+	background: linear-gradient(45deg, transparent 6px, #e8e8e8 0) bottom left,
+		linear-gradient(-135deg, transparent 0px, #e8e8e8 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+}
+
+.rounded-dark-primaryTabLeftSelected {
+	background: linear-gradient(45deg, transparent 6px, rgb(246, 78, 0) 0)
+			bottom left,
+		linear-gradient(-135deg, transparent 0px, #f64e00 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+}
+
+.rounded-dark-primaryTabRight {
+	background: linear-gradient(45deg, transparent 0px, #e8e8e8 0) bottom left,
+		linear-gradient(-135deg, transparent 6px, #e8e8e8 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+}
+
+.rounded-dark-primaryTabRightSelected {
+	background: linear-gradient(45deg, transparent 0px, rgb(246, 78, 0) 0)
+			bottom left,
+		linear-gradient(-135deg, transparent 6px, #f64e00 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+}
+
+.rounded-dark-secondaryTabLeft {
+	background: linear-gradient(45deg, transparent 6px, #e8e8e8 0) bottom left,
+		linear-gradient(-135deg, transparent 0px, #e8e8e8 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+}
+
+.rounded-dark-secondaryTabLeftSelected {
+	background: linear-gradient(45deg, transparent 6px, #d97f00 0) bottom left,
+		linear-gradient(-135deg, transparent 0px, #d97f00 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+}
+
+.rounded-dark-secondaryTabRight {
+	background: linear-gradient(45deg, transparent 0px, #e8e8e8 0) bottom left,
+		linear-gradient(-135deg, transparent 6px, #e8e8e8 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+}
+
+.rounded-dark-secondaryTabRightSelected {
+	background: linear-gradient(45deg, transparent 0px, #d97f00 0) bottom left,
+		linear-gradient(-135deg, transparent 6px, #d97f00 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+}

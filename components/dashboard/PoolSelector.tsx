@@ -10,9 +10,12 @@ import {
 	Image,
 	Text,
 	Tag,
+	ModalOverlay,
+	useColorMode,
 } from "@chakra-ui/react";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { motion, Variants } from "framer-motion";
+import { HEADING_FONT, VARIANT } from "../../styles/theme";
 
 const itemVariants: Variants = {
 	open: {
@@ -53,9 +56,11 @@ export default function PoolSelector() {
 		setSearchedPools(newPools);
 	};
 
+	const { colorMode } = useColorMode();
+
 	return (
 		<Box>
-			<Box id="menu-list-123" h='50px'>
+			<Box id="menu-list-123" h='40px'>
 				<motion.nav
 					initial={false}
 					animate={isOpen ? "open" : "closed"}
@@ -67,31 +72,21 @@ export default function PoolSelector() {
 								whileTap={{ scale: 0.97 }}
 								onClick={() => setIsOpen(!isOpen)}
 							>
-								<Flex align={"center"} mb={4} gap={10}>
+								<Flex align={"center"}  gap={6}>
 									<Flex>
 										<Box textAlign={'left'}>
-										{/* <Text fontSize={'sm'} color='whiteAlpha.600'>Market Name</Text> */}
 										<Flex gap={4}>
-
-										<Heading fontSize={{sm: '3xl', md: "3xl", lg: '3xl'}} 
-										// fontFamily='Orbitron'
-										fontWeight='semibold'
-
-										color={'blackAlpha.800'}
-										>
+										<Heading fontSize={{sm: '3xl', md: "3xl", lg: '32px'}} fontWeight={HEADING_FONT == 'Chakra Petch' ? 'bold' : 'semibold'}>
 											{pools[tradingPool].name}
 										</Heading>
-										{/* <Text fontSize={'xs'}>Earning</Text> */}
-										{/* <Tag mt={2}>10% APY</Tag> */}
-
 										</Flex>
 										</Box>
 									</Flex>
-									<Flex align={'center'} color='blackAlpha.900'>
-									<Text fontSize={'xs'} display={{sm: 'none', md: 'block', lg: 'block'}} >{!isOpen ? 'All Markets' : 'Tap To Close'}</Text>
+									<Flex align={'center'} color={colorMode == 'dark' ? 'whiteAlpha.700' : 'blackAlpha.700'} >
+									<Text fontSize={'sm'} display={{sm: 'none', md: 'block', lg: 'block'}} >{!isOpen ? 'All Pools' : 'Tap To Close'}</Text>
 									<motion.div
 										variants={{
-											open: { rotate: 180 },
+											open: { rotate: 180, marginBottom: '4px' },
 											closed: { rotate: 0 },
 										}}
 										transition={{ duration: 0.2 }}
@@ -104,13 +99,13 @@ export default function PoolSelector() {
 								</Flex>
 							</motion.button>
 						) : (
-							<Skeleton height="30px" width="200px" rounded={8} />
+							<Skeleton height="30px" width="200px" rounded={0} />
 						)}
 					</Flex>
 					<motion.ul
 						variants={{
 							open: {
-								clipPath: "inset(0% 0% 0% 0% round 10px)",
+								clipPath: "inset(0% 0% 0% 0%)",
 								transition: {
 									type: "spring",
 									bounce: 0,
@@ -120,7 +115,7 @@ export default function PoolSelector() {
 								},
 							},
 							closed: {
-								clipPath: "inset(10% 50% 90% 50% round 10px)",
+								clipPath: "inset(00% 50% 90% 50%)",
 								transition: {
 									type: "spring",
 									bounce: 0,
@@ -134,48 +129,55 @@ export default function PoolSelector() {
 							display: "flex",
 							flexDirection: "column",
 							position: "relative",
-							width: "100%",
+							width: "450px",
 							zIndex: '100',
-							backgroundColor: "white",
-							border: "2px solid white",
-							borderRadius: "10px"
+							borderRadius: VARIANT == 'rounded' ? '16px' : '0px',
+							// background: "linear-gradient(45deg, transparent 10px, #1D1F24 0) bottom left, linear-gradient(-135deg, transparent 10px, #1D1F24 0) top right",
+							// backgroundRepeat: 'no-repeat',
+							// backgroundSize: '100% 50%',
+							// boxShadow: '0px 0px 20px 0px rgba(0,255,0,0.5)',
 						}}
+						
 					>
-						<Box bg={'blackAlpha.100'} borderRadius="10px">
-						<motion.div
-							variants={{
-								open: {
-									opacity: 1,
-									y: 0,
-									transition: {
-										ease: "easeOut",
-										duration: 0.1,
-									},
-								},
-								closed: {
-									opacity: 0,
-									y: 20,
-									transition: { duration: 0.1 },
-								},
-							}}
-							style={{
-								padding: "4px 10px",
-								borderRadius: '8px 8px 0 0'
-							}}
-						>
-							<Input
-								placeholder="Search Pool"
-								bg={'transparent'}
-								rounded={0}
-								my={3}
-								pl={1}
-								variant='unstyled'
-								onChange={handleSearch}
-								_active={{ borderColor: "transparent" }}
-							/>
-						</motion.div>
+						<Box className={`${VARIANT}-${colorMode}-containerBody`}>
+							<Box className={`${VARIANT}-${colorMode}-containerHeader`}>
+								<motion.div
+									variants={{
+										open: {
+											opacity: 1,
+											y: 0,
+											transition: {
+												ease: "easeOut",
+												duration: 0.1,
+											},
+										},
+										closed: {
+											opacity: 0,
+											y: 20,
+											transition: { duration: 0.1 },
+										},
+									}}
+									style={{
+										padding: "4px 10px",
+										// background: "linear-gradient(-135deg, transparent 10px, #2B2E32 0) top right",
+										// backgroundRepeat: 'no-repeat',
+										// backgroundSize: '100% 100%',
+									}}
+								>
+									<Input
+										placeholder="Search Pool"
+										bg={'transparent'}
+										rounded={0}
+										my={3}
+										pl={1}
+										variant='unstyled'
+										onChange={handleSearch}
+										_active={{ borderColor: "transparent" }}
+									/>
+								</motion.div>
+							</Box>
 
-						<Divider border={'2px'} borderColor={'#ffffff'} />
+						{VARIANT === 'edgy' && <Divider borderColor={colorMode == 'dark' ? 'whiteAlpha.400' : 'blackAlpha.400'} /> }
 
 						{searchedPools.map((pool, index) => {
 							return (
@@ -189,11 +191,10 @@ export default function PoolSelector() {
 									key={index}
 								>
 									<Box
-										_hover={{ bg: "blackAlpha.50" }}
+										_hover={{ bg: "bg.600" }}
 										cursor="pointer"
 										px={4}
 										my={0}
-										// p={'12px'}
 									>
 										<Flex
 											paddingY={1}
@@ -203,7 +204,7 @@ export default function PoolSelector() {
 										>
 											<Box>
 												<Heading fontSize={"xl"}>
-													{pool.name} ({pool.symbol})
+													{pool.name}
 												</Heading>
 												<Flex
 													justify={"start"}
@@ -228,7 +229,7 @@ export default function PoolSelector() {
 																		height={
 																			"30px"
 																		}
-																		src={`/icons/${synth.token.symbol?.toUpperCase()}.svg`}
+																		src={`/icons/${synth.token.symbol}.svg`}
 																		alt={""}
 																	/>
 																</Box>
@@ -245,7 +246,7 @@ export default function PoolSelector() {
 															index: number
 														) => (
 															<Box
-																mr={-4}
+																mr={-3}
 																key={index}
 															>
 																<Image

@@ -44,10 +44,10 @@ const Connect = () => {
 					>
 						{(() => {
 							if (!connected) {
-								return <ConnectButton />;
+								return <></>
 							}
 							if (chain.unsupported) {
-								return <ConnectButton />;
+								return <></>
 							}
 							return (
 								<>

@@ -1,36 +1,34 @@
-import { Box, Button, Flex, Heading, useDisclosure, useToast } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, IconButton, useColorMode, useDisclosure, useToast } from "@chakra-ui/react";
 import React, { useContext } from "react";
 
 import {
 	Table,
 	Thead,
 	Tbody,
-	Tfoot,
 	Tr,
-	Th,
-	Td,
-	TableCaption,
 	TableContainer,
     Text,
     Image
 } from "@chakra-ui/react";
 import { AppDataContext } from "../components/context/AppDataProvider";
-import { useEffect } from "react";
 
-const nonMintable = ["ETH", "waArbUSDC"];
+const nonMintable = ["MNT", "WETH", 'WMNT'];
+const startWithNonMintable = ["a", "s"]
 
 const mintAmounts: any = {
-	"USDC": "100",
-	"USDT": "100",
-	"DAI": "100",
-	"EUROC": "100",
+    "USDT": "1000",
+	"DAI": "1000",
+	"EUROC": "1000",
 	"WETH": "1",
     "AAVE": "10",
-    "WBTC": "0.1",
     "LINK": "10",
     "Link": "10",
     "wstETH": "10",
-    "ARB": '10'
+    "ARB": '10', 
+    // in use
+	"USDC": "1000",
+    "WBTC": "0.1",
+    "ETH": "1",
 };
 
 import Head from "next/head";
@@ -47,11 +45,15 @@ import {
 import { getContract, send } from "../src/contract";
 import { useAccount, useNetwork } from "wagmi";
 import { ethers } from "ethers";
-import { tokenFormatter } from "../src/const";
+import { useBalanceData } from "../components/context/BalanceProvider";
+import Big from "big.js";
+import ThBox from "../components/dashboard/ThBox";
+import TdBox from "../components/dashboard/TdBox";
+import { VARIANT } from "../styles/theme";
 
 export default function Faucet() {
-	const [collaterals, setCollaterals] = React.useState<any>([]);
-	const { pools, updateCollateralWalletBalance } = useContext(AppDataContext);
+	const { pools } = useContext(AppDataContext);
+    const { updateFromTx } = useBalanceData();
     const [loading, setLoading] = React.useState<any>(false);
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [openedCollateral, setOpenedCollateral] = React.useState<any>(null);
@@ -59,51 +61,38 @@ export default function Faucet() {
     const {address, isConnected}  = useAccount();
     const {chain} = useNetwork();
 
-    const toast = useToast();
-
-	useEffect(() => {
-		if (collaterals.length == 0) {
-			// filter out non-mintable assets from pool[].collaterals
-			let _collaterals: string[] = [];
-			for (let i = 0; i < pools.length; i++) {
-				for (let j = 0; j < pools[i].collaterals.length; j++) {
-					if (!nonMintable.includes(pools[i].collaterals[j].token.symbol)) {
-						_collaterals.push(pools[i].collaterals[j]);
-					}
-				}
-			}
-			// delete duplicates
-			_collaterals = _collaterals.filter(
-				(item, index) => _collaterals.indexOf(item) === index
-			);
-
-			setCollaterals(_collaterals);
-		}
-	});
+    const { tokens, walletBalances } = useBalanceData();
 
     const _onOpen = (collateral: any) => {
         setOpenedCollateral(collateral);
         onOpen();
     }
 
+    const _onClose = () => {
+        setOpenedCollateral(null);
+        setLoading(false);
+
+        onClose();
+    }
+
+    const toast = useToast();
+
     const mint = async () => {
         setLoading(true);
-        const token = await getContract("MockToken", chain?.id!, openedCollateral.token.id);
-        const amount = ethers.utils.parseUnits(mintAmounts[openedCollateral.token.symbol], openedCollateral.token.decimals);
-        send(token, "mint", [address, amount])
+        const token = await getContract("MockToken", chain?.id!, openedCollateral.id);
+        send(token, "mint(address)", [address])
             .then(async(res: any) => {
-                await res.wait(1);
-                toast({
-					title: "Mint Successful",
-					description: `You have minted ${tokenFormatter.format(mintAmounts[openedCollateral.token.symbol])} ${openedCollateral.token.symbol}`,
-					status: "success",
-					duration: 10000,
-					isClosable: true,
-					position: "top-right",
-				})
+                let response = await res.wait();
+                updateFromTx(response);
                 setLoading(false);
-                updateCollateralWalletBalance(openedCollateral.token.id, pools[0].id, amount.toString(), false);
-                updateCollateralWalletBalance(openedCollateral.token.id, pools[1].id, amount.toString(), false);
+                toast({
+                    title: `Minted ${openedCollateral.symbol}`,
+                    description: `${mintAmounts[openedCollateral.symbol]} ${openedCollateral.symbol} minted to your wallet.`,
+                    status: "success",
+                    duration: 5000,
+                    isClosable: true,
+                    position: 'top-right'
+                })
                 onClose();
             })
             .catch((err: any) => {
@@ -112,79 +101,129 @@ export default function Faucet() {
             });
     };
 
+    const addToMetamask = async (token: any) => {
+        (window as any).ethereum.request({
+            method: 'wallet_watchAsset',
+            params: {
+              type: 'ERC20', // Initially only supports ERC20, but eventually more!
+              options: {
+                address: token.id, // The address that the token is at.
+                symbol: token.symbol, // A ticker symbol or shorthand, up to 5 chars.
+                decimals: token.decimals, // The number of decimals in the token
+                image: process.env.NEXT_PUBLIC_VERCEL_URL + '/icons/'+token.symbol+'.svg', // A string url of the token logo
+              },
+            }
+        });
+    }
+
+    const validate = () => {
+        if(!isConnected) return {valid: false, message: "Please connect your wallet."}
+        else if(chain?.unsupported) return {valid: false, message: "Unsupported network"}
+        else return {valid: true, message: "Mint"}
+    }
+
+	const { colorMode } = useColorMode();
+
 	return (
 		<>
         <Head>
-				<title>Test Faucet | ZKSynth</title>
-				<link rel="icon" type="image/x-icon" href="/veZS.png"></link>
+				<title>Test Faucet | {process.env.NEXT_PUBLIC_TOKEN_SYMBOL}</title>
+				<link rel="icon" type="image/x-icon" href={`/${process.env.NEXT_PUBLIC_TOKEN_SYMBOL}.svg`}></link>
 			</Head>
 			<Heading mt={'80px'} fontSize={"3xl"}>Faucet</Heading>
-            <Text color={'gray.400'} mb={10}>
+            <Text color={colorMode == 'dark' ? 'whiteAlpha.500' : 'blackAlpha.500'} mt={2} mb={10}>
                 Note: This is a testnet faucet. These tokens are not real and have no value.
             </Text>
 
-			<TableContainer bg={'whiteAlpha.600'} border='2px' borderColor={'whiteAlpha.400'} rounded={8} pt={1}>
+			<TableContainer px={4} pb={4} className={`${VARIANT}-${colorMode}-containerBody`} rounded={12}>
 				<Table variant="simple">
 					<Thead>
 						<Tr>
-							<Th>Asset</Th>
-							<Th>Mint Amount</Th>
-							<Th isNumeric></Th>
+							<ThBox>Asset</ThBox>
+							<ThBox>Mint Amount</ThBox>
+							<ThBox isNumeric></ThBox>
 						</Tr>
 					</Thead>
 					<Tbody>
-                        {collaterals.map((collateral: any, index: number) => (
-                            <Tr key={index}>
-							<Td>
-                                <Flex gap={2}>
-                                <Image src={`/icons/${collateral.token.symbol}.svg`} w='34px'/>
-                                    <Box>
-                            <Text >
-                                {collateral.token.name} 
-                                
-                            </Text>
-                            <Text fontSize={'sm'} color='gray.400'>
-                            {collateral.token.symbol}
-                            </Text>
+                        {tokens.map((token: any, index: number) => {
+                            if(nonMintable.includes(token.symbol) || token.symbol.startsWith(startWithNonMintable[0]) || token.symbol.startsWith(startWithNonMintable[1])) return;
+                            return <Tr key={index}>
+                                <TdBox style={index == token.length - 1 ? {border: 0} : {}}>
+                                    <Flex gap={2}>
+                                    <Image src={`/icons/${token.symbol}.svg`} w='34px'/>
+                                        <Box>
+                                            <Flex align={'center'} gap={2}>
+                                                <Text>{token.symbol}</Text>
+                                                <IconButton
+                                                    icon={
+                                                        <Image
+                                                            src="https://cdn.consensys.net/uploads/metamask-1.svg"
+                                                            w={"20px"}
+                                                            alt=""
+                                                        />
+                                                    }
+                                                    onClick={() => addToMetamask(token)}
+                                                    size={"xs"}
+                                                    rounded="full"
+                                                    aria-label={""}
+                                                />
+                                            </Flex>
+                                            <Text textAlign={'left'} fontSize={'sm'} color='gray.500'>
+                                            {Big(walletBalances[token.id] ?? 0).div(10**token.decimals).toNumber()} in wallet
+                                            </Text>
+                                        </Box>
+                                    </Flex>
+                                </TdBox>
+                                <TdBox style={index == tokens.length - 1 ? {border: 0} : {}}>{mintAmounts[token.symbol]}</TdBox>
+                                <TdBox style={index == tokens.length - 1 ? {border: 0} : {}} isNumeric>
+                                <Flex justify={'end'}>
+                                    <Box className={`${VARIANT}-${colorMode}-primaryButton`}>
+                                        <Button
+                                            onClick={() => _onOpen(token)}
+                                            color={"white"}
+                                            size={"md"} 
+                                            bg={'transparent'} 
+                                            _hover={{bg: 'transparent'}}
+                                        >
+                                            Mint
+                                        </Button>
                                     </Box>
                                 </Flex>
-                                
-                            </Td>
-							<Td>{mintAmounts[collateral.token.symbol]}</Td>
-							<Td isNumeric>
-                                <Button fontSize={'md'} rounded='10' onClick={() => _onOpen(collateral)}>Mint</Button>
-                            </Td>
-						</Tr>
-                        ))}
-						
+                            </TdBox>
+                            </Tr>
+                        })}
 					</Tbody>
 				</Table>
 			</TableContainer>
 
-            {openedCollateral && <Modal isOpen={isOpen} onClose={onClose} isCentered>
-            <ModalOverlay />
-            <ModalContent width={'400px'}>
-            <ModalHeader>{openedCollateral.token.name}</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody >
-                <Flex gap={4}>
-
-                <Image alt={openedCollateral.token.symbol} src={`/icons/${openedCollateral.token.symbol}.svg`} w='44px' mb={2}/>
-                <Box  mb={2}>
-
-                <Text color={'gray.600'}>
-                    You are about to mint {mintAmounts[openedCollateral.token.symbol]} {openedCollateral.token.symbol} tokens.
-                </Text>
-                </Box>
-                </Flex>
-                
-            </ModalBody>
+            {openedCollateral && <Modal isOpen={isOpen} onClose={_onClose} isCentered>
+                <ModalOverlay />
+                <ModalContent rounded={0} bg={'transparent'} shadow={0} width={'400px'}>
+                    <Box className={`${VARIANT}-${colorMode}-containerBody2`}>
+                <ModalHeader>{openedCollateral.name}</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody >
+                    <Flex gap={4}>
+                    <Image alt={openedCollateral.symbol} src={`/icons/${openedCollateral.symbol}.svg`} w='44px' mb={2}/>
+                    <Box  mb={2}>
+                        <Text color={'blackAlpha.600'}>
+                            You are about to mint {mintAmounts[openedCollateral.symbol]} {openedCollateral.symbol} tokens.
+                        </Text>
+                    </Box>
+                    </Flex>
+                </ModalBody>
 
             <ModalFooter justifyContent={'center'}>
-                <Button isDisabled={!isConnected} size={'md'} loadingText="Minting" isLoading={loading} colorScheme={'blue'} mb={0} rounded={12} onClick={mint} width='100%'>
-                {isConnected ? 'Mint' : 'Please Connect Your Wallet'}
+            <Box w={'100%'} className={`${VARIANT}-${colorMode}-primaryButton`}>
+
+                <Button w={'100%'} isDisabled={!validate().valid} color={"white"} size={"lg"} bg={'transparent'} 
+					_hover={{bg: 'transparent'}} loadingText="Minting" isLoading={loading} mb={0} rounded={0} onClick={mint}
+                >
+                    {validate().message}
                 </Button>
+                </Box>
             </ModalFooter>
+            </Box>
             </ModalContent>
         </Modal>}
 

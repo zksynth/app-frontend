@@ -8,6 +8,8 @@ import {
 	useDisclosure,
 	Divider,
 	Link,
+	NumberInput,
+	NumberInputField,
 } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import { getContract, send, estimateGas } from "../../src/contract";
@@ -30,19 +32,23 @@ import { base58 } from "ethers/lib/utils.js";
 import { useToast } from '@chakra-ui/react';
 const Big = require("big.js");
 import { ExternalLinkIcon, InfoIcon } from "@chakra-ui/icons";
-import { EvmPriceServiceConnection } from "@pythnetwork/pyth-evm-js";
+import { useBalanceData } from "../context/BalanceProvider";
 import useUpdateData from "../utils/useUpdateData";
+import useHandleError, { PlatformType } from "../utils/useHandleError";
+import { formatInput, parseInput } from "../utils/number";
+import { usePriceData } from "../context/PriceContext";
 
 function Swap() {
-	const [inputAssetIndex, setInputAssetIndex] = useState(1);
-	const [outputAssetIndex, setOutputAssetIndex] = useState(0);
-	const [inputAmount, setInputAmount] = useState<number>('' as any);
-	const [outputAmount, setOutputAmount] = useState(0);
-	const [nullValue, setNullValue] = useState(false);
+	const [inputAssetIndex, setInputAssetIndex] = useState(0);
+	const [outputAssetIndex, setOutputAssetIndex] = useState(1);
+	const [inputAmount, setInputAmount] = useState("");
+	const [outputAmount, setOutputAmount] = useState("");
 	const [gas, setGas] = useState(0);
 	const { getButtonProps, getDisclosureProps, isOpen } = useDisclosure()
 	const [hidden, setHidden] = useState(!isOpen);
 	const { chain } = useNetwork();
+
+	const { walletBalances } = useBalanceData();
 
 	const {
 		isOpen: isInputOpen,
@@ -64,19 +70,15 @@ function Swap() {
 	const { account } = useContext(AppDataContext);
 	const toast = useToast();
 
-	const updateInputAmount = (e: any) => {
-		setInputAmount(e.target.value);
-		if (isNaN(Number(e.target.value))) return;
-		let outputAmount =
-			(Number(e.target.value) * inputToken()?.priceUSD) /
-			outputToken()?.priceUSD;
+	const updateInputAmount = (value: any) => {
+		value = parseInput(value);
+		setInputAmount(value);
+		let outputAmount = Big(value).mul(prices[inputToken()?.token.id] ?? 0).div(prices[outputToken()?.token?.id] ?? 0);
 		setOutputAmount(
-			Number(
 				Big(1)
 					.minus(Big(pools[tradingPool]._fee ?? 0).div(1e22))
 					.times(outputAmount)
 					.toFixed(10)
-			)
 		);
 	};
 
@@ -86,37 +88,29 @@ function Swap() {
 		}
 		setInputAssetIndex(e);
 		// calculate output amount
-		let _outputAmount = Big(inputAmount || 0)
+		let _outputAmount = Big(Number(inputAmount))
 			.times(inputToken(e).priceUSD)
 			.div(outputToken().priceUSD);
 		setOutputAmount(
-			Number(
 				Big(1)
 					.minus(Big(pools[tradingPool]._fee ?? 0).div(1e22))
 					.times(_outputAmount)
 					.toFixed(10)
-			)
 		);
 		onInputClose();
 	};
 
-	const updateOutputAmount = (e: any) => {
-		setOutputAmount(e.target.value);
-		if (isNaN(Number(e.target.value))) return;
-		let inputAmount = Big(Number(e.target.value))
-			.times(
-				pools[tradingPool].synths[outputAssetIndex].priceUSD
-			)
-			.div(
-				pools[tradingPool].synths[inputAssetIndex].priceUSD
-			);
+	const updateOutputAmount = (value: any) => {
+		value = parseInput(value);
+		setOutputAmount(value);
+
+		let inputAmount = Big(value).mul(prices[outputToken()?.token.id] ?? 0).div(prices[inputToken()?.token?.id] ?? 0);
+
 		setInputAmount(
-			Number(
-				Big(1)
-					.minus(Big(pools[tradingPool]._fee ?? 0).div(1e22))
-					.times(inputAmount)
-					.toFixed(10)
-			)
+			Big(1)
+				.minus(Big(pools[tradingPool]._fee ?? 0).div(1e22))
+				.times(inputAmount)
+				.toFixed(10)
 		);
 	};
 
@@ -125,17 +119,15 @@ function Swap() {
 			setInputAssetIndex(outputAssetIndex);
 		}
 		setOutputAssetIndex(e);
-		// calculate input amount
-		let _inputAmount = Big(outputAmount)
-			.times(outputToken(e).priceUSD)
-			.div(inputToken().priceUSD);
+		// Calculate input amount
+		let _inputAmount = Big(Number(outputAmount))
+			.times(prices[outputToken(e)?.token?.id] ?? 0)
+			.div(prices[inputToken()?.token?.id] ?? 0);
 		setInputAmount(
-			Number(
-				Big(1)
-					.minus(Big(pools[tradingPool]._fee ?? 0).div(1e22))
-					.times(_inputAmount)
-					.toFixed(10)
-			)
+			Big(1)
+				.minus(Big(pools[tradingPool]._fee ?? 0).div(1e22))
+				.times(_inputAmount)
+				.toFixed(10)
 		);
 		onOutputClose();
 	};
@@ -144,11 +136,13 @@ function Swap() {
 		let temp = inputAssetIndex;
 		setInputAssetIndex(outputAssetIndex);
 		setOutputAssetIndex(temp);
-		setInputAmount(0);
-		setOutputAmount(0);
+		setInputAmount("");
+		setOutputAmount("");
 	};
 
-	const {getUpdateData} = useUpdateData();
+	const { getUpdateData } = useUpdateData();
+	const { updateFromTx } = useBalanceData();
+	const handleError = useHandleError(PlatformType.DEX);
 
 	const exchange = async () => {
 		if (!inputAmount || !outputAmount) {
@@ -168,52 +162,32 @@ function Swap() {
 			pools[tradingPool].synths[outputAssetIndex].token.symbol;
 		const _outputAmount = outputAmount;
 
-		let _referral = useReferral ? BigNumber.from(base58.decode(referral!)).toHexString() : ethers.constants.AddressZero;
+		const priceFeedUpdateData = await getUpdateData([inputToken().token.id, outputToken().token.id]);
 
-		const priceFeedUpdateData = await getUpdateData();
-		let args = [
-			pools[tradingPool].synths[inputAssetIndex].token.id,
-			ethers.utils.parseEther(inputAmount.toString()),
-			pools[tradingPool].synths[outputAssetIndex].token.id,
-			0,
-			address,
-		];
-
-		args.push(priceFeedUpdateData);
-
-		send(pool, "swap", args)
+		send(
+			pool,
+			"swap",
+			[
+				pools[tradingPool].synths[inputAssetIndex].token.id,
+				ethers.utils.parseEther(inputAmount.toString()),
+				pools[tradingPool].synths[outputAssetIndex].token.id,
+				0,
+				address,
+				priceFeedUpdateData
+			]
+		)
 			.then(async (res: any) => {
 				const response = await res.wait(1);
-				// decode response.logs
-				const decodedLogs = response.logs.map((log: any) =>
-				{try {
-					return pool.interface.parseLog(log);
-				} catch (e) {
-					console.log(e);
-				}}
-				);
-				if(chain?.id! == 280){
-					decodedLogs.pop();
-				}
-				console.log(decodedLogs);
-				console.log(decodedLogs[decodedLogs.length - 3].args.value.toString(), decodedLogs[decodedLogs.length - 2].args.value.toString(), decodedLogs[decodedLogs.length - 1].args.value.toString());
-
+				updateFromTx(response);
 				setConfirmed(true);
-				handleExchange(
-					inputToken().token.id,
-					outputToken().token.id,
-					decodedLogs[decodedLogs.length - 1].args.value.toString(),
-					decodedLogs[decodedLogs.length - 3].args.value.toString(),
-				);
-				setInputAmount(0);
-				setOutputAmount(0);
-
+				setInputAmount("");
+				setOutputAmount("");
 				setLoading(false);
 				toast({
 					title: "Swap Successful!",
 					description: <Box>
 						<Text>
-					{`Swapped ${_inputAmount} ${_inputAsset} for ${_outputAmount} ${_outputAsset}`}
+					{`Swapped ${tokenFormatter.format(Number(_inputAmount))} ${_inputAsset} for ${tokenFormatter.format(Number(_outputAmount))} ${_outputAsset}`}
 						</Text>
 					<Link href={chain?.blockExplorers?.default.url + "tx/" + res.hash} target="_blank">
 						<Flex align={'center'} gap={2}>
@@ -230,6 +204,7 @@ function Swap() {
 			})
 			.catch((err: any) => {
 				console.log('Caught Error', err);
+				handleError(err);
 				if(err?.reason == "user rejected transaction"){
 					toast({
 						title: "Transaction Rejected",
@@ -244,25 +219,21 @@ function Swap() {
 			});
 	};
 
-
 	useEffect(() => {
 		if (pools[tradingPool] && !isNaN(Number(inputAmount)) && validateInput() == 0)
 			getContract("Pool", chain?.id!, pools[tradingPool].id).then(async (contract: any) => {
-
-				const priceFeedUpdateData = await getUpdateData();
-
-				let args = [
-					pools[tradingPool].synths[inputAssetIndex].token.id,
-					ethers.utils.parseEther(inputAmount.toString()),
-					pools[tradingPool].synths[outputAssetIndex].token.id,
-					0,
-					address,
-				];
-		
-				if(priceFeedUpdateData.length > 0) args.push(priceFeedUpdateData);		
-
+				const priceFeedUpdateData = await getUpdateData([inputToken().token.id, outputToken().token.id]);
 				// estimate gas
-				contract.estimateGas.swap(...args)
+				contract.estimateGas
+					.swap(
+						pools[tradingPool].synths[inputAssetIndex].token.id,
+						ethers.utils.parseEther(inputAmount.toString()),
+						pools[tradingPool].synths[outputAssetIndex].token.id,
+						0,
+						address,
+						priceFeedUpdateData,
+						{from: address}
+					)
 					.then((gas: any) => {
 						setGas(
 							Number(ethers.utils.formatUnits(gas, "gwei")) * 2000 / 10
@@ -275,37 +246,7 @@ function Swap() {
 	});
 
 	const { isConnected, address } = useAccount();
-
-	const { pools, tradingPool, updateSynthWalletBalance } =
-		useContext(AppDataContext);
-
-	const handleExchange = (
-		src: string,
-		dst: string,
-		srcValue: string,
-		dstValue: string
-	) => {
-		updateSynthWalletBalance(dst, pools[tradingPool].id, dstValue, false);
-		updateSynthWalletBalance(src, pools[tradingPool].id, srcValue, true);
-		setNullValue(!nullValue);
-	};
-
-	const [useReferral, setUseReferral] = useState(false);
-	const [referral, setReferral] = useState<string | null>(null);
-
-	const router = useRouter();
-
-	useEffect(() => {
-		if (referral == null) {
-			const { ref: refCode } = router.query;
-			if (refCode) {
-				setReferral(refCode as string);
-				setUseReferral(true);
-			} else {
-				setUseReferral(false);
-			}
-		}
-	});
+	const { pools, tradingPool } = useContext(AppDataContext);
 
 	useEffect(() => {
 		if (
@@ -323,19 +264,8 @@ function Swap() {
 	}, [inputAssetIndex, outputAssetIndex, pools, tradingPool]);
 
 	const handleMax = () => {
-		let _inputAmount = Big(inputToken().walletBalance ?? 0).div(1e18);
-		setInputAmount(_inputAmount);
-		let _outputAmount = Big(_inputAmount)
-			.times(inputToken().priceUSD)
-			.div(outputToken().priceUSD);
-		setOutputAmount(
-			Number(
-				Big(1)
-					.minus(Big(inputToken().burnFee ?? 0).add(outputToken().mintFee ?? 0).div(10000))
-					.times(_outputAmount)
-					.toString()
-			)
-		);
+		let _inputAmount = Big(walletBalances[inputToken().token.id] ?? 0).div(1e18).toFixed(inputToken().token.decimals);
+		updateInputAmount(_inputAmount);
 	};
 
 	const inputToken = (_inputAssetIndex = inputAssetIndex) => {
@@ -350,7 +280,7 @@ function Swap() {
 
 	const swapInputExceedsBalance = () => {
 		if (inputAmount) {
-			return Big(inputAmount).gt(Big(inputToken().walletBalance ?? 0).div(1e18));
+			return Big(inputAmount).gt(Big(walletBalances[inputToken().token.id] ?? 0).div(1e18));
 		}
 		return false;
 	};
@@ -371,22 +301,12 @@ function Swap() {
 	const validateInput = () => {
 		if(!isConnected) return ERRORS.NOT_CONNECTED
 		else if(chain?.unsupported) return ERRORS.UNSUPPORTED_CHAIN
-		else if (inputAmount <= 0) return ERRORS.INVALID_AMOUNT
+		else if (Number(inputAmount) <= 0) return ERRORS.INVALID_AMOUNT
 		else if (swapInputExceedsBalance()) return ERRORS.INSUFFICIENT_BALANCE
 		else return 0
 	}
 
-	const isValid = () => {
-		if (referral == "" || referral == null) return true;
-		try {
-			const decodedString = BigNumber.from(
-				base58.decode(referral!)
-			).toHexString();
-			return ethers.utils.isAddress(decodedString);
-		} catch (err) {
-			return false;
-		}
-	};
+	const { prices } = usePriceData();
 
 	return (
 		<>
@@ -394,25 +314,34 @@ function Swap() {
 				<title>
 					{" "}
 					{tokenFormatter.format(
-						inputToken()?.priceUSD / outputToken()?.priceUSD
+						prices[inputToken()?.token?.id] ? prices[inputToken()?.token?.id] / prices[outputToken()?.token?.id] : 0
 					)}{" "}
-					{outputToken()?.token.symbol}/{inputToken()?.token.symbol} | ZKSynth
+					{outputToken() && outputToken()?.token.symbol}/{inputToken()?.token.symbol} | ZKSynth
 				</title>
-				<link rel="icon" type="image/x-icon" href="/veZS.png"></link>
+				<link rel="icon" type="image/x-icon" href={`/${process.env.NEXT_PUBLIC_TOKEN_SYMBOL}.svg`}></link>
 			</Head>
 			{pools[tradingPool] ? (
-				<Box shadow='2xl' rounded={8}>
+				<Box bg={'white'} rounded={16}>
 					<Box px="5" py={10} roundedTop={15} 
 						// bg={"whiteAlpha.100"}
 					>
 						<Flex align="center" justify={"space-between"}>
 							<InputGroup width={"70%"}>
-								<Input
-									{...inputStyle}
-									value={inputAmount}
+								<NumberInput
+									w={"100%"}
+									value={formatInput(inputAmount)}
 									onChange={updateInputAmount}
 									min={0}
-								/>
+									step={0.01}
+									{...inputStyle}
+								>
+									<NumberInputField
+										pr={0}
+										fontSize={"4xl"}
+										placeholder="0"
+										border={0}
+									/>
+								</NumberInput>
 							</InputGroup>
 
 							<SelectBody
@@ -423,7 +352,7 @@ function Swap() {
 
 						<Flex
 							fontSize={"sm"}
-							color="blackAlpha.700"
+							color="gray.400"
 							justify={"space-between"}
 							align="center"
 							mt={4}
@@ -431,7 +360,7 @@ function Swap() {
 						>
 							<Text>
 								{dollarFormatter.format(
-									inputAmount * inputToken()?.priceUSD 
+									Number(inputAmount) * prices[inputToken()?.token?.id] 
 								)}
 							</Text>
 							<Flex gap={1}>
@@ -445,7 +374,7 @@ function Swap() {
 									{" "}
 									{tokenFormatter.format(
 										inputToken()
-											? Big(inputToken().walletBalance ?? 0)
+											? Big(walletBalances[inputToken().token.id] ?? 0)
 													.div(1e18)
 													.toNumber()
 											: 0
@@ -458,10 +387,8 @@ function Swap() {
 					<Flex px="5" mt={-5} align='center'>
 						<Divider w={'10px'} border='1px' borderColor={'blackAlpha.300'} />
 						<Button
-							bg="whiteAlpha.50"
-							border={'2px'}
-							borderColor={'blackAlpha.300'}
-							_hover={{ bg: "blackAlpha.50" }}
+							bg="blackAlpha.200"
+							_hover={{ bg: "blackAlpha.100" }}
 							rounded="100%"
 							onClick={switchTokens}
 							variant="unstyled"
@@ -480,14 +407,23 @@ function Swap() {
 					<Box px="5" pt={7} roundedBottom={15} bg={"whiteAlpha"}>
 						{/* Output */}
 						<Flex align="center" justify={"space-between"}>
-							<InputGroup width={"70%"}>
-								<Input
-									{...inputStyle}
-									value={outputAmount}
-									onChange={updateOutputAmount}
-									min={0}
+						<InputGroup width={"70%"}>
+							<NumberInput
+								w={"100%"}
+								value={formatInput(outputAmount)}
+								onChange={updateOutputAmount}
+								min={0}
+								step={0.01}
+								{...inputStyle}
+							>
+								<NumberInputField
+									pr={0}
+									fontSize={"4xl"}
+									placeholder="0"
+									border={0}
 								/>
-							</InputGroup>
+							</NumberInput>
+						</InputGroup>
 
 							<SelectBody
 								onOpen={onOutputOpen}
@@ -497,7 +433,7 @@ function Swap() {
 
 						<Flex
 							fontSize={"sm"}
-							color="blackAlpha.700"
+							color="gray.400"
 							justify={"space-between"}
 							align="center"
 							mt={4}
@@ -506,7 +442,7 @@ function Swap() {
 						>
 							<Text>
 								{dollarFormatter.format(
-									outputAmount * outputToken()?.priceUSD
+									Number(outputAmount) * prices[outputToken()?.token?.id] ?? 0
 								)}
 							</Text>
 							<Flex gap={1}>
@@ -515,7 +451,7 @@ function Swap() {
 									{" "}
 									{tokenFormatter.format(
 										outputToken()
-											? Big(outputToken().walletBalance ?? 0)
+											? Big(walletBalances[outputToken().token.id] ?? 0)
 													.div(1e18)
 													.toNumber()
 											: 0
@@ -534,10 +470,12 @@ function Swap() {
 							color="blackAlpha.700"
 							rounded={16}
 							px={4}
-							py={2}
+							py={'6px'}
 							cursor="pointer"
 							{...getButtonProps()}
-							_hover={{ bg: "whiteAlpha.100" }}
+							_hover={{ bg: "blackAlpha.200" }}
+							border={"2px"}
+							borderColor={"blackAlpha.50"}
 						>
 							<Flex align={"center"} gap={2} fontSize="md">
 								<InfoOutlineIcon />
@@ -569,14 +507,14 @@ function Swap() {
 								onAnimationStart={() => setHidden(false)}
 								onAnimationComplete={() => setHidden(!isOpen)}
 								
-								animate={{ height: isOpen ? 94 : 0 }}
+								animate={{ height: isOpen ? 100 : 0 }}
 								style={{
-								height: 94,
-								width: '100%',
+									height: 100,
+									width: '100%',
 								}}
 							>
 								{isOpen && 	
-								<Box border={'2px'} borderColor='blackAlpha.200' mt={2} px={4} py={2} rounded={16} fontSize='sm' color={'blackAlpha.500'}>
+								<Box border={'2px'} borderColor='blackAlpha.200' mt={2} px={4} py={"10px"} rounded={16} fontSize='sm' color={'blackAlpha.800'}>
 									<Flex justify={'space-between'}>
 									<Text>Price Impact</Text>
 									<Text>{100*(Number(inputToken().burnFee) + Number(outputToken().mintFee)) / 10000} %</Text>
@@ -598,41 +536,6 @@ function Swap() {
 							</motion.div>
 						</Box>
 
-						{/* <Box py={5}>
-						{!account && (
-							<>
-								{" "}
-								<Flex mt={isOpen ? 8 : 3} mb={3} gap={2} align={"center"}>
-									<Text
-										fontSize={"sm"}
-										color="gray.400"
-										fontWeight={"bold"}
-									>
-										Use Referral Code
-									</Text>
-									<Switch
-										colorScheme={"primary"}
-										isChecked={useReferral}
-										onChange={_setUseReferral}
-									/>
-								</Flex>
-								<Collapse in={useReferral} animateOpacity>
-									<Box mb={2} >
-										<Input
-											placeholder="Referral Code"
-											value={referral!}
-											onChange={(e) =>
-												setReferral(e.target.value)
-											}
-											isInvalid={!isValid()}
-											errorBorderColor="red.400"
-											colorScheme={"primary"}
-										/>
-									</Box>
-								</Collapse>{" "}
-							</>
-						)}
-						</Box> */}
 						</Box>}
 
 						<Button
@@ -642,13 +545,12 @@ function Swap() {
 							fontSize={"xl"}
 							width={"100%"}
 							// bgColor={"primary.400"}
-							bgGradient="linear(to-b, primary.400, primary.400)"
+							bgGradient="linear(to-b, primary.400, secondary.400)"
 							rounded={16}
 							onClick={exchange}
 							isDisabled={
 								loading ||
 								validateInput() > 0 ||
-								!isValid() || 
 								pools[tradingPool].paused
 							}
 							loadingText="Sign the transaction in your wallet"
@@ -657,7 +559,7 @@ function Swap() {
 							color="white"
 							height={"55px"}
 						>
-							{pools[tradingPool].paused ? 'Market Paused Till 5PM EDT' : !isValid() ? 'Invalid Referral' : validateInput() > 0 ? ERROR_MSG[validateInput()] : "Swap"}
+							{pools[tradingPool].paused ? 'Market Paused Till 5PM EDT' : validateInput() > 0 ? ERROR_MSG[validateInput()] : "Swap"}
 						</Button>
 						{hash && <Box mt={-5} pb={4}>
 						<Response
@@ -698,13 +600,13 @@ export function SelectBody({ asset, onOpen }: any) {
 				bg="whiteAlpha.200"
 				rounded={"full"}
 				shadow={"lg"}
-				border={"2px"}
-				borderColor="blackAlpha.200"
 				px={1}
 				py={1}
 				pr={2}
 				gap={1}
 				mr={-1}
+				border={'2px'}
+				borderColor={'blackAlpha.200'}
 			>
 				<Image
 					src={"/icons/" + asset?.token.symbol + ".svg"}
@@ -714,7 +616,7 @@ export function SelectBody({ asset, onOpen }: any) {
 					alt={asset?.symbol}
 				/>
 
-				<Text fontSize="xl" color="blackAlpha.600" fontWeight={"bold"}>
+				<Text fontSize="xl" color="blackAlpha.800" fontWeight={"bold"}>
 					{asset.token.symbol}
 				</Text>
 				<Box>

@@ -1,0 +1,230 @@
+{
+  "name": "ZkSynth",
+  "symbol": "ZS",
+  "version": "0.6.0",
+  "latest": "0.6.0",
+  "l0Admin": "0x6CeEBBFF9FaA802990f58659c1Ff227B4534570C",
+  "l1Admin": "0x6CeEBBFF9FaA802990f58659c1Ff227B4534570C",
+  "l2Admin": "0x6CeEBBFF9FaA802990f58659c1Ff227B4534570C",
+  "rewardAlloc": "0",
+  "weth": "0x5300000000000000000000000000000000000004",
+  "multicall": "0x679ad1c5943ba35475a85c1bacf1fb3d59e1927e",
+  "esSYX": {
+    "initialRewardsDuration": "30",
+    "lockPeriod": "15552000",
+    "unlockPeriod": "4838400",
+    "percReleaseAtUnlock": "500",
+    "quota": "1000000"
+  },
+  "pools": [
+    {
+      "name": "Crypto Pool",
+      "symbol": "A",
+      "rewardSpeed": "0",
+      "issuerAlloc": "10000",
+      "pyth": "0xA2aa501b19aff244D90cc15a4Cf739D2725B5729",
+      "collaterals": [
+        {
+          "symbol": "ETH",
+          "address": "0x5300000000000000000000000000000000000004",
+          "pyth": "0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace",
+          "params": {
+            "cap": "100000000000000000000",
+            "baseLTV": "7000",
+            "liqThreshold": "9000",
+            "liqBonus": "11000"
+          }
+        },
+        {
+          "symbol": "USDC",
+          "address": "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4",
+          "pyth": "0xeaa020c61cc479712813461ce153894a96a6c00b21ed0cfc2798d1f9a9e9c94a",
+          "params": {
+            "cap": "100000000000",
+            "baseLTV": "6500",
+            "liqThreshold": "8500",
+            "liqBonus": "11200"
+          }
+        },
+        {
+          "symbol": "USDT",
+          "address": "0xf55BEC9cafDbE8730f096Aa55dad6D22d44099Df",
+          "pyth": "0x2b89b9dc8fdf9f34709a5b106b472f0f39bb6ca9ce04b0fd7f2e971688e2e53b",
+          "params": {
+            "cap": "100000000000",
+            "baseLTV": "6500",
+            "liqThreshold": "8500",
+            "liqBonus": "11200"
+          }
+        },
+        {
+          "symbol": "WBTC",
+          "address": "0x3C1BCa5a656e69edCD0D4E36BEbb3FcDAcA60Cf1",
+          "pyth": "0xc9d8b075a5c69303365ae23633d4e085199bf5c520a3b90fed1322a0342ffc33",
+          "params": {
+            "cap": "1000000000",
+            "baseLTV": "7000",
+            "liqThreshold": "8500",
+            "liqBonus": "11000"
+          }
+        },
+        {
+          "symbol": "wstETH",
+          "address": "0xf610A9dfB7C89644979b4A0f27063E9e7d7Cda32",
+          "pyth": "0x6df640f3b8963d8f8358f791f352b8364513f6ab1cca5ed3f1f7b5448980e784",
+          "params": {
+            "cap": "10000000000000000000",
+            "baseLTV": "7000",
+            "liqThreshold": "8500",
+            "liqBonus": "11000"
+          }
+        }
+      ],
+      "synths": [
+        {
+          "name": "Bitcoin",
+          "symbol": "BTC",
+          "pyth": "0xe62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43",
+          "mintFee": "2",
+          "burnFee": "4"
+        },
+        {
+          "name": "Ethereum",
+          "symbol": "ETH",
+          "pyth": "0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace",
+          "mintFee": "2",
+          "burnFee": "4"
+        },
+        {
+          "name": "US Dollar",
+          "symbol": "USD",
+          "price": "1",
+          "isBaseCurrency": true,
+          "isFeeToken": true,
+          "mintFee": "2",
+          "burnFee": "4"
+        },
+        {
+          "name": "Ripple",
+          "symbol": "XRP",
+          "pyth": "0xec5d399846a9209f3fe5881d70aae9268c94339ff9817e8d18ff19fa05eea1c8",
+          "mintFee": "4",
+          "burnFee": "6"
+        },
+        {
+          "name": "Binance Coin",
+          "symbol": "BNB",
+          "pyth": "0x2f95862b045670cd22bee3114c39763a4a08beeb663b145d283c31d7d1101c4f",
+          "mintFee": "4",
+          "burnFee": "6"
+        },
+        {
+          "name": "Solana",
+          "symbol": "SOL",
+          "pyth": "0xef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d",
+          "mintFee": "4",
+          "burnFee": "6"
+        },
+        {
+          "name": "Dogecoin",
+          "symbol": "DOGE",
+          "pyth": "0xdcef50dd0a4cd2dcc17e45df1676dcb336a11a61c69df7a0299b0150c672d25c",
+          "mintFee": "4",
+          "burnFee": "6"
+        },
+        {
+          "name": "Litecoin",
+          "symbol": "LTC",
+          "pyth": "0x6e3f3fa8253588df9326580180233eb791e03b443a3ba7a1d892e73874e19a54",
+          "mintFee": "4",
+          "burnFee": "6"
+        },
+        {
+          "name": "Cardano",
+          "symbol": "ADA",
+          "pyth": "0x2a01deaec9e51a579277b34b122399984d0bbf57e2458a7e42fecd2829867a0d",
+          "mintFee": "4",
+          "burnFee": "6"
+        },
+        {
+          "name": "Polkadot",
+          "symbol": "DOT",
+          "pyth": "0xca3eed9b267293f6595901c734c7525ce8ef49adafe8284606ceb307afa2ca5b",
+          "mintFee": "4",
+          "burnFee": "6"
+        },
+        {
+          "name": "Algorand",
+          "symbol": "ALGO",
+          "pyth": "0xfa17ceaf30d19ba51112fdcc750cc83454776f47fb0112e4af07f15f4bb1ebc0",
+          "mintFee": "6",
+          "burnFee": "8"
+        },
+        {
+          "name": "Worldcoin",
+          "symbol": "WLD",
+          "pyth": "0xd6835ad1f773de4a378115eb6824bd0c0e42d84d1c84d9750e853fb6b6c7794a",
+          "mintFee": "6",
+          "burnFee": "8"
+        },
+        {
+          "name": "Arbitrum",
+          "symbol": "ARB",
+          "pyth": "0x3fa4252848f9f0a1480be62745a4629d9eb1322aebab8a791e344b3b9c1adcf5",
+          "mintFee": "6",
+          "burnFee": "8"
+        },
+        {
+          "name": "Avalanche",
+          "symbol": "AVAX",
+          "pyth": "0x93da3352f9f1d105fdfe4971cfa80e9dd777bfc5d0f683ebb6e1294b92137bb7",
+          "mintFee": "6",
+          "burnFee": "8"
+        },
+        {
+          "name": "Internet Computer",
+          "symbol": "ICP",
+          "pyth": "0xc9907d786c5821547777780a1e4f89484f3417cb14dd244f2b0a34ea7a554d67",
+          "mintFee": "6",
+          "burnFee": "8"
+        },
+        {
+          "name": "dYdX",
+          "symbol": "DYDX",
+          "pyth": "0x6489800bb8974169adfe35937bf6736507097d13c190d760c557108c7e93a81b",
+          "mintFee": "6",
+          "burnFee": "8"
+        },
+        {
+          "name": "Mina",
+          "symbol": "MINA",
+          "pyth": "0xe322f437708e16b033d785fceb5c7d61c94700364281a10fabc77ca20ef64bf1",
+          "mintFee": "6",
+          "burnFee": "8"
+        },
+        {
+          "name": "Chainlink",
+          "symbol": "LINK",
+          "pyth": "0x8ac0c70fff57e9aefdf5edf44b51d62c2d433653cbb2cf5cc06bb115af04d221",
+          "mintFee": "6",
+          "burnFee": "8"
+        },
+        {
+          "name": "Aptos",
+          "symbol": "APT",
+          "pyth": "0x03ae4db29ed4ae33d323568895aa00337e658e348b37509f5372ae51f0af00d5",
+          "mintFee": "6",
+          "burnFee": "8"
+        },
+        {
+          "name": "Terra",
+          "symbol": "LUNA",
+          "pyth": "0xe6ccd3f878cf338e6732bf59f60943e8ca2c28402fc4d9c258503b2edbe74a31",
+          "mintFee": "6",
+          "burnFee": "8"
+        }
+      ]
+    }
+  ],
+  "dummyTokens": []
+}
