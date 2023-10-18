@@ -108,14 +108,14 @@ function NavBar() {
 
 	return (
 		<>
-		<Flex className={`${VARIANT}-${colorMode}-navBar`} justify={'center'} shadow={'2xl'} zIndex={0} mt={8} align='center' >
+		<Flex className={`${VARIANT}-${colorMode}-navBar`} justify={'center'} shadow={'xl'} zIndex={0} mt={8} align='center' >
 			<Box minW='0' w={'100%'} maxW='1250px'>
 			<Flex align={"center"} justify="space-between" >
 				<Flex justify="space-between" align={"center"} w='100%'>
 					<Flex gap={10} align='center'>
 						<Image
 							src={`/${process.env.NEXT_PUBLIC_TOKEN_SYMBOL}-logo-${colorMode}.svg`}
-							alt="reax logo"
+							alt="logo"
 							height="36px"
 							ml={-2}
 							mr={-6}

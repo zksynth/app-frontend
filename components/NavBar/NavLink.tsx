@@ -36,15 +36,13 @@ export default function NavLink({
 					px={4}
 					cursor="pointer"
 					flex='stretch'
-					color={isPath ? (colorMode == 'dark' ? 'secondary.400' : 'black') : `${colorMode == 'dark' ? 'white' : 'black'}Alpha.600`}
+					color={isPath ? (colorMode == 'dark' ? 'secondary.400' : 'primary.400') : `${colorMode == 'dark' ? 'white' : 'black'}Alpha.600`}
 					className={`${VARIANT}-${colorMode}-navLink${isPath ? 'Selected' : ''}`}
 				>
-					<Box
-						fontWeight={"bold"}
-					>
+					<Box>
 						<Flex align={"center"} gap={2}>
 							{children}
-							<Heading size={"xs"}>{title}</Heading>
+							<Heading size={"xs"} fontWeight={'semibold'}>{title}</Heading>
 						</Flex>
 					</Box>
 				</Flex>

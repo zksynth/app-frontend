@@ -29,7 +29,7 @@ export default function Footer() {
       <Box
         borderTopWidth={1}
         borderStyle={'solid'}
-        borderColor={'whiteAlpha.400'}
+        borderColor={'blackAlpha.400'}
         >
         <Container
           as={Stack}

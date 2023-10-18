@@ -23,16 +23,17 @@ import { SyntheticsPositionProvider } from "../components/context/SyntheticsPosi
 import { WagmiConfig, configureChains, createConfig, mainnet } from 'wagmi'
 import { scrollSepolia } from "viem/chains";
 import { publicProvider } from 'wagmi/providers/public';
+import { defaultChain } from "../src/const";
  
 const { chains, publicClient } = configureChains(
-	[scrollSepolia],
+	[defaultChain],
 	[
 	  publicProvider()
 	]
   );
   
   const { connectors } = getDefaultWallets({
-	appName: 'My RainbowKit App',
+	appName: 'zkSynth',
 	projectId: 'YOUR_PROJECT_ID',
 	chains
   });

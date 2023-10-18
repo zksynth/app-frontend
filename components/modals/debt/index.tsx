@@ -255,10 +255,12 @@ export default function Debt({ synth, index }: any) {
 							<TabList>
 								<Tab
 									w={"50%"}
-									borderX={0}
-									borderColor={colorMode == 'dark' ? 'whiteAlpha.50' : 'blackAlpha.200'}
+									border={0}
+									
+									borderColor={colorMode == 'dark' ? 'whiteAlpha.50' : 'primary.400'}
 									_selected={{
 										color: "primary.400",
+										borderBottom: "2px"
 									}}
 									rounded={0}
 								>
@@ -267,10 +269,11 @@ export default function Debt({ synth, index }: any) {
 								<Divider borderColor={colorMode == 'dark' ? 'whiteAlpha.400' : 'blackAlpha.300'} orientation="vertical" h={'44px'} />
 								<Tab
 									w={"50%"}
-									borderX={0}
-									borderColor={colorMode == 'dark' ? 'whiteAlpha.50' : 'blackAlpha.200'}
+									border={0}
+									borderColor={colorMode == 'dark' ? 'whiteAlpha.50' : 'secondary.400'}
 									_selected={{
-										color: "primary.400",
+										color: "secondary.400",
+										borderBottom: "2px"
 									}}
 									rounded={0}
 								>

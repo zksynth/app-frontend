@@ -51,7 +51,7 @@ export default function CollateralTable() {
 	const { colorMode } = useColorMode();
 
 	return (
-		<Box>
+		<Box >
 			<Box className={`${VARIANT}-${colorMode}-containerHeader`} px={5} py={5}>
 				<Heading fontSize={'18px'} color={'secondary.300'}>Mint Synthetic Assets</Heading>			
 			</Box>

@@ -90,7 +90,7 @@ function TokenSelector({
 				
 			>
 				<ModalOverlay bg="blackAlpha.600" backdropFilter="blur(30px)" />
-				<ModalContent maxH={"600px"} bgColor="lightBg.600" rounded={16} mx={2}>
+				<ModalContent maxH={"700px"} bgColor="lightBg.600" rounded={16} mx={2}>
 					<ModalHeader>Select a token</ModalHeader>
 					<Box mx={5} mb={5}>
 					<Select rounded={'full'} placeholder="Select a pool" value={tradingPool} onChange={(e) => {
@@ -130,7 +130,6 @@ function TokenSelector({
 										)
 									}
 								>
-									
 									<Box
 										borderColor={"gray.700"}
 									>

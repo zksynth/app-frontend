@@ -46,33 +46,33 @@
     border-radius: 16px;
 }
 
-.rounded-light-primaryButton {
+.rounded-light-secondaryButton {
 	background: #EC255A;
     border-radius: 12px;
     color: white;
 }
 
-.rounded-light-primaryButton:hover {
+.rounded-light-secondaryButton:hover {
     background: #ff225d;
     border-radius: 12px;
 }
 
-.rounded-light-disabledPrimaryButton {
+.rounded-light-disabledSecondaryButton {
     background: #B11B43;
     border-radius: 12px;
 }
 
-.rounded-light-secondaryButton {
+.rounded-light-primaryButton {
     background: #FD5D5D;
     border-radius: 12px;
 }
 
-.rounded-light-secondaryButton:hover {
+.rounded-light-primaryButton:hover {
     background: #ff5151;
     border-radius: 12px;
 }
 
-.rounded-light-disabledSecondaryButton {
+.rounded-light-disabledPrimaryButton {
     background: #BC3F3F;
     border-radius: 12px;
 }

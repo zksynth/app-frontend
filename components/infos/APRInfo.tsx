@@ -55,13 +55,13 @@ function APRInfoBox({ debtBurnApr, esSyxApr }: any) {
 							<Text color={colorMode == 'dark' ? "whiteAlpha.700" : "blackAlpha.700"}>Burn</Text>
 						</Flex>
 					</Flex>
-					<Flex align={"center"} gap={2} my={2}>
+					{/* <Flex align={"center"} gap={2} my={2}>
 						<Image src={`/${process.env.NEXT_PUBLIC_VESTED_TOKEN_SYMBOL}.svg`} w={5} alt={process.env.NEXT_PUBLIC_VESTED_TOKEN_SYMBOL} />
 						<Flex gap={2}>
 							<Text color={colorMode == 'dark' ? "whiteAlpha.800" : "blackAlpha.800"}>{esSyxApr} %</Text>
 							<Text color={colorMode == 'dark' ? "whiteAlpha.700" : "blackAlpha.700"}>{process.env.NEXT_PUBLIC_VESTED_TOKEN_SYMBOL}</Text>
 						</Flex>
-					</Flex>
+					</Flex> */}
 				</Box>
 				
 				<Divider />

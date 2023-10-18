@@ -67,7 +67,7 @@ export default function Synthetics() {
 										height: "100%",
 									}}
 								>
-									<Box className={`${VARIANT}-${colorMode}-containerBody`} h={'100%'} mr={2}>
+									<Box className={`${VARIANT}-${colorMode}-containerBody`} shadow={'xl'} h={'100%'} mr={2}>
 										<CollateralTable />
 									</Box>
 								</motion.div>
@@ -83,7 +83,7 @@ export default function Synthetics() {
 										height: "100%",
 									}}
 								>
-									<Box className={`${VARIANT}-${colorMode}-containerBody`} h={'100%'} ml={2}>
+									<Box className={`${VARIANT}-${colorMode}-containerBody`} shadow={'xl'} h={'100%'} ml={2}>
 										<IssuanceTable />
 									</Box>
 								</motion.div>

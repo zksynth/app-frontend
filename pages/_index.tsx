@@ -168,7 +168,7 @@ export default function Index({ children }: any) {
 				bgGradient={
 					colorMode == "dark"
 						? "linear(to-b, blackAlpha.500, blackAlpha.800)"
-						: router.pathname == "/" ? "linear(to-b, blackAlpha.100, #fde9ef)" : "linear(to-b, blackAlpha.100, blackAlpha.300)"
+						: router.pathname == "/" ? "linear(to-b, blackAlpha.200, #fde9ef)" : "linear(to-b, blackAlpha.100, blackAlpha.300)"
 				}
 				zIndex={0}
 			>
