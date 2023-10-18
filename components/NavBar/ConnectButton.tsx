@@ -31,8 +31,8 @@ export const CustomConnectButton = () => {
             {(() => {
               if (!connected) {
                 return (
-                    <Box className={`${VARIANT}-${colorMode}-primaryButton`} rounded={'full'} _hover={{rounded: 'full'}} mr={-2}>
-                  <Button size={'md'} onClick={openConnectModal} type='button' bg={'transparent'} _hover={{ opacity: 0.6 }} rounded={'full'}>
+                    <Box className={`${VARIANT}-${colorMode}-secondaryButton`} rounded={'full'} _hover={{rounded: 'full'}} mr={-2}>
+                  <Button size={'md'} onClick={openConnectModal} type='button' bg={'transparent'} _hover={{ opacity: 0.6 }} rounded={'full'} color={'white'}>
                     Connect Wallet
                   </Button>
                   </Box>

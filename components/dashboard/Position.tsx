@@ -220,7 +220,7 @@ export default function Position({ poolIndex }: any) {
 										bg={
 											Big(pos.availableToIssue).gt(0)
 												? "green.400"
-												: "primary.400"
+												: "yellow.400"
 										}
 										width={pos.debtLimit + "%"}
 									></Box>

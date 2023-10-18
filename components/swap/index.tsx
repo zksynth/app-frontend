@@ -27,8 +27,6 @@ import { InfoOutlineIcon } from "@chakra-ui/icons";
 import Response from "../modals/_utils/Response";
 import { motion } from "framer-motion";
 import { ERRORS, ERROR_MSG } from '../../src/errors';
-import { useRouter } from "next/router";
-import { base58 } from "ethers/lib/utils.js";
 import { useToast } from '@chakra-ui/react';
 const Big = require("big.js");
 import { ExternalLinkIcon, InfoIcon } from "@chakra-ui/icons";
@@ -39,8 +37,8 @@ import { formatInput, parseInput } from "../utils/number";
 import { usePriceData } from "../context/PriceContext";
 
 function Swap() {
-	const [inputAssetIndex, setInputAssetIndex] = useState(0);
-	const [outputAssetIndex, setOutputAssetIndex] = useState(1);
+	const [inputAssetIndex, setInputAssetIndex] = useState(4);
+	const [outputAssetIndex, setOutputAssetIndex] = useState(9);
 	const [inputAmount, setInputAmount] = useState("");
 	const [outputAmount, setOutputAmount] = useState("");
 	const [gas, setGas] = useState(0);

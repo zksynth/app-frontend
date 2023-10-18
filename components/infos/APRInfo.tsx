@@ -17,6 +17,7 @@ export default function APRInfo({ debtBurnApr, esSyxApr, children }: any) {
 					<APRInfoBox debtBurnApr={debtBurnApr} esSyxApr={esSyxApr} />
 				}
 				isOpen={isLabelOpen}
+				rounded={'16px'}
 			>
 				<Box
 					onMouseEnter={() => setIsLabelOpen(true)}
@@ -40,7 +41,7 @@ function APRInfoBox({ debtBurnApr, esSyxApr }: any) {
 			>
 				<Box px={3} py={2} className={`${VARIANT}-${colorMode}-containerHeader`}>
 					<Text color={colorMode == 'dark' ? "whiteAlpha.700" : "blackAlpha.700"}>Total APY</Text>
-					<Text color={colorMode == 'dark' ? "whiteAlpha.800" : "blackAlpha.800"} fontSize={"lg"}>
+					<Text color={colorMode == 'dark' ? "whiteAlpha.800" : "blackAlpha.800"} fontSize={"lg"} fontWeight={'bold'}>
 						{(Number(debtBurnApr)
 						 + Number(esSyxApr)
 						 ).toFixed(2)} %
@@ -52,7 +53,7 @@ function APRInfoBox({ debtBurnApr, esSyxApr }: any) {
 					<Flex align={"center"} gap={2} mb={2} mt={2}>
 						<Flex gap={2}>
 							<Text color={colorMode == 'dark' ? "whiteAlpha.800" : "blackAlpha.800"}>{debtBurnApr} %</Text>
-							<Text color={colorMode == 'dark' ? "whiteAlpha.700" : "blackAlpha.700"}>Burn</Text>
+							<Text color={colorMode == 'dark' ? "whiteAlpha.700" : "blackAlpha.700"}>Debt Burn</Text>
 						</Flex>
 					</Flex>
 					{/* <Flex align={"center"} gap={2} my={2}>
@@ -64,11 +65,11 @@ function APRInfoBox({ debtBurnApr, esSyxApr }: any) {
 					</Flex> */}
 				</Box>
 				
-				<Divider />
-				<Flex className={`${VARIANT}-${colorMode}-containerFooter2`} px={2.5} py={1} align={'center'} gap={1}>
-					<InfoIcon color={colorMode == 'dark' ? 'whiteAlpha.600' : 'black'} />
-					<Text color={colorMode == 'dark' ? 'whiteAlpha.600' : 'black'}>
-						Earned on Debt
+				{/* <Divider /> */}
+				<Flex className={`${VARIANT}-${colorMode}-containerFooter2`} border={0} shadow={0} px={2.5} py={1} align={'center'} gap={1}>
+					<InfoIcon color={colorMode == 'dark' ? 'whiteAlpha.600' : 'blackAlpha.700'} />
+					<Text color={colorMode == 'dark' ? 'whiteAlpha.600' : 'blackAlpha.700'} fontSize={'xs'}>
+						Earned on Synthetic Assets
 					</Text>
 				</Flex>
 			</Box>

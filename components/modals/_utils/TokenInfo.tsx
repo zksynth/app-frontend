@@ -12,6 +12,10 @@ export default function TokenInfo({ token, color = 'primary.400', isNew = false 
 	const { chain } = useNetwork();
 	const { colorMode } = useColorMode();
 
+	color = (token.id == WETH_ADDRESS(chain?.id!)?.toLowerCase() ? Big(walletBalances[token.id] ?? 0).add(walletBalances[ADDRESS_ZERO] ?? 0) : Big(walletBalances[token.id] ?? 0))
+	.div(10 ** token.decimals)
+	.toNumber() > 0 ? color : colorMode == 'dark' ? "whiteAlpha.600" : "blackAlpha.600";
+
 	return (
 		<>
 			<Flex gap={2.5} ml={"-2px"} textAlign="left">
