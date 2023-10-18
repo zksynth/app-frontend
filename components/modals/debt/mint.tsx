@@ -29,7 +29,6 @@ import { VARIANT } from "../../../styles/theme";
 
 const Issue = ({ asset, amount, setAmount, onClose }: any) => {
 	const [loading, setLoading] = useState(false);
-
 	const { isConnected, address } = useAccount();
 	const { chain } = useNetwork();
 	const {getUpdateData} = useUpdateData();
@@ -86,7 +85,7 @@ const Issue = ({ asset, amount, setAmount, onClose }: any) => {
 				title: "Mint Successful",
 				description: <Box>
 					<Text>
-						{`You have minted ${amount} ${asset.token.symbol}`}
+						{`You have minted ${tokenFormatter.format(amount)} ${asset.token.symbol}`}
 					</Text>
 					<Link href={chain?.blockExplorers?.default.url + "/tx/" + res.hash} target="_blank">
 						<Flex align={'center'} gap={2}>

@@ -29,7 +29,7 @@ export default function Footer() {
       <Box
         borderTopWidth={1}
         borderStyle={'solid'}
-        borderColor={'whiteAlpha.200'}
+        borderColor={'whiteAlpha.400'}
         >
         <Container
           as={Stack}
@@ -50,9 +50,9 @@ export default function Footer() {
             </Flex>
             <Stack direction={'row'} align={'center'} spacing={4}>
               <Flex gap={2} align={'center'}>
-              {colorMode == 'dark' ? <MdDarkMode /> : <MdLightMode/>}
+              {/* {colorMode == 'dark' ? <MdDarkMode /> : <MdLightMode/>}
               <Switch zIndex={1000} size="sm" onChange={toggleColorMode} />
-              <Text>|</Text>
+              <Text>|</Text> */}
               </Flex>
               <Link zIndex={1000} target={'_blank'} href={process.env.NEXT_PUBLIC_TWITTER_LINK}>
                 <FaTwitter />

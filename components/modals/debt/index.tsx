@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import { useContext } from "react";
-
 import {
 	Modal,
 	ModalOverlay,
@@ -162,7 +160,7 @@ export default function Debt({ synth, index }: any) {
 								width={"32px"}
 							/>
 
-							<Text>{synth.token.name.split(" ").slice(1, -2).join(" ")}</Text>
+							<Text>{synth.token.name.split(" ").slice(1).join(" ")}</Text>
 							<Tooltip label='Add to Metamask'>
 							<IconButton
 								icon={
@@ -181,7 +179,6 @@ export default function Debt({ synth, index }: any) {
 						</Flex>
 					</ModalHeader>
 					<ModalBody m={0} p={0}>
-
 						{<>
 							<Divider borderColor={colorMode == 'dark' ? 'whiteAlpha.400' : 'blackAlpha.200'}/>
 							<Box bg={colorMode == 'dark' ? 'darkBg.600' : 'lightBg.600'} pb={12} pt={6} px={8}>
@@ -243,7 +240,7 @@ export default function Debt({ synth, index }: any) {
 											variant={"unstyled"}
 											fontSize="sm"
 											fontWeight={"bold"}
-											onClick={() => _setAmount(Big(max()).toFixed(18))}
+											onClick={() => _setAmount(Big(max()).mul(0.9999).toFixed(18))}
 										>
 											MAX
 										</Button>

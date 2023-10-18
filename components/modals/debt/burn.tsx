@@ -29,10 +29,6 @@ import { VARIANT } from "../../../styles/theme";
 
 const Burn = ({ asset, amount, setAmount, amountNumber, onClose }: any) => {
 	const [loading, setLoading] = useState(false);
-	const [response, setResponse] = useState<string | null>(null);
-	const [hash, setHash] = useState(null);
-	const [confirmed, setConfirmed] = useState(false);
-	const [message, setMessage] = useState("");
 	const { address } = useAccount();
 	const { chain } = useNetwork();
 	const toast = useToast();
@@ -58,10 +54,6 @@ const Burn = ({ asset, amount, setAmount, amountNumber, onClose }: any) => {
 	const burn = async () => {
 		if (!amount) return;
 		setLoading(true);
-		setConfirmed(false);
-		setHash(null);
-		setResponse("");
-		setMessage("");
 
 		let pool = await getContract("Pool", chain?.id!, pools[tradingPool].id);
 		let value = Big(amount)
@@ -77,7 +69,6 @@ const Burn = ({ asset, amount, setAmount, amountNumber, onClose }: any) => {
 			updateFromTx(response);
 			updateFromSynthTx(response);
 			setAmount("0");
-			setConfirmed(true);
 			setLoading(false);
 			onClose();
 			toast({
@@ -85,7 +76,7 @@ const Burn = ({ asset, amount, setAmount, amountNumber, onClose }: any) => {
 				description: (
 					<Box>
 						<Text>
-							{`You have burned ${amount} ${asset.token.symbol}`}
+							{`You have burned ${tokenFormatter.format(amount)} ${asset.token.symbol}`}
 						</Text>
 						<Link
 							href={

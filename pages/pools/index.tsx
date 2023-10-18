@@ -104,7 +104,7 @@ export default function Synth() {
             </Flex>
             {pools.length > 0 ? 
                 pools.map((pool: any, index: number) => (
-			    <Box maxW={'400px'} key={index} className={`${VARIANT}-${colorMode}-containerBody`} cursor={'pointer'} onClick={() => router.push('/pools/'+index)}>
+			    <Box maxW={'400px'} key={index} shadow={'xl'} className={`${VARIANT}-${colorMode}-containerBody`} cursor={'pointer'} onClick={() => router.push('/pools/'+index)}>
                     <Box className={`${VARIANT}-${colorMode}-halfContainerBody2`} >
                         <Flex py={4} px={5} align={'center'} justify={'space-between'} gap={4} >
                             <Heading fontSize={'22px'} fontWeight={'bold'}>{pool.name}</Heading>
@@ -122,7 +122,7 @@ export default function Synth() {
                             <Box>
                                 <Text fontSize={'sm'} color={colorMode == 'dark' ? 'whiteAlpha.600' : 'blackAlpha.600'}>TVL</Text>
                                 <Flex gap={1.5}>
-                                <Text fontSize={'lg'}>{dollarFormatter.format(Number(pool.totalCollateral))}</Text>
+                                <Text fontSize={'lg'} fontWeight={'semibold'}>{dollarFormatter.format(Number(pool.totalCollateral))}</Text>
                                 <Flex ml={1}>
                                 {pool.collaterals.map((collateral: any, index: number) => (<Box key={index} ml={-1}>
                                     <Tooltip label={collateral.token.symbol} placement={'top'}>

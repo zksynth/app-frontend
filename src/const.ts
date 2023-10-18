@@ -1,6 +1,5 @@
 import { ethers } from "ethers";
 import { lineaMainnet, lineaTestnet, mantleMainnet, mantleTestnet } from "./chains";
-import { mainnet } from "wagmi";
 import { scrollSepolia } from "viem/chains";
 export const ADDRESS_ZERO = ethers.constants.AddressZero;
 

@@ -223,7 +223,6 @@ function Swap() {
 		if (pools[tradingPool] && !isNaN(Number(inputAmount)) && validateInput() == 0)
 			getContract("Pool", chain?.id!, pools[tradingPool].id).then(async (contract: any) => {
 				const priceFeedUpdateData = await getUpdateData([inputToken().token.id, outputToken().token.id]);
-
 				// estimate gas
 				contract.estimateGas
 					.swap(
@@ -232,7 +231,8 @@ function Swap() {
 						pools[tradingPool].synths[outputAssetIndex].token.id,
 						0,
 						address,
-						priceFeedUpdateData
+						priceFeedUpdateData,
+						{from: address}
 					)
 					.then((gas: any) => {
 						setGas(
@@ -388,7 +388,7 @@ function Swap() {
 						<Divider w={'10px'} border='1px' borderColor={'blackAlpha.300'} />
 						<Button
 							bg="blackAlpha.200"
-							_hover={{ bg: "whiteAlpha.200" }}
+							_hover={{ bg: "blackAlpha.100" }}
 							rounded="100%"
 							onClick={switchTokens}
 							variant="unstyled"
@@ -466,14 +466,16 @@ function Swap() {
 							align={"center"}
 							mt={12}
 							mb={!isOpen ? !account ? '-4' : '-6' : '0'}
-							bg="whiteAlpha.50"
-							color="gray.200"
+							bg="blackAlpha.50"
+							color="blackAlpha.700"
 							rounded={16}
 							px={4}
-							py={2}
+							py={'6px'}
 							cursor="pointer"
 							{...getButtonProps()}
-							_hover={{ bg: "whiteAlpha.100" }}
+							_hover={{ bg: "blackAlpha.200" }}
+							border={"2px"}
+							borderColor={"blackAlpha.50"}
 						>
 							<Flex align={"center"} gap={2} fontSize="md">
 								<InfoOutlineIcon />
@@ -505,14 +507,14 @@ function Swap() {
 								onAnimationStart={() => setHidden(false)}
 								onAnimationComplete={() => setHidden(!isOpen)}
 								
-								animate={{ height: isOpen ? 94 : 0 }}
+								animate={{ height: isOpen ? 100 : 0 }}
 								style={{
-								height: 94,
-								width: '100%',
+									height: 100,
+									width: '100%',
 								}}
 							>
 								{isOpen && 	
-								<Box border={'2px'} borderColor='whiteAlpha.200' mt={2} px={4} py={2} rounded={16} fontSize='sm' color={'gray.400'}>
+								<Box border={'2px'} borderColor='blackAlpha.200' mt={2} px={4} py={"10px"} rounded={16} fontSize='sm' color={'blackAlpha.800'}>
 									<Flex justify={'space-between'}>
 									<Text>Price Impact</Text>
 									<Text>{100*(Number(inputToken().burnFee) + Number(outputToken().mintFee)) / 10000} %</Text>
@@ -597,7 +599,7 @@ export function SelectBody({ asset, onOpen }: any) {
 				align={"center"}
 				bg="whiteAlpha.200"
 				rounded={"full"}
-				shadow={"2xl"}
+				shadow={"lg"}
 				px={1}
 				py={1}
 				pr={2}

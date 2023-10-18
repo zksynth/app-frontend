@@ -5,7 +5,6 @@ import {
 	Heading,
 	Progress,
 	Text,
-	useBreakpointValue,
 	useColorMode,
 	useMediaQuery,
 	useToast,
@@ -22,7 +21,6 @@ import { useNetwork, useSwitchNetwork } from "wagmi";
 import { Status } from "../components/utils/status";
 import { defaultChain } from "../src/const";
 import { usePriceData } from "../components/context/PriceContext";
-import Success from "../components/modals/debt/Success";
 
 export default function Index({ children }: any) {
 	const router = useRouter();
