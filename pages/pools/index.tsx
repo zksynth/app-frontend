@@ -27,7 +27,7 @@ export default function Synth() {
     useEffect(() => {
         if(pools.length > 0) return;
         if(!allPools[0]) return;
-        // if(status != Status.SUCCESS) return;
+        if(status != Status.SUCCESS) return;
         // clone allPools
         let allPoolsClone = JSON.parse(JSON.stringify(allPools));
         // Set pool total debt
