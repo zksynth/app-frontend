@@ -8,7 +8,7 @@ const NETWORKS: any = {
 	[scroll.id]: scroll
 }
 
-export const defaultChain = NETWORKS[Number(process.env.NEXT_PUBLIC_CHAIN_ID)!] ?? scrollSepolia;
+export const defaultChain = NETWORKS[Number(process.env.NEXT_PUBLIC_CHAIN_ID)!] ?? scroll;
 
 export const NATIVE = defaultChain.nativeCurrency.symbol;
 export const W_NATIVE = `W${NATIVE}`;
