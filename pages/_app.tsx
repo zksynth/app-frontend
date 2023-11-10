@@ -21,35 +21,34 @@ import { PriceContextProvider } from "../components/context/PriceContext";
 import { SyntheticsPositionProvider } from "../components/context/SyntheticsPosition";
 
 import { WagmiConfig, configureChains, createConfig, mainnet } from 'wagmi'
-import { scrollSepolia } from "viem/chains";
 import { publicProvider } from 'wagmi/providers/public';
 import { defaultChain } from "../src/const";
  
 const { chains, publicClient } = configureChains(
-	[defaultChain],
-	[
-	  publicProvider()
-	]
-  );
-  
-  const { connectors } = getDefaultWallets({
-	appName: 'zkSynth',
-	projectId: 'YOUR_PROJECT_ID',
-	chains
-  });
-  
-  const wagmiConfig = createConfig({
-	autoConnect: true,
-	connectors,
-	publicClient
-  })
+[defaultChain],
+[
+	publicProvider()
+]
+);
+
+const { connectors } = getDefaultWallets({
+appName: 'zkSynth',
+projectId: 'YOUR_PROJECT_ID',
+chains
+});
+
+const wagmiConfig = createConfig({
+autoConnect: true,
+connectors,
+publicClient
+})
 
 function MyApp({ Component, pageProps }: AppProps) {
 
 	return (
 		<ChakraProvider theme={theme}>
 			<WagmiConfig config={wagmiConfig}>
-				<RainbowKitProvider chains={[scrollSepolia]} modalSize="compact" theme={rainbowTheme}>
+				<RainbowKitProvider chains={chains} modalSize="compact" theme={rainbowTheme}>
 					<AppDataProvider>
 							<BalanceContextProvider>
 								<PriceContextProvider>
