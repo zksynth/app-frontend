@@ -6,7 +6,7 @@ export default function Skeleton1({isLoaded}: any) {
   const {colorMode} = useColorMode();
   return (
     <Flex gap={4}>
-      <Box className={`${VARIANT}-${colorMode}-halfButton2`} w={'400px'}>
+      <Box bg={'white'} shadow={'md'} className={`${VARIANT}-${colorMode}-halfButton2`} w={'400px'}>
         <Stack padding={4} py={6} spacing={1} >
           <Skeleton height='40px'/>
           <Skeleton height='40px'/>

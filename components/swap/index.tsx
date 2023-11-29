@@ -217,31 +217,31 @@ function Swap() {
 			});
 	};
 
-	useEffect(() => {
-		if (pools[tradingPool] && !isNaN(Number(inputAmount)) && validateInput() == 0)
-			getContract("Pool", chain?.id!, pools[tradingPool].id).then(async (contract: any) => {
-				const priceFeedUpdateData = await getUpdateData([inputToken().token.id, outputToken().token.id]);
-				// estimate gas
-				contract.estimateGas
-					.swap(
-						pools[tradingPool].synths[inputAssetIndex].token.id,
-						ethers.utils.parseEther(inputAmount.toString()),
-						pools[tradingPool].synths[outputAssetIndex].token.id,
-						0,
-						address,
-						priceFeedUpdateData,
-						{from: address}
-					)
-					.then((gas: any) => {
-						setGas(
-							Number(ethers.utils.formatUnits(gas, "gwei")) * 2000 / 10
-						);
-					})
-					.catch((err: any) => {
-						console.log(err);
-					});
-			});
-	});
+	// useEffect(() => {
+	// 	if (pools[tradingPool] && !isNaN(Number(inputAmount)) && validateInput() == 0 && !gas)
+	// 		getContract("Pool", chain?.id!, pools[tradingPool].id).then(async (contract: any) => {
+	// 			const priceFeedUpdateData = await getUpdateData([inputToken().token.id, outputToken().token.id]);
+	// 			// estimate gas
+	// 			contract.estimateGas
+	// 				.swap(
+	// 					pools[tradingPool].synths[inputAssetIndex].token.id,
+	// 					ethers.utils.parseEther(inputAmount.toString()),
+	// 					pools[tradingPool].synths[outputAssetIndex].token.id,
+	// 					0,
+	// 					address,
+	// 					priceFeedUpdateData,
+	// 					{from: address}
+	// 				)
+	// 				.then((gas: any) => {
+	// 					setGas(
+	// 						Number(ethers.utils.formatUnits(gas, "gwei")) * 2000 / 10
+	// 					);
+	// 				})
+	// 				.catch((err: any) => {
+	// 					console.log(err);
+	// 				});
+	// 		});
+	// });
 
 	const { isConnected, address } = useAccount();
 	const { pools, tradingPool } = useContext(AppDataContext);

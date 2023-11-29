@@ -17,6 +17,7 @@ export default function useUpdateData() {
      */
     const getUpdateData = async (
         tokens = (pools[tradingPool]?.collaterals ?? []).map((token: any) => token.token.id).concat((pools[tradingPool]?.synths ?? []).map((token: any) => token.token.id)),
+        retry = 0
     ): Promise<string[]> => {
         let pythFeeds: string[] = [];
         // get feeds for tokens
@@ -32,6 +33,7 @@ export default function useUpdateData() {
                 }
             }
         }
+        console.log("Pyth feeds: ", pythFeeds);
         const pythPriceService = new EvmPriceServiceConnection(PYTH_ENDPOINT);
         try{
             const priceFeedUpdateData = pythFeeds.length > 0 ? await pythPriceService.getPriceFeedsUpdateData(pythFeeds) : [];
@@ -40,7 +42,8 @@ export default function useUpdateData() {
             console.log("Pyth data fetching failed, trying again...");
             // wait 2 sec and return
             await new Promise(r => setTimeout(r, 2000));
-            return await getUpdateData(tokens)
+            if(retry > 5) return [];
+            return await getUpdateData(tokens, retry + 1)
         }
     }
 
