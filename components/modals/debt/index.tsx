@@ -159,7 +159,7 @@ export default function Debt({ synth, index }: any) {
 								width={"32px"}
 							/>
 
-							<Text>{synth.token.name.split(" ").slice(1).join(" ")}</Text>
+							<Text>{synth.token.name.split(" ").slice(1, -2).join(" ")}</Text>
 							<Tooltip label='Add to Metamask'>
 							<IconButton
 								icon={

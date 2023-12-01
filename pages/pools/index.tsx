@@ -91,7 +91,7 @@ export default function Synth() {
 	return (<>
         <Head>
             <title>{process.env.NEXT_PUBLIC_TOKEN_SYMBOL} | Synthetics</title>
-            <link rel="icon" type="image/x-icon" href={`/${process.env.NEXT_PUBLIC_TOKEN_SYMBOL}.svg`}></link>
+            <link rel="icon" type="image/x-icon" href={`/${process.env.NEXT_PUBLIC_TOKEN_SYMBOL}.favicon`}></link>
         </Head>
 		<Box mt={"80px"}>
             <Flex flexDir={'column'} align={'start'} gap={6} mb={10}>
@@ -109,9 +109,9 @@ export default function Synth() {
                         <Flex py={4} px={5} align={'center'} justify={'space-between'} gap={4} >
                             <Heading fontSize={'22px'} fontWeight={'bold'}>{pool.name}</Heading>
                             <Flex>
-                                {pool.synths.slice(0, 5).map((synth: any, index: number) => (<Box key={index} ml={-3} border={'1.5px white solid'} rounded={'full'}>
+                                {pool.synths.slice(0, 5).map((synth: any, index: number) => (<Box key={index} ml={-1}>
                                     <Tooltip label={synth.token.symbol} placement={'top'}>
-                                        <Image src={`/icons/${synth.token.symbol}.svg`} w={'32px'} key={index} />
+                                        <Image src={`/icons/${synth.token.symbol}.svg`} w={'32px'} key={index} alt="logo" />
                                     </Tooltip>
                                 </Box>))}
                             </Flex>

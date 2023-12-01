@@ -33,7 +33,7 @@ export default function Synthetics() {
 		<>
 			<Head>
 				<title>{process.env.NEXT_PUBLIC_TOKEN_SYMBOL} | Synthetics</title>
-				<link rel="icon" type="image/x-icon" href={`/${process.env.NEXT_PUBLIC_TOKEN_SYMBOL}.svg`}></link>
+				<link rel="icon" type="image/x-icon" href={`/${process.env.NEXT_PUBLIC_TOKEN_SYMBOL}.favicon`}></link>
 			</Head>
 				<Box w={'100%'}>
 				

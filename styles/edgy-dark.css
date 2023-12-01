@@ -1,4 +1,12 @@
 /* Starts Here */
+.edgy-dark-navBar {
+	background: linear-gradient(45deg, transparent 10px, #191d25 0) bottom left,
+		linear-gradient(-135deg, transparent 10px, #191d25 0) top right;
+	background-repeat: no-repeat;
+	background-size: 100% 51%;
+	padding-left: 32px;
+}
+
 .edgy-dark-containerBody {
 	background: linear-gradient(45deg, transparent 10px, #191d25 0) bottom left,
 		linear-gradient(-135deg, transparent 10px, #191d25 0) top right;
@@ -196,9 +204,7 @@
 }
 
 .edgy-dark-navLinkSelected {
-	background: linear-gradient(45deg, transparent 4px, #181e26 0) bottom left,
-		linear-gradient(-135deg, transparent 4px, #181e26 0) top right;
-	background-repeat: no-repeat;
+	background: rgba(255, 255, 255, 0.03);
 	background-size: 100% 51%;
 }
 

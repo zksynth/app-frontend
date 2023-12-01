@@ -8,7 +8,8 @@ import {
 	Input,
 	Tooltip,
 	Divider,
-	Image
+	Image,
+	useColorMode
 } from "@chakra-ui/react";
 
 import { useContext, useState, useEffect } from "react";
@@ -25,6 +26,7 @@ import {
 	ModalCloseButton,
 } from "@chakra-ui/react";
 import { useBalanceData } from "../context/BalanceProvider";
+import { VARIANT } from "../../styles/theme";
 
 function TokenSelector({
 	onTokenSelected,
@@ -78,6 +80,8 @@ function TokenSelector({
 		}
 	}, [searchToken]);
 
+	const { colorMode } = useColorMode();
+
 	if(!pools[tradingPool]) return <></>
 
 	return (
@@ -90,30 +94,35 @@ function TokenSelector({
 				
 			>
 				<ModalOverlay bg="blackAlpha.600" backdropFilter="blur(30px)" />
-				<ModalContent maxH={"700px"} bgColor="lightBg.600" rounded={16} mx={2}>
-					<ModalHeader>Select a token</ModalHeader>
-					<Box mx={5} mb={5}>
-					<Select rounded={'full'} placeholder="Select a pool" value={tradingPool} onChange={(e) => {
-						if(e.target.value !== ''){
-							setTradingPool(Number(e.target.value))
-							localStorage.setItem("tradingPool", e.target.value);
-						}}} bg='white' variant={'filled'} _focus={{bg: 'white'}} cursor={'pointer'} focusBorderColor='transparent'>
-							{pools.map((pool: any, index: number) => (
-								<option value={index} key={pool.id}>
-									{pool.name}
-								</option>
-							))}
-						</Select>
-						</Box>
+				<ModalContent maxH={"700px"} bg={'transparent'} mx={2}>
+				<Box className={`${VARIANT}-${colorMode}-containerBody`}>
+						<Box className={`${VARIANT}-${colorMode}-containerHeader`} pb={'1px'}>
+							<ModalHeader>Select a token</ModalHeader>
+							<Box mx={5} mb={5}>
+								<Box className="edgy-dark-halfButton"> 
+									<Select rounded={'full'} placeholder="Select a pool" value={tradingPool} onChange={(e) => {
+										if(e.target.value !== ''){
+											setTradingPool(Number(e.target.value))
+											localStorage.setItem("tradingPool", e.target.value);
+										}}} bg={'transparent'} variant={'filled'} _focus={{bg: 'transparent'}} cursor={'pointer'} focusBorderColor='transparent'>
+										{pools.map((pool: any, index: number) => (
+											<option value={index} key={pool.id}>
+												{pool.name}
+											</option>
+										))}
+									</Select>
+								</Box>
+								</Box>
+							</Box>
 						{/* <Divider/> */}
-					<ModalCloseButton rounded={'full'} mt={1} />
-					<ModalBody bgColor="whiteAlpha.100">
+					<ModalCloseButton mt={1} />
+					<ModalBody  bg={colorMode == 'dark' ? 'darkBg.600' : 'lightBg.600'}>
 
 						{/* Token List */}
 						<Box mx={-6} mt={-2}>
 						{pools[tradingPool].synths.map(
 							(_synth: any, tokenIndex: number) => (
-								<Box key={tokenIndex} bg={'white'}>
+								<Box key={tokenIndex} >
 								<Divider borderColor={'blackAlpha.400'}/>
 								<Flex
 									justify="space-between"
@@ -121,7 +130,7 @@ function TokenSelector({
 									py={3}
 									px={6}
 									_hover={{
-										bg: "blackAlpha.50",
+										bg: "blackAlpha.400",
 										cursor: "pointer",
 									}}
 									onClick={() =>
@@ -135,7 +144,7 @@ function TokenSelector({
 									>
 										<Flex
 											align={"center"}
-											gap={"2"}
+											gap={3}
 											ml={-1}
 										>
 											<Image
@@ -194,9 +203,10 @@ function TokenSelector({
 					</Flex> */}
 					<Flex roundedBottom={16} py={1} justify='space-between' px={4} fontSize='sm' >
 						<Text>{pools[tradingPool].synths.length} Tokens</Text>
-						<Text>zkSynth</Text>
-						
+						<Text>{process.env.NEXT_PUBLIC_TOKEN_SYMBOL}</Text>
 					</Flex>
+					</Box>
+
 				</ModalContent>
 			</Modal>
 		</>

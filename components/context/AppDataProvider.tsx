@@ -158,7 +158,7 @@ function AppDataProvider({ children }: any) {
 						pool.synths[j].feed = res.returnData[index].toString();
 						index += 1;
 						if(fallbackOracle !== ADDRESS_ZERO){
-							pool.synths[j].fallbackFeed = res.returnData[index + 1].toString();
+							pool.synths[j].fallbackFeed = res.returnData[index].toString();
 							index += 1;
 						}
 					}
@@ -166,7 +166,7 @@ function AppDataProvider({ children }: any) {
 						pool.collaterals[j].feed = res.returnData[index].toString();
 						index += 1;
 						if(fallbackOracle !== ADDRESS_ZERO){
-							pool.collaterals[j].fallbackFeed = res.returnData[index + 1].toString();
+							pool.collaterals[j].fallbackFeed = res.returnData[index].toString();
 							index += 1;
 						}
 					}

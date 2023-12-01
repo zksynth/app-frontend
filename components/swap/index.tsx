@@ -10,6 +10,9 @@ import {
 	Link,
 	NumberInput,
 	NumberInputField,
+	useColorMode,
+	Heading,
+	Tooltip,
 } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import { getContract, send, estimateGas } from "../../src/contract";
@@ -35,6 +38,7 @@ import useUpdateData from "../utils/useUpdateData";
 import useHandleError, { PlatformType } from "../utils/useHandleError";
 import { formatInput, parseInput } from "../utils/number";
 import { usePriceData } from "../context/PriceContext";
+import { VARIANT } from "../../styles/theme";
 
 function Swap() {
 	const [inputAssetIndex, setInputAssetIndex] = useState(4);
@@ -305,6 +309,7 @@ function Swap() {
 	}
 
 	const { prices } = usePriceData();
+	const { colorMode } = useColorMode();
 
 	return (
 		<>
@@ -314,15 +319,22 @@ function Swap() {
 					{tokenFormatter.format(
 						prices[inputToken()?.token?.id] ? prices[inputToken()?.token?.id] / prices[outputToken()?.token?.id] : 0
 					)}{" "}
-					{outputToken() && outputToken()?.token.symbol}/{inputToken()?.token.symbol} | ZKSynth
+					{outputToken() && outputToken()?.token.symbol}/{inputToken()?.token.symbol} | {process.env.NEXT_PUBLIC_TOKEN_SYMBOL}
 				</title>
-				<link rel="icon" type="image/x-icon" href={`/${process.env.NEXT_PUBLIC_TOKEN_SYMBOL}.svg`}></link>
+				<link rel="icon" type="image/x-icon" href={`/${process.env.NEXT_PUBLIC_TOKEN_SYMBOL}.favicon`}></link>
 			</Head>
 			{pools[tradingPool] ? (
-				<Box bg={'white'} rounded={16}>
-					<Box px="5" py={10} roundedTop={15} 
-						// bg={"whiteAlpha.100"}
-					>
+				<Box className={`${VARIANT}-${colorMode}-containerBody`} pb={5}>
+					<Box className={`${VARIANT}-${colorMode}-containerHeader`} px={5} py={4}>
+						<Flex align={'center'} justify={'space-between'}>
+							<Flex align={'center'} gap={4}>
+								<Heading size={'sm'}>Swap</Heading>
+							</Flex>
+							<Flex>
+							</Flex>
+						</Flex>
+					</Box>
+					<Box px="5" py={10} bg={'darkBg.400'} borderTop={'1px'} borderColor={'whiteAlpha.50'}>
 						<Flex align="center" justify={"space-between"}>
 							<InputGroup width={"70%"}>
 								<NumberInput
@@ -382,24 +394,24 @@ function Swap() {
 						</Flex>
 					</Box>
 
-					<Flex px="5" mt={-5} align='center'>
-						<Divider w={'10px'} border='1px' borderColor={'blackAlpha.300'} />
+					<Flex px="5" my={-4} align='center'>
 						<Button
-							bg="blackAlpha.200"
-							_hover={{ bg: "blackAlpha.100" }}
-							rounded="100%"
+							_hover={{ bg: colorMode == 'dark' ? "whiteAlpha.50" : 'blackAlpha.100' }}
+							rounded={'0'}
 							onClick={switchTokens}
 							variant="unstyled"
-							w={"40px"}
-							h={"40px"}
+							size={'sm'}
 							display="flex"
 							alignItems="center"
 							justifyContent="center"
+							bg={colorMode == 'dark' ? 'darkBg.200' : 'blackAlpha.200'}
+							transform={"rotate(45deg)"}
+							mx={1.5}
 						>
-							<MdOutlineSwapVert size={"18px"} />
+							<Box  transform="rotate(-45deg)">
+							<MdOutlineSwapVert size={"20px"} />
+							</Box>
 						</Button>
-						<Divider border='1px' borderColor={'blackAlpha.300'} />
-
 					</Flex>
 
 					<Box px="5" pt={7} roundedBottom={15} bg={"whiteAlpha"}>
@@ -422,7 +434,6 @@ function Swap() {
 								/>
 							</NumberInput>
 						</InputGroup>
-
 							<SelectBody
 								onOpen={onOutputOpen}
 								asset={outputToken()}
@@ -458,7 +469,8 @@ function Swap() {
 							</Flex>
 						</Flex>
 					
-					{ gas > 0 && <Box pb={10} pt={5}>
+					{gas > 0 && <>
+						<Box pb={10} pt={5}>
 						<Flex
 							justify="space-between"
 							align={"center"}
@@ -533,40 +545,30 @@ function Swap() {
 								</Box>}
 							</motion.div>
 						</Box>
+						</Box>
+					</>}
 
-						</Box>}
+						<Box mt={!gas ? 14 : 0} className={(loading || validateInput() > 0 || pools[tradingPool].paused) ? `${VARIANT}-${colorMode}-disabledPrimaryButton` : `${VARIANT}-${colorMode}-primaryButton`}>
+							<Button
+								
 
-						<Button
-							mt={!gas ? 14 : 0}
-							mb={5}
-							size="lg"
-							fontSize={"xl"}
-							width={"100%"}
-							// bgColor={"primary.400"}
-							bgGradient="linear(to-b, primary.400, secondary.400)"
-							rounded={16}
-							onClick={exchange}
-							isDisabled={
-								loading ||
-								validateInput() > 0 ||
-								pools[tradingPool].paused
-							}
-							loadingText="Sign the transaction in your wallet"
-							isLoading={loading}
-							_hover={{ opacity: 0.6 }}
-							color="white"
-							height={"55px"}
-						>
-							{pools[tradingPool].paused ? 'Market Paused Till 5PM EDT' : validateInput() > 0 ? ERROR_MSG[validateInput()] : "Swap"}
-						</Button>
-						{hash && <Box mt={-5} pb={4}>
-						<Response
-							response={response}
-							message={message}
-							hash={hash}
-							confirmed={confirmed}
-						/>
-						</Box>}
+								size="lg"
+								fontSize={"xl"}
+								width={"100%"}
+								onClick={exchange}
+								bg={'transparent'}
+								isDisabled={loading ||
+									validateInput() > 0 ||
+									pools[tradingPool].paused}
+								loadingText="Loading"
+								isLoading={loading}
+								_hover={{ opacity: 0.6 }}
+								color="white"
+								height={"55px"}
+							>
+								{pools[tradingPool].paused ? 'Market Paused Till 5PM EDT' : validateInput() > 0 ? ERROR_MSG[validateInput()] : "Swap"}
+							</Button>
+						</Box>
 					</Box>
 				</Box>
 			) : (
@@ -590,18 +592,17 @@ function Swap() {
 }
 
 export function SelectBody({ asset, onOpen }: any) {
+	const {colorMode} = useColorMode();
 	return (
 		<Box cursor="pointer" onClick={onOpen}>
 			<Flex
+				className={`${VARIANT}-${colorMode}-selectButton`}
 				justify={"space-between"}
 				align={"center"}
-				bg="whiteAlpha.200"
-				rounded={"full"}
 				shadow={"lg"}
 				px={1}
 				py={1}
 				pr={2}
-				gap={1}
 				mr={-1}
 				border={'2px'}
 				borderColor={'blackAlpha.200'}
@@ -614,9 +615,9 @@ export function SelectBody({ asset, onOpen }: any) {
 					alt={asset?.symbol}
 				/>
 
-				<Text fontSize="xl" color="blackAlpha.800" fontWeight={"bold"}>
+				<Heading fontWeight={'bold'} ml={2} fontSize="xl" color={colorMode == 'light' ? "blackAlpha.800" : "whiteAlpha.800"}>
 					{asset.token.symbol}
-				</Text>
+				</Heading>
 				<Box>
 					<RiArrowDropDownLine size={30} />
 				</Box>

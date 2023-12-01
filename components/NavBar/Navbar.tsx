@@ -24,6 +24,11 @@ import { Status } from "../utils/status";
 import { CustomConnectButton } from "./ConnectButton";
 import { tokenFormatter } from "../../src/const";
 import { VARIANT } from "../../styles/theme";
+import { CgArrowsExchangeAlt } from "react-icons/cg";
+import { FiBox } from "react-icons/fi";
+import { RiExchangeBoxLine } from "react-icons/ri";
+import { AiOutlineSwap } from "react-icons/ai";
+import { BsDroplet } from "react-icons/bs";
 
 function NavBar() {
 	const { status, account, fetchData } = useContext(AppDataContext);
@@ -73,11 +78,11 @@ function NavBar() {
 			);
 			setIsSubscribed(true);
 		}
-		if (localStorage.getItem("chakra-ui-color-mode") === "dark") {
-			localStorage.setItem("chakra-ui-color-mode", "light");
-			// reload
-			window.location.reload();
-		}
+		// if (localStorage.getItem("chakra-ui-color-mode") === "dark") {
+		// 	localStorage.setItem("chakra-ui-color-mode", "light");
+		// 	// reload
+		// 	window.location.reload();
+		// }
 		if (
 			(!(isConnected && !isConnecting) || chain?.unsupported) &&
 			status !== Status.FETCHING &&
@@ -109,45 +114,37 @@ function NavBar() {
 	return (
 		<>
 		<Flex className={`${VARIANT}-${colorMode}-navBar`} justify={'center'} shadow={'xl'} zIndex={0} mt={8} align='center' >
-			<Box minW='0' w={'100%'} maxW='1250px'>
+			<Box w={'100%'} maxW='1250px'>
 			<Flex align={"center"} justify="space-between" >
 				<Flex justify="space-between" align={"center"} w='100%'>
-					<Flex gap={10} align='center'>
+					<Flex align='center' minW={'33%'} gap={8}>
 						<Image
 							src={`/${process.env.NEXT_PUBLIC_TOKEN_SYMBOL}-logo-${colorMode}.svg`}
 							alt="logo"
-							height="36px"
-							ml={-2}
-							mr={-6}
+							height="14px"
+							ml={-1}
 						/>
 						<Flex
 							align="center"
+							justify={'center'}
 							display={{ sm: "none", md: "flex" }}
+							gap={1}
 						>
 							<NavLocalLink
 								path={"/"}
-								title="Swap"
+								title={<Flex align={'center'} gap={2}>
+									<AiOutlineSwap />
+									<Text>Swap</Text>
+								</Flex>}
 							></NavLocalLink>
 
 							<NavLocalLink
 								path={"/pools"}
-								title="Pools"
+								title={<Flex align={'center'} gap={2}>
+								<FiBox size={'16px'} />
+								<Text>Pools</Text>
+							</Flex>}
 							></NavLocalLink>
-
-							{/* <NavLocalLink
-								path={"/synthetics"}
-								title={"Synths"}
-							></NavLocalLink>
-
-							<NavLocalLink
-								path={"/lend"}
-								title="Markets"
-							></NavLocalLink>
-							
-							<NavLocalLink
-								path={"/pools"}
-								title="Liquidity"
-							></NavLocalLink> */}
 						</Flex>
 					</Flex>
 					
@@ -174,34 +171,16 @@ function NavBar() {
 					justify="flex-end"
 					align={"center"}
 					// gap={2}
-					w='100%'
+					minW='33%'
 				>
-					{/* <Button mr={4} size={'sm'} bg={'secondary.600'} _hover={{bg: 'secondary.800'}} px={3} py={1} rounded={'full'} onClick={() => router.push('/synthetics')}>
-						<Flex ml={-1.5} mr={1.5}>
-							<Box border={'0px white solid'} rounded={'full'}>
-								<Image src={'/icons/cBTC.svg'} w={'25px'} />
-							</Box>
-							<Box border={'0px white solid'} rounded={'full'} ml={-2}>
-								<Image src={'/icons/cETH.svg'} w={'25px'}  />
-							</Box>
-							<Box border={'0px white solid'} rounded={'full'} ml={-2}>
-								<Image src={'/icons/cSOL.svg'} w={'25px'} />
-							</Box>
-						</Flex>
-						Mint Synths & Earn {"20"}% APY
-					</Button> */}
-					{/* <NavLocalLink
-						path={"/leaderboard"}
-						title={<Flex gap={2} align={'center'}>
-						<Text color={'secondary.400'} fontWeight={'bold'} fontSize={'md'}>{tokenFormatter.format(dex?.yourPoints?.totalPoints ?? 0)}</Text> <Text color={colorMode == 'dark' ? 'white' : 'black'}>Points</Text>
-						</Flex>}>
-					</NavLocalLink> */}
-
-					{isConnected && process.env.NEXT_PUBLIC_NETWORK == 'testnet' && <>
+					{isConnected && process.env.NEXT_PUBLIC_NETWORK == 'testnet' && <Box>
 						<NavLocalLink
 						path={"/faucet"}
-						title="Faucet"></NavLocalLink>
-					</>}
+						title={<Flex align={'center'} gap={2}>
+							<BsDroplet />
+						<Text>Faucet</Text>
+					</Flex>}></NavLocalLink>
+					</Box>}
 					<Box ml={2}>
 						<CustomConnectButton />
 					</Box>

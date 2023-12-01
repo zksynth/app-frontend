@@ -13,7 +13,7 @@ import { AppDataContext } from './context/AppDataProvider';
 import { useNetwork } from 'wagmi';
 import { Switch } from '@chakra-ui/react'
 import { MdDarkMode, MdLightMode } from 'react-icons/md';
-import { BsBook } from 'react-icons/bs';
+import { BsBook, BsBookFill } from 'react-icons/bs';
 
 export default function Footer() {
   const {block} = useContext(AppDataContext);
@@ -29,7 +29,7 @@ export default function Footer() {
       <Box
         borderTopWidth={1}
         borderStyle={'solid'}
-        borderColor={'blackAlpha.400'}
+        borderColor={'whiteAlpha.50'}
         >
         <Container
           as={Stack}
@@ -58,7 +58,7 @@ export default function Footer() {
                 <FaTwitter />
               </Link>
               <Link zIndex={1000} target={'_blank'} href={process.env.NEXT_PUBLIC_DOCS_LINK}>
-                <BsBook />
+                <BsBookFill />
               </Link>
               <Link zIndex={1000} target={'_blank'} href={process.env.NEXT_PUBLIC_DISCORD_LINK}>
                 <FaDiscord />

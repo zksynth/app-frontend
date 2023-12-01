@@ -13,7 +13,7 @@ import {
 import { AppDataContext } from "../components/context/AppDataProvider";
 
 const nonMintable = ["MNT", "WETH", 'WMNT'];
-const startWithNonMintable = ["a", "s"]
+const startWithNonMintable = ["a", "c"]
 
 const mintAmounts: any = {
     "USDT": "1000",
@@ -29,6 +29,7 @@ const mintAmounts: any = {
 	"USDC": "1000",
     "WBTC": "0.1",
     "ETH": "1",
+    "BTC.b": "0.1",
 };
 
 import Head from "next/head";
@@ -80,7 +81,7 @@ export default function Faucet() {
     const mint = async () => {
         setLoading(true);
         const token = await getContract("MockToken", chain?.id!, openedCollateral.id);
-        send(token, "mint(address)", [address])
+        send(token, "mint", [address, ethers.utils.parseUnits(mintAmounts[openedCollateral.symbol], openedCollateral.decimals)])
             .then(async(res: any) => {
                 let response = await res.wait();
                 updateFromTx(response);
@@ -128,7 +129,7 @@ export default function Faucet() {
 		<>
         <Head>
 				<title>Test Faucet | {process.env.NEXT_PUBLIC_TOKEN_SYMBOL}</title>
-				<link rel="icon" type="image/x-icon" href={`/${process.env.NEXT_PUBLIC_TOKEN_SYMBOL}.svg`}></link>
+				<link rel="icon" type="image/x-icon" href={`/${process.env.NEXT_PUBLIC_TOKEN_SYMBOL}.favicon`}></link>
 			</Head>
 			<Heading mt={'80px'} fontSize={"3xl"}>Faucet</Heading>
             <Text color={colorMode == 'dark' ? 'whiteAlpha.500' : 'blackAlpha.500'} mt={2} mb={10}>
@@ -206,7 +207,7 @@ export default function Faucet() {
                     <Flex gap={4}>
                     <Image alt={openedCollateral.symbol} src={`/icons/${openedCollateral.symbol}.svg`} w='44px' mb={2}/>
                     <Box  mb={2}>
-                        <Text color={'blackAlpha.600'}>
+                        <Text color={colorMode == 'light' ? 'blackAlpha.600' : 'whiteAlpha.600'}>
                             You are about to mint {mintAmounts[openedCollateral.symbol]} {openedCollateral.symbol} tokens.
                         </Text>
                     </Box>

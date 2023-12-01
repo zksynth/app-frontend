@@ -1,14 +1,16 @@
 import { ethers } from "ethers";
 import { lineaMainnet, lineaTestnet, mantleMainnet, mantleTestnet } from "./chains";
-import { scrollSepolia, scroll } from "viem/chains";
+import { scrollSepolia, scroll, telosTestnet } from 'viem/chains';
 export const ADDRESS_ZERO = ethers.constants.AddressZero;
 
 const NETWORKS: any = {
 	[scrollSepolia.id]: scrollSepolia,
-	[scroll.id]: scroll
+	[scroll.id]: scroll,
+	[telosTestnet.id]: {...telosTestnet, name: 'Telos Testnet', iconUrl: '/icons/TLOS.svg', blockExplorers: {default: {name: 'Teloscan', url: 'https://testnet.teloscan.io'}}},
 }
 
 export const defaultChain = NETWORKS[Number(process.env.NEXT_PUBLIC_CHAIN_ID)!] ?? scroll;
+
 
 export const NATIVE = defaultChain.nativeCurrency.symbol;
 export const W_NATIVE = `W${NATIVE}`;
@@ -26,6 +28,7 @@ export const EIP712_VERSION = (asset: string) => VERSIONS[asset.toLowerCase()] ?
 const _WETH_ADDRESS: any = {
 	[scrollSepolia.id]: "0x86e6dd832c9a692CA6ED2fD562c55FaB9Cd4B259".toLowerCase(),
 	[scroll.id]: "0x5300000000000000000000000000000000000004".toLowerCase(),
+	[telosTestnet.id]: "0x8A68a340c4c9c30a362364894e0e333c2b90A040".toLowerCase()
 };
 
 export const PERP_CATEGORIES: any = {

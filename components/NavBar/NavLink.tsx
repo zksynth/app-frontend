@@ -24,7 +24,6 @@ export default function NavLink({
 
 	return ( <Flex flexDir={'column'} align='center'>
 		<Flex 
-			my={2}
 			// mb={isPath ? '-2px' : 0} 
 			align={"center"}
 		>
@@ -32,12 +31,18 @@ export default function NavLink({
 				<Flex flexDir={'column'} align={'center'} w={'100%'}>
 				<Flex
 					align={"center"}
-					h={"34px"}
+					h={"48px"}
 					px={4}
 					cursor="pointer"
 					flex='stretch'
 					color={isPath ? (colorMode == 'dark' ? 'secondary.400' : 'primary.400') : `${colorMode == 'dark' ? 'white' : 'black'}Alpha.600`}
 					className={`${VARIANT}-${colorMode}-navLink${isPath ? 'Selected' : ''}`}
+					{
+						...isPath && {
+							borderBottom: '2px',
+							borderColor: colorMode == 'dark' ? 'secondary.400' : 'primary.400'
+						}
+					}
 				>
 					<Box>
 						<Flex align={"center"} gap={2}>

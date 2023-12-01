@@ -1,8 +1,9 @@
-import { scrollSepolia, scroll } from 'viem/chains';
+import { scrollSepolia, scroll, telosTestnet } from 'viem/chains';
 
 const _Endpoints: any = {
 	[scrollSepolia.id]: process.env.NEXT_PUBLIC_GRAPH_URL_534351,
 	[scroll.id]: process.env.NEXT_PUBLIC_GRAPH_URL_534352,
+	[telosTestnet.id]: process.env.NEXT_PUBLIC_GRAPH_URL_41,
 }
 
 export const Endpoints = (chainId: number) => _Endpoints[chainId] ?? (process.env.NEXT_PUBLIC_NETWORK == 'testnet' ? _Endpoints[scrollSepolia.id] : _Endpoints[scroll.id]); 

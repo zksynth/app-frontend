@@ -42,7 +42,7 @@ export const theme = extendTheme({
 	colors: {
 		warning: "#FF8A00",
 		danger: "#FF0000",
-		primary: VARIANT == 'edgy ' ? {
+		primary: VARIANT == 'edgy' ? {
 			50:  '#FFE5BC',
 			100: '#FFD89B',
 			200: '#FFC871',
@@ -65,7 +65,7 @@ export const theme = extendTheme({
 			800: '#821432',
 			900: '#631026',
 		},
-		secondary: VARIANT == 'edgy ' ? {
+		secondary: VARIANT == 'edgy' ? {
 			50:  '#FFB593',
 			100: '#FF9B6D',
 			200: '#FF8B55',

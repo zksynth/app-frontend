@@ -32,9 +32,9 @@ const { chains, publicClient } = configureChains(
 );
 
 const { connectors } = getDefaultWallets({
-appName: 'zkSynth',
-projectId: 'YOUR_PROJECT_ID',
-chains
+	appName: process.env.NEXT_PUBLIC_TOKEN_SYMBOL ?? "WAGMI",
+	projectId: 'YOUR_PROJECT_ID',
+	chains
 });
 
 const wagmiConfig = createConfig({

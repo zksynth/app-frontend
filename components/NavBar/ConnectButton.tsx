@@ -31,25 +31,25 @@ export const CustomConnectButton = () => {
             {(() => {
               if (!connected) {
                 return (
-                    <Box className={`${VARIANT}-${colorMode}-secondaryButton`} rounded={'full'} _hover={{rounded: 'full'}} mr={-2}>
-                  <Button size={'md'} onClick={openConnectModal} type='button' bg={'transparent'} _hover={{ opacity: 0.6 }} rounded={'full'} color={'white'}>
-                    Connect Wallet
-                  </Button>
+                  <Box className={`${VARIANT}-${colorMode}-primaryButton`} m={2}>
+                    <Button size={'sm'} onClick={openConnectModal} type='button' bg={'transparent'} _hover={{ opacity: 0.6 }} rounded={'full'} color={'white'}>
+                      Connect Wallet
+                    </Button>
                   </Box>
                 );
               }
               if (chain.unsupported) {
                 return (
-                  <Box className={`${VARIANT}-${colorMode}-errorButton`} rounded={'full'} _hover={{rounded: 'full'}} mr={-2}>
-                  <Button size={'md'}  onClick={openChainModal} type='button' bg={'transparent'} _hover={{ opacity: 0.6 }} rounded={'full'}>
+                  <Box className={`${VARIANT}-${colorMode}-errorButton`} m={2}>
+                  <Button size={'sm'}  onClick={openChainModal} type='button' bg={'transparent'} _hover={{ opacity: 0.6 }}>
                   Wrong network
                   </Button>
                   </Box>
                 );
               }
               return (
-                <Box >
-                  <Button rounded={0} size={'sm'} py={'18px'} onClick={openAccountModal} type='button' bg={'transparent'} _hover={{ opacity: 0.6 }}>
+                <Box>
+                  <Button m={2} size={'sm'} py={'18px'} onClick={openAccountModal} type='button' bg={'transparent'} _hover={{ opacity: 0.6 }}>
                     {account.displayName} <RiArrowDropDownLine size={24}/>
                   </Button>
                 </Box>
