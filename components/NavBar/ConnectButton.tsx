@@ -1,4 +1,4 @@
-import { Box, Button, useColorMode } from '@chakra-ui/react';
+import { Box, Button, Flex, useColorMode, Text } from '@chakra-ui/react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { RiArrowDropDownLine } from 'react-icons/ri';
 import { VARIANT } from '../../styles/theme';
@@ -31,8 +31,8 @@ export const CustomConnectButton = () => {
             {(() => {
               if (!connected) {
                 return (
-                    <Box className={`${VARIANT}-${colorMode}-secondaryButton`} rounded={'full'} _hover={{rounded: 'full'}} mr={-2}>
-                  <Button size={'md'} onClick={openConnectModal} type='button' bg={'transparent'} _hover={{ opacity: 0.6 }} rounded={'full'} color={'white'}>
+                    <Box bg={'whiteAlpha.800'} rounded={'full'} _hover={{rounded: 'full'}} mr={-2}>
+                  <Button size={'sm'} h={'36px'} fontSize={'13px'} color='black' onClick={openConnectModal} type='button' bg={'transparent'} _hover={{ opacity: 0.6 }} rounded={'full'}>
                     Connect Wallet
                   </Button>
                   </Box>
@@ -49,8 +49,13 @@ export const CustomConnectButton = () => {
               }
               return (
                 <Box >
-                  <Button rounded={0} size={'sm'} py={'18px'} onClick={openAccountModal} type='button' bg={'transparent'} _hover={{ opacity: 0.6 }} color={'blackAlpha.600'}>
-                    {account.displayName} <RiArrowDropDownLine size={24}/>
+                  <Button rounded={'full'} size={'sm'} py={'18px'} mr={-2} onClick={openAccountModal} type='button' bg={'transparent'} _hover={{ opacity: 0.6 }} color={'whiteAlpha.800'}>
+                    <Flex justify={'space-between'} align={'center'} mr={-2}>
+                      <Text fontSize={'13px'}>
+                        {account.displayName} 
+                      </Text>
+                      <RiArrowDropDownLine size={24} />
+                    </Flex>
                   </Button>
                 </Box>
               );

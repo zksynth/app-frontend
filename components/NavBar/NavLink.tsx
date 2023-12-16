@@ -32,12 +32,17 @@ export default function NavLink({
 				<Flex flexDir={'column'} align={'center'} w={'100%'}>
 				<Flex
 					align={"center"}
-					h={"34px"}
+					h={"36px"}
 					px={4}
 					cursor="pointer"
 					flex='stretch'
-					color={isPath ? (colorMode == 'dark' ? 'secondary.400' : 'primary.400') : `${colorMode == 'dark' ? 'white' : 'black'}Alpha.600`}
-					className={`${VARIANT}-${colorMode}-navLink${isPath ? 'Selected' : ''}`}
+					color={'whiteAlpha.700'}
+					// className={`${VARIANT}-${colorMode}-navLink${isPath ? 'Selected' : ''}`}
+					{...isPath && {
+						bg: 'white',
+						rounded: 'full',
+						color: 'black',
+					}}
 				>
 					<Box>
 						<Flex align={"center"} gap={2}>

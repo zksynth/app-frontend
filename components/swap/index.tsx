@@ -597,7 +597,7 @@ export function SelectBody({ asset, onOpen }: any) {
 				align={"center"}
 				bg="whiteAlpha.200"
 				rounded={"full"}
-				shadow={"lg"}
+				shadow={"0"}
 				px={1}
 				py={1}
 				pr={2}
