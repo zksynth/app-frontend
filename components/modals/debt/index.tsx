@@ -194,7 +194,6 @@ export default function Debt({ synth, index }: any) {
 									mt={5}
 									variant={"unstyled"}
 									display="flex"
-									placeholder="Enter amount"
 								>
 									<NumberInput
 										w={"100%"}

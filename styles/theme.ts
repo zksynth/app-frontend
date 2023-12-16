@@ -15,13 +15,13 @@ const breakpoints = {
 };
 
 export const VARIANT: string = process.env.NEXT_PUBLIC_VARIANT ?? "rounded";
-export const HEADING_FONT = VARIANT == "rounded" ? "General Sans" : "Chakra Petch";
+export const HEADING_FONT = VARIANT == "rounded" ? "Rethink Sans" : "Chakra Petch";
 export const BODY_FONT = VARIANT == "rounded" ? "Poppins" : "Rubik";
 
 const components: any = {
 	Heading: {
 		baseStyle: {
-			fontWeight: 'semibold'
+			fontWeight: 'bold'
 		}
 	}
 };

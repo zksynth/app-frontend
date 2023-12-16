@@ -24,6 +24,8 @@ import { Status } from "../utils/status";
 import { CustomConnectButton } from "./ConnectButton";
 import { tokenFormatter } from "../../src/const";
 import { VARIANT } from "../../styles/theme";
+import { AiOutlineSwap } from "react-icons/ai";
+import { FiBox } from "react-icons/fi";
 
 function NavBar() {
 	const { status, account, fetchData } = useContext(AppDataContext);
@@ -108,31 +110,43 @@ function NavBar() {
 
 	return (
 		<>
-		<Flex className={`${VARIANT}-${colorMode}-navBar`} justify={'center'} shadow={'xl'} zIndex={0} mt={8} align='center' >
-			<Box minW='0' w={'100%'} maxW='1250px'>
+		<Flex justify={'center'} shadow={'sm'} mt={8} zIndex={0}>
+			<Box className={`${VARIANT}-${colorMode}-navBar`} minW='0' maxW='750px'>
 			<Flex align={"center"} justify="space-between" >
 				<Flex justify="space-between" align={"center"} w='100%'>
 					<Flex gap={10} align='center'>
 						<Image
 							src={`/${process.env.NEXT_PUBLIC_TOKEN_SYMBOL}-logo-${colorMode}.svg`}
 							alt="logo"
-							height="36px"
-							ml={-2}
+							height="40px"
+							ml={-2.5}
 							mr={-6}
 						/>
 						<Flex
 							align="center"
 							display={{ sm: "none", md: "flex" }}
 						>
+
 							<NavLocalLink
 								path={"/"}
-								title="Swap"
+								title={<Flex align={'center'} gap={2}>
+								<FiBox size={'15px'} />
+								<Heading fontSize={'sm'}>Home</Heading>
+							</Flex>}
 							></NavLocalLink>
 
 							<NavLocalLink
-								path={"/pools"}
-								title="Pools"
+								path={"/swap"}
+								title={<Flex align={'center'} gap={2}>
+								<AiOutlineSwap />
+								<Heading fontSize={'sm'}>Swap</Heading>
+							</Flex>}
 							></NavLocalLink>
+
+							{/* <NavLocalLink
+								path={"/pools"}
+								title="All Pools"
+							></NavLocalLink> */}
 
 							{/* <NavLocalLink
 								path={"/synthetics"}

@@ -37,7 +37,7 @@ function APRInfoBox({ debtBurnApr, esSyxApr }: any) {
 		<>
 			<Box
 				className={`${VARIANT}-${colorMode}-containerBody`}
-				shadow={'2xl'}
+				shadow={'0'}
 			>
 				<Box px={3} py={2} className={`${VARIANT}-${colorMode}-containerHeader`}>
 					<Text color={colorMode == 'dark' ? "whiteAlpha.700" : "blackAlpha.700"}>Total APY</Text>
@@ -67,7 +67,7 @@ function APRInfoBox({ debtBurnApr, esSyxApr }: any) {
 				
 				{/* <Divider /> */}
 				<Flex className={`${VARIANT}-${colorMode}-containerFooter2`} border={0} shadow={0} px={2.5} py={1} align={'center'} gap={1}>
-					<InfoIcon color={colorMode == 'dark' ? 'whiteAlpha.600' : 'blackAlpha.700'} />
+					<InfoIcon w={'12px'} mr={0.5} color={colorMode == 'dark' ? 'whiteAlpha.600' : 'blackAlpha.700'} />
 					<Text color={colorMode == 'dark' ? 'whiteAlpha.600' : 'blackAlpha.700'} fontSize={'xs'}>
 						Earned on Synthetic Assets
 					</Text>

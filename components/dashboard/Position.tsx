@@ -27,7 +27,7 @@ export default function Position({ poolIndex }: any) {
 					wrap={"wrap"}
 					w="100%"
 					className={`${VARIANT}-${colorMode}-containerBody`}
-					shadow={'xl'}
+					shadow={'0'}
 				>
 					<Flex
 						align={"center"}

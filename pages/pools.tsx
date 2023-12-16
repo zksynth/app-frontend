@@ -1,18 +1,18 @@
 import { Box, Divider, Flex, Heading, Image, Text, Tooltip, useColorMode } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { BsArrowRight, BsArrowRightShort, BsStars } from "react-icons/bs";
-import { ESYX_PRICE, POOL_COLORS, dollarFormatter, tokenFormatter } from "../../src/const";
-import ThBox from "../../components/dashboard/ThBox";
-import { HEADING_FONT, VARIANT } from "../../styles/theme";
-import TdBox from "../../components/dashboard/TdBox";
+import { ESYX_PRICE, POOL_COLORS, dollarFormatter, tokenFormatter } from "../src/const";
+import ThBox from "../components/dashboard/ThBox";
+import { HEADING_FONT, VARIANT } from "../styles/theme";
+import TdBox from "../components/dashboard/TdBox";
 import { useRouter } from "next/router";
-import { useAppData } from "../../components/context/AppDataProvider";
+import { useAppData } from "../components/context/AppDataProvider";
 import Big from "big.js";
-import { usePriceData } from "../../components/context/PriceContext";
-import { Status } from "../../components/utils/status";
-import APRInfo from "../../components/infos/APRInfo";
-import Skeleton1 from "../../components/others/Skeleton1";
-import { useSyntheticsData } from "../../components/context/SyntheticsPosition";
+import { usePriceData } from "../components/context/PriceContext";
+import { Status } from "../components/utils/status";
+import APRInfo from "../components/infos/APRInfo";
+import Skeleton1 from "../components/others/Skeleton1";
+import { useSyntheticsData } from "../components/context/SyntheticsPosition";
 import Head from "next/head";
 
 export default function Synth() {

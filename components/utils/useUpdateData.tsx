@@ -25,11 +25,13 @@ export default function useUpdateData() {
             for(let j in pools[i].collaterals){
                 if(tokens.findIndex((token: any) => token == pools[i].collaterals[j].token.id) !== -1 && pools[i].collaterals[j].feed.slice(0, 20) !== ethers.constants.HashZero.slice(0, 20)){
                     pythFeeds.push(REPLACED_FEEDS[pools[i].collaterals[j].feed] ?? pools[i].collaterals[j].feed);
+                    console.log("Added feed: ", pools[i].collaterals[j].token.symbol);
                 }
             }
             for(let j in pools[i].synths){
                 if(tokens.findIndex((token: any) => token == pools[i].synths[j].token.id) !== -1 && pools[i].synths[j].feed.slice(0, 20) !== ethers.constants.HashZero.slice(0, 20)){
                     pythFeeds.push(REPLACED_FEEDS[pools[i].synths[j].feed] ?? pools[i].synths[j].feed);
+                    console.log("Added feed: ", pools[i].synths[j].token.symbol);
                 }
             }
         }

@@ -9,7 +9,7 @@ export default function IconBox({ children }: any) {
 			h={"30px"}
 			w={"30px"}
 			bg={colorMode == 'dark' ? "whiteAlpha.200" : "blackAlpha.200"}
-			rounded={0}
+			rounded={'full'}
 		>
 			{children}
 		</Flex>

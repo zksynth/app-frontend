@@ -24,17 +24,17 @@ export default function Footer() {
     <Box
       color={'whiteAlpha.400'}
       bg='transparent'
-      pb={2}
+      pb={1}
       >
       <Box
         borderTopWidth={1}
         borderStyle={'solid'}
-        borderColor={'blackAlpha.400'}
+        borderColor={'blackAlpha.200'}
         >
         <Container
           as={Stack}
           maxW={'1200px'}
-          pt={2}
+          pt={1.5}
           direction={{ base: 'column', md: 'row' }}
           spacing={4}
           justify={{ md: 'space-between' }}

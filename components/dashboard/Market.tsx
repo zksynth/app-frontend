@@ -183,9 +183,9 @@ export default function Market() {
 				justifyContent={"space-between"}
 				alignContent={"start"}
 			>
-				<Box>
-					{pools.length > 1 ? <PoolSelector /> : <Heading fontWeight={HEADING_FONT == 'Chakra Petch' ? 'bold' : 'semibold'} fontSize={{sm: '3xl', md: "3xl", lg: '32px'}}>{pools[0]?.name}</Heading>}
-					<Flex mt={8} mb={4} gap={10} wrap={'wrap'}>
+				<Flex w='100%' my={2} justify={'space-between'} align={'center'}>
+					{pools.length > 1 ? <PoolSelector /> : <Heading fontSize={{sm: '3xl', md: "3xl", lg: '32px'}}>{pools[0]?.name}</Heading>}
+					<Flex gap={10} wrap={'wrap'}>
 						<Flex gap={2}>
 							<Heading size={"sm"} color={"primary.400"}>
 								Total Collateral
@@ -221,7 +221,7 @@ export default function Market() {
 							</APRInfo>
 						</Flex>
 					</Flex>
-				</Box>
+				</Flex>
 
 				{
 					(pools[tradingPool]

@@ -165,11 +165,13 @@ export default function Index({ children }: any) {
 			</Box>
 
 			<Box
-				bgGradient={
-					colorMode == "dark"
-						? "linear(to-b, blackAlpha.500, blackAlpha.800)"
-						: router.pathname == "/" ? "linear(to-b, blackAlpha.200, #fde9ef)" : "linear(to-b, blackAlpha.100, blackAlpha.300)"
-				}
+				// bgGradient={
+				// 	colorMode == "dark"
+				// 		? "linear(to-b, blackAlpha.500, blackAlpha.800)"
+				// 		: router.pathname == "/" ? "linear(to-b, blackAlpha.200, #fde9ef)" : "linear(to-b, blackAlpha.100, blackAlpha.300)"
+				// }
+				backgroundImage={`/graph-paper.svg`}
+				bgColor={'blackAlpha.50'}
 				zIndex={0}
 			>
 				<Flex
@@ -180,7 +182,7 @@ export default function Index({ children }: any) {
 				>
 					<Box
 						zIndex={2}
-						minW={{ sm: "0", md: "0", lg: "1200px" }}
+						// minW={{ sm: "0", md: "0", lg: "1200px" }}
 						w={"100%"}
 						px={{ sm: "4", md: "0" }}
 					>

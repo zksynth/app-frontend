@@ -17,7 +17,6 @@ import {
 	tokenFormatter,
 } from "../../../src/const";
 import Big from "big.js";
-import Response from "../_utils/Response";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { useToast } from "@chakra-ui/react";
 import useUpdateData from "../../utils/useUpdateData";

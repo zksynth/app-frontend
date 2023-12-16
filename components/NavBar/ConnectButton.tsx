@@ -49,7 +49,7 @@ export const CustomConnectButton = () => {
               }
               return (
                 <Box >
-                  <Button rounded={0} size={'sm'} py={'18px'} onClick={openAccountModal} type='button' bg={'transparent'} _hover={{ opacity: 0.6 }}>
+                  <Button rounded={0} size={'sm'} py={'18px'} onClick={openAccountModal} type='button' bg={'transparent'} _hover={{ opacity: 0.6 }} color={'blackAlpha.600'}>
                     {account.displayName} <RiArrowDropDownLine size={24}/>
                   </Button>
                 </Box>
