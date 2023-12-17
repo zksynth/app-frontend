@@ -24,7 +24,7 @@ export default function NavLink({
 
 	return ( <Flex flexDir={'column'} align='center'>
 		<Flex 
-			my={2}
+			my={1}
 			// mb={isPath ? '-2px' : 0} 
 			align={"center"}
 		>
@@ -32,7 +32,7 @@ export default function NavLink({
 				<Flex flexDir={'column'} align={'center'} w={'100%'}>
 				<Flex
 					align={"center"}
-					h={"36px"}
+					h={"34px"}
 					px={4}
 					cursor="pointer"
 					flex='stretch'

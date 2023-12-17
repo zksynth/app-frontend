@@ -118,7 +118,7 @@ function NavBar() {
 						<Image
 							src={`/${process.env.NEXT_PUBLIC_TOKEN_SYMBOL}-logo-${colorMode}.svg`}
 							alt="logo"
-							height="40px"
+							height="34px"
 							ml={-2.5}
 							mr={-6}
 						/>
