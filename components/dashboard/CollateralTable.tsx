@@ -13,6 +13,7 @@ import {
 	Heading,
 	Divider,
 	useColorMode,
+	Flex,
 } from "@chakra-ui/react";
 import { AppDataContext } from "../context/AppDataProvider";
 
@@ -20,9 +21,29 @@ import CollateralModal from "../modals/collateral";
 import ThBox from "./ThBox";
 import { VARIANT } from "../../styles/theme";
 
+import {
+	Pagination,
+	usePagination,
+	PaginationNext,
+	PaginationPage,
+	PaginationPrevious,
+	PaginationContainer,
+	PaginationPageGroup,
+} from "@ajna/pagination";
+import { MdNavigateBefore, MdNavigateNext } from "react-icons/md";
+
+const pageSize = 5;
+
 export default function CollateralTable() {
 	const { pools, tradingPool } = useContext(AppDataContext);
 	const { colorMode } = useColorMode();
+
+	const { currentPage, setCurrentPage, pagesCount, pages } =
+		usePagination({
+			pagesCount: Math.ceil((pools[tradingPool]?.collaterals?.length ?? 1) / pageSize) ?? 1,
+			initialState: { currentPage: 1 }
+		}
+	);	
 
 	return (
 		<>
@@ -67,6 +88,40 @@ export default function CollateralTable() {
 					<Skeleton height="50px" rounded={12} m={6} />
 				</Box>
 			)}
+
+			<Flex justify={"center"}>
+				<Pagination
+					pagesCount={pagesCount}
+					currentPage={currentPage}
+					onPageChange={setCurrentPage}
+				>
+					<PaginationContainer my={4}>
+						<PaginationPrevious variant={"none"}>
+							<MdNavigateBefore />
+						</PaginationPrevious>
+						<PaginationPageGroup>
+							{pages.map((page: number) => (
+								<PaginationPage
+									key={`pagination_page_${page}`}
+									page={page}
+									width={10}
+									rounded={"full"}
+									bgColor={"transparent"
+									}
+									color={
+										page === currentPage ? 'primary.400' : colorMode == 'dark' ? 'white' : 'blackAlpha.600'
+									}
+									_hover={{ bgColor: colorMode == 'dark' ? "whiteAlpha.200" : "blackAlpha.200" }}
+								/>
+							))}
+						</PaginationPageGroup>
+						<PaginationNext variant={"none"}>
+							{" "}
+							<MdNavigateNext />{" "}
+						</PaginationNext>
+					</PaginationContainer>
+				</Pagination>
+			</Flex>
 		</>
 	);
 }

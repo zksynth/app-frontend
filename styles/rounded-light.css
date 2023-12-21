@@ -2,7 +2,7 @@
 .rounded-light-navBar{
     background: #EC255A;
     border-radius: 28px;
-    padding: 0px 16px;
+    padding: 0px 14px;
     border: 1px solid #e8e8e8;
 }
 
@@ -106,7 +106,8 @@
 }
 
 .rounded-light-errorButton {
-    background: #ff1755;
+    background: orange;
+    /* border: 1px solid yellow; */
     border-radius: 12px;
 }
 

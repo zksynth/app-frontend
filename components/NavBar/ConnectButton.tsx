@@ -41,7 +41,7 @@ export const CustomConnectButton = () => {
               if (chain.unsupported) {
                 return (
                   <Box className={`${VARIANT}-${colorMode}-errorButton`} rounded={'full'} _hover={{rounded: 'full'}} mr={-2}>
-                  <Button size={'md'}  onClick={openChainModal} type='button' bg={'transparent'} _hover={{ opacity: 0.6 }} rounded={'full'}>
+                  <Button size={'sm'} fontSize={'13px'} color={'white'} onClick={openChainModal} type='button' bg={'transparent'} _hover={{ opacity: 0.6 }} rounded={'full'}>
                   Wrong network
                   </Button>
                   </Box>
