@@ -10,18 +10,15 @@ import { useAppData } from "../context/AppDataProvider";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import { ESYX_PRICE, defaultChain, dollarFormatter } from "../../src/const";
 import PoolSelector from "./PoolSelector";
-import APRInfo from "../infos/APRInfo";
 import { TokenContext } from "../context/TokenContext";
 import { useAccount, useNetwork } from "wagmi";
 import { getAddress, getContract, send } from "../../src/contract";
 import { usePriceData } from "../context/PriceContext";
 import { useSyntheticsData } from "../context/SyntheticsPosition";
-import { BsStars } from "react-icons/bs";
 import { HEADING_FONT, VARIANT } from "../../styles/theme";
 
 export default function Market() {
 	const { pools, tradingPool, account } = useAppData();
-	const { poolDebt, position } = useSyntheticsData();
     const [totalDebt, setTotalDebt] = useState<any>('0.00');
     const [totalCollateral, setTotalCollateral] = useState<any>('0.00');
 	const { prices } = usePriceData();
@@ -41,53 +38,7 @@ export default function Market() {
         setTotalCollateral(_totalCollateral.toFixed(2));
     }, [pools, tradingPool, prices])
 
-	const esSyxApr = () => {
-		if (!pools[tradingPool]) return "0";
-		const totalDebt = poolDebt();
-		if (Big(totalDebt).eq(0)) return "0";
-		return Big(pools[tradingPool]?.rewardSpeeds[0] ?? 0)
-			.div(1e18)
-			.mul(365 * 24 * 60 * 60 * ESYX_PRICE)
-			.div(totalDebt)
-			.mul(100)
-			.toFixed(2);
-	};
-
-
-	const debtBurnApr = () => {
-		const pool = pools[tradingPool];
-		if (!pool) return "0";
-		const totalDebt = poolDebt();
-		if (Big(totalDebt).eq(0)) return "0";
-		// average burn and revenue
-		let averageDailyBurn = Big(0);
-		let averageDailyRevenue = Big(0);
-		for(let k = 0; k < pool.synths.length; k++) {
-			for(let l = 0; l <pool.synths[k].synthDayData.length; l++) {
-				let synthDayData = pool.synths[k].synthDayData[l];
-				// synthDayData.dailyMinted / 1e18 * pool.synths[k].mintFee / 10000 * pool.synths[k].priceUSD
-				let totalFee = Big(synthDayData.dailyMinted).div(1e18).mul(pool.synths[k].mintFee).div(10000).mul(prices[pool.synths[k].token.id]);
-				// add burn fee
-				totalFee = totalFee.plus(Big(synthDayData.dailyBurned).div(1e18).mul(pool.synths[k].burnFee).div(10000).mul(prices[pool.synths[k].token.id]));
-
-				// add to average
-				averageDailyBurn = averageDailyBurn.plus(
-					totalFee.mul(pool.issuerAlloc).div(10000)
-				);
-				averageDailyRevenue = averageDailyRevenue.plus(
-					totalFee.mul(10000 - pool.issuerAlloc).div(10000)
-				);
-			}
-		}
-		// pool.averageDailyBurn = averageDailyBurn.div(7).toString();
-		// pool.averageDailyRevenue = averageDailyRevenue.div(7).toString();
-		return averageDailyBurn
-			.div(7)
-			.mul(365)
-			.div(totalDebt)
-			.mul(100)
-			.toFixed(2);
-	};
+	
 
 	const [synAccrued, setSynAccrued] = useState<any>(null);
 	const [claiming, setClaiming] = useState(false);
@@ -200,26 +151,7 @@ export default function Market() {
 							<Heading size={"sm"}>{dollarFormatter.format(totalDebt ?? 0)}</Heading>
 						</Flex>
 
-						<Flex gap={2}>
-							<Heading size={"sm"} color={"secondary.400"}>
-								APR
-							</Heading>
-							<APRInfo
-								debtBurnApr={debtBurnApr()}
-								esSyxApr={esSyxApr()}
-							>
-								<Flex gap={1} align={'center'} cursor={"help"}>
-									<Heading size={"sm"}>
-										{(
-											Number(debtBurnApr())
-											+ Number(esSyxApr())
-										).toFixed(2)}
-										%
-									</Heading>
-									<BsStars />
-								</Flex>
-							</APRInfo>
-						</Flex>
+						
 					</Flex>
 				</Flex>
 

@@ -21,6 +21,7 @@ import {
 	NumberInputField,
 	Divider,
 	useColorMode,
+	Radio,
 } from "@chakra-ui/react";
 import { ADDRESS_ZERO, NATIVE, W_NATIVE, dollarFormatter, tokenFormatter } from "../../../src/const";
 import Big from "big.js";
@@ -188,12 +189,26 @@ export default function CollateralModal({ collateral, index }: any) {
 										<TabList>
 											<Box className={VARIANT + '-' + colorMode + '-' + (isNative ? `${tabSelected == 0 ? 'secondary' : 'primary'}TabLeftSelected` : `${tabSelected == 0 ? 'secondary' : 'primary'}TabLeft`)}>
 											<Tab>
+												<Radio
+													size="md"
+													isChecked={isNative}
+													colorScheme="red"
+													mr={1.5}
+													ml={-1}
+												/>
 												{NATIVE}
 											</Tab>
 											</Box>
 											<Box className={VARIANT + '-' + colorMode + '-' + (!isNative ? `${tabSelected == 0 ? 'secondary' : 'primary'}TabRightSelected` : `${tabSelected == 0 ? 'secondary' : 'primary'}TabRight`)}>
 											<Tab>
 												{W_NATIVE}
+												<Radio
+													size="md"
+													isChecked={!isNative}
+													colorScheme="red"
+													ml={1.5}
+													mr={-1}
+												/>
 											</Tab>
 											</Box>
 										</TabList>
