@@ -3,6 +3,7 @@ import { AppDataContext } from '../context/AppDataProvider';
 import { EvmPriceServiceConnection } from '@pythnetwork/pyth-evm-js';
 import { PYTH_ENDPOINT, REPLACED_FEEDS } from '../../src/const';
 import { ethers } from 'ethers';
+import Big from 'big.js';
 
 export default function useUpdateData() {
     const {
@@ -23,7 +24,7 @@ export default function useUpdateData() {
         // get feeds for tokens
         for(let i in pools){
             for(let j in pools[i].collaterals){
-                if(tokens.findIndex((token: any) => token == pools[i].collaterals[j].token.id) !== -1 && pools[i].collaterals[j].feed.slice(0, 20) !== ethers.constants.HashZero.slice(0, 20)){
+                if(tokens.findIndex((token: any) => token == pools[i].collaterals[j].token.id) !== -1 && pools[i].collaterals[j].feed.slice(0, 20) !== ethers.constants.HashZero.slice(0, 20) && Big(pools[i].collaterals[j].balance ?? 0).gt(0)){
                     pythFeeds.push(REPLACED_FEEDS[pools[i].collaterals[j].feed] ?? pools[i].collaterals[j].feed);
                     console.log("Added feed: ", pools[i].collaterals[j].token.symbol);
                 }
